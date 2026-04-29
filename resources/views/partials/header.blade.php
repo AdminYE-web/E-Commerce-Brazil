@@ -42,12 +42,24 @@
                         <i class="bi bi-cart"></i>
                     </a>
 
-                    <div class="language-box">
-                        <img src="{{ asset('assets/images/br-flag.png') }}" alt="BR" class="flag-img">
-                        <span class="arrow-down">
-                            <i class="bi bi-chevron-down"></i>
-                        </span>
-                    </div>
+                   <div class="language-dropdown">
+    <button type="button" class="language-toggle">
+        <img src="{{ asset('assets/images/br-flag.png') }}" alt="BR" class="flag-img">
+        <i class="bi bi-chevron-down"></i>
+    </button>
+
+    <div class="language-menu">
+        <a href="#" class="language-item active">
+            <span class="lang-flag flag-br"></span>
+            <span>Português (BR)</span>
+        </a>
+
+        <a href="#" class="language-item">
+            <span class="lang-flag flag-jp"></span>
+            <span>日本語 (JP)</span>
+        </a>
+    </div>
+</div>
                 </div>
 
             </nav>

@@ -2762,3 +2762,117 @@ body {
         margin-right: auto;
     }
 }
+/* ===== Language Dropdown ===== */
+.language-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.language-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: none;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+}
+
+.language-toggle .flag-img {
+    width: 34px;
+    height: 24px;
+    object-fit: cover;
+    border-radius: 2px;
+    display: block;
+}
+
+.language-toggle i {
+    font-size: 12px;
+    color: #2449b8;
+    transition: transform 0.25s ease;
+}
+
+/* เมนู */
+.language-menu {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    min-width: 190px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.16);
+    padding: 8px 0;
+    z-index: 1200;
+
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(8px);
+    transition: opacity 0.22s ease, transform 0.22s ease, visibility 0.22s ease;
+}
+
+/* เปิดตอน hover */
+.language-dropdown:hover .language-menu,
+.language-dropdown.is-open .language-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* หมุนลูกศร */
+.language-dropdown:hover .language-toggle i,
+.language-dropdown.is-open .language-toggle i {
+    transform: rotate(180deg);
+}
+
+.language-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    color: #111;
+    font-size: 15px;
+    text-decoration: none;
+    line-height: 1.2;
+    transition: background 0.2s ease;
+}
+
+.language-item:hover {
+    background: #f6f7fb;
+    color: #111;
+}
+
+.language-item.active {
+    font-weight: 500;
+}
+
+/* ธงวงกลม */
+.lang-flag {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: inline-block;
+    border: 1px solid #e5e5e5;
+}
+
+/* Brazil */
+.flag-br {
+    background:
+        radial-gradient(circle at center, #f8d34f 0 28%, transparent 29%),
+        #169b45;
+    position: relative;
+}
+
+.flag-br::before {
+    content: "";
+    position: absolute;
+    inset: 2px;
+    background: #f8d34f;
+    transform: rotate(45deg);
+}
+
+/* Japan */
+.flag-jp {
+    background:
+        radial-gradient(circle at center, #d91f35 0 38%, #ffffff 39%);
+}

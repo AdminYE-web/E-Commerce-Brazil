@@ -158,7 +158,26 @@
         });
     </script>
 
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const dropdown = document.querySelector('.language-dropdown');
+    const toggle = document.querySelector('.language-toggle');
 
+    if (dropdown && toggle) {
+        toggle.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            dropdown.classList.toggle('is-open');
+        });
+
+        document.addEventListener('click', function (e) {
+            if (!dropdown.contains(e.target)) {
+                dropdown.classList.remove('is-open');
+            }
+        });
+    }
+});
+</script>
 </body>
 
 </html>
