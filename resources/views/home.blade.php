@@ -8,11 +8,13 @@
             <div id="homeBannerCarousel" class="carousel slide hero-carousel" data-bs-ride="carousel">
 
                 <div class="carousel-inner">
+
+                    <!-- Banner 1 -->
                     <div class="carousel-item active">
                         <div class="hero-slide">
 
                             <div class="hero-copy">
-                                <h1 class="hero-title ">
+                                <h1 class="hero-title">
                                     Padrão Japonês <br>
                                     Estilo Único <br>
                                     Seu Brinde Perfeito
@@ -25,19 +27,19 @@
                                     que sua ideia merece.
                                 </p>
 
-                                <div class="hero-dots-custom">
-                                    <button class="active" type="button" data-bs-target="#homeBannerCarousel"
-                                        data-bs-slide-to="0"></button>
-                                    <button type="button" data-bs-target="#homeBannerCarousel"
-                                        data-bs-slide-to="1"></button>
-                                    <button type="button" data-bs-target="#homeBannerCarousel"
-                                        data-bs-slide-to="2"></button>
-                                </div>
+                                <div class="hero-action-group">
+                                    <div class="hero-dots-custom">
+                                        <button class="active" type="button" data-bs-target="#homeBannerCarousel"
+                                            data-bs-slide-to="0"></button>
+                                        <button type="button" data-bs-target="#homeBannerCarousel"
+                                            data-bs-slide-to="1"></button>
+                                    </div>
 
-                                <a href="#" class="btn hero-cta">
-                                    <span>Ver Catálogo</span>
-                                    <i class="bi bi-arrow-right"></i>
-                                </a>
+                                    <a href="#" class="btn hero-cta">
+                                        <span>Ver Catálogo</span>
+                                        <i class="bi bi-arrow-right"></i>
+                                    </a>
+                                </div>
                             </div>
 
                             <img src="{{ asset('assets/images/home/banner_home.png') }}" alt="Banner Home"
@@ -45,6 +47,42 @@
 
                         </div>
                     </div>
+
+                    <!-- Banner 2 -->
+                    <div class="carousel-item">
+                        <div class="hero-slide" style="background: #F5CF3C">
+
+                            <div class="hero-copy">
+                                <h1 class="hero-head" style="color: black">HOTMOBILY</h1>
+                                <h1 class="hero-title" style="color: black">
+                                    Estilo que Resiste a Tudo
+                                </h1>
+
+                                <p class="hero-text" style="color: black">
+                                    Brindes Únicos e Colecionáveis com Estilo Extraordinário
+                                </p>
+
+                                <div class="hero-action-group">
+                                    <div class="hero-dots-custom">
+                                        <button class="active" type="button" data-bs-target="#homeBannerCarousel"
+                                            data-bs-slide-to="0"></button>
+                                        <button type="button" data-bs-target="#homeBannerCarousel"
+                                            data-bs-slide-to="1"></button>
+                                    </div>
+
+                                    <a href="#" class="btn hero-cta" style="background: white; color: black">
+                                        <span>Ver Catálogo</span>
+                                        <i class="bi bi-arrow-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <img src="{{ asset('assets/images/home/banner_home_2.png') }}" alt="Banner Home 2"
+                                class="hero-banner-image">
+
+                        </div>
+                    </div>
+
                 </div>
 
                 <button class="carousel-control-prev hero-control hero-control-prev-custom" type="button"
@@ -163,9 +201,8 @@
                                 </div>
 
                                 <div class="product-img-wrap">
-                                    
-                                    <img src="{{ asset('assets/images/home/Group 971.png') }}"
-                                        alt="Lanyard Polyester">
+
+                                    <img src="{{ asset('assets/images/home/Group 971.png') }}" alt="Lanyard Polyester">
                                 </div>
                             </div>
                         </div>
@@ -301,7 +338,7 @@
                                 </div>
 
                                 <div class="product-img-wrap">
-                                   
+
                                     <img src="{{ asset('assets/images/home/Group 973.png') }}" alt="Lanyard Sublimation">
                                 </div>
                             </div>
@@ -340,25 +377,25 @@
                                 </div>
 
                                 <div class="product-img-wrap">
-                                  
+
                                     <img src="{{ asset('assets/images/home/Group 22 (1).png') }}" alt="Yoyo">
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                
+
 
                 {{-- <div class="recommended-swiper-pagination"></div> --}}
             </div>
-           <div class="text-center mt-4">
-             <a href="#" class="btn hero-cta">
+            <div class="text-center mt-4">
+                <a href="#" class="btn hero-cta">
                     <span>Ver mais</span>
                 </a>
-           </div>
+            </div>
         </div>
     </section>
-  <section class="promotional-steps-section">
+    <section class="promotional-steps-section">
 
 
         <div class="container recommended-container">
@@ -387,8 +424,7 @@
 
                                 <div class="product-img-wrap">
 
-                                    <img src="{{ asset('assets/images/home/Group 21.png') }}"
-                                        alt="Rubber Keychain">
+                                    <img src="{{ asset('assets/images/home/Group 21.png') }}" alt="Rubber Keychain">
                                 </div>
                             </div>
                         </div>
@@ -406,8 +442,9 @@
                                 </div>
 
                                 <div class="product-img-wrap">
-                                    
-                                    <img src="{{ asset('assets/images/home/lanyard-polyester.png') }}" alt="Lanyard Sublimation">
+
+                                    <img src="{{ asset('assets/images/home/lanyard-polyester.png') }}"
+                                        alt="Lanyard Sublimation">
                                 </div>
                             </div>
                         </div>
@@ -426,8 +463,7 @@
 
                                 <div class="product-img-wrap">
 
-                                    <img src="{{ asset('assets/images/home/Group 972.png') }}"
-                                        alt="Lanyard Snap yoyo">
+                                    <img src="{{ asset('assets/images/home/Group 972.png') }}" alt="Lanyard Snap yoyo">
                                 </div>
                             </div>
                         </div>
@@ -445,325 +481,331 @@
                                 </div>
 
                                 <div class="product-img-wrap">
-                                   
+
                                     <img src="{{ asset('assets/images/home/Group 18.png') }}" alt="Yoyo">
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                
+
 
                 {{-- <div class="recommended-swiper-pagination"></div> --}}
             </div>
-           <div class="text-center mt-4">
-             <a href="#" class="btn hero-cta">
+            <div class="text-center mt-4">
+                <a href="#" class="btn hero-cta">
                     <span>Ver mais</span>
                 </a>
-           </div>
+            </div>
         </div>
     </section>
-<section class="premium-materials-section premium-materials-desktop">
-    <div class="container">
-        <div class="premium-materials-header">
-            <h2>Seleção de Materiais Premium</h2>
-            <p>
-                Explore nossa ampla variedade de materiais de alta qualidade para personalizar <br>
-                seus brindes exclusivos.
-            </p>
+    <section class="premium-materials-section premium-materials-desktop">
+        <div class="container">
+            <div class="premium-materials-header">
+                <h2>Seleção de Materiais Premium</h2>
+                <p>
+                    Explore nossa ampla variedade de materiais de alta qualidade para personalizar <br>
+                    seus brindes exclusivos.
+                </p>
+            </div>
+
+            <div class="materials-grid">
+
+                <div class="material-card">
+                    <div class="material-image">
+                        <img src="{{ asset('assets/images/home/material-rubber-pvc.png') }}" alt="Rubber & PVC">
+                    </div>
+                    <div class="material-content">
+                        <h3>Rubber &amp; PVC</h3>
+                        <p>
+                            Efeito 2D em relevo de alta qualidade, ideal para chaveiros, straps e descansos de copo.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="material-card">
+                    <div class="material-image">
+                        <img src="{{ asset('assets/images/home/material-acrylic.png') }}" alt="Acrylic">
+                    </div>
+                    <div class="material-content">
+                        <h3>Acrylic</h3>
+                        <p>
+                            Acrílico premium com acabamento transparente, colorido ou aurora para figuras incríveis.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="material-card">
+                    <div class="material-image">
+                        <img src="{{ asset('assets/images/home/material-textile.png') }}" alt="Textile">
+                    </div>
+                    <div class="material-content">
+                        <h3>Textile</h3>
+                        <p>
+                            Tecidos tecidos intrincados para amuletos tradicionais e tapeçarias de alta qualidade.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="material-card">
+                    <div class="material-image">
+                        <img src="{{ asset('assets/images/home/material-polyester.png') }}" alt="Polyester">
+                    </div>
+                    <div class="material-content">
+                        <h3>Polyester</h3>
+                        <p>
+                            Cordões de tecido duráveis, a escolha confiável para uso profissional diário.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="material-card">
+                    <div class="material-image">
+                        <img src="{{ asset('assets/images/home/material-sublimation.png') }}" alt="Sublimation">
+                    </div>
+                    <div class="material-content">
+                        <h3>Sublimation</h3>
+                        <p>
+                            Impressão digital colorida vibrante em cordões macios e de toque suave.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="material-card">
+                    <div class="material-image">
+                        <img src="{{ asset('assets/images/home/material-nylon.png') }}" alt="Nylon">
+                    </div>
+                    <div class="material-content">
+                        <h3>Nylon</h3>
+                        <p>
+                            Acabamento brilhante luxuoso com resistência premium e visual sofisticado.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="material-card material-card-wide">
+                    <div class="material-image">
+                        <img src="{{ asset('assets/images/home/material-other.png') }}" alt="Other Materials">
+                    </div>
+                    <div class="material-content">
+                        <h3>Other Materials</h3>
+                        <p>Specialty Materials &amp; Custom Parts</p>
+                    </div>
+                </div>
+
+            </div>
         </div>
-
-        <div class="materials-grid">
-
-            <div class="material-card">
-                <div class="material-image">
-                    <img src="{{ asset('assets/images/home/material-rubber-pvc.png') }}" alt="Rubber & PVC">
-                </div>
-                <div class="material-content">
-                    <h3>Rubber &amp; PVC</h3>
-                    <p>
-                        Efeito 2D em relevo de alta qualidade, ideal para chaveiros, straps e descansos de copo.
-                    </p>
-                </div>
+    </section>
+    <section class="premium-materials-section premium-materials-mobile">
+        <div class="container">
+            <div class="premium-materials-header">
+                <h2>Seleção de Materiais Premium</h2>
+                <p>
+                    Explore nossa ampla variedade de materiais de alta qualidade para personalizar
+                    seus brindes exclusivos.
+                </p>
             </div>
 
-            <div class="material-card">
-                <div class="material-image">
-                    <img src="{{ asset('assets/images/home/material-acrylic.png') }}" alt="Acrylic">
-                </div>
-                <div class="material-content">
-                    <h3>Acrylic</h3>
-                    <p>
-                        Acrílico premium com acabamento transparente, colorido ou aurora para figuras incríveis.
-                    </p>
-                </div>
-            </div>
-
-            <div class="material-card">
-                <div class="material-image">
-                    <img src="{{ asset('assets/images/home/material-textile.png') }}" alt="Textile">
-                </div>
-                <div class="material-content">
-                    <h3>Textile</h3>
-                    <p>
-                        Tecidos tecidos intrincados para amuletos tradicionais e tapeçarias de alta qualidade.
-                    </p>
-                </div>
-            </div>
-
-            <div class="material-card">
-                <div class="material-image">
-                    <img src="{{ asset('assets/images/home/material-polyester.png') }}" alt="Polyester">
-                </div>
-                <div class="material-content">
-                    <h3>Polyester</h3>
-                    <p>
-                        Cordões de tecido duráveis, a escolha confiável para uso profissional diário.
-                    </p>
-                </div>
-            </div>
-
-            <div class="material-card">
-                <div class="material-image">
-                    <img src="{{ asset('assets/images/home/material-sublimation.png') }}" alt="Sublimation">
-                </div>
-                <div class="material-content">
-                    <h3>Sublimation</h3>
-                    <p>
-                        Impressão digital colorida vibrante em cordões macios e de toque suave.
-                    </p>
-                </div>
-            </div>
-
-            <div class="material-card">
-                <div class="material-image">
-                    <img src="{{ asset('assets/images/home/material-nylon.png') }}" alt="Nylon">
-                </div>
-                <div class="material-content">
-                    <h3>Nylon</h3>
-                    <p>
-                        Acabamento brilhante luxuoso com resistência premium e visual sofisticado.
-                    </p>
-                </div>
-            </div>
-
-            <div class="material-card material-card-wide">
-                <div class="material-image">
-                    <img src="{{ asset('assets/images/home/material-other.png') }}" alt="Other Materials">
-                </div>
-                <div class="material-content">
-                    <h3>Other Materials</h3>
-                    <p>Specialty Materials &amp; Custom Parts</p>
-                </div>
-            </div>
-
-        </div>
-    </div>
-</section>
-<section class="premium-materials-section premium-materials-mobile">
-    <div class="container">
-        <div class="premium-materials-header">
-            <h2>Seleção de Materiais Premium</h2>
-            <p>
-                Explore nossa ampla variedade de materiais de alta qualidade para personalizar
-                seus brindes exclusivos.
-            </p>
-        </div>
-
-        <div class="swiper premium-materials-swiper">
-            <div class="swiper-wrapper">
-
-                <div class="swiper-slide">
-                    <div class="material-card">
-                        <div class="material-image">
-                            <img src="{{ asset('assets/images/home/material-rubber-pvc.png') }}" alt="Rubber & PVC">
-                        </div>
-                        <div class="material-content">
-                            <h3>Rubber &amp; PVC</h3>
-                            <p>Efeito 2D em relevo de alta qualidade, ideal para chaveiros, straps e descansos de copo.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="swiper-slide">
-                    <div class="material-card">
-                        <div class="material-image">
-                            <img src="{{ asset('assets/images/home/material-acrylic.png') }}" alt="Acrylic">
-                        </div>
-                        <div class="material-content">
-                            <h3>Acrylic</h3>
-                            <p>Acrílico premium com acabamento transparente, colorido ou aurora para figuras incríveis.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="swiper-slide">
-                    <div class="material-card">
-                        <div class="material-image">
-                            <img src="{{ asset('assets/images/home/material-textile.png') }}" alt="Textile">
-                        </div>
-                        <div class="material-content">
-                            <h3>Textile</h3>
-                            <p>Tecidos tecidos intrincados para amuletos tradicionais e tapeçarias de alta qualidade.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="swiper-slide">
-                    <div class="material-card">
-                        <div class="material-image">
-                            <img src="{{ asset('assets/images/home/material-polyester.png') }}" alt="Polyester">
-                        </div>
-                        <div class="material-content">
-                            <h3>Polyester</h3>
-                            <p>Cordões de tecido duráveis, a escolha confiável para uso profissional diário.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="swiper-slide">
-                    <div class="material-card">
-                        <div class="material-image">
-                            <img src="{{ asset('assets/images/home/material-sublimation.png') }}" alt="Sublimation">
-                        </div>
-                        <div class="material-content">
-                            <h3>Sublimation</h3>
-                            <p>Impressão digital colorida vibrante em cordões macios e de toque suave.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="swiper-slide">
-                    <div class="material-card">
-                        <div class="material-image">
-                            <img src="{{ asset('assets/images/home/material-nylon.png') }}" alt="Nylon">
-                        </div>
-                        <div class="material-content">
-                            <h3>Nylon</h3>
-                            <p>Acabamento brilhante luxuoso com resistência premium e visual sofisticado.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="swiper-slide">
-                    <div class="material-card">
-                        <div class="material-image">
-                            <img src="{{ asset('assets/images/home/material-other.png') }}" alt="Other Materials">
-                        </div>
-                        <div class="material-content">
-                            <h3>Other Materials</h3>
-                            <p>Specialty Materials &amp; Custom Parts</p>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-            {{-- <div class="premium-materials-pagination"></div> --}}
-        </div>
-    </div>
-</section>
-<section class="blog-inspirations-section">
-    <div class="container">
-        <div class="blog-inspirations-header">
-            <h2>Blog e Inspirações</h2>
-        </div>
-
-        <div class="blog-swiper-wrap">
-            <div class="swiper blog-swiper">
+            <div class="swiper premium-materials-swiper">
                 <div class="swiper-wrapper">
 
                     <div class="swiper-slide">
-                        <article class="blog-card">
-                            <a href="#" class="blog-image">
-                                <img src="{{ asset('assets/images/home/blog-1.png') }}" alt="Blog">
-                            </a>
-
-                            <div class="blog-content">
-                                <h3>xsqvfzsqrvf</h3>
-                                <p>
-                                    khgkjflsdjv;jzkxvj jfdj aaaaa aaa aaaaaaaaaa vxvvvv zgyzf dszbvxf zgyzv gs sgxvzv vxzvd
-                                </p>
-
-                                <div class="blog-meta">
-                                    <span class="blog-tag blog-tag-blue">Brindes</span>
-                                    <span class="blog-date">24/04/2026</span>
-                                </div>
+                        <div class="material-card">
+                            <div class="material-image">
+                                <img src="{{ asset('assets/images/home/material-rubber-pvc.png') }}" alt="Rubber & PVC">
                             </div>
-                        </article>
+                            <div class="material-content">
+                                <h3>Rubber &amp; PVC</h3>
+                                <p>Efeito 2D em relevo de alta qualidade, ideal para chaveiros, straps e descansos de copo.
+                                </p>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="swiper-slide">
-                        <article class="blog-card">
-                            <a href="#" class="blog-image">
-                                <img src="{{ asset('assets/images/home/blog-2.png') }}" alt="Blog">
-                            </a>
-
-                            <div class="blog-content">
-                                <h3>zsgqvzsqzs</h3>
-                                <p>
-                                    khgkjflsdjv;jzkxvj jfdj aaaaa aaa aaaaaaaaaa vxvvvv zgyzf dszbvxf
-                                </p>
-
-                                <div class="blog-meta">
-                                    <span class="blog-tag blog-tag-yellow">Mercado</span>
-                                    <span class="blog-date">24/04/2026</span>
-                                </div>
+                        <div class="material-card">
+                            <div class="material-image">
+                                <img src="{{ asset('assets/images/home/material-acrylic.png') }}" alt="Acrylic">
                             </div>
-                        </article>
+                            <div class="material-content">
+                                <h3>Acrylic</h3>
+                                <p>Acrílico premium com acabamento transparente, colorido ou aurora para figuras incríveis.
+                                </p>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="swiper-slide">
-                        <article class="blog-card">
-                            <a href="#" class="blog-image">
-                                <img src="{{ asset('assets/images/home/blog-3.png') }}" alt="Blog">
-                            </a>
-
-                            <div class="blog-content">
-                                <h3>gfvsdFSDF</h3>
-                                <p>
-                                    khgkjflsdjv;jzkxvj jfdj aaaaa aaa aaaaaaaaaa vxvvvv zgyzf dszbvxf zgyzv gs sgxvzv vxzvd
-                                </p>
-
-                                <div class="blog-meta">
-                                    <span class="blog-tag blog-tag-blue">Design</span>
-                                    <span class="blog-date">24/04/2026</span>
-                                </div>
+                        <div class="material-card">
+                            <div class="material-image">
+                                <img src="{{ asset('assets/images/home/material-textile.png') }}" alt="Textile">
                             </div>
-                        </article>
+                            <div class="material-content">
+                                <h3>Textile</h3>
+                                <p>Tecidos tecidos intrincados para amuletos tradicionais e tapeçarias de alta qualidade.
+                                </p>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="swiper-slide">
-                        <article class="blog-card">
-                            <a href="#" class="blog-image">
-                                <img src="{{ asset('assets/images/home/blog-4.png') }}" alt="Blog">
-                            </a>
-
-                            <div class="blog-content">
-                                <h3>AFAFcAZSf</h3>
-                                <p>
-                                    khgkjflsdjv;jzkxvj jfdj aaaaa aaa aaaaaaaaaa vxvvvv zgyzf dszbvxf....................................
-                                </p>
-
-                                <div class="blog-meta">
-                                    <span class="blog-tag blog-tag-blue">Design</span>
-                                    <span class="blog-date">24/04/2026</span>
-                                </div>
+                        <div class="material-card">
+                            <div class="material-image">
+                                <img src="{{ asset('assets/images/home/material-polyester.png') }}" alt="Polyester">
                             </div>
-                        </article>
+                            <div class="material-content">
+                                <h3>Polyester</h3>
+                                <p>Cordões de tecido duráveis, a escolha confiável para uso profissional diário.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="swiper-slide">
+                        <div class="material-card">
+                            <div class="material-image">
+                                <img src="{{ asset('assets/images/home/material-sublimation.png') }}" alt="Sublimation">
+                            </div>
+                            <div class="material-content">
+                                <h3>Sublimation</h3>
+                                <p>Impressão digital colorida vibrante em cordões macios e de toque suave.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="swiper-slide">
+                        <div class="material-card">
+                            <div class="material-image">
+                                <img src="{{ asset('assets/images/home/material-nylon.png') }}" alt="Nylon">
+                            </div>
+                            <div class="material-content">
+                                <h3>Nylon</h3>
+                                <p>Acabamento brilhante luxuoso com resistência premium e visual sofisticado.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="swiper-slide">
+                        <div class="material-card">
+                            <div class="material-image">
+                                <img src="{{ asset('assets/images/home/material-other.png') }}" alt="Other Materials">
+                            </div>
+                            <div class="material-content">
+                                <h3>Other Materials</h3>
+                                <p>Specialty Materials &amp; Custom Parts</p>
+                            </div>
+                        </div>
                     </div>
 
                 </div>
+
+                {{-- <div class="premium-materials-pagination"></div> --}}
+            </div>
+        </div>
+    </section>
+    <section class="blog-inspirations-section">
+        <div class="container">
+            <div class="blog-inspirations-header">
+                <h2>Blog e Inspirações</h2>
             </div>
 
-            <div class="blog-swiper-pagination"></div>
-        </div>
+            <div class="blog-swiper-wrap">
+                <div class="swiper blog-swiper">
+                    <div class="swiper-wrapper">
 
-        <div class="blog-button-wrap">
-            <a href="#" class="blog-more-btn">Explorar Mais no Blog</a>
+                        <div class="swiper-slide">
+                            <article class="blog-card">
+                                <a href="#" class="blog-image">
+                                    <img src="{{ asset('assets/images/home/blog-1.png') }}" alt="Blog">
+                                </a>
+
+                                <div class="blog-content">
+                                    <h3>xsqvfzsqrvf</h3>
+                                    <p>
+                                        khgkjflsdjv;jzkxvj jfdj aaaaa aaa aaaaaaaaaa vxvvvv zgyzf dszbvxf zgyzv gs sgxvzv
+                                        vxzvd
+                                    </p>
+
+                                    <div class="blog-meta">
+                                        <span class="blog-tag blog-tag-blue">Brindes</span>
+                                        <span class="blog-date">24/04/2026</span>
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+
+                        <div class="swiper-slide">
+                            <article class="blog-card">
+                                <a href="#" class="blog-image">
+                                    <img src="{{ asset('assets/images/home/blog-2.png') }}" alt="Blog">
+                                </a>
+
+                                <div class="blog-content">
+                                    <h3>zsgqvzsqzs</h3>
+                                    <p>
+                                        khgkjflsdjv;jzkxvj jfdj aaaaa aaa aaaaaaaaaa vxvvvv zgyzf dszbvxf
+                                    </p>
+
+                                    <div class="blog-meta">
+                                        <span class="blog-tag blog-tag-yellow">Mercado</span>
+                                        <span class="blog-date">24/04/2026</span>
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+
+                        <div class="swiper-slide">
+                            <article class="blog-card">
+                                <a href="#" class="blog-image">
+                                    <img src="{{ asset('assets/images/home/blog-3.png') }}" alt="Blog">
+                                </a>
+
+                                <div class="blog-content">
+                                    <h3>gfvsdFSDF</h3>
+                                    <p>
+                                        khgkjflsdjv;jzkxvj jfdj aaaaa aaa aaaaaaaaaa vxvvvv zgyzf dszbvxf zgyzv gs sgxvzv
+                                        vxzvd
+                                    </p>
+
+                                    <div class="blog-meta">
+                                        <span class="blog-tag blog-tag-blue">Design</span>
+                                        <span class="blog-date">24/04/2026</span>
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+
+                        <div class="swiper-slide">
+                            <article class="blog-card">
+                                <a href="#" class="blog-image">
+                                    <img src="{{ asset('assets/images/home/blog-4.png') }}" alt="Blog">
+                                </a>
+
+                                <div class="blog-content">
+                                    <h3>AFAFcAZSf</h3>
+                                    <p>
+                                        khgkjflsdjv;jzkxvj jfdj aaaaa aaa aaaaaaaaaa vxvvvv zgyzf
+                                        dszbvxf....................................
+                                    </p>
+
+                                    <div class="blog-meta">
+                                        <span class="blog-tag blog-tag-blue">Design</span>
+                                        <span class="blog-date">24/04/2026</span>
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="blog-swiper-pagination"></div>
+            </div>
+
+            <div class="blog-button-wrap">
+                <a href="#" class="blog-more-btn">Explorar Mais no Blog</a>
+            </div>
         </div>
-    </div>
-</section>
+    </section>
 
 
     <script>
@@ -881,51 +923,51 @@ document.addEventListener('DOMContentLoaded', function () {
     window.addEventListener('resize', initPremiumMaterialsSwiper);
 });
 </script> --}}
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    let blogSwiper = null;
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let blogSwiper = null;
 
-    function initBlogSwiper() {
-        const isMobile = window.innerWidth < 768;
+            function initBlogSwiper() {
+                const isMobile = window.innerWidth < 768;
 
-        if (isMobile && blogSwiper === null) {
-            blogSwiper = new Swiper('.blog-swiper', {
-                slidesPerView: 1.2,
-                spaceBetween: 14,
-                speed: 500,
-                pagination: {
-                    el: '.blog-swiper-pagination',
-                    clickable: true,
-                },
-                breakpoints: {
-                    0: {
-                        slidesPerView: 1.5,
-                        spaceBetween: 16,
-                    },
-                    576: {
-                        slidesPerView: 2,
-                        spaceBetween: 20,
-                    },
-                    992: {
-                        slidesPerView: 3,
-                        spaceBetween: 24,
-                    },
-                    1200: {
-                        slidesPerView: 4,
-                        spaceBetween: 30,
-                    }
+                if (isMobile && blogSwiper === null) {
+                    blogSwiper = new Swiper('.blog-swiper', {
+                        slidesPerView: 1.2,
+                        spaceBetween: 14,
+                        speed: 500,
+                        pagination: {
+                            el: '.blog-swiper-pagination',
+                            clickable: true,
+                        },
+                        breakpoints: {
+                            0: {
+                                slidesPerView: 1.5,
+                                spaceBetween: 16,
+                            },
+                            576: {
+                                slidesPerView: 2,
+                                spaceBetween: 20,
+                            },
+                            992: {
+                                slidesPerView: 3,
+                                spaceBetween: 24,
+                            },
+                            1200: {
+                                slidesPerView: 4,
+                                spaceBetween: 30,
+                            }
+                        }
+                    });
                 }
-            });
-        }
 
-        if (!isMobile && blogSwiper !== null) {
-            blogSwiper.destroy(true, true);
-            blogSwiper = null;
-        }
-    }
+                if (!isMobile && blogSwiper !== null) {
+                    blogSwiper.destroy(true, true);
+                    blogSwiper = null;
+                }
+            }
 
-    initBlogSwiper();
-    window.addEventListener('resize', initBlogSwiper);
-});
-</script>
+            initBlogSwiper();
+            window.addEventListener('resize', initBlogSwiper);
+        });
+    </script>
 @endsection
