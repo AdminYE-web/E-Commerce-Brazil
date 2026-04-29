@@ -64,9 +64,9 @@
 
                                 <div class="hero-action-group">
                                     <div class="hero-dots-custom">
-                                        <button class="active" type="button" data-bs-target="#homeBannerCarousel"
-                                            data-bs-slide-to="0"></button>
                                         <button type="button" data-bs-target="#homeBannerCarousel"
+                                            data-bs-slide-to="0"></button>
+                                        <button class="active" type="button" data-bs-target="#homeBannerCarousel"
                                             data-bs-slide-to="1"></button>
                                     </div>
 
