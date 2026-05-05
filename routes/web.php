@@ -1,13 +1,21 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Admin\ProductController;
-use App\Http\Controllers\Admin\ProductPriceTierController;
-use App\Http\Controllers\Admin\OptionGroupController;
-use App\Http\Controllers\Admin\ProductOptionController;
 use App\Http\Controllers\Admin\OptionDependencyController;
-
+use App\Http\Controllers\Admin\OptionGroupController;
+use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\ProductOptionController;
+use App\Http\Controllers\Admin\ProductPriceTierController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\Admin\ProductDetailController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\MaterialController;
 use App\Http\Controllers\HomeController;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -22,4 +30,82 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('product-options', ProductOptionController::class);
 
     Route::resource('option-dependencies', OptionDependencyController::class);
+
+    Route::resource('product-details', ProductDetailController::class);
+
+    Route::resource('categories', CategoryController::class);
+Route::resource('materials', MaterialController::class);
 });
+
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [LoginController::class, 'showLogin'])->name('login');
+    Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
+
+    Route::get('/register', [RegisterController::class, 'showRegister'])->name('register');
+    Route::post('/register', [RegisterController::class, 'register'])->name('register.submit');
+
+    Route::get('/forgot-password', [ForgotPasswordController::class, 'showForgotPassword'])
+        ->name('password.request');
+
+    Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink'])
+        ->name('password.email');
+
+    Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetPassword'])
+        ->name('password.reset');
+
+    Route::post('/reset-password', [ResetPasswordController::class, 'resetPassword'])
+        ->name('password.update');
+});
+
+Route::post('/logout', [LoginController::class, 'logout'])
+    ->middleware('auth')
+    ->name('logout');
+
+Route::get('/email/verify', function () {
+    return view('auth.verify-email');
+})->middleware('auth')->name('verification.notice');
+
+ Route::get('/email/verify/success', function () {
+    return view('auth.verify-success');
+})->name('verification.success');
+
+
+Route::get('/email/verify/{id}/{hash}', function (Request $request, $id, $hash) {
+    if (! $request->hasValidSignature()) {
+        abort(403, 'Invalid or expired verification link.');
+    }
+
+    $user = User::where('user_id', $id)->firstOrFail();
+
+    if (! hash_equals((string) $hash, sha1($user->email))) {
+        abort(403, 'Invalid verification link.');
+    }
+
+    if (is_null($user->email_verified_at)) {
+        $user->forceFill([
+            'email_verified_at' => now(),
+            'status' => 1,
+        ])->save();
+    } else {
+        $user->update([
+            'status' => 1,
+        ]);
+    }
+
+    return redirect()->route('verification.success');
+})->middleware('signed')->name('verification.verify');
+
+Route::post('/email/verification-notification', function (Request $request) {
+    if ($request->user()->hasVerifiedEmail()) {
+        return redirect('/');
+    }
+   
+    $request->user()->sendEmailVerificationNotification();
+
+    return back()->with('message', 'A new verification link has been sent to your email.');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
+

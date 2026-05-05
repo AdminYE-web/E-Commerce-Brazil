@@ -3,63 +3,128 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\OptionGroup;
+use App\Models\ProductOption;
 use Illuminate\Http\Request;
+use App\Models\OptionImage;
 
 class ProductOptionController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+      $options = ProductOption::with(['group', 'mainImage'])
+    ->orderBy('option_id', 'desc')
+    ->paginate(10);
+
+        return view('admin.product_options.index', compact('options'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        $groups = OptionGroup::where('is_active', 1)
+            ->orderBy('group_name')
+            ->get();
+
+        return view('admin.product_options.create', compact('groups'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'option_group_id' => 'required|exists:option_groups,option_group_id',
+            'option_code' => 'nullable|string|max:100',
+            'option_name' => 'required|string|max:255',
+            'additional_price' => 'required|numeric|min:0',
+            'price_type' => 'required|in:per_item,per_order',
+        ]);
+
+      $option = ProductOption::create([
+    'option_group_id' => $request->option_group_id,
+    'option_code' => $request->option_code,
+    'option_name' => $request->option_name,
+    'additional_price' => $request->additional_price,
+    'price_type' => $request->price_type,
+    'is_active' => $request->has('is_active') ? 1 : 0,
+]);
+if ($request->hasFile('images')) {
+    foreach ($request->file('images') as $index => $image) {
+        $path = $image->store('options', 'public');
+
+        OptionImage::create([
+            'option_id' => $option->option_id,
+            'image_path' => $path,
+            'image_alt' => $option->option_name,
+            'is_main' => $index === 0 ? 1 : 0,
+            'sort_order' => $index + 1,
+        ]);
+    }
+}
+
+        return redirect()
+            ->route('admin.product-options.index')
+            ->with('success', 'เพิ่มตัวเลือกสินค้าเรียบร้อยแล้ว');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+   public function edit(ProductOption $productOption)
+{
+    $groups = OptionGroup::where('is_active', 1)
+        ->orderBy('group_name')
+        ->get();
+
+    $productOption->load('images');
+
+    return view('admin.product_options.edit', [
+        'option' => $productOption,
+        'groups' => $groups,
+    ]);
+}
+
+    public function update(Request $request, ProductOption $productOption)
     {
-        //
+        $request->validate([
+            'option_group_id' => 'required|exists:option_groups,option_group_id',
+            'option_code' => 'nullable|string|max:100',
+            'option_name' => 'required|string|max:255',
+            'additional_price' => 'required|numeric|min:0',
+            'price_type' => 'required|in:per_item,per_order',
+        ]);
+
+        $productOption->update([
+            'option_group_id' => $request->option_group_id,
+            'option_code' => $request->option_code,
+            'option_name' => $request->option_name,
+            'additional_price' => $request->additional_price,
+            'price_type' => $request->price_type,
+            'is_active' => $request->has('is_active') ? 1 : 0,
+        ]);
+        if ($request->hasFile('images')) {
+    $currentMaxSort = $productOption->images()->max('sort_order') ?? 0;
+    $hasMainImage = $productOption->images()->where('is_main', 1)->exists();
+
+    foreach ($request->file('images') as $index => $image) {
+        $path = $image->store('options', 'public');
+
+        OptionImage::create([
+            'option_id' => $productOption->option_id,
+            'image_path' => $path,
+            'image_alt' => $productOption->option_name,
+            'is_main' => !$hasMainImage && $index === 0 ? 1 : 0,
+            'sort_order' => $currentMaxSort + $index + 1,
+        ]);
+    }
+}
+
+        return redirect()
+            ->route('admin.product-options.index')
+            ->with('success', 'แก้ไขตัวเลือกสินค้าเรียบร้อยแล้ว');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function destroy(ProductOption $productOption)
     {
-        //
-    }
+        $productOption->delete();
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return redirect()
+            ->route('admin.product-options.index')
+            ->with('success', 'ลบตัวเลือกสินค้าเรียบร้อยแล้ว');
     }
 }

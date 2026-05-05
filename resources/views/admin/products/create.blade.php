@@ -1,8 +1,18 @@
 <h1>Add Product</h1>
 
-<form action="{{ route('admin.products.store') }}" method="POST">
+<form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">
     @csrf
-
+<div>
+    <label>Product Images</label><br>
+    <input type="file" name="images[]" multiple accept="image/*">
+</div>
+<br>
+<div>
+    <label>Product Detail Images</label><br>
+    <input type="file" name="detail_images[]" multiple accept="image/*">
+    <br>
+    <small>กรุณาอัปโหลดอย่างน้อย 2 รูป และไม่เกิน 10 รูป</small>
+</div>
     <div>
         <label>Product Code</label><br>
         <input type="text" name="product_code" value="{{ old('product_code') }}">
@@ -12,6 +22,49 @@
     </div>
 
     <br>
+    <div>
+    <label>Category</label><br>
+    <select name="category_id">
+        <option value="">-- Select Category --</option>
+
+        @foreach($categories as $category)
+            <option 
+                value="{{ $category->category_id }}"
+                {{ old('category_id') == $category->category_id ? 'selected' : '' }}
+            >
+                {{ $category->category_name }}
+            </option>
+        @endforeach
+    </select>
+
+    @error('category_id')
+        <div style="color:red;">{{ $message }}</div>
+    @enderror
+</div>
+
+<br>
+
+<div>
+    <label>Material</label><br>
+    <select name="material_id">
+        <option value="">-- Select Material --</option>
+
+        @foreach($materials as $material)
+            <option 
+                value="{{ $material->material_id }}"
+                {{ old('material_id') == $material->material_id ? 'selected' : '' }}
+            >
+                {{ $material->material_name }}
+            </option>
+        @endforeach
+    </select>
+
+    @error('material_id')
+        <div style="color:red;">{{ $message }}</div>
+    @enderror
+</div>
+
+<br>
 
     <div>
         <label>Product Name</label><br>
