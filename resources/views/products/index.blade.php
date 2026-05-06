@@ -168,35 +168,35 @@ document.addEventListener('DOMContentLoaded', function () {
     const productTypeInput = document.getElementById('product-type-input');
 
     if (typeof Swiper !== 'undefined') {
-    new Swiper('.category-swiper', {
-        slidesPerView: 8,
-        slidesPerGroup: 1,
-        spaceBetween: 22,
-        loop: true,
-        navigation: {
-            nextEl: '.category-swiper-next',
-            prevEl: '.category-swiper-prev',
-        },
-        breakpoints: {
-            0: {
-                slidesPerView: 3,
-                spaceBetween: 12,
+        new Swiper('.category-swiper', {
+            slidesPerView: 8,
+            slidesPerGroup: 1,
+            spaceBetween: 22,
+            loop: true,
+            navigation: {
+                nextEl: '.category-swiper-next',
+                prevEl: '.category-swiper-prev',
             },
-            576: {
-                slidesPerView: 4,
-                spaceBetween: 14,
-            },
-            768: {
-                slidesPerView: 5,
-                spaceBetween: 18,
-            },
-            992: {
-                slidesPerView: 8,
-                spaceBetween: 22,
+            breakpoints: {
+                0: {
+                    slidesPerView: 3,
+                    spaceBetween: 12,
+                },
+                576: {
+                    slidesPerView: 4,
+                    spaceBetween: 14,
+                },
+                768: {
+                    slidesPerView: 5,
+                    spaceBetween: 18,
+                },
+                992: {
+                    slidesPerView: 8,
+                    spaceBetween: 22,
+                }
             }
-        }
-    });
-}
+        });
+    }
 
     function updateCategorySlideActive() {
         const checkedCategoryIds = Array.from(
@@ -214,12 +214,34 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    function loadProducts(url = null) {
+    function getFilterParams() {
         const formData = new FormData(filterForm);
-        const params = new URLSearchParams(formData);
-        const requestUrl = url || `${filterForm.action}?${params.toString()}`;
+        return new URLSearchParams(formData);
+    }
 
-        fetch(requestUrl, {
+    function loadProducts(url = null) {
+        let browserUrl;
+        let ajaxUrl;
+
+        if (url) {
+            const urlObj = new URL(url, window.location.origin);
+
+            urlObj.searchParams.set('_ajax', '1');
+            ajaxUrl = urlObj.toString();
+
+            urlObj.searchParams.delete('_ajax');
+            browserUrl = urlObj.pathname + '?' + urlObj.searchParams.toString();
+        } else {
+            const params = getFilterParams();
+
+            const ajaxParams = new URLSearchParams(params);
+            ajaxParams.set('_ajax', '1');
+
+            ajaxUrl = `${filterForm.action}?${ajaxParams.toString()}`;
+            browserUrl = `${filterForm.action}?${params.toString()}`;
+        }
+
+        fetch(ajaxUrl, {
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',
                 'Accept': 'application/json'
@@ -236,7 +258,8 @@ document.addEventListener('DOMContentLoaded', function () {
             productsGrid.innerHTML = data.html;
             productsPagination.innerHTML = data.pagination;
 
-            const cleanUrl = requestUrl.replace(window.location.origin, '');
+            const cleanUrl = browserUrl.replace(window.location.origin, '');
+
             window.history.replaceState({}, '', cleanUrl);
 
             updateCategorySlideActive();
