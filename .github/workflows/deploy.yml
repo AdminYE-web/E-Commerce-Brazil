@@ -29,5 +29,5 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          # server-dir: /public_html/  # (Optional) ระบุโฟลเดอร์ปลายทางบน Server ถ้าระบบไม่ได้ชี้ไปที่ Root อัตโนมัติ
-          # local-dir: ./build/        # (Optional) หากคุณมีการ Build ไฟล์ ให้ระบุโฟลเดอร์ที่ต้องการอัปโหลด เช่น ./dist/ หรือ ./build/
+          server-dir: /master-brindes.jp/public_html/  # (Optional) ระบุโฟลเดอร์ปลายทางบน Server ถ้าระบบไม่ได้ชี้ไปที่ Root อัตโนมัติ
+          local-dir: /       # (Optional) หากคุณมีการ Build ไฟล์ ให้ระบุโฟลเดอร์ที่ต้องการอัปโหลด เช่น ./dist/ หรือ ./build/
