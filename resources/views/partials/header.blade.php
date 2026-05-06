@@ -88,7 +88,7 @@
                             <li><a href="#">Antibacterial Lanyards</a></li>
                         </ul>
 
-                        <a href="#" class="mega-menu-view-all">View All <i class="bi bi-arrow-right"></i></a>
+                        <a href="products" class="mega-menu-view-all">View All <i class="bi bi-arrow-right"></i></a>
                     </div>
 
                     <!-- column 2 -->
@@ -153,7 +153,7 @@
                             <li><a href="#">Rigid Frame ID Card Holder F002</a></li>
                         </ul>
 
-                        <a href="#" class="mega-menu-view-all">
+                        <a href="{{ route('products.index') }}" class="mega-menu-view-all">
                             View All <i class="bi bi-arrow-right"></i>
                         </a>
                     </div>
@@ -175,7 +175,7 @@
                             <li><a href="#">Euro Clip C</a></li>
                         </ul>
 
-                        <a href="#" class="mega-menu-view-all">
+                        <a href="{{ route('products.index') }}" class="mega-menu-view-all">
                             View All <i class="bi bi-arrow-right"></i>
                         </a>
                     </div>

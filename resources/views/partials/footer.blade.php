@@ -75,8 +75,8 @@
                     <div class="footer-col">
                         <h4>Account</h4>
                         <ul>
-                            <li><a href="#">Login</a></li>
-                            <li><a href="#">Create Account</a></li>
+                            <li><a href="{{ route('login') }}">Login</a></li>
+                            <li><a href="{{ route('register') }}">Create Account</a></li>
                             <li><a href="#">Your Account</a></li>
                         </ul>
                     </div>
@@ -121,8 +121,8 @@
                         <br>
                         <h4>Account</h4>
                         <ul>
-                            <li><a href="#">Login</a></li>
-                            <li><a href="#">Create Account</a></li>
+                            <li><a href="{{ route('login') }}">Login</a></li>
+                            <li><a href="{{ route('register') }}">Create Account</a></li>
                             <li><a href="#">Your Account</a></li>
                         </ul>
                     </div>
