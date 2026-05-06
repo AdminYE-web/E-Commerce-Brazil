@@ -32,4 +32,13 @@ class ProductOption extends Model
         return $this->hasOne(OptionImage::class, 'option_id', 'option_id')
             ->where('is_main', 1);
     }
+    public function childDependencies()
+{
+    return $this->hasMany(OptionDependency::class, 'parent_option_id', 'option_id');
+}
+
+public function parentDependencies()
+{
+    return $this->hasMany(OptionDependency::class, 'child_option_id', 'option_id');
+}
 }

@@ -9,8 +9,10 @@ class Category extends Model
     protected $primaryKey = 'category_id';
 
     protected $fillable = [
-        'category_name',
         'category_code',
+        'category_name',
+        'image_path',
+        'sort_order',
         'is_active',
     ];
 

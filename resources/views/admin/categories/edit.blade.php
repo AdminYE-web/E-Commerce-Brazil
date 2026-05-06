@@ -14,7 +14,7 @@
     </div>
 @endif
 
-<form action="{{ route('admin.categories.update', $category->category_id) }}" method="POST">
+<form action="{{ route('admin.categories.update', $category->category_id) }}" method="POST" enctype="multipart/form-data">
     @csrf
     @method('PUT')
 
@@ -39,6 +39,48 @@
     </div>
 
     <br>
+
+    <div>
+    <label>Current Image</label><br>
+
+    @if($category->image_path)
+        <img 
+            src="{{ asset('storage/' . $category->image_path) }}" 
+            width="120"
+            style="display:block; margin-bottom:10px;"
+        >
+    @else
+        <span>No image</span>
+    @endif
+</div>
+
+<br>
+
+<div>
+    <label>Change Category Image</label><br>
+    <input type="file" name="image_path" accept="image/*">
+
+    @error('image_path')
+        <div style="color:red;">{{ $message }}</div>
+    @enderror
+</div>
+
+<br>
+<div>
+    <label>Sort Order</label><br>
+    <input 
+        type="number" 
+        name="sort_order" 
+        value="{{ old('sort_order', $category->sort_order) }}"
+        min="0"
+    >
+
+    @error('sort_order')
+        <div style="color:red;">{{ $message }}</div>
+    @enderror
+</div>
+
+<br>
 
     <div>
         <label>

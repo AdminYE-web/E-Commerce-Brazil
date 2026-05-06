@@ -2,16 +2,17 @@
 
 <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">
     @csrf
+
 <div>
-    <label>Product Images</label><br>
+    <label>Product Main Images</label><br>
     <input type="file" name="images[]" multiple accept="image/*">
 </div>
+
 <br>
+
 <div>
-    <label>Product Detail Images</label><br>
-    <input type="file" name="detail_images[]" multiple accept="image/*">
-    <br>
-    <small>กรุณาอัปโหลดอย่างน้อย 2 รูป และไม่เกิน 10 รูป</small>
+    <label>Product Gallery Images</label><br>
+    <input type="file" name="gallery_images[]" multiple accept="image/*">
 </div>
     <div>
         <label>Product Code</label><br>
@@ -22,6 +23,23 @@
     </div>
 
     <br>
+    <div>
+    <label>Product Type</label><br>
+    <select name="product_type">
+        <option value="1" {{ old('product_type', 1) == 1 ? 'selected' : '' }}>
+            hotstrap
+        </option>
+        <option value="2" {{ old('product_type') == 2 ? 'selected' : '' }}>
+            hotmobily
+        </option>
+    </select>
+
+    @error('product_type')
+        <div style="color:red;">{{ $message }}</div>
+    @enderror
+</div>
+
+<br>
     <div>
     <label>Category</label><br>
     <select name="category_id">

@@ -13,6 +13,7 @@ class Product extends Model
     'product_code',
     'category_id',
     'material_id',
+      'product_type',
     'product_name',
     'description',
     'is_antivirus_included',
@@ -22,11 +23,12 @@ class Product extends Model
     {
         return $this->hasMany(ProductPriceTier::class, 'product_id', 'product_id');
     }
- public function mainImage()
+public function mainImage()
 {
     return $this->hasOne(ProductImage::class, 'product_id', 'product_id')
         ->where('image_type', 'main')
-        ->where('is_main', 1);
+        ->orderBy('is_main', 'desc')
+        ->orderBy('sort_order');
 }
 
 public function images()
@@ -51,5 +53,11 @@ public function category()
 public function material()
 {
     return $this->belongsTo(Material::class, 'material_id', 'material_id');
+}
+public function galleryImages()
+{
+    return $this->hasMany(ProductImage::class, 'product_id', 'product_id')
+        ->where('image_type', 'gallery')
+        ->orderBy('sort_order');
 }
 }

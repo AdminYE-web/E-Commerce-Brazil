@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\ProductListBannerController;
 use App\Http\Controllers\Admin\OptionDependencyController;
 use App\Http\Controllers\Admin\OptionGroupController;
 use App\Http\Controllers\Admin\ProductController;
@@ -12,12 +13,32 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Admin\ProductDetailController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\MaterialController;
+use App\Http\Controllers\ProductListController;
 use App\Http\Controllers\HomeController;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/products', [ProductListController::class, 'index'])
+    ->name('products.index');
+    Route::get('/products/{product}/description', [ProductListController::class, 'description'])
+    ->name('products.description');
+    
+
+Route::get('/products/{product}', [ProductListController::class, 'show'])
+    ->name('products.show');
+    Route::get('/hotstrap/{product}', [ProductListController::class, 'showHotstrap'])
+    ->name('products.hotstrap.show');
+
+Route::get('/hotmobily/{product}', [ProductListController::class, 'showHotmobily'])
+    ->name('products.hotmobily.show');
+
+    Route::get('/hotstrap/{product}/detail', [ProductListController::class, 'showHotstrap'])
+    ->name('products.hotstrap.show');
+
+Route::get('/hotmobily/{product}/detail', [ProductListController::class, 'showHotmobily'])
+    ->name('products.hotmobily.show');
 
 Route::prefix('admin')->name('admin.')->group(function () {
 
@@ -35,6 +56,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::resource('categories', CategoryController::class);
 Route::resource('materials', MaterialController::class);
+Route::resource('product-list-banners', ProductListBannerController::class);
 });
 
 Route::middleware('guest')->group(function () {

@@ -14,7 +14,7 @@
     </div>
 @endif
 
-<form action="{{ route('admin.categories.store') }}" method="POST">
+<form action="{{ route('admin.categories.store') }}" method="POST" enctype="multipart/form-data">
     @csrf
 
     <div>
@@ -30,6 +30,32 @@
     </div>
 
     <br>
+    <div>
+    <label>Sort Order</label><br>
+    <input 
+        type="number" 
+        name="sort_order" 
+        value="{{ old('sort_order', 0) }}"
+        min="0"
+    >
+
+    @error('sort_order')
+        <div style="color:red;">{{ $message }}</div>
+    @enderror
+</div>
+
+<br>
+
+    <div>
+    <label>Category Image</label><br>
+    <input type="file" name="image_path" accept="image/*">
+
+    @error('image_path')
+        <div style="color:red;">{{ $message }}</div>
+    @enderror
+</div>
+
+<br>
 
     <div>
         <label>

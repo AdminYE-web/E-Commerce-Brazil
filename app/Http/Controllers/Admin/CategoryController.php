@@ -5,12 +5,15 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class CategoryController extends Controller
 {
     public function index()
     {
-        $categories = Category::orderBy('category_id', 'desc')->paginate(10);
+        $categories = Category::orderBy('sort_order')
+    ->orderBy('category_id', 'desc')
+    ->paginate(10);
 
         return view('admin.categories.index', compact('categories'));
     }
@@ -21,54 +24,83 @@ class CategoryController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $request->validate([
-            'category_code' => 'nullable|string|max:100',
-            'category_name' => 'required|string|max:255',
-            'is_active' => 'nullable|boolean',
-        ]);
+{
+    $request->validate([
+        'category_code' => 'nullable|string|max:100',
+        'category_name' => 'required|string|max:255',
+        'image_path' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        'sort_order' => 'nullable|integer|min:0',
+        'is_active' => 'nullable|boolean',
+    ]);
 
-        Category::create([
-            'category_code' => $request->category_code,
-            'category_name' => $request->category_name,
-            'is_active' => $request->has('is_active') ? 1 : 0,
-        ]);
+    $imagePath = null;
 
-        return redirect()
-            ->route('admin.categories.index')
-            ->with('success', 'เพิ่ม Category เรียบร้อยแล้ว');
+    if ($request->hasFile('image_path')) {
+        $imagePath = $request->file('image_path')
+            ->store('categories', 'public');
     }
 
+    Category::create([
+        'category_code' => $request->category_code,
+        'category_name' => $request->category_name,
+        'image_path' => $imagePath,
+        'sort_order' => $request->sort_order ?? 0,
+        'is_active' => $request->has('is_active') ? 1 : 0,
+    ]);
+
+    return redirect()
+        ->route('admin.categories.index')
+        ->with('success', 'เพิ่ม Category เรียบร้อยแล้ว');
+}
     public function edit(Category $category)
     {
         return view('admin.categories.edit', compact('category'));
     }
 
     public function update(Request $request, Category $category)
-    {
-        $request->validate([
-            'category_code' => 'nullable|string|max:100',
-            'category_name' => 'required|string|max:255',
-            'is_active' => 'nullable|boolean',
-        ]);
+{
+    $request->validate([
+        'category_code' => 'nullable|string|max:100',
+        'category_name' => 'required|string|max:255',
+        'image_path' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        'sort_order' => 'nullable|integer|min:0',
+        'is_active' => 'nullable|boolean',
+    ]);
 
-        $category->update([
-            'category_code' => $request->category_code,
-            'category_name' => $request->category_name,
-            'is_active' => $request->has('is_active') ? 1 : 0,
-        ]);
+    $imagePath = $category->image_path;
 
-        return redirect()
-            ->route('admin.categories.index')
-            ->with('success', 'แก้ไข Category เรียบร้อยแล้ว');
+    if ($request->hasFile('image_path')) {
+        if ($category->image_path) {
+            Storage::disk('public')->delete($category->image_path);
+        }
+
+        $imagePath = $request->file('image_path')
+            ->store('categories', 'public');
     }
+
+    $category->update([
+        'category_code' => $request->category_code,
+        'category_name' => $request->category_name,
+        'image_path' => $imagePath,
+        'sort_order' => $request->sort_order ?? 0,
+        'is_active' => $request->has('is_active') ? 1 : 0,
+    ]);
+
+    return redirect()
+        ->route('admin.categories.index')
+        ->with('success', 'แก้ไข Category เรียบร้อยแล้ว');
+}
 
     public function destroy(Category $category)
-    {
-        $category->delete();
-
-        return redirect()
-            ->route('admin.categories.index')
-            ->with('success', 'ลบ Category เรียบร้อยแล้ว');
+{
+    if ($category->image_path) {
+        Storage::disk('public')->delete($category->image_path);
     }
+
+    $category->delete();
+
+    return redirect()
+        ->route('admin.categories.index')
+        ->with('success', 'ลบ Category เรียบร้อยแล้ว');
+}
 }
