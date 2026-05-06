@@ -8,14 +8,20 @@ class ProductDetail extends Model
 {
     protected $primaryKey = 'product_detail_id';
 
-    protected $fillable = [
-        'product_id',
-        'sample_image',
-        'detail_content',
-        'is_active',
-    ];
-    protected $casts = [
+   protected $fillable = [
+    'product_id',
+    'sample_image',
+    'specification_image',
+    'detail_content',
+    'specification_content',
+    'accordion_content',
+    'is_active',
+];
+
+protected $casts = [
     'detail_content' => 'array',
+    'specification_content' => 'array',
+    'accordion_content' => 'array',
 ];
 
     public function product()

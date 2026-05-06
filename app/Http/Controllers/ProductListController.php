@@ -100,24 +100,34 @@ class ProductListController extends Controller
         return view('products.hotmobily_desc', compact('product'));
     }
 
-    public function description(Product $product)
-    {
-        $product->load([
-            'mainImage',
-            'images',
-            'detail',
-            'category',
-            'material',
-        ]);
+   public function description(Product $product)
+{
+    $product->load([
+        'mainImage',
+        'images',
+        'galleryImages',
+        'detail',
+        'category',
+        'material',
+    ]);
 
-        if ((int) $product->product_type === 1) {
-            return view('products.hotstrap_desc', compact('product'));
-        }
+    $relatedProducts = Product::with('mainImage')
+        ->where('is_active', 1)
+        ->where('category_id', $product->category_id)
+        ->where('product_id', '!=', $product->product_id)
+        ->where('product_type', $product->product_type)
+        ->inRandomOrder()
+        ->limit(4)
+        ->get();
 
-        if ((int) $product->product_type === 2) {
-            return view('products.hotmobily_desc', compact('product'));
-        }
-
-        abort(404);
+    if ((int) $product->product_type === 1) {
+        return view('products.hotstrap_desc', compact('product', 'relatedProducts'));
     }
+
+    if ((int) $product->product_type === 2) {
+        return view('products.hotmobily_desc', compact('product', 'relatedProducts'));
+    }
+
+    abort(404);
+}
 }
