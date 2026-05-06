@@ -1,0 +1,33 @@
+name: Auto Deploy via FTP
+
+# กำหนดให้ทำงานเมื่อมีการ Push โค้ดเข้า branch "main"
+on:
+  push:
+    branches:
+      - main 
+
+jobs:
+  deploy:
+    name: FTP Deploy
+    runs-on: ubuntu-latest
+    
+    steps:
+      # 1. ดึงโค้ดล่าสุดจาก Repository
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+      
+      # 2. (ตัวเลือก) หากเป็นโปรเจกต์ Node.js/React ให้เพิ่มขั้นตอนการ Build ตรงนี้
+      # - name: Install and Build
+      #   run: |
+      #     npm install
+      #     npm run build
+
+      # 3. อัปโหลดไฟล์ผ่าน FTP
+      - name: Sync files
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          # server-dir: /master-brindes.jp/public_html/  # (Optional) ระบุโฟลเดอร์ปลายทางบน Server ถ้าระบบไม่ได้ชี้ไปที่ Root อัตโนมัติ
+          # local-dir: ./       # (Optional) หากคุณมีการ Build ไฟล์ ให้ระบุโฟลเดอร์ที่ต้องการอัปโหลด เช่น ./dist/ หรือ ./build/
