@@ -222,7 +222,7 @@
         }
 
         .customize-option-group h2 {
-            font-size: 22px;
+            font-size: 28px;
             font-weight: 800;
             margin: 0 0 16px;
         }
@@ -281,7 +281,7 @@
         }
 
         .option-image-card span {
-            font-size: 13px;
+            font-size: 16px;
             color: #111;
         }
 
@@ -354,7 +354,7 @@
         }
 
         .product-summary-box h3 {
-            font-size: 18px;
+            font-size: 25px;
             font-weight: 800;
             margin: 0 0 16px;
         }
@@ -365,15 +365,15 @@
 
         .summary-item span {
             display: block;
-            font-size: 12px;
-            color: #6b7280;
+            font-size: 16px;
+            color: #616161;
             margin-bottom: 4px;
         }
 
         .summary-item strong {
             display: block;
-            font-size: 14px;
-            color: #111827;
+            font-size: 16px;
+            color: #616161;
         }
 
         .summary-divider {
