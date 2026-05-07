@@ -39,7 +39,7 @@
                                 </div>
                             </div>
 
-                            <img src="{{ asset('assets/images/home/banner_home.png') }}" alt="Banner Home"
+                            <img src="{{ asset('assets/images/home/banner_home_v2.png') }}" alt="Banner Home"
                                 class="hero-banner-image">
 
                         </div>
@@ -74,7 +74,7 @@
                                 </div>
                             </div>
 
-                            <img src="{{ asset('assets/images/home/banner_home_2.png') }}" alt="Banner Home 2"
+                            <img src="{{ asset('assets/images/home/banner_home_2_v2.png') }}" alt="Banner Home 2"
                                 class="hero-banner-image">
 
                         </div>
