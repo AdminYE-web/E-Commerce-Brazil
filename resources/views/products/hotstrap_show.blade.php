@@ -912,8 +912,8 @@
             border-radius: 10px;
             background: #2f6fc2;
             color: #fff;
-            font-size: 25px;
-            font-weight: 800;
+            font-size: 20px;
+            font-weight: 600;
             letter-spacing: 0.5px;
             cursor: pointer;
         }
