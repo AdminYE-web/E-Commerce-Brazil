@@ -173,7 +173,7 @@
                 <div class="contact-recaptcha-wrap">
                     <div class="contact-recaptcha">
                         @if (config('services.recaptcha.site_key'))
-                            <div class="g-recaptcha" data-sitekey="{{ config('services.recaptcha.site_key') }}"></div>
+                            <div class="g-recaptcha" data-sitekey="{{ config('services.recaptcha.site_key') }}" data-callback="onRecaptchaSuccess" data-expired-callback="onRecaptchaExpired"></div>
                         @else
                             <div class="contact-recaptcha-unavailable">reCAPTCHA is not configured.</div>
                         @endif
@@ -181,7 +181,7 @@
                     <div class="contact-field-error" data-error-for="g-recaptcha-response">@error('g-recaptcha-response'){{ $message }}@enderror</div>
                 </div>
 
-                <button class="contact-submit" type="submit">
+                <button class="contact-submit" type="submit" disabled>
                     <span>Enviar solicita&ccedil;&atilde;o de or&ccedil;amento</span>
                     <i class="bi bi-arrow-right" aria-hidden="true"></i>
                 </button>
@@ -219,6 +219,17 @@
 @endsection
 
 @section('js')
+    <script>
+        /* ── reCAPTCHA callback (must be global, before api.js loads) ── */
+        function onRecaptchaSuccess() {
+            var btn = document.querySelector('.contact-submit');
+            if (btn) btn.disabled = false;
+        }
+        function onRecaptchaExpired() {
+            var btn = document.querySelector('.contact-submit');
+            if (btn) btn.disabled = true;
+        }
+    </script>
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"
         integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
@@ -390,6 +401,8 @@
                 if (typeof grecaptcha !== 'undefined') {
                     grecaptcha.reset();
                 }
+                // Re-disable submit button after reset
+                $submit.prop('disabled', true);
             }
 
             function showServerValidationErrors(errors) {

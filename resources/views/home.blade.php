@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Home')
+@section('title', 'Página inicial | Master Brindes')
 
 @section('content')
     <section class="hero-banner">
@@ -110,24 +110,24 @@
 
                 <div class="feature-item">
                     <div class="feature-icon">
-                        <img src="{{ asset('assets/images/home/hugeicons_checkmark-square-04.png') }}" alt="Easy Ordering">
+                        <img src="{{ asset('assets/images/home/hugeicons_checkmark-square-04.png') }}" alt="Pedido fácil">
                     </div>
-                    <div class="feature-text">Easy Ordering</div>
+                    <div class="feature-text">Pedido fácil</div>
                 </div>
 
                 <div class="feature-item">
                     <div class="feature-icon">
-                        <img src="{{ asset('assets/images/home/Icon.png') }}" alt="Lowest Prices">
+                        <img src="{{ asset('assets/images/home/Icon.png') }}" alt="Preços mais baixos">
                     </div>
-                    <div class="feature-text">Lowest Prices</div>
+                    <div class="feature-text">Preços mais baixos</div>
                 </div>
 
                 <div class="feature-item">
                     <div class="feature-icon">
                         <img src="{{ asset('assets/images/home/material-symbols-light_delivery-truck-speed-outline.png') }}"
-                            alt="Fast Rush Delivery">
+                            alt="Entrega expressa rápida">
                     </div>
-                    <div class="feature-text">Fast Rush Delivery</div>
+                    <div class="feature-text">Entrega expressa rápida</div>
                 </div>
 
             </div>

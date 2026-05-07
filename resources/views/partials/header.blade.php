@@ -15,13 +15,13 @@
 
                     <li class="nav-item">
                         <button type="button" class="nav-link desktop-menu-toggle " data-target="lanyardMegaMenu">
-                            Lanyard
+                            Cordão
                         </button>
                     </li>
 
                     <li class="nav-item">
                         <button type="button" class="nav-link desktop-menu-toggle" data-target="otherProductMegaMenu">
-                            Other Product
+                            Outro produto
                         </button>
                     </li>
                 </ul>
@@ -29,7 +29,7 @@
                 <!-- Search -->
                 <form class="search-box" action="#" method="GET">
                     <i class="bi bi-search search-icon"></i>
-                    <input type="text" name="keyword" placeholder="SEARCH">
+                    <input type="text" name="keyword" placeholder="Procurar">
                 </form>
 
                 <!-- Icons -->

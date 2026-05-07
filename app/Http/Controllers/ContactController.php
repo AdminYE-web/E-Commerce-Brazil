@@ -6,10 +6,13 @@ use App\Models\ContactSubmission;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Mail\ContactFormSubmitted;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 
 class ContactController extends Controller
@@ -61,24 +64,47 @@ class ContactController extends Controller
             $attachmentPath = $file->store('contact-attachments', 'public');
         }
 
-        // Save to database
-        $submission = ContactSubmission::create([
-            'contact_method' => $request->input('contact_method'),
-            'subject' => $request->input('subject'),
-            'name' => $request->input('name'),
-            'email' => $request->input('email'),
-            'line_id' => $request->input('line_id'),
-            'country_code' => $request->input('country_code'),
-            'phone' => $request->input('phone'),
-            'message' => $request->input('message'),
-            'attachment_path' => $attachmentPath,
-            'attachment_original_name' => $attachmentOriginalName,
-            'ip_address' => $request->ip(),
-        ]);
+        try {
+            DB::beginTransaction();
 
-        // Send email to sales team
-        Mail::to('vendas@example.com')->send(new ContactFormSubmitted($submission));
+            // Save to database
+            $submission = ContactSubmission::create([
+                'contact_method' => $request->input('contact_method'),
+                'subject' => $request->input('subject'),
+                'name' => $request->input('name'),
+                'email' => $request->input('email'),
+                'line_id' => $request->input('line_id'),
+                'country_code' => $request->input('country_code'),
+                'phone' => $request->input('phone'),
+                'message' => $request->input('message'),
+                'attachment_path' => $attachmentPath,
+                'attachment_original_name' => $attachmentOriginalName,
+                'ip_address' => $request->ip(),
+            ]);
 
+            // Send email to sales team
+            Mail::to($request->input('email'))->send(new ContactFormSubmitted($submission));
+
+            DB::commit();
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            // Clean up uploaded file if it exists
+            if ($attachmentPath) {
+                Storage::disk('public')->delete($attachmentPath);
+            }
+
+            Log::error('Contact form submission failed', [
+                'error' => $e->getMessage(),
+                'email' => $request->input('email'),
+            ]);
+
+            return $this->validationResponse($request, [
+                'message' => ['Ocorreu um erro ao enviar sua solicitação. Por favor, tente novamente.'],
+            ]);
+        }
+
+        
         if ($request->expectsJson()) {
             return response()->json([
                 'message' => 'Sua solicitação de contato foi enviada com sucesso.',
