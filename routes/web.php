@@ -1,5 +1,8 @@
 <?php
-
+use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\Admin\ProductOptionVariantController;
+use App\Http\Controllers\Admin\ProductOptionAssignmentController;
 use App\Http\Controllers\Admin\ProductListBannerController;
 use App\Http\Controllers\Admin\OptionDependencyController;
 use App\Http\Controllers\Admin\OptionGroupController;
@@ -13,8 +16,8 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Admin\ProductDetailController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\MaterialController;
-use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ProductListController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\HomeController;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -27,6 +30,7 @@ Route::post('/contact', [ContactController::class, 'store'])
     ->name('contact.submit');
 Route::get('/contact/complete', [ContactController::class, 'complete'])
     ->name('contact.complete');
+
 Route::get('/products', [ProductListController::class, 'index'])
     ->name('products.index');
     Route::get('/products/{product}/description', [ProductListController::class, 'description'])
@@ -37,6 +41,7 @@ Route::get('/products/{product}', [ProductListController::class, 'show'])
     ->name('products.show');
     Route::get('/hotstrap/{product}', [ProductListController::class, 'showHotstrap'])
     ->name('products.hotstrap.show');
+    
 
 Route::get('/hotmobily/{product}', [ProductListController::class, 'showHotmobily'])
     ->name('products.hotmobily.show');
@@ -46,10 +51,24 @@ Route::get('/hotmobily/{product}', [ProductListController::class, 'showHotmobily
 
 Route::get('/hotmobily/{product}/detail', [ProductListController::class, 'showHotmobily'])
     ->name('products.hotmobily.show');
+Route::post('/cart/add', [CartController::class, 'add'])
+    ->name('cart.add');
+
+Route::get('/cart', [CartController::class, 'index'])
+    ->name('cart.index');
+
 
 Route::prefix('admin')->name('admin.')->group(function () {
+       Route::get('/', [AdminDashboardController::class, 'index'])
+        ->name('dashboard');
+
 
     Route::resource('products', ProductController::class);
+       Route::get('products/{product}/options', [ProductOptionAssignmentController::class, 'edit'])
+        ->name('products.options.edit');
+
+    Route::put('products/{product}/options', [ProductOptionAssignmentController::class, 'update'])
+        ->name('products.options.update');
 
     Route::resource('product-price-tiers', ProductPriceTierController::class);
 
@@ -64,7 +83,26 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('categories', CategoryController::class);
 Route::resource('materials', MaterialController::class);
 Route::resource('product-list-banners', ProductListBannerController::class);
+
+Route::get('product-options/{option}/variants', [ProductOptionVariantController::class, 'index'])
+    ->name('product-options.variants.index');
+
+Route::get('product-options/{option}/variants/create', [ProductOptionVariantController::class, 'create'])
+    ->name('product-options.variants.create');
+
+Route::post('product-options/{option}/variants', [ProductOptionVariantController::class, 'store'])
+    ->name('product-options.variants.store');
+
+Route::get('product-option-variants/{variant}/edit', [ProductOptionVariantController::class, 'edit'])
+    ->name('product-option-variants.edit');
+
+Route::put('product-option-variants/{variant}', [ProductOptionVariantController::class, 'update'])
+    ->name('product-option-variants.update');
+
+Route::delete('product-option-variants/{variant}', [ProductOptionVariantController::class, 'destroy'])
+    ->name('product-option-variants.destroy');
 });
+
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'showLogin'])->name('login');
@@ -137,3 +175,4 @@ Route::post('/email/verification-notification', function (Request $request) {
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+

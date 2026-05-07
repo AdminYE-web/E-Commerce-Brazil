@@ -27,27 +27,32 @@ class ProductPriceTierController extends Controller
         return view('admin.product_price_tiers.create', compact('products'));
     }
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'product_id' => 'required|exists:products,product_id',
-            'min_qty' => 'required|integer|min:1',
-            'max_qty' => 'nullable|integer|gte:min_qty',
-            'unit_price' => 'required|numeric|min:0',
-        ]);
+   public function store(Request $request)
+{
+    $request->validate([
+        'product_id' => 'required|exists:products,product_id',
 
+        'tiers' => 'required|array|min:1',
+        'tiers.*.min_qty' => 'required|integer|min:1',
+        'tiers.*.max_qty' => 'nullable|integer|min:1',
+        'tiers.*.unit_price' => 'required|numeric|min:0',
+        'tiers.*.is_active' => 'nullable|boolean',
+    ]);
+
+    foreach ($request->tiers as $tier) {
         ProductPriceTier::create([
             'product_id' => $request->product_id,
-            'min_qty' => $request->min_qty,
-            'max_qty' => $request->max_qty,
-            'unit_price' => $request->unit_price,
-            'is_active' => $request->has('is_active') ? 1 : 0,
+            'min_qty' => $tier['min_qty'],
+            'max_qty' => $tier['max_qty'] ?? null,
+            'unit_price' => $tier['unit_price'],
+            'is_active' => !empty($tier['is_active']) ? 1 : 0,
         ]);
-
-        return redirect()
-            ->route('admin.product-price-tiers.index')
-            ->with('success', 'เพิ่มราคาขั้นบันไดเรียบร้อยแล้ว');
     }
+
+    return redirect()
+        ->route('admin.product-price-tiers.index')
+        ->with('success', 'Product price tiers created successfully.');
+}
 
     public function edit(ProductPriceTier $productPriceTier)
     {

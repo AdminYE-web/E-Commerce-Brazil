@@ -48,6 +48,9 @@
                     <a href="{{ route('admin.product-options.edit', $option->option_id) }}">
                         Edit
                     </a>
+                    <a href="{{ route('admin.product-options.variants.index', $option->option_id) }}">
+    Manage Variants
+</a>
 
                     <form 
                         action="{{ route('admin.product-options.destroy', $option->option_id) }}" 

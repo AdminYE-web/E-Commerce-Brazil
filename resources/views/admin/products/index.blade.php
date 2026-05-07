@@ -53,6 +53,9 @@
                     <a href="{{ route('admin.products.edit', $product->product_id) }}">
                         Edit
                     </a>
+                    <a href="{{ route('admin.products.options.edit', $product->product_id) }}">
+    Manage Options
+</a>
                     @if ($product->detail)
                         <a href="{{ route('admin.product-details.edit', $product->detail->product_detail_id) }}">
                             Edit Detail

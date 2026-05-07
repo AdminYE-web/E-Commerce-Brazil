@@ -228,9 +228,18 @@
                                         </div>
 
                                         <div class="product-img-wrap">
-                                            <img src="{{ asset('storage/' . $relatedProduct->mainImage->image_path) }}"
-                                                alt="{{ $relatedProduct->product_name }}">
-                                        </div>
+    @if($relatedProduct->mainImage)
+        <img 
+            src="{{ asset('storage/' . $relatedProduct->mainImage->image_path) }}"
+            alt="{{ $relatedProduct->product_name }}"
+        >
+    @else
+        <img 
+            src="{{ asset('images/no-image.png') }}"
+            alt="No image"
+        >
+    @endif
+</div>
                                     </a>
                                 </div>
                             </div>

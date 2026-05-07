@@ -9,14 +9,32 @@ class OptionGroup extends Model
     protected $primaryKey = 'option_group_id';
 
     protected $fillable = [
-        'group_code',
-        'group_name',
-        'is_required',
-        'is_active',
-    ];
+    'parent_group_id',
+    'group_code',
+    'group_name',
+    'help_text',
+    'display_type',
+    'is_required',
+    'sort_order',
+    'is_active',
+];
 
-    public function options()
-    {
-        return $this->hasMany(ProductOption::class, 'option_group_id', 'option_group_id');
-    }
+  
+    public function parent()
+{
+    return $this->belongsTo(OptionGroup::class, 'parent_group_id', 'option_group_id');
+}
+
+public function children()
+{
+    return $this->hasMany(OptionGroup::class, 'parent_group_id', 'option_group_id')
+        ->orderBy('sort_order');
+}
+
+public function options()
+{
+    return $this->hasMany(ProductOption::class, 'option_group_id', 'option_group_id')
+        ->where('is_active', 1)
+        ->orderBy('option_name');
+}
 }

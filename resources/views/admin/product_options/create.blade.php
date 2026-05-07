@@ -58,8 +58,44 @@
             placeholder="เช่น แบบแข็ง"
         >
     </div>
-
     <br>
+
+<div>
+    <label>Option Detail</label><br>
+    <textarea 
+        name="option_detail" 
+        rows="8"
+        style="width:100%;"
+        placeholder="เช่น&#10;Model: ID-6_N&#10;Type: Soft Card Holder&#10;Card Size: 91 mm (H) x 55 mm (W)"
+    >{{ old('option_detail') }}</textarea>
+
+    @error('option_detail')
+        <div style="color:red;">{{ $message }}</div>
+    @enderror
+</div>
+<br>
+
+<div>
+    <label>Color Code</label><br>
+    <input 
+        type="text" 
+        name="color_code" 
+        value="{{ old('color_code') }}"
+        placeholder="เช่น #ff0000"
+    >
+
+    <input 
+        type="color" 
+        value="{{ old('color_code', '#000000') }}"
+        onchange="this.previousElementSibling.value = this.value"
+    >
+
+    @error('color_code')
+        <div style="color:red;">{{ $message }}</div>
+    @enderror
+</div>
+    <br>
+    
 
     <div>
         <label>Additional Price</label><br>

@@ -66,39 +66,72 @@ class ProductListController extends Controller
         return view('products.desc', compact('product'));
     }
 
-    public function showHotstrap(Product $product)
-    {
-        if ((int) $product->product_type !== 1) {
-            abort(404);
-        }
-
-        $product->load([
-            'mainImage',
-            'images',
-            'detail',
-            'category',
-            'material',
-        ]);
-
-        return view('products.hotstrap_desc', compact('product'));
+   public function showHotstrap(Product $product)
+{
+    if ((int) $product->product_type !== 1) {
+        abort(404);
     }
 
-    public function showHotmobily(Product $product)
-    {
-        if ((int) $product->product_type !== 2) {
-            abort(404);
-        }
+    $product->load([
+    'mainImage',
+    'images',
+    'galleryImages',
+    'detail',
+    'category',
+    'material',
+    'priceTiers',
+    'assignedOptions.group.parent',
+    'assignedOptions.mainImage',
+    'assignedOptions.variants',
+]);
+    $optionGroups = $product->assignedOptions
+        ->where('pivot.is_active', 1)
+        ->sortBy(function ($option) {
+            $group = $option->group;
+            $parent = $group?->parent;
 
-        $product->load([
-            'mainImage',
-            'images',
-            'detail',
-            'category',
-            'material',
-        ]);
+            return [
+                $parent->sort_order ?? $group->sort_order ?? 999,
+                $group->sort_order ?? 999,
+                $option->pivot->sort_order ?? 0,
+            ];
+        })
+        ->groupBy(function ($option) {
+            $group = $option->group;
+            $displayGroup = $group?->parent ?: $group;
 
-        return view('products.hotmobily_desc', compact('product'));
+            return $displayGroup?->option_group_id ?? 0;
+        });
+
+    return view('products.hotstrap_show', compact('product', 'optionGroups'));
+}
+
+   public function showHotmobily(Product $product)
+{
+    if ((int) $product->product_type !== 2) {
+        abort(404);
     }
+
+    $product->load([
+        'mainImage',
+        'images',
+        'galleryImages',
+        'detail',
+        'category',
+        'material',
+        'assignedOptions.group',
+        'assignedOptions.mainImage',
+    ]);
+
+    $optionGroups = $product->assignedOptions
+        ->where('pivot.is_active', 1)
+        ->sortBy('pivot.sort_order')
+        ->groupBy(function ($option) {
+            return $option->group->group_name ?? 'Other';
+        });
+
+    return view('products.hotmobily_show', compact('product', 'optionGroups'));
+}
 
    public function description(Product $product)
 {

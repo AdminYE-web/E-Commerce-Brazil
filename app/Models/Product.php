@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\ProductDetail;
+use App\Models\ProductPriceTier;
 
 class Product extends Model
 {
@@ -20,9 +21,11 @@ class Product extends Model
     'is_active',
 ];
     public function priceTiers()
-    {
-        return $this->hasMany(ProductPriceTier::class, 'product_id', 'product_id');
-    }
+{
+    return $this->hasMany(ProductPriceTier::class, 'product_id', 'product_id')
+        ->where('is_active', 1)
+        ->orderBy('min_qty');
+}
 public function mainImage()
 {
     return $this->hasOne(ProductImage::class, 'product_id', 'product_id')
@@ -60,4 +63,28 @@ public function galleryImages()
         ->where('image_type', 'gallery')
         ->orderBy('sort_order');
 }
+public function optionAssignments()
+{
+    return $this->hasMany(ProductOptionAssignment::class, 'product_id', 'product_id');
+}
+
+public function assignedOptions()
+{
+    return $this->belongsToMany(
+        ProductOption::class,
+        'product_option_assignments',
+        'product_id',
+        'option_id',
+        'product_id',
+        'option_id'
+    )
+    ->withPivot([
+        'assignment_id',
+        'sort_order',
+        'is_default',
+        'is_active',
+    ])
+    ->withTimestamps();
+}
+
 }

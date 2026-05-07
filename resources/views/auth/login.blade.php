@@ -64,10 +64,10 @@
                 <span>Continue with Google</span>
             </a>
 
-            <a href="{{ url('/auth/facebook/redirect') }}" class="auth-social-btn">
+            {{-- <a href="{{ url('/auth/facebook/redirect') }}" class="auth-social-btn">
                 <img class="text-start" src="{{ asset('assets/images/login/face-icon.png') }}" alt="">
                 <span>Continue with Facebook</span>
-            </a>
+            </a> --}}
         </div>
 
         <p class="auth-register-text">

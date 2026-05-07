@@ -34,17 +34,23 @@ class ProductOptionController extends Controller
             'option_group_id' => 'required|exists:option_groups,option_group_id',
             'option_code' => 'nullable|string|max:100',
             'option_name' => 'required|string|max:255',
+            'color_code' => 'nullable|string|max:20',
             'additional_price' => 'required|numeric|min:0',
             'price_type' => 'required|in:per_item,per_order',
+            'option_detail' => 'nullable|string',
+            
         ]);
 
       $option = ProductOption::create([
     'option_group_id' => $request->option_group_id,
     'option_code' => $request->option_code,
     'option_name' => $request->option_name,
+    'color_code' => $request->color_code,
     'additional_price' => $request->additional_price,
     'price_type' => $request->price_type,
     'is_active' => $request->has('is_active') ? 1 : 0,
+    'option_detail' => $request->option_detail,
+    
 ]);
 if ($request->hasFile('images')) {
     foreach ($request->file('images') as $index => $image) {
@@ -85,17 +91,21 @@ if ($request->hasFile('images')) {
             'option_group_id' => 'required|exists:option_groups,option_group_id',
             'option_code' => 'nullable|string|max:100',
             'option_name' => 'required|string|max:255',
+            'color_code' => 'nullable|string|max:20',
             'additional_price' => 'required|numeric|min:0',
             'price_type' => 'required|in:per_item,per_order',
+           'option_detail' => 'nullable|string',
         ]);
 
         $productOption->update([
             'option_group_id' => $request->option_group_id,
             'option_code' => $request->option_code,
             'option_name' => $request->option_name,
+            'color_code' => $request->color_code,
             'additional_price' => $request->additional_price,
             'price_type' => $request->price_type,
             'is_active' => $request->has('is_active') ? 1 : 0,
+            'option_detail' => $request->option_detail,
         ]);
         if ($request->hasFile('images')) {
     $currentMaxSort = $productOption->images()->max('sort_order') ?? 0;

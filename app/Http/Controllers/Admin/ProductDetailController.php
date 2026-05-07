@@ -109,6 +109,7 @@ class ProductDetailController extends Controller
                 }
             }
         }
+        $accordionContent = $request->accordion_content ?? [];
 
         ProductDetail::create([
             'product_id' => $request->product_id,
