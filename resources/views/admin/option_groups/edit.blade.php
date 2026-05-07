@@ -16,7 +16,7 @@
 </div>
 @endif
 
-<form action="{{ route('admin.option-groups.update', $group->option_group_id) }}" method="POST">
+<form action="{{ route('admin.option-groups.update', $optionGroup->option_group_id) }}" method="POST">
     @csrf
     @method('PUT')
 
@@ -25,7 +25,7 @@
         <input
             type="text"
             name="group_code"
-            value="{{ old('group_code', $group->group_code) }}">
+            value="{{ old('group_code', $optionGroup->group_code) }}">
     </div>
 
     <br>
@@ -35,7 +35,7 @@
         <input
             type="text"
             name="group_name"
-            value="{{ old('group_name', $group->group_name) }}">
+            value="{{ old('group_name', $optionGroup->group_name) }}">
     </div>
     <br>
 <div>
@@ -46,7 +46,7 @@
         @foreach($parentGroups as $parent)
             <option 
                 value="{{ $parent->option_group_id }}"
-                {{ old('parent_group_id', $group->parent_group_id) == $parent->option_group_id ? 'selected' : '' }}
+                {{ old('parent_group_id', $optionGroup->parent_group_id) == $parent->option_group_id ? 'selected' : '' }}
             >
                 {{ $parent->group_name }}
             </option>
@@ -66,7 +66,7 @@
         rows="4"
         style="width:100%;"
         placeholder="ข้อความที่จะแสดงเมื่อกดปุ่ม info"
-    >{{ old('help_text', $group->help_text) }}</textarea>
+    >{{ old('help_text', $optionGroup->help_text) }}</textarea>
 
     @error('help_text')
         <div style="color:red;">{{ $message }}</div>
@@ -77,27 +77,27 @@
 <div>
     <label>Display Type</label><br>
     <select name="display_type">
-        <option value="button" {{ old('display_type', $group->display_type) == 'button' ? 'selected' : '' }}>
+        <option value="button" {{ old('display_type', $optionGroup->display_type) == 'button' ? 'selected' : '' }}>
             button - ปุ่มข้อความ
         </option>
 
-        <option value="image_card" {{ old('display_type', $group->display_type) == 'image_card' ? 'selected' : '' }}>
+        <option value="image_card" {{ old('display_type', $optionGroup->display_type) == 'image_card' ? 'selected' : '' }}>
             image_card - การ์ดรูปภาพ
         </option>
 
-        <option value="color" {{ old('display_type', $group->display_type) == 'color' ? 'selected' : '' }}>
+        <option value="color" {{ old('display_type', $optionGroup->display_type) == 'color' ? 'selected' : '' }}>
             color - วงกลมสี
         </option>
-        <option value="select_detail" {{ old('display_type', $group->display_type) == 'select_detail' ? 'selected' : '' }}>
+        <option value="select_detail" {{ old('display_type', $optionGroup->display_type) == 'select_detail' ? 'selected' : '' }}>
     select_detail - Dropdown พร้อมรูปและรายละเอียด
 </option>
-<option value="image_card_variant" {{ old('display_type', $group->display_type ?? '') == 'image_card_variant' ? 'selected' : '' }}>
+<option value="image_card_variant" {{ old('display_type', $optionGroup->display_type ?? '') == 'image_card_variant' ? 'selected' : '' }}>
     image_card_variant - การ์ดรูปภาพพร้อมเลือกสี
 </option>
-<option value="image_grid_compact" {{ old('display_type', $group->display_type) == 'image_grid_compact' ? 'selected' : '' }}>
+<option value="image_grid_compact" {{ old('display_type', $optionGroup->display_type) == 'image_grid_compact' ? 'selected' : '' }}>
     image_grid_compact - การ์ดรูปภาพเล็กหลายคอลัมน์
 </option>
-<option value="grouped_buttons" {{ old('display_type', $group->display_type) == 'grouped_buttons' ? 'selected' : '' }}>
+<option value="grouped_buttons" {{ old('display_type', $optionGroup->display_type) == 'grouped_buttons' ? 'selected' : '' }}>
     grouped_buttons - หัวข้อหลักพร้อมคำถามย่อยหลายชุด
 </option>
     </select>
@@ -114,7 +114,7 @@
     <input 
         type="number" 
         name="sort_order" 
-        value="{{ old('sort_order', $group->sort_order) }}"
+        value="{{ old('sort_order', $optionGroup->sort_order) }}"
         min="0"
     >
 
@@ -132,7 +132,7 @@
                 type="checkbox"
                 name="is_required"
                 value="1"
-                {{ old('is_required', $group->is_required) ? 'checked' : '' }}>
+                {{ old('is_required', $optionGroup->is_required) ? 'checked' : '' }}>
             Required
         </label>
     </div>
@@ -145,7 +145,7 @@
                 type="checkbox"
                 name="is_active"
                 value="1"
-                {{ old('is_active', $group->is_active) ? 'checked' : '' }}>
+                {{ old('is_active', $optionGroup->is_active) ? 'checked' : '' }}>
             Active
         </label>
     </div>
