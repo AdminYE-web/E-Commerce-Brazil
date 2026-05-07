@@ -13,6 +13,7 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Admin\ProductDetailController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\MaterialController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ProductListController;
 use App\Http\Controllers\HomeController;
 use App\Models\User;
@@ -20,6 +21,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/contact', [ContactController::class, 'show'])->name('contact');
+Route::post('/contact', [ContactController::class, 'store'])
+    ->middleware('throttle:6,1')
+    ->name('contact.submit');
+Route::get('/contact/complete', [ContactController::class, 'complete'])
+    ->name('contact.complete');
 Route::get('/products', [ProductListController::class, 'index'])
     ->name('products.index');
     Route::get('/products/{product}/description', [ProductListController::class, 'description'])
@@ -130,4 +137,3 @@ Route::post('/email/verification-notification', function (Request $request) {
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
-

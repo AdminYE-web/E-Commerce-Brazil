@@ -34,7 +34,7 @@
 
                 <!-- Icons -->
                 <div class="header-icons">
-                    <a href="#" class="icon-link">
+                    <a href="{{ route('contact') }}" class="icon-link">
                         <i class="bi bi-envelope"></i>
                     </a>
 
@@ -238,7 +238,7 @@
 
             <!-- Right icons -->
             <div class="mobile-icons">
-                <a href="#" class="icon-link">
+                <a href="{{ route('contact') }}" class="icon-link">
                     <i class="bi bi-envelope"></i>
                 </a>
                 <a href="#" class="icon-link">
@@ -301,7 +301,7 @@
                 <li><a href="#" class="mobile-menu-link"><span>Blog</span></a></li>
                 <li><a href="#" class="mobile-menu-link"><span>FAQ</span></a></li>
                 <li><a href="#" class="mobile-menu-link"><span>About Us</span></a></li>
-                <li><a href="#" class="mobile-menu-link"><span>Contact Us</span></a></li>
+                <li><a href="{{ route('contact') }}" class="mobile-menu-link"><span>Contact Us</span></a></li>
             </ul>
         </div>
 

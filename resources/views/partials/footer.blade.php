@@ -62,7 +62,7 @@
                         <h4>Support</h4>
                         <ul>
                             <li><a href="#">FAQ</a></li>
-                            <li><a href="#">Contato</a></li>
+                            <li><a href="{{ route('contact') }}">Contato</a></li>
                             <li><a href="#">Track Order</a></li>
                             <li><a href="#">How to Order</a></li>
                             <li><a href="#">How to Design</a></li>
@@ -132,7 +132,7 @@
                         <h4>Support</h4>
                         <ul>
                             <li><a href="#">FAQ</a></li>
-                            <li><a href="#">Contato</a></li>
+                            <li><a href="{{ route('contact') }}">Contato</a></li>
                             <li><a href="#">Track Order</a></li>
                             <li><a href="#">How to Order</a></li>
                             <li><a href="#">How to Design</a></li>
