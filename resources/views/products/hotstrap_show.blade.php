@@ -223,7 +223,7 @@
 
         .customize-option-group h2 {
             font-size: 28px;
-            font-weight: 800;
+            font-weight: 600;
             margin: 0 0 16px;
         }
 
