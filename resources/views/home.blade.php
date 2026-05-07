@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Página inicial | Master Brindes')
+@section('title', __('messages.home.page_title'))
 
 @section('content')
     <section class="hero-banner">
@@ -15,16 +15,13 @@
 
                             <div class="hero-copy">
                                 <h1 class="hero-title">
-                                    Padrão Japonês <br>
-                                    Estilo Único <br>
-                                    Seu Brinde Perfeito
+                                    {{ __('messages.home.banner1_title_line1') }} <br>
+                                    {{ __('messages.home.banner1_title_line2') }} <br>
+                                    {{ __('messages.home.banner1_title_line3') }}
                                 </h1>
 
                                 <p class="hero-text">
-                                    Manufatura de precisão no Japão com <br>
-                                    atendimento 100% em português. <br>
-                                    Do design à entrega, a perfeição <br>
-                                    que sua ideia merece.
+                                    {{ __('messages.home.banner1_text') }}
                                 </p>
 
                                 <div class="hero-action-group">
@@ -36,7 +33,7 @@
                                     </div>
 
                                     <a href="#" class="btn hero-cta">
-                                        <span>Ver Catálogo</span>
+                                        <span>{{ __('messages.home.view_catalog') }}</span>
                                         <i class="bi bi-arrow-right"></i>
                                     </a>
                                 </div>
@@ -55,11 +52,11 @@
                             <div class="hero-copy">
                                 <h1 class="hero-head" style="color: black">HOTMOBILY</h1>
                                 <h1 class="hero-title" style="color: black">
-                                    Estilo que Resiste a Tudo
+                                    {{ __('messages.home.banner2_title') }}
                                 </h1>
 
                                 <p class="hero-text" style="color: black">
-                                    Brindes Únicos e Colecionáveis com Estilo Extraordinário
+                                    {{ __('messages.home.banner2_text') }}
                                 </p>
 
                                 <div class="hero-action-group">
@@ -71,7 +68,7 @@
                                     </div>
 
                                     <a href="#" class="btn hero-cta" style="background: white; color: black">
-                                        <span>Ver Catálogo</span>
+                                        <span>{{ __('messages.home.view_catalog') }}</span>
                                         <i class="bi bi-arrow-right"></i>
                                     </a>
                                 </div>
@@ -112,14 +109,14 @@
                     <div class="feature-icon">
                         <img src="{{ asset('assets/images/home/hugeicons_checkmark-square-04.png') }}" alt="Pedido fácil">
                     </div>
-                    <div class="feature-text">Pedido fácil</div>
+                    <div class="feature-text">{{ __('messages.home.feature_easy_order') }}</div>
                 </div>
 
                 <div class="feature-item">
                     <div class="feature-icon">
                         <img src="{{ asset('assets/images/home/Icon.png') }}" alt="Preços mais baixos">
                     </div>
-                    <div class="feature-text">Preços mais baixos</div>
+                    <div class="feature-text">{{ __('messages.home.feature_lowest_prices') }}</div>
                 </div>
 
                 <div class="feature-item">
@@ -127,7 +124,7 @@
                         <img src="{{ asset('assets/images/home/material-symbols-light_delivery-truck-speed-outline.png') }}"
                             alt="Entrega expressa rápida">
                     </div>
-                    <div class="feature-text">Entrega expressa rápida</div>
+                    <div class="feature-text">{{ __('messages.home.feature_fast_delivery') }}</div>
                 </div>
 
             </div>
@@ -142,8 +139,8 @@
         <div class="container recommended-container">
             <div class="recommended-title">
                 <h2>
-                    Produtos recomendados
-                    <span>Selecionados para você</span>
+                    {{ __('messages.home.recommended_title') }}
+                    <span>{{ __('messages.home.recommended_subtitle') }}</span>
                 </h2>
             </div>
 
@@ -153,7 +150,7 @@
 
                         <div class="swiper-slide">
                             <div class="recommended-card">
-                                <h3>Rubber Keychain</h3>
+                                <h3>{{ __('messages.home.recommend_rubber') }}</h3>
 
                                 <div class="stars">
                                     <i class="bi bi-star-fill"></i>
@@ -164,14 +161,14 @@
                                 </div>
 
                                 <div class="product-img-wrap">
-                                    <img src="{{ asset('assets/images/home/Group 21.png') }}" alt="Rubber Keychain">
+                                    <img src="{{ asset('assets/images/home/Group 21.png') }}" alt="{{ __('messages.home.recommend_rubber') }}">
                                 </div>
                             </div>
                         </div>
 
                         <div class="swiper-slide">
                             <div class="recommended-card">
-                                <h3>Acrylic Keychain</h3>
+                                <h3>{{ __('messages.home.recommend_acrylic') }}</h3>
 
                                 <div class="stars">
                                     <i class="bi bi-star-fill"></i>
@@ -183,14 +180,14 @@
 
                                 <div class="product-img-wrap">
                                     <img src="{{ asset('assets/images/home/lanyard-polyester.png') }}"
-                                        alt="Acrylic Keychain">
+                                        alt="{{ __('messages.home.recommend_acrylic') }}">
                                 </div>
                             </div>
                         </div>
 
                         <div class="swiper-slide">
                             <div class="recommended-card">
-                                <h3>Lanyard Polyester</h3>
+                                <h3>{{ __('messages.home.recommend_lanyard_poly') }}</h3>
 
                                 <div class="stars">
                                     <i class="bi bi-star-fill"></i>
@@ -202,14 +199,14 @@
 
                                 <div class="product-img-wrap">
 
-                                    <img src="{{ asset('assets/images/home/Group 971.png') }}" alt="Lanyard Polyester">
+                                    <img src="{{ asset('assets/images/home/Group 971.png') }}" alt="{{ __('messages.home.recommend_lanyard_poly') }}">
                                 </div>
                             </div>
                         </div>
 
                         <div class="swiper-slide">
                             <div class="recommended-card">
-                                <h3>Yoyo</h3>
+                                <h3>{{ __('messages.home.recommend_yoyo') }}</h3>
 
                                 <div class="stars">
                                     <i class="bi bi-star-fill"></i>
@@ -220,7 +217,7 @@
                                 </div>
 
                                 <div class="product-img-wrap">
-                                    <img src="{{ asset('assets/images/home/yoyo.png') }}" alt="Yoyo">
+                                    <img src="{{ asset('assets/images/home/yoyo.png') }}" alt="{{ __('messages.home.recommend_yoyo') }}">
                                 </div>
                             </div>
                         </div>
@@ -238,7 +235,7 @@
 
         <div class="container">
             <div class="purchase-steps-title">
-                <h2>Passo a Passo para Compra</h2>
+                <h2>{{ __('messages.home.steps_title') }}</h2>
             </div>
 
             <div class="purchase-steps-wrapper">
@@ -249,8 +246,7 @@
                         <img src="{{ asset('assets/images/home/step-1.png') }}" alt="Choose and customize product">
                     </div>
                     <div class="step-text">
-                        Escolha e personalize<br>
-                        seu produt
+                        {{ __('messages.home.step1_text') }}
                     </div>
                 </div>
 
@@ -260,8 +256,7 @@
                         <img src="{{ asset('assets/images/home/step-2.png') }}" alt="Add to cart">
                     </div>
                     <div class="step-text">
-                        Adicione ao carrinho<br>
-                        e revise os detalhes
+                        {{ __('messages.home.step2_text') }}
                     </div>
                 </div>
 
@@ -271,8 +266,7 @@
                         <img src="{{ asset('assets/images/home/step-3.png') }}" alt="Confirm order and payment">
                     </div>
                     <div class="step-text">
-                        Confirme o pedido e<br>
-                        realize o pagamento
+                        {{ __('messages.home.step3_text') }}
                     </div>
                 </div>
 
@@ -282,8 +276,7 @@
                         <img src="{{ asset('assets/images/home/step-4.png') }}" alt="Receive product">
                     </div>
                     <div class="step-text">
-                        Receba seu produto<br>
-                        com total segurança
+                        {{ __('messages.home.step4_text') }}
                     </div>
                 </div>
 
@@ -296,8 +289,8 @@
         <div class="container recommended-container">
             <div class="recommended-title">
                 <h2>
-                    Cordões&Accessories
-                    <span>Cordões de qualidade para cada estilo.</span>
+                    {{ __('messages.home.lanyards_title') }}
+                    <span>{{ __('messages.home.lanyards_subtitle') }}</span>
                 </h2>
             </div>
 
@@ -307,7 +300,7 @@
 
                         <div class="swiper-slide">
                             <div class="recommended-card">
-                                <h3>Lanyard Polyester</h3>
+                                <h3>{{ __('messages.home.recommend_lanyard_poly') }}</h3>
 
                                 <div class="stars">
                                     <i class="bi bi-star-fill"></i>
@@ -320,14 +313,14 @@
                                 <div class="product-img-wrap">
 
                                     <img src="{{ asset('assets/images/home/acrylic-keychain.png') }}"
-                                        alt="Rubber Keychain">
+                                        alt="{{ __('messages.home.recommend_lanyard_poly') }}">
                                 </div>
                             </div>
                         </div>
 
                         <div class="swiper-slide">
                             <div class="recommended-card">
-                                <h3>Lanyard Sublimation</h3>
+                                <h3>{{ __('messages.home.recommend_lanyard_fullcolor') }}</h3>
 
                                 <div class="stars">
                                     <i class="bi bi-star-fill"></i>
@@ -339,14 +332,14 @@
 
                                 <div class="product-img-wrap">
 
-                                    <img src="{{ asset('assets/images/home/Group 973.png') }}" alt="Lanyard Sublimation">
+                                    <img src="{{ asset('assets/images/home/Group 973.png') }}" alt="{{ __('messages.home.recommend_lanyard_fullcolor') }}">
                                 </div>
                             </div>
                         </div>
 
                         <div class="swiper-slide">
                             <div class="recommended-card">
-                                <h3>Lanyard Snap yoyo</h3>
+                                <h3>{{ __('messages.home.recommend_lanyard_snap_yoyo') }}</h3>
 
                                 <div class="stars">
                                     <i class="bi bi-star-fill"></i>
@@ -359,14 +352,14 @@
                                 <div class="product-img-wrap">
 
                                     <img src="{{ asset('assets/images/home/image-Photoroom (39) 1.png') }}"
-                                        alt="Lanyard Snap yoyo">
+                                        alt="{{ __('messages.home.recommend_lanyard_snap_yoyo') }}">
                                 </div>
                             </div>
                         </div>
 
                         <div class="swiper-slide">
                             <div class="recommended-card">
-                                <h3>Yoyo</h3>
+                                <h3>{{ __('messages.home.recommend_yoyo') }}</h3>
 
                                 <div class="stars">
                                     <i class="bi bi-star-fill"></i>
@@ -378,7 +371,7 @@
 
                                 <div class="product-img-wrap">
 
-                                    <img src="{{ asset('assets/images/home/Group 22 (1).png') }}" alt="Yoyo">
+                                    <img src="{{ asset('assets/images/home/Group 22 (1).png') }}" alt="{{ __('messages.home.recommend_yoyo') }}">
                                 </div>
                             </div>
                         </div>
@@ -390,7 +383,7 @@
             </div>
             <div class="text-center mt-4">
                 <a href="#" class="btn hero-cta">
-                    <span>Ver mais</span>
+                    <span>{{ __('messages.home.view_more') }}</span>
                 </a>
             </div>
         </div>
@@ -401,8 +394,8 @@
         <div class="container recommended-container">
             <div class="recommended-title">
                 <h2>
-                    Promotional good
-                    <span>Brindes únicos, estilo extraordinário.</span>
+                    {{ __('messages.home.promotional_title') }}
+                    <span>{{ __('messages.home.promotional_subtitle') }}</span>
                 </h2>
             </div>
 
@@ -412,7 +405,7 @@
 
                         <div class="swiper-slide">
                             <div class="recommended-card">
-                                <h3>Rubber Keychain</h3>
+                                <h3>{{ __('messages.home.recommend_rubber') }}</h3>
 
                                 <div class="stars">
                                     <i class="bi bi-star-fill"></i>
@@ -424,14 +417,14 @@
 
                                 <div class="product-img-wrap">
 
-                                    <img src="{{ asset('assets/images/home/Group 21.png') }}" alt="Rubber Keychain">
+                                    <img src="{{ asset('assets/images/home/Group 21.png') }}" alt="{{ __('messages.home.recommend_rubber') }}">
                                 </div>
                             </div>
                         </div>
 
                         <div class="swiper-slide">
                             <div class="recommended-card">
-                                <h3>Acrylic Keychain</h3>
+                                <h3>{{ __('messages.home.recommend_acrylic') }}</h3>
 
                                 <div class="stars">
                                     <i class="bi bi-star-fill"></i>
@@ -444,14 +437,14 @@
                                 <div class="product-img-wrap">
 
                                     <img src="{{ asset('assets/images/home/lanyard-polyester.png') }}"
-                                        alt="Lanyard Sublimation">
+                                        alt="{{ __('messages.home.recommend_lanyard_fullcolor') }}">
                                 </div>
                             </div>
                         </div>
 
                         <div class="swiper-slide">
                             <div class="recommended-card">
-                                <h3>Standee</h3>
+                                <h3>{{ __('messages.home.promotional_standee') }}</h3>
 
                                 <div class="stars">
                                     <i class="bi bi-star-fill"></i>
@@ -463,14 +456,14 @@
 
                                 <div class="product-img-wrap">
 
-                                    <img src="{{ asset('assets/images/home/Group 972.png') }}" alt="Lanyard Snap yoyo">
+                                    <img src="{{ asset('assets/images/home/Group 972.png') }}" alt="{{ __('messages.home.promotional_standee') }}">
                                 </div>
                             </div>
                         </div>
 
                         <div class="swiper-slide">
                             <div class="recommended-card">
-                                <h3>Phone Stand</h3>
+                                <h3>{{ __('messages.home.promotional_phonestand') }}</h3>
 
                                 <div class="stars">
                                     <i class="bi bi-star-fill"></i>
@@ -482,7 +475,7 @@
 
                                 <div class="product-img-wrap">
 
-                                    <img src="{{ asset('assets/images/home/Group 18.png') }}" alt="Yoyo">
+                                    <img src="{{ asset('assets/images/home/Group 18.png') }}" alt="{{ __('messages.home.promotional_phonestand') }}">
                                 </div>
                             </div>
                         </div>
@@ -494,7 +487,7 @@
             </div>
             <div class="text-center mt-4">
                 <a href="#" class="btn hero-cta">
-                    <span>Ver mais</span>
+                    <span>{{ __('messages.home.view_more') }}</span>
                 </a>
             </div>
         </div>
@@ -502,10 +495,9 @@
     <section class="premium-materials-section premium-materials-desktop">
         <div class="container">
             <div class="premium-materials-header">
-                <h2>Seleção de Materiais Premium</h2>
+                <h2>{{ __('messages.home.materials_title') }}</h2>
                 <p>
-                    Explore nossa ampla variedade de materiais de alta qualidade para personalizar <br>
-                    seus brindes exclusivos.
+                    {{ __('messages.home.materials_description') }}
                 </p>
             </div>
 
@@ -516,9 +508,9 @@
                         <img src="{{ asset('assets/images/home/material-rubber-pvc.png') }}" alt="Rubber & PVC">
                     </div>
                     <div class="material-content">
-                        <h3>Rubber &amp; PVC</h3>
+                        <h3>{{ __('messages.home.material_rubber_pvc') }}</h3>
                         <p>
-                            Efeito 2D em relevo de alta qualidade, ideal para chaveiros, straps e descansos de copo.
+                            {{ __('messages.home.material_rubber_pvc_desc') }}
                         </p>
                     </div>
                 </div>
@@ -528,9 +520,9 @@
                         <img src="{{ asset('assets/images/home/material-acrylic.png') }}" alt="Acrylic">
                     </div>
                     <div class="material-content">
-                        <h3>Acrylic</h3>
+                        <h3>{{ __('messages.home.material_acrylic') }}</h3>
                         <p>
-                            Acrílico premium com acabamento transparente, colorido ou aurora para figuras incríveis.
+                            {{ __('messages.home.material_acrylic_desc') }}
                         </p>
                     </div>
                 </div>
@@ -540,9 +532,9 @@
                         <img src="{{ asset('assets/images/home/material-textile.png') }}" alt="Textile">
                     </div>
                     <div class="material-content">
-                        <h3>Textile</h3>
+                        <h3>{{ __('messages.home.material_textile') }}</h3>
                         <p>
-                            Tecidos tecidos intrincados para amuletos tradicionais e tapeçarias de alta qualidade.
+                            {{ __('messages.home.material_textile_desc') }}
                         </p>
                     </div>
                 </div>
@@ -552,9 +544,9 @@
                         <img src="{{ asset('assets/images/home/material-polyester.png') }}" alt="Polyester">
                     </div>
                     <div class="material-content">
-                        <h3>Polyester</h3>
+                        <h3>{{ __('messages.home.material_polyester') }}</h3>
                         <p>
-                            Cordões de tecido duráveis, a escolha confiável para uso profissional diário.
+                            {{ __('messages.home.material_polyester_desc') }}
                         </p>
                     </div>
                 </div>
@@ -564,9 +556,9 @@
                         <img src="{{ asset('assets/images/home/material-sublimation.png') }}" alt="Sublimation">
                     </div>
                     <div class="material-content">
-                        <h3>Sublimation</h3>
+                        <h3>{{ __('messages.home.material_sublimation') }}</h3>
                         <p>
-                            Impressão digital colorida vibrante em cordões macios e de toque suave.
+                            {{ __('messages.home.material_sublimation_desc') }}
                         </p>
                     </div>
                 </div>
@@ -576,9 +568,9 @@
                         <img src="{{ asset('assets/images/home/material-nylon.png') }}" alt="Nylon">
                     </div>
                     <div class="material-content">
-                        <h3>Nylon</h3>
+                        <h3>{{ __('messages.home.material_nylon') }}</h3>
                         <p>
-                            Acabamento brilhante luxuoso com resistência premium e visual sofisticado.
+                            {{ __('messages.home.material_nylon_desc') }}
                         </p>
                     </div>
                 </div>
@@ -588,8 +580,8 @@
                         <img src="{{ asset('assets/images/home/material-other.png') }}" alt="Other Materials">
                     </div>
                     <div class="material-content">
-                        <h3>Other Materials</h3>
-                        <p>Specialty Materials &amp; Custom Parts</p>
+                        <h3>{{ __('messages.home.material_other') }}</h3>
+                        <p>{{ __('messages.home.material_other_desc') }}</p>
                     </div>
                 </div>
 
@@ -599,10 +591,9 @@
     <section class="premium-materials-section premium-materials-mobile">
         <div class="container">
             <div class="premium-materials-header">
-                <h2>Seleção de Materiais Premium</h2>
+                <h2>{{ __('messages.home.materials_title') }}</h2>
                 <p>
-                    Explore nossa ampla variedade de materiais de alta qualidade para personalizar
-                    seus brindes exclusivos.
+                    {{ __('messages.home.materials_description') }}
                 </p>
             </div>
 
@@ -615,8 +606,8 @@
                                 <img src="{{ asset('assets/images/home/material-rubber-pvc.png') }}" alt="Rubber & PVC">
                             </div>
                             <div class="material-content">
-                                <h3>Rubber &amp; PVC</h3>
-                                <p>Efeito 2D em relevo de alta qualidade, ideal para chaveiros, straps e descansos de copo.
+                                <h3>{{ __('messages.home.material_rubber_pvc') }}</h3>
+                                <p>{{ __('messages.home.material_rubber_pvc_desc') }}
                                 </p>
                             </div>
                         </div>
@@ -628,8 +619,8 @@
                                 <img src="{{ asset('assets/images/home/material-acrylic.png') }}" alt="Acrylic">
                             </div>
                             <div class="material-content">
-                                <h3>Acrylic</h3>
-                                <p>Acrílico premium com acabamento transparente, colorido ou aurora para figuras incríveis.
+                                <h3>{{ __('messages.home.material_acrylic') }}</h3>
+                                <p>{{ __('messages.home.material_acrylic_desc') }}
                                 </p>
                             </div>
                         </div>
@@ -641,8 +632,8 @@
                                 <img src="{{ asset('assets/images/home/material-textile.png') }}" alt="Textile">
                             </div>
                             <div class="material-content">
-                                <h3>Textile</h3>
-                                <p>Tecidos tecidos intrincados para amuletos tradicionais e tapeçarias de alta qualidade.
+                                <h3>{{ __('messages.home.material_textile') }}</h3>
+                                <p>{{ __('messages.home.material_textile_desc') }}
                                 </p>
                             </div>
                         </div>
@@ -654,8 +645,8 @@
                                 <img src="{{ asset('assets/images/home/material-polyester.png') }}" alt="Polyester">
                             </div>
                             <div class="material-content">
-                                <h3>Polyester</h3>
-                                <p>Cordões de tecido duráveis, a escolha confiável para uso profissional diário.</p>
+                                <h3>{{ __('messages.home.material_polyester') }}</h3>
+                                <p>{{ __('messages.home.material_polyester_desc') }}</p>
                             </div>
                         </div>
                     </div>
@@ -666,8 +657,8 @@
                                 <img src="{{ asset('assets/images/home/material-sublimation.png') }}" alt="Sublimation">
                             </div>
                             <div class="material-content">
-                                <h3>Sublimation</h3>
-                                <p>Impressão digital colorida vibrante em cordões macios e de toque suave.</p>
+                                <h3>{{ __('messages.home.material_sublimation') }}</h3>
+                                <p>{{ __('messages.home.material_sublimation_desc') }}</p>
                             </div>
                         </div>
                     </div>
@@ -678,8 +669,8 @@
                                 <img src="{{ asset('assets/images/home/material-nylon.png') }}" alt="Nylon">
                             </div>
                             <div class="material-content">
-                                <h3>Nylon</h3>
-                                <p>Acabamento brilhante luxuoso com resistência premium e visual sofisticado.</p>
+                                <h3>{{ __('messages.home.material_nylon') }}</h3>
+                                <p>{{ __('messages.home.material_nylon_desc') }}</p>
                             </div>
                         </div>
                     </div>
@@ -690,8 +681,8 @@
                                 <img src="{{ asset('assets/images/home/material-other.png') }}" alt="Other Materials">
                             </div>
                             <div class="material-content">
-                                <h3>Other Materials</h3>
-                                <p>Specialty Materials &amp; Custom Parts</p>
+                                <h3>{{ __('messages.home.material_other') }}</h3>
+                                <p>{{ __('messages.home.material_other_desc') }}</p>
                             </div>
                         </div>
                     </div>
@@ -705,7 +696,7 @@
     <section class="blog-inspirations-section">
         <div class="container">
             <div class="blog-inspirations-header">
-                <h2>Blog e Inspirações</h2>
+                <h2>{{ __('messages.home.blog_title') }}</h2>
             </div>
 
             <div class="blog-swiper-wrap">
@@ -719,14 +710,13 @@
                                 </a>
 
                                 <div class="blog-content">
-                                    <h3>xsqvfzsqrvf</h3>
+                                    <h3>Teste</h3>
                                     <p>
-                                        khgkjflsdjv;jzkxvj jfdj aaaaa aaa aaaaaaaaaa vxvvvv zgyzf dszbvxf zgyzv gs sgxvzv
-                                        vxzvd
+                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam
                                     </p>
 
                                     <div class="blog-meta">
-                                        <span class="blog-tag blog-tag-blue">Brindes</span>
+                                        <span class="blog-tag blog-tag-blue">{{ __('messages.home.blog_tag_brindes') }}</span>
                                         <span class="blog-date">24/04/2026</span>
                                     </div>
                                 </div>
@@ -740,13 +730,13 @@
                                 </a>
 
                                 <div class="blog-content">
-                                    <h3>zsgqvzsqzs</h3>
+                                    <h3>Teste</h3>
                                     <p>
-                                        khgkjflsdjv;jzkxvj jfdj aaaaa aaa aaaaaaaaaa vxvvvv zgyzf dszbvxf
+                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam
                                     </p>
 
                                     <div class="blog-meta">
-                                        <span class="blog-tag blog-tag-yellow">Mercado</span>
+                                        <span class="blog-tag blog-tag-yellow">{{ __('messages.home.blog_tag_mercado') }}</span>
                                         <span class="blog-date">24/04/2026</span>
                                     </div>
                                 </div>
@@ -760,14 +750,13 @@
                                 </a>
 
                                 <div class="blog-content">
-                                    <h3>gfvsdFSDF</h3>
+                                    <h3>Teste</h3>
                                     <p>
-                                        khgkjflsdjv;jzkxvj jfdj aaaaa aaa aaaaaaaaaa vxvvvv zgyzf dszbvxf zgyzv gs sgxvzv
-                                        vxzvd
+                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam
                                     </p>
 
                                     <div class="blog-meta">
-                                        <span class="blog-tag blog-tag-blue">Design</span>
+                                        <span class="blog-tag blog-tag-blue">{{ __('messages.home.blog_tag_design') }}</span>
                                         <span class="blog-date">24/04/2026</span>
                                     </div>
                                 </div>
@@ -781,14 +770,13 @@
                                 </a>
 
                                 <div class="blog-content">
-                                    <h3>AFAFcAZSf</h3>
+                                    <h3>Teste</h3>
                                     <p>
-                                        khgkjflsdjv;jzkxvj jfdj aaaaa aaa aaaaaaaaaa vxvvvv zgyzf
-                                        dszbvxf....................................
+                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam
                                     </p>
 
                                     <div class="blog-meta">
-                                        <span class="blog-tag blog-tag-blue">Design</span>
+                                        <span class="blog-tag blog-tag-blue">{{ __('messages.home.blog_tag_design') }}</span>
                                         <span class="blog-date">24/04/2026</span>
                                     </div>
                                 </div>
@@ -802,7 +790,7 @@
             </div>
 
             <div class="blog-button-wrap">
-                <a href="#" class="blog-more-btn">Explorar Mais no Blog</a>
+                <a href="#" class="blog-more-btn">{{ __('messages.home.blog_explore_more') }}</a>
             </div>
         </div>
     </section>

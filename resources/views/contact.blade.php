@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Contato')
+@section('title', __('messages.contact.title'))
 
 @section('css')
     <style>
@@ -48,8 +48,8 @@
 @section('content')
     <section class="contact-hero" aria-labelledby="contact-page-title">
         <div class="contact-hero__inner">
-            <h1 id="contact-page-title">Contato</h1>
-            <p>Tem alguma d&uacute;vida ou precisa de suporte?</p>
+            <h1 id="contact-page-title">{{ __('messages.contact.title') }}</h1>
+            <p>{{ __('messages.contact.subtitle') }}</p>
         </div>
     </section>
 
@@ -82,8 +82,8 @@
                 <div class="contact-logo-placeholder" aria-hidden="true"></div>
 
                 <div class="contact-intro__copy">
-                    <h2>Fale conosco</h2>
-                    <p>Deixe seus dados no formul&aacute;rio abaixo e retornaremos em breve.</p>
+                    <h2>{{ __('messages.contact.heading') }}</h2>
+                    <p>{{ __('messages.contact.intro') }}</p>
                 </div>
             </div>
 
@@ -94,58 +94,58 @@
                 <div class="contact-alert contact-alert--error" data-contact-error hidden></div>
 
                 <fieldset class="contact-fieldset">
-                    <legend><span>*</span>Como gostaria de ser contactado?</legend>
+                    <legend><span>*</span>{{ __('messages.contact.contact_method') }}</legend>
 
                     <div class="contact-radio-group">
                         <label class="contact-radio">
                             <input type="radio" name="contact_method" value="whatsapp" @checked(old('contact_method', 'whatsapp') === 'whatsapp')>
-                            <span>WhatsApp</span>
+                            <span>{{ __('messages.contact.whatsapp') }}</span>
                         </label>
 
                         <label class="contact-radio">
                             <input type="radio" name="contact_method" value="line" @checked(old('contact_method') === 'line')>
-                            <span>LINE</span>
+                            <span>{{ __('messages.contact.line') }}</span>
                         </label>
 
                         <label class="contact-radio">
                             <input type="radio" name="contact_method" value="phone" @checked(old('contact_method') === 'phone')>
-                            <span>Liga&ccedil;&atilde;o</span>
+                            <span>{{ __('messages.contact.phone_call') }}</span>
                         </label>
                     </div>
                     <div class="contact-field-error" data-error-for="contact_method">@error('contact_method'){{ $message }}@enderror</div>
                 </fieldset>
 
                 <div class="contact-field">
-                    <label for="contact-subject"><span>*</span>Assunto</label>
+                    <label for="contact-subject"><span>*</span>{{ __('messages.contact.subject') }}</label>
                     <select id="contact-subject" name="subject" required>
-                        <option value="payment" @selected(old('subject') === 'payment')>Pagamento</option>
-                        <option value="quote" @selected(old('subject') === 'quote')>Solicita&ccedil;&atilde;o de or&ccedil;amento</option>
-                        <option value="support" @selected(old('subject') === 'support')>Suporte</option>
-                        <option value="order" @selected(old('subject') === 'order')>Pedido existente</option>
+                        <option value="payment" @selected(old('subject') === 'payment')>{{ __('messages.contact.payment') }}</option>
+                        <option value="quote" @selected(old('subject') === 'quote')>{{ __('messages.contact.quote') }}</option>
+                        <option value="support" @selected(old('subject') === 'support')>{{ __('messages.contact.support') }}</option>
+                        <option value="order" @selected(old('subject') === 'order')>{{ __('messages.contact.existing_order') }}</option>
                     </select>
                     <div class="contact-field-error" data-error-for="subject">@error('subject'){{ $message }}@enderror</div>
                 </div>
 
                 <div class="contact-field">
-                    <label for="contact-name"><span>*</span>Nome</label>
-                    <input id="contact-name" type="text" name="name" placeholder="Seu nome" value="{{ old('name') }}" required>
+                    <label for="contact-name"><span>*</span>{{ __('messages.contact.name') }}</label>
+                    <input id="contact-name" type="text" name="name" placeholder="{{ __('messages.contact.your_name') }}" value="{{ old('name') }}" required>
                     <div class="contact-field-error" data-error-for="name">@error('name'){{ $message }}@enderror</div>
                 </div>
 
                 <div class="contact-field">
-                    <label for="contact-email"><span>*</span>Email</label>
-                    <input id="contact-email" type="email" name="email" placeholder="Digite seu melhor e-mail" value="{{ old('email') }}" required>
+                    <label for="contact-email"><span>*</span>{{ __('messages.contact.email') }}</label>
+                    <input id="contact-email" type="email" name="email" placeholder="{{ __('messages.contact.best_email') }}" value="{{ old('email') }}" required>
                     <div class="contact-field-error" data-error-for="email">@error('email'){{ $message }}@enderror</div>
                 </div>
 
                 <div class="contact-field">
-                    <label for="contact-line">LINE-ID</label>
-                    <input id="contact-line" type="text" name="line_id" placeholder="Seu ID do LINE" value="{{ old('line_id') }}">
+                    <label for="contact-line">{{ __('messages.contact.line_id') }}</label>
+                    <input id="contact-line" type="text" name="line_id" placeholder="{{ __('messages.contact.your_line_id') }}" value="{{ old('line_id') }}">
                     <div class="contact-field-error" data-error-for="line_id">@error('line_id'){{ $message }}@enderror</div>
                 </div>
 
                 <div class="contact-field">
-                    <label for="contact-phone">Telefone</label>
+                    <label for="contact-phone">{{ __('messages.contact.phone') }}</label>
                     <div class="contact-phone-row">
                         <select aria-label="Country code" name="country_code">
                             <option value="+81" @selected(old('country_code', '+81') === '+81')>(JP)+81</option>
@@ -159,13 +159,13 @@
                 </div>
 
                 <div class="contact-field">
-                    <label for="contact-message"><span>*</span>Mensagem</label>
-                    <textarea id="contact-message" name="message" placeholder="Ol&aacute;, quero fazer meu pedido!" required>{{ old('message') }}</textarea>
+                    <label for="contact-message"><span>*</span>{{ __('messages.contact.message') }}</label>
+                    <textarea id="contact-message" name="message" placeholder="{{ __('messages.contact.message_placeholder') }}" required>{{ old('message') }}</textarea>
                     <div class="contact-field-error" data-error-for="message">@error('message'){{ $message }}@enderror</div>
                 </div>
 
                 <div class="contact-field contact-field--file">
-                    <label for="contact-file">File Upload</label>
+                    <label for="contact-file">{{ __('messages.contact.file_upload') }}</label>
                     <input id="contact-file" type="file" name="attachment">
                     <div class="contact-field-error" data-error-for="attachment">@error('attachment'){{ $message }}@enderror</div>
                 </div>
@@ -175,24 +175,24 @@
                         @if (config('services.recaptcha.site_key'))
                             <div class="g-recaptcha" data-sitekey="{{ config('services.recaptcha.site_key') }}" data-callback="onRecaptchaSuccess" data-expired-callback="onRecaptchaExpired"></div>
                         @else
-                            <div class="contact-recaptcha-unavailable">reCAPTCHA is not configured.</div>
+                            <div class="contact-recaptcha-unavailable">{{ __('messages.contact.recaptcha_unavailable') }}</div>
                         @endif
                     </div>
                     <div class="contact-field-error" data-error-for="g-recaptcha-response">@error('g-recaptcha-response'){{ $message }}@enderror</div>
                 </div>
 
                 <button class="contact-submit" type="submit" disabled>
-                    <span>Enviar solicita&ccedil;&atilde;o de or&ccedil;amento</span>
+                    <span>{{ __('messages.contact.submit_quote') }}</span>
                     <i class="bi bi-arrow-right" aria-hidden="true"></i>
                 </button>
             </form>
 
-            <div class="contact-info-grid" aria-label="Informa&ccedil;&otilde;es de contato">
+            <div class="contact-info-grid" aria-label="{{ __('messages.contact.contact_info_label') }}">
                 <article class="contact-info-card">
                     <div class="contact-info-card__icon">
                         <i class="bi bi-envelope"></i>
                     </div>
-                    <h3>E-mail</h3>
+                    <h3>{{ __('messages.contact.email_label') }}</h3>
                     <p>sales@xxxxx-xxxxxx.com</p>
                 </article>
 
@@ -200,7 +200,7 @@
                     <div class="contact-info-card__icon">
                         <i class="bi bi-geo-alt"></i>
                     </div>
-                    <h3>Endere&ccedil;o</h3>
+                    <h3>{{ __('messages.contact.address') }}</h3>
                     <p>1234 Maple Street Xixox 210</p>
                     <p>San Francisco, CA 94107</p>
                     <p>Japan(Seg-Sex: 10:00-16:00)</p>
@@ -210,7 +210,7 @@
                     <div class="contact-info-card__icon">
                         <i class="bi bi-telephone"></i>
                     </div>
-                    <h3>Telefone</h3>
+                    <h3>{{ __('messages.contact.phone') }}</h3>
                     <p>+81 5068655592</p>
                 </article>
             </div>

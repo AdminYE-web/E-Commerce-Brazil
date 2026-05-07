@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Contato - Enviado com sucesso')
+@section('title', __('messages.contact_complete.title'))
 
 @section('css')
     <style>
@@ -131,8 +131,8 @@
 @section('content')
     <section class="contact-hero" aria-labelledby="contact-complete-title">
         <div class="contact-hero__inner">
-            <h1 id="contact-complete-title">Obrigado!</h1>
-            <p>Sua solicitação foi enviada com sucesso.</p>
+            <h1 id="contact-complete-title">{{ __('messages.contact_complete.hero_title') }}</h1>
+            <p>{{ __('messages.contact_complete.hero_subtitle') }}</p>
         </div>
     </section>
 
@@ -166,20 +166,19 @@
                     <i class="bi bi-check-lg"></i>
                 </div>
 
-                <h1><span>Solicitação</span> enviada com sucesso!</h1>
+                <h1>{{ __('messages.contact_complete.success_title') }}</h1>
 
                 <p>
-                    Obrigado por seu interesse. Recebemos sua mensagem e
-                    nossa equipe entrará em contato em breve para ajudá-lo.
+                    {{ __('messages.contact_complete.success_message') }}
                 </p>
 
                 <a href="{{ route('home') }}" class="complete-card__btn">
-                    <span>Continuar navegando</span>
+                    <span>{{ __('messages.contact_complete.continue_browsing') }}</span>
                     <i class="bi bi-arrow-right" aria-hidden="true"></i>
                 </a>
 
-                <a href="{{ route('contact') }}" class="complete-card__link">
-                    Ir para a página inicial
+                <a href="{{ route('home') }}" class="complete-card__link">
+                    {{ __('messages.contact_complete.go_home') }}
                 </a>
             </div>
         </div>

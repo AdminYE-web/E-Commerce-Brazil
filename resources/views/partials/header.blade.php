@@ -1,3 +1,11 @@
+@php
+    $currentLocale = app()->getLocale();
+    $supportedLanguages = config('app.supported_locales', ['pt', 'ja', 'en']);
+    $languageFlags = config('app.locale_flags', ['pt' => 'br', 'ja' => 'jp', 'en' => 'us']);
+    $currentLanguage = in_array($currentLocale, $supportedLanguages, true) ? $currentLocale : config('app.locale', 'pt');
+    $currentLanguageFlag = $languageFlags[$currentLanguage] ?? 'br';
+@endphp
+
 <header class="site-header">
 
     <!-- ================= DESKTOP ================= -->
@@ -15,13 +23,13 @@
 
                     <li class="nav-item">
                         <button type="button" class="nav-link desktop-menu-toggle " data-target="lanyardMegaMenu">
-                            Cordão
+                            {{ __('messages.header.lanyard') }}
                         </button>
                     </li>
 
                     <li class="nav-item">
                         <button type="button" class="nav-link desktop-menu-toggle" data-target="otherProductMegaMenu">
-                            Outro produto
+                            {{ __('messages.header.other_product') }}
                         </button>
                     </li>
                 </ul>
@@ -29,7 +37,7 @@
                 <!-- Search -->
                 <form class="search-box" action="#" method="GET">
                     <i class="bi bi-search search-icon"></i>
-                    <input type="text" name="keyword" placeholder="Procurar">
+                    <input type="text" name="keyword" placeholder="{{ __('messages.header.search') }}">
                 </form>
 
                 <!-- Icons -->
@@ -43,23 +51,20 @@
                     </a>
 
                    <div class="language-dropdown">
-    <button type="button" class="language-toggle">
-        <img src="{{ asset('assets/images/br-flag.png') }}" alt="BR" class="flag-img">
-        <i class="bi bi-chevron-down"></i>
-    </button>
+                        <button type="button" class="language-toggle">
+                            <span class="fi fi-{{ $currentLanguageFlag }} lang-flag-toggle"></span>
+                            <i class="bi bi-chevron-down"></i>
+                        </button>
 
-    <div class="language-menu">
-        <a href="#" class="language-item active">
-            <span class="lang-flag flag-br"></span>
-            <span>Português (BR)</span>
-        </a>
-
-        <a href="#" class="language-item">
-            <span class="lang-flag flag-jp"></span>
-            <span>日本語 (JP)</span>
-        </a>
-    </div>
-</div>
+                        <div class="language-menu">
+                            @foreach ($supportedLanguages as $language)
+                                <a href="{{ route('language.switch', $language) }}" class="language-item {{ $currentLanguage === $language ? 'active' : '' }}">
+                                    <span class="fi fi-{{ $languageFlags[$language] ?? $language }} lang-flag"></span>
+                                    <span>{{ __("messages.header.language.$language") }}</span>
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
                 </div>
 
             </nav>
@@ -73,31 +78,31 @@
 
                     <!-- column 1 -->
                     <div class="mega-menu-col">
-                        <div class="mega-menu-title">Printed Lanyards</div>
+                        <div class="mega-menu-title">{{ __('messages.header.mega.printed_lanyards') }}</div>
                         <ul class="mega-menu-list">
-                            <li><a href="#">Polyester Lanyards</a></li>
-                            <li><a href="#">Nylon Lanyards</a></li>
-                            <li><a href="#">PU Leather Lanyards</a></li>
-                            <li><a href="#">Sublimation Lanyards</a></li>
-                            <li><a href="#">Reflector Lanyards</a></li>
-                            <li><a href="#">Premium Lanyards</a></li>
-                            <li><a href="#">Jacquard Lanyards</a></li>
-                            <li><a href="#">Yoyo Badge Lanyard</a></li>
-                            <li><a href="#">Eco-Friendly Lanyards</a></li>
-                            <li><a href="#">Ready-to-Use Lanyards</a></li>
-                            <li><a href="#">Antibacterial Lanyards</a></li>
+                            <li><a href="#">{{ __('messages.header.mega.polyester_lanyards') }}</a></li>
+                            <li><a href="#">{{ __('messages.header.mega.nylon_lanyards') }}</a></li>
+                            <li><a href="#">{{ __('messages.header.mega.pu_leather_lanyards') }}</a></li>
+                            <li><a href="#">{{ __('messages.header.mega.sublimation_lanyards') }}</a></li>
+                            <li><a href="#">{{ __('messages.header.mega.reflector_lanyards') }}</a></li>
+                            <li><a href="#">{{ __('messages.header.mega.premium_lanyards') }}</a></li>
+                            <li><a href="#">{{ __('messages.header.mega.jacquard_lanyards') }}</a></li>
+                            <li><a href="#">{{ __('messages.header.mega.yoyo_badge_lanyard') }}</a></li>
+                            <li><a href="#">{{ __('messages.header.mega.eco_friendly_lanyards') }}</a></li>
+                            <li><a href="#">{{ __('messages.header.mega.ready_to_use_lanyards') }}</a></li>
+                            <li><a href="#">{{ __('messages.header.mega.antibacterial_lanyards') }}</a></li>
                         </ul>
 
-                        <a href="products" class="mega-menu-view-all">View All <i class="bi bi-arrow-right"></i></a>
+                        <a href="products" class="mega-menu-view-all">{{ __('messages.header.view_all') }} <i class="bi bi-arrow-right"></i></a>
                     </div>
 
                     <!-- column 2 -->
                     <div class="mega-menu-col">
-                        <div class="mega-menu-title">Blank Lanyards</div>
+                        <div class="mega-menu-title">{{ __('messages.header.mega.blank_lanyards') }}</div>
                         <ul class="mega-menu-list">
-                            <li><a href="#">Polyester Lanyards (Flag Red)</a></li>
-                            <li><a href="#">Polyester Lanyards (348C)</a></li>
-                            <li><a href="#">Polyester Lanyards (293C)</a></li>
+                            <li><a href="#">{{ __('messages.header.mega.polyester_lanyards_flag_red') }}</a></li>
+                            <li><a href="#">{{ __('messages.header.mega.polyester_lanyards_348c') }}</a></li>
+                            <li><a href="#">{{ __('messages.header.mega.polyester_lanyards_293c') }}</a></li>
                         </ul>
                     </div>
 
@@ -105,12 +110,12 @@
                     <div class="mega-product-card">
                         <div class="mega-product-image">
                             <img src="{{ asset('assets/images/home/lanyard-red.png') }}"
-                                alt="Polyester Lanyards (Flag Red)">
+                                alt="{{ __('messages.header.mega.polyester_lanyards_flag_red') }}">
                         </div>
                         <div class="mega-product-content">
-                            <h4>Polyester Lanyards (Flag Red) (10mm)</h4>
+                            <h4>{{ __('messages.header.mega.polyester_lanyards_flag_red_10mm') }}</h4>
                             <p>
-                                This blank employee lanyard measures 45 cm (450 mm) in length and 10 mm in width,...
+                                {{ __('messages.header.mega.blank_lanyard_description') }}
                             </p>
                         </div>
                     </div>
@@ -118,13 +123,12 @@
                     <!-- card 2 -->
                     <div class="mega-product-card">
                         <div class="mega-product-image">
-                            <img src="{{ asset('assets/images/home/lanyard-orange.png') }}" alt="Polyester Lanyards">
+                            <img src="{{ asset('assets/images/home/lanyard-orange.png') }}" alt="{{ __('messages.header.mega.polyester_lanyards') }}">
                         </div>
                         <div class="mega-product-content">
-                            <h4>Polyester Lanyards</h4>
+                            <h4>{{ __('messages.header.mega.polyester_lanyards') }}</h4>
                             <p>
-                                This #1 best-selling lanyard is fully customizable in size and design, with the option
-                                to screen print your company name.
+                                {{ __('messages.header.mega.polyester_lanyard_description') }}
                             </p>
                         </div>
                     </div>
@@ -138,80 +142,78 @@
 
                     <!-- ID Case -->
                     <div class="mega-menu-col">
-                        <div class="mega-menu-title">ID Case</div>
+                        <div class="mega-menu-title">{{ __('messages.header.mega.id_case') }}</div>
                         <ul class="mega-menu-list">
-                            <li><a href="#">Soft ID Card Holder (Horizontal) STD-1</a></li>
-                            <li><a href="#">Soft ID Card Holder (Horizontal) STD-2</a></li>
-                            <li><a href="#">Soft ID Card Holder (Horizontal) STD-3</a></li>
-                            <li><a href="#">Soft ID Card Holder 1_N</a></li>
-                            <li><a href="#">Soft ID Card Holder 2_N</a></li>
-                            <li><a href="#">Soft ID Card Holder 3_N</a></li>
-                            <li><a href="#">Soft ID Card Holder 4_N</a></li>
-                            <li><a href="#">Soft ID Card Holder 6_N</a></li>
-                            <li><a href="#">Leather Badge Holder</a></li>
-                            <li><a href="#">Rigid Frame ID Card Holder F001</a></li>
-                            <li><a href="#">Rigid Frame ID Card Holder F002</a></li>
+                            <li><a href="#">{{ __('messages.header.mega.soft_id_card_holder_horizontal_std_1') }}</a></li>
+                            <li><a href="#">{{ __('messages.header.mega.soft_id_card_holder_horizontal_std_2') }}</a></li>
+                            <li><a href="#">{{ __('messages.header.mega.soft_id_card_holder_horizontal_std_3') }}</a></li>
+                            <li><a href="#">{{ __('messages.header.mega.soft_id_card_holder_1n') }}</a></li>
+                            <li><a href="#">{{ __('messages.header.mega.soft_id_card_holder_2n') }}</a></li>
+                            <li><a href="#">{{ __('messages.header.mega.soft_id_card_holder_3n') }}</a></li>
+                            <li><a href="#">{{ __('messages.header.mega.soft_id_card_holder_4n') }}</a></li>
+                            <li><a href="#">{{ __('messages.header.mega.soft_id_card_holder_6n') }}</a></li>
+                            <li><a href="#">{{ __('messages.header.mega.leather_badge_holder') }}</a></li>
+                            <li><a href="#">{{ __('messages.header.mega.rigid_frame_id_card_holder_f001') }}</a></li>
+                            <li><a href="#">{{ __('messages.header.mega.rigid_frame_id_card_holder_f002') }}</a></li>
                         </ul>
 
                         <a href="{{ route('products.index') }}" class="mega-menu-view-all">
-                            View All <i class="bi bi-arrow-right"></i>
+                            {{ __('messages.header.view_all') }} <i class="bi bi-arrow-right"></i>
                         </a>
                     </div>
 
                     <!-- Attachment -->
                     <div class="mega-menu-col">
-                        <div class="mega-menu-title">Attachment</div>
+                        <div class="mega-menu-title">{{ __('messages.header.mega.attachment') }}</div>
                         <ul class="mega-menu-list">
-                            <li><a href="#">Resin Logo Front Keeper</a></li>
-                            <li><a href="#">Snap yoyo</a></li>
-                            <li><a href="#">Spring Hook</a></li>
-                            <li><a href="#">Oval Spring Hook</a></li>
-                            <li><a href="#">Metal Clip</a></li>
-                            <li><a href="#">Metal Clip with PVC Strap</a></li>
-                            <li><a href="#">A-Clip</a></li>
-                            <li><a href="#">PVC Hook</a></li>
-                            <li><a href="#">Euro Clip A</a></li>
-                            <li><a href="#">Euro Clip B</a></li>
-                            <li><a href="#">Euro Clip C</a></li>
+                            <li><a href="#">{{ __('messages.header.mega.resin_logo_front_keeper') }}</a></li>
+                            <li><a href="#">{{ __('messages.header.mega.snap_yoyo') }}</a></li>
+                            <li><a href="#">{{ __('messages.header.mega.spring_hook') }}</a></li>
+                            <li><a href="#">{{ __('messages.header.mega.oval_spring_hook') }}</a></li>
+                            <li><a href="#">{{ __('messages.header.mega.metal_clip') }}</a></li>
+                            <li><a href="#">{{ __('messages.header.mega.metal_clip_with_pvc_strap') }}</a></li>
+                            <li><a href="#">{{ __('messages.header.mega.a_clip') }}</a></li>
+                            <li><a href="#">{{ __('messages.header.mega.pvc_hook') }}</a></li>
+                            <li><a href="#">{{ __('messages.header.mega.euro_clip_a') }}</a></li>
+                            <li><a href="#">{{ __('messages.header.mega.euro_clip_b') }}</a></li>
+                            <li><a href="#">{{ __('messages.header.mega.euro_clip_c') }}</a></li>
                         </ul>
 
                         <a href="{{ route('products.index') }}" class="mega-menu-view-all">
-                            View All <i class="bi bi-arrow-right"></i>
+                            {{ __('messages.header.view_all') }} <i class="bi bi-arrow-right"></i>
                         </a>
                     </div>
 
                     <!-- Badge Reel -->
                     <div class="mega-menu-col">
-                        <div class="mega-menu-title">Badge Reel</div>
+                        <div class="mega-menu-title">{{ __('messages.header.mega.badge_reel') }}</div>
                         <ul class="mega-menu-list">
-                            <li><a href="#">Black &amp; White Badge Reel</a></li>
-                            <li><a href="#">Carabiner Badge Reel</a></li>
-                            <li><a href="#">Stopper Badge Reel</a></li>
+                            <li><a href="#">{{ __('messages.header.mega.black_white_badge_reel') }}</a></li>
+                            <li><a href="#">{{ __('messages.header.mega.carabiner_badge_reel') }}</a></li>
+                            <li><a href="#">{{ __('messages.header.mega.stopper_badge_reel') }}</a></li>
                         </ul>
                     </div>
 
                     <!-- Other -->
                     <div class="mega-menu-col">
-                        <div class="mega-menu-title">Other</div>
+                        <div class="mega-menu-title">{{ __('messages.header.mega.other') }}</div>
                         <ul class="mega-menu-list">
-                            <li><a href="#">Wrist Straps</a></li>
-                            <li><a href="#">Phone Strap Case</a></li>
-                            <li><a href="#">Carabiner</a></li>
+                            <li><a href="#">{{ __('messages.header.mega.wrist_straps') }}</a></li>
+                            <li><a href="#">{{ __('messages.header.mega.phone_strap_case') }}</a></li>
+                            <li><a href="#">{{ __('messages.header.mega.carabiner') }}</a></li>
                         </ul>
                     </div>
 
                     <!-- Product card -->
                     <div class="mega-product-card other-product-card">
                         <div class="mega-product-image">
-                            <img src="{{ asset('assets/images/home/wrist-straps.png') }}" alt="Wrist Straps">
+                            <img src="{{ asset('assets/images/home/wrist-straps.png') }}" alt="{{ __('messages.header.mega.wrist_straps') }}">
                         </div>
 
                         <div class="mega-product-content">
-                            <h4>Wrist Straps</h4>
+                            <h4>{{ __('messages.header.mega.wrist_straps') }}</h4>
                             <p>
-                                Perfect for marathons, running events, and festivals. These compact wrist straps come
-                                with a
-                                secure locking slider, making...
+                                {{ __('messages.header.mega.wrist_straps_description') }}
                             </p>
                         </div>
                     </div>
@@ -251,7 +253,7 @@
         <div class="mobile-search-wrap">
             <form class="search-box mobile-search-box d-flex" action="#" method="GET">
                 <i class="bi bi-search search-icon"></i>
-                <input type="text" name="keyword" placeholder="Search">
+                <input type="text" name="keyword" placeholder="{{ __('messages.header.search') }}">
             </form>
         </div>
     </div>
@@ -277,31 +279,34 @@
             <ul class="mobile-menu-list">
                 <li>
                     <button type="button" class="mobile-menu-link open-submenu" data-target="lanyardMenuPanel">
-                        <span>Lanyard</span>
+                        <span>{{ __('messages.header.lanyard') }}</span>
                         <i class="bi bi-chevron-right"></i>
                     </button>
                 </li>
 
                 <li>
                     <button type="button" class="mobile-menu-link open-submenu" data-target="otherProductMenuPanel">
-                        <span>Other Product</span>
+                        <span>{{ __('messages.header.other_product') }}</span>
                         <i class="bi bi-chevron-right"></i>
                     </button>
                 </li>
 
                 <li>
                     <button type="button" class="mobile-menu-link open-submenu" data-target="additionalMenuPanel">
-                        <span>Additional Lanyard Details</span>
+                        <span>{{ __('messages.header.additional_lanyard_details') }}</span>
                         <i class="bi bi-chevron-right"></i>
                     </button>
                 </li>
 
-                <li><a href="#" class="mobile-menu-link"><span>Track order</span></a></li>
-                <li><a href="#" class="mobile-menu-link"><span>Gallery</span></a></li>
-                <li><a href="#" class="mobile-menu-link"><span>Blog</span></a></li>
-                <li><a href="#" class="mobile-menu-link"><span>FAQ</span></a></li>
-                <li><a href="#" class="mobile-menu-link"><span>About Us</span></a></li>
-                <li><a href="{{ route('contact') }}" class="mobile-menu-link"><span>Contact Us</span></a></li>
+                <li><a href="#" class="mobile-menu-link"><span>{{ __('messages.header.track_order') }}</span></a></li>
+                <li><a href="#" class="mobile-menu-link"><span>{{ __('messages.header.gallery') }}</span></a></li>
+                <li><a href="#" class="mobile-menu-link"><span>{{ __('messages.header.blog') }}</span></a></li>
+                <li><a href="#" class="mobile-menu-link"><span>{{ __('messages.header.faq') }}</span></a></li>
+                <li><a href="#" class="mobile-menu-link"><span>{{ __('messages.header.about_us') }}</span></a></li>
+                <li><a href="{{ route('contact') }}" class="mobile-menu-link"><span>{{ __('messages.header.contact_us') }}</span></a></li>
+                @foreach ($supportedLanguages as $language)
+                    <li><a href="{{ route('language.switch', $language) }}" class="mobile-menu-link {{ $currentLanguage === $language ? 'active' : '' }}"><span class="fi fi-{{ $languageFlags[$language] ?? $language }} lang-flag"></span><span>{{ __("messages.header.language.$language") }}</span></a></li>
+                @endforeach
             </ul>
         </div>
 
@@ -312,13 +317,13 @@
                 <button type="button" class="back-main-menu">
                     <i class="bi bi-chevron-left"></i>
                 </button>
-                <span>Lanyard</span>
+                <span>{{ __('messages.header.lanyard') }}</span>
             </div>
 
             <ul class="mobile-menu-list submenu-list">
-                <li><a href="#">Polyester Lanyards</a></li>
-                <li><a href="#">Nylon Lanyards</a></li>
-                <li><a href="#">Sublimation Lanyards</a></li>
+                <li><a href="#">{{ __('messages.header.mega.polyester_lanyards') }}</a></li>
+                <li><a href="#">{{ __('messages.header.mega.nylon_lanyards') }}</a></li>
+                <li><a href="#">{{ __('messages.header.mega.sublimation_lanyards') }}</a></li>
             </ul>
         </div>
 
@@ -329,14 +334,14 @@
                 <button type="button" class="back-main-menu">
                     <i class="bi bi-chevron-left"></i>
                 </button>
-                <span>Other Product</span>
+                <span>{{ __('messages.header.other_product') }}</span>
             </div>
 
             <ul class="mobile-menu-list submenu-list">
-                <li><a href="#">Badge Holder</a></li>
-                <li><a href="#">ID Card Holder</a></li>
-                <li><a href="#">Keychain</a></li>
-                <li><a href="#">Wristband</a></li>
+                <li><a href="#">{{ __('messages.header.mega.badge_holder') }}</a></li>
+                <li><a href="#">{{ __('messages.header.mega.id_card_holder') }}</a></li>
+                <li><a href="#">{{ __('messages.header.mega.keychain') }}</a></li>
+                <li><a href="#">{{ __('messages.header.mega.wristband') }}</a></li>
             </ul>
         </div>
 
@@ -347,14 +352,14 @@
                 <button type="button" class="back-main-menu">
                     <i class="bi bi-chevron-left"></i>
                 </button>
-                <span>Additional Lanyard Details</span>
+                <span>{{ __('messages.header.additional_lanyard_details') }}</span>
             </div>
 
             <ul class="mobile-menu-list submenu-list">
-                <li><a href="#">Printing Method</a></li>
-                <li><a href="#">Material Guide</a></li>
-                <li><a href="#">Attachment Options</a></li>
-                <li><a href="#">Size Guide</a></li>
+                <li><a href="#">{{ __('messages.header.mega.printing_method') }}</a></li>
+                <li><a href="#">{{ __('messages.header.mega.material_guide') }}</a></li>
+                <li><a href="#">{{ __('messages.header.mega.attachment_options') }}</a></li>
+                <li><a href="#">{{ __('messages.header.mega.size_guide') }}</a></li>
             </ul>
         </div>
 

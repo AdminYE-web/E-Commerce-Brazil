@@ -5,14 +5,14 @@
         <div class="container">
             <div class="newsletter-inner">
                 <div class="newsletter-text">
-                    <h3>Subscribe to Our Newsletter</h3>
-                    <p>Receive a regular digest of our latest news and exciting updates.</p>
+                    <h3>{{ __('messages.newsletter.title') }}</h3>
+                    <p>{{ __('messages.newsletter.description') }}</p>
                 </div>
 
                 <form class="newsletter-form" action="#" method="POST">
                     @csrf
-                    <input type="email" name="email" placeholder="Enter your email">
-                    <button type="submit">Subscribe</button>
+                    <input type="email" name="email" placeholder="{{ __('messages.newsletter.email_placeholder') }}">
+                    <button type="submit">{{ __('messages.newsletter.subscribe') }}</button>
                 </form>
             </div>
         </div>
@@ -48,36 +48,36 @@
 
                     <!-- Company Info -->
                     <div class="footer-col">
-                        <h4>Company Info</h4>
+                        <h4>{{ __('messages.footer.company_info') }}</h4>
                         <ul>
-                            <li><a href="#">About Us</a></li>
-                            <li><a href="#">Blog</a></li>
-                            <li><a href="#">Privacy Policy</a></li>
-                            <li><a href="#">Gallery</a></li>
+                            <li><a href="#">{{ __('messages.footer.about_us') }}</a></li>
+                            <li><a href="#">{{ __('messages.footer.blog') }}</a></li>
+                            <li><a href="#">{{ __('messages.footer.privacy_policy') }}</a></li>
+                            <li><a href="#">{{ __('messages.footer.gallery') }}</a></li>
                         </ul>
                     </div>
 
                     <!-- Support -->
                     <div class="footer-col">
-                        <h4>Support</h4>
+                        <h4>{{ __('messages.footer.support') }}</h4>
                         <ul>
-                            <li><a href="#">FAQ</a></li>
-                            <li><a href="{{ route('contact') }}">Contato</a></li>
-                            <li><a href="#">Track Order</a></li>
-                            <li><a href="#">How to Order</a></li>
-                            <li><a href="#">How to Design</a></li>
-                            <li><a href="#">Payment Guide</a></li>
-                            <li><a href="#">Refund Guide</a></li>
+                            <li><a href="#">{{ __('messages.footer.faq') }}</a></li>
+                            <li><a href="{{ route('contact') }}">{{ __('messages.footer.contact') }}</a></li>
+                            <li><a href="#">{{ __('messages.footer.track_order') }}</a></li>
+                            <li><a href="#">{{ __('messages.footer.how_to_order') }}</a></li>
+                            <li><a href="#">{{ __('messages.footer.how_to_design') }}</a></li>
+                            <li><a href="#">{{ __('messages.footer.payment_guide') }}</a></li>
+                            <li><a href="#">{{ __('messages.footer.refund_guide') }}</a></li>
                         </ul>
                     </div>
 
                     <!-- Account -->
                     <div class="footer-col">
-                        <h4>Account</h4>
+                        <h4>{{ __('messages.footer.account') }}</h4>
                         <ul>
-                            <li><a href="{{ route('login') }}">Login</a></li>
-                            <li><a href="{{ route('register') }}">Create Account</a></li>
-                            <li><a href="#">Your Account</a></li>
+                            <li><a href="{{ route('login') }}">{{ __('messages.footer.login') }}</a></li>
+                            <li><a href="{{ route('register') }}">{{ __('messages.footer.create_account') }}</a></li>
+                            <li><a href="#">{{ __('messages.footer.your_account') }}</a></li>
                         </ul>
                     </div>
 
@@ -110,34 +110,34 @@
 
                     <!-- Company Info -->
                     <div class="footer-col">
-                        <h4>Company Info</h4>
+                        <h4>{{ __('messages.footer.company_info') }}</h4>
                         <ul>
-                            <li><a href="#">About Us</a></li>
-                            <li><a href="#">Blog</a></li>
-                            <li><a href="#">Privacy Policy</a></li>
-                            <li><a href="#">Gallery</a></li>
+                            <li><a href="#">{{ __('messages.footer.about_us') }}</a></li>
+                            <li><a href="#">{{ __('messages.footer.blog') }}</a></li>
+                            <li><a href="#">{{ __('messages.footer.privacy_policy') }}</a></li>
+                            <li><a href="#">{{ __('messages.footer.gallery') }}</a></li>
                         </ul>
                         <br>
                         <br>
-                        <h4>Account</h4>
+                        <h4>{{ __('messages.footer.account') }}</h4>
                         <ul>
-                            <li><a href="{{ route('login') }}">Login</a></li>
-                            <li><a href="{{ route('register') }}">Create Account</a></li>
-                            <li><a href="#">Your Account</a></li>
+                            <li><a href="{{ route('login') }}">{{ __('messages.footer.login') }}</a></li>
+                            <li><a href="{{ route('register') }}">{{ __('messages.footer.create_account') }}</a></li>
+                            <li><a href="#">{{ __('messages.footer.your_account') }}</a></li>
                         </ul>
                     </div>
 
                     <!-- Support -->
                     <div class="footer-col">
-                        <h4>Support</h4>
+                        <h4>{{ __('messages.footer.support') }}</h4>
                         <ul>
-                            <li><a href="#">FAQ</a></li>
-                            <li><a href="{{ route('contact') }}">Contato</a></li>
-                            <li><a href="#">Track Order</a></li>
-                            <li><a href="#">How to Order</a></li>
-                            <li><a href="#">How to Design</a></li>
-                            <li><a href="#">Payment Guide</a></li>
-                            <li><a href="#">Refund Guide</a></li>
+                            <li><a href="#">{{ __('messages.footer.faq') }}</a></li>
+                            <li><a href="{{ route('contact') }}">{{ __('messages.footer.contact') }}</a></li>
+                            <li><a href="#">{{ __('messages.footer.track_order') }}</a></li>
+                            <li><a href="#">{{ __('messages.footer.how_to_order') }}</a></li>
+                            <li><a href="#">{{ __('messages.footer.how_to_design') }}</a></li>
+                            <li><a href="#">{{ __('messages.footer.payment_guide') }}</a></li>
+                            <li><a href="#">{{ __('messages.footer.refund_guide') }}</a></li>
                         </ul>
                     </div>
                 </div>
@@ -148,7 +148,7 @@
     <!-- Copyright -->
     <section class="footer-bottom">
         <div class="container">
-            <p>Copyright 2026. All rights reserved.</p>
+            <p>{{ __('messages.footer.copyright') }}</p>
         </div>
     </section>
 

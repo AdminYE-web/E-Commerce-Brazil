@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
     <meta charset="UTF-8">
@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('assets/bootstrap/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css">
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}?v={{ date('is') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 
@@ -162,10 +163,11 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const dropdown = document.querySelector('.language-dropdown');
-    const toggle = document.querySelector('.language-toggle');
+    document.querySelectorAll('.language-dropdown').forEach(function (dropdown) {
+        const toggle = dropdown.querySelector('.language-toggle');
 
-    if (dropdown && toggle) {
+        if (!toggle) return;
+
         toggle.addEventListener('click', function (e) {
             e.preventDefault();
             e.stopPropagation();
@@ -177,7 +179,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 dropdown.classList.remove('is-open');
             }
         });
-    }
+    });
 });
 </script>
 </body>
