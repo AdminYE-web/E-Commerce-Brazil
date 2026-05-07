@@ -9,10 +9,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('option_groups', function (Blueprint $table) {
+            $table->string('display_type')
+                ->default('button')
+                ->after('group_name');
 
-            $table->integer('sort_order')
-                ->default(0)
-                ->after('is_required');
+            $table->boolean('is_required')
+                ->default(true)
+                ->after('display_type');
+
+           
         });
     }
 
@@ -20,8 +25,8 @@ return new class extends Migration
     {
         Schema::table('option_groups', function (Blueprint $table) {
             $table->dropColumn([
-                
-                'sort_order'
+                'display_type',
+                'is_required'
             ]);
         });
     }
