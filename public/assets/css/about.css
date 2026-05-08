@@ -1,0 +1,917 @@
+.about-page,
+.about-page * {
+    box-sizing: border-box;
+}
+
+.about-page {
+    --about-blue: #064580;
+    --about-accent: #2f80ff;
+    --about-text: #111111;
+    --about-muted: #5f6368;
+    --about-soft: #eefbff;
+    --about-border: #d7d7d7;
+    background: #ffffff;
+    color: var(--about-text);
+    font-family: "Inter", Arial, Helvetica, sans-serif;
+    overflow: hidden;
+}
+
+html,
+body {
+    overflow-x: hidden;
+}
+
+.about-page img {
+    max-width: 100%;
+}
+
+.about-ceo__copy,
+.about-timeline__card,
+.about-why-card,
+.about-data-table__label,
+.about-data-table__value {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.about-container {
+    width: min(calc(100% - 104px), 1100px);
+    margin: 0 auto;
+}
+
+.about-section-title,
+.about-info__title,
+.about-why h2,
+.about-team__heading h2 {
+    margin: 0;
+    color: #0c0c0c;
+    font-weight: 800;
+    letter-spacing: 0;
+}
+
+.about-hero {
+    position: relative;
+    height: 135px;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    background: var(--about-blue);
+    text-align: center;
+}
+
+.about-hero__ghost {
+    position: absolute;
+    top: 27px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: transparent;
+    font-size: clamp(66px, 6.1vw, 86px);
+    font-weight: 800;
+    line-height: 0.9;
+    opacity: 0.38;
+    white-space: nowrap;
+    -webkit-text-stroke: 1px rgba(47, 128, 255, 0.58);
+}
+
+.about-hero__content {
+    position: relative;
+    z-index: 1;
+}
+
+.about-hero h1 {
+    margin: 0;
+    color: #ffffff;
+    font-size: clamp(24px, 2.15vw, 31px);
+    font-weight: 800;
+    line-height: 1.08;
+}
+
+.about-hero p {
+    max-width: 360px;
+    margin: 6px auto 0;
+    color: rgba(255, 255, 255, 0.92);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.35;
+}
+
+.about-ceo {
+    padding: 48px 0 42px;
+    background: #ffffff;
+}
+
+.about-ceo__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) clamp(220px, 29vw, 330px);
+    gap: clamp(54px, 7vw, 96px);
+    align-items: start;
+}
+
+.about-ceo .about-section-title {
+    margin-bottom: 16px;
+    font-size: clamp(22px, 2.25vw, 30px);
+    line-height: 1.08;
+}
+
+.about-ceo__copy p,
+.about-ceo__copy li {
+    margin: 0;
+    color: #111111;
+    font-size: 8.5px;
+    font-weight: 400;
+    line-height: 1.45;
+}
+
+.about-ceo__copy p + p {
+    margin-top: 4px;
+}
+
+.about-ceo__lead {
+    margin-top: 5px !important;
+    font-weight: 700 !important;
+}
+
+.about-ceo__list {
+    margin: 3px 0 5px;
+    padding: 0;
+    list-style: none;
+}
+
+.about-ceo__list li::before {
+    content: "- ";
+}
+
+.about-ceo__signature {
+    margin-top: 12px;
+    padding-right: 4px;
+    text-align: right;
+}
+
+.about-ceo__signature strong,
+.about-ceo__signature span {
+    display: block;
+}
+
+.about-ceo__signature strong {
+    font-size: 8.5px;
+    font-weight: 800;
+    line-height: 1.25;
+}
+
+.about-ceo__signature span {
+    margin-top: 2px;
+    color: #222222;
+    font-size: 7px;
+    line-height: 1.25;
+}
+
+.about-ceo__image {
+    padding-top: 5px;
+}
+
+.about-ceo__image img {
+    width: 100%;
+    height: clamp(220px, 29vw, 330px);
+    display: block;
+    border-radius: 9px;
+    object-fit: cover;
+    object-position: center top;
+}
+
+.about-team {
+    padding: 14px 0 54px;
+    background: #ffffff;
+}
+
+.about-team__heading {
+    position: relative;
+    width: min(calc(100% - 104px), 1100px);
+    margin: 0 auto;
+    text-align: center;
+}
+
+.about-team__heading h2 {
+    font-size: clamp(20px, 1.75vw, 24px);
+    line-height: 1.18;
+}
+
+.about-team__heading p {
+    margin: 13px 0 0;
+    color: #666666;
+    font-size: 10px;
+    font-weight: 400;
+    line-height: 1.45;
+}
+
+.about-team__controls {
+    position: absolute;
+    top: 46px;
+    right: 0;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.about-team__arrow {
+    width: 27px;
+    height: 27px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: #ffffff;
+    color: var(--about-accent);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.about-team__arrow:hover,
+.about-team__arrow:focus-visible {
+    color: #1166f2;
+    outline: none;
+}
+
+.about-team__rail {
+    width: 100vw;
+    max-width: 100vw;
+    margin-top: 24px;
+    margin-left: calc(50% - 50vw);
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    display: flex;
+    justify-content: center;
+}
+
+.about-team__rail::-webkit-scrollbar {
+    display: none;
+}
+
+.about-team__track {
+    width: max-content;
+    display: flex;
+    gap: clamp(14px, 1.4vw, 22px);
+    padding: 0 0 4px 0;
+}
+
+.about-team-card {
+    flex: 0 0 clamp(158px, 15vw, 230px);
+    overflow: hidden;
+    border-radius: 8px;
+    background: #f6f7f8;
+    box-shadow: none;
+}
+
+.about-team-card__image {
+    width: 100%;
+    height: clamp(136px, 12.2vw, 186px);
+    overflow: hidden;
+    background: #f6f7f8;
+}
+
+.about-team-card__image img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    object-position: center top;
+}
+
+.about-team-card__body {
+    min-height: 34px;
+    padding: 8px 6px 9px;
+    background: #ffffff;
+}
+
+.about-team-card__body h3 {
+    margin: 0 0 2px;
+    color: #111111;
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1.15;
+}
+
+.about-team-card__body p {
+    margin: 0;
+    color: #111111;
+    font-size: 9px;
+    line-height: 1.2;
+}
+
+.about-history {
+    padding: 0 0 32px;
+    background: #ffffff;
+}
+
+.about-history .about-section-title {
+    font-size: clamp(21px, 1.85vw, 26px);
+    line-height: 1.2;
+}
+
+.about-timeline {
+    position: relative;
+    max-width: 780px;
+    margin-top: 27px;
+    margin-left: clamp(40px, 7.4vw, 86px);
+}
+
+.about-timeline::before {
+    content: "";
+    position: absolute;
+    top: 8px;
+    bottom: 33px;
+    left: 18px;
+    width: 1px;
+    background: rgba(47, 128, 255, 0.42);
+}
+
+.about-timeline__item {
+    position: relative;
+    min-height: 72px;
+    margin-bottom: 16px;
+}
+
+.about-timeline__dot {
+    position: absolute;
+    z-index: 1;
+    top: 5px;
+    left: 10px;
+    width: 17px;
+    height: 17px;
+    border-radius: 50%;
+    background: var(--about-accent);
+}
+
+.about-timeline__year {
+    position: absolute;
+    top: 5px;
+    left: 74px;
+    color: #111111;
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.about-timeline__card,
+.about-timeline__more {
+    width: min(560px, calc(100% - 158px));
+    margin-left: 158px;
+}
+
+.about-timeline__card {
+    min-height: 61px;
+    padding: 16px 18px 13px;
+    border: 1px solid var(--about-border);
+    border-radius: 10px;
+    background: #ffffff;
+}
+
+.about-timeline__card h3 {
+    margin: 0 0 8px;
+    color: #111111;
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1.25;
+}
+
+.about-timeline__card p {
+    margin: 0;
+    color: #111111;
+    font-size: 10px;
+    line-height: 1.45;
+}
+
+.about-timeline__more {
+    height: 24px;
+    border: 1px solid #8f8f8f;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #111111;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-weight: 400;
+    cursor: pointer;
+}
+
+.about-timeline__more:hover,
+.about-timeline__more:focus-visible {
+    border-color: #555555;
+    outline: none;
+}
+
+.about-why {
+    padding: 30px 0 47px;
+    background: var(--about-soft);
+}
+
+.about-why h2 {
+    text-align: center;
+    font-size: clamp(20px, 1.8vw, 25px);
+    line-height: 1.2;
+}
+
+.about-why__grid {
+    width: min(100%, 980px);
+    margin: 28px auto 0;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: clamp(18px, 2.3vw, 28px);
+}
+
+.about-why-card {
+    min-height: 150px;
+    padding: 27px 18px 18px;
+    border-radius: 8px;
+    background: #ffffff;
+    text-align: center;
+    box-shadow: 0 15px 26px rgba(16, 42, 67, 0.16);
+}
+
+.about-why-card__icon {
+    height: 31px;
+    margin-bottom: 15px;
+    color: #1267ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    line-height: 1;
+}
+
+.about-why-card h3 {
+    margin: 0 0 8px;
+    color: #111111;
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1.25;
+}
+
+.about-why-card p {
+    max-width: 178px;
+    margin: 0 auto;
+    color: #666666;
+    font-size: 9.5px;
+    line-height: 1.45;
+}
+
+.about-info {
+    padding: 32px 0 25px;
+    background: #ffffff;
+}
+
+.about-production {
+    padding: 21px 0 35px;
+    background: #ffffff;
+}
+
+.about-info__title {
+    text-align: center;
+    font-size: clamp(20px, 1.85vw, 25px);
+    line-height: 1.2;
+}
+
+.about-data-table {
+    width: min(100%, 620px);
+    margin: 34px auto 0;
+}
+
+.about-data-table--production {
+    margin-top: 33px;
+}
+
+.about-data-table__row {
+    display: grid;
+    grid-template-columns: 190px minmax(0, 1fr);
+    gap: 34px;
+    align-items: start;
+    margin-bottom: 15px;
+}
+
+.about-data-table__label {
+    color: #111111;
+    font-size: 10.5px;
+    font-weight: 800;
+    line-height: 1.35;
+}
+
+.about-data-table__value {
+    color: #111111;
+    font-size: 10px;
+    font-weight: 400;
+    line-height: 1.35;
+    text-align: right;
+}
+
+.about-data-table__value span {
+    display: block;
+}
+
+.about-location-image,
+.about-production-image {
+    overflow: hidden;
+    margin-right: auto;
+    margin-left: auto;
+    background: #f5f5f5;
+}
+
+.about-location-image {
+    width: min(100%, 550px);
+    aspect-ratio: 550 / 280;
+    margin-top: 44px;
+}
+
+.about-production-image {
+    width: min(100%, 550px);
+    aspect-ratio: 550 / 274;
+    margin-top: 40px;
+}
+
+.about-location-image img,
+.about-production-image img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+}
+
+@media (min-width: 1200px) {
+    .about-team-card__body h3 {
+        font-size: 12px;
+    }
+
+    .about-team-card__body p {
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 900px) {
+    .about-container,
+    .about-team__heading {
+        width: min(calc(100% - 64px), 1100px);
+    }
+
+    .about-ceo__grid {
+        grid-template-columns: minmax(0, 1fr) 224px;
+        gap: 58px;
+    }
+
+    .about-ceo__image img {
+        height: 224px;
+    }
+
+    .about-why-card {
+        min-height: 126px;
+        padding: 18px 14px 14px;
+    }
+
+    .about-timeline__card,
+    .about-timeline__more {
+        width: min(360px, calc(100% - 128px));
+        margin-left: 128px;
+    }
+
+    .about-timeline__item {
+        margin-bottom: 8px;
+    }
+
+    .about-timeline__card {
+        padding: 13px 15px 11px;
+    }
+
+    .about-timeline__card h3 {
+        font-size: 9.5px;
+        margin-bottom: 7px;
+    }
+
+    .about-timeline__card p {
+        font-size: 8.5px;
+        line-height: 1.42;
+    }
+
+    .about-why-card__icon {
+        height: 27px;
+        margin-bottom: 10px;
+        font-size: 27px;
+    }
+
+    .about-why-card h3 {
+        margin-bottom: 7px;
+        font-size: 9.5px;
+    }
+
+    .about-why-card p {
+        font-size: 8px;
+        line-height: 1.4;
+    }
+}
+
+@media (max-width: 699px) {
+    .about-container,
+    .about-team__heading {
+        width: min(calc(100% - 32px), 1100px);
+    }
+
+    .about-hero {
+        height: 128px;
+    }
+
+    .about-hero__ghost {
+        top: 30px;
+        font-size: 48px;
+    }
+
+    .about-hero h1 {
+        font-size: 24px;
+    }
+
+    .about-hero p {
+        max-width: 290px;
+        font-size: 11px;
+    }
+
+    .about-ceo {
+        padding: 36px 0 36px;
+    }
+
+    .about-ceo__grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+
+    .about-ceo__copy p,
+    .about-ceo__copy li {
+        font-size: 11px;
+        line-height: 1.55;
+    }
+
+    .about-ceo__signature strong {
+        font-size: 11px;
+    }
+
+    .about-ceo__signature span {
+        font-size: 9px;
+    }
+
+    .about-ceo__image {
+        width: min(100%, 330px);
+        padding-top: 0;
+        margin: 0 auto;
+    }
+
+    .about-ceo__image img {
+        height: auto;
+        aspect-ratio: 1;
+    }
+
+    .about-team {
+        padding-bottom: 42px;
+    }
+
+    .about-team__heading p {
+        font-size: 11px;
+    }
+
+    .about-team__controls {
+        position: static;
+        justify-content: flex-end;
+        margin-top: 14px;
+    }
+
+    .about-team__rail {
+        width: 100%;
+        max-width: none;
+        margin-left: 0;
+        overflow: visible;
+        display: block;
+    }
+
+    .about-team__track {
+        padding: 0;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        gap: 24px;
+    }
+
+    .about-team-card {
+        flex: none;
+        width: min(100%, 260px);
+    }
+
+    .about-team-card__image {
+        height: 240px;
+    }
+
+    .about-history {
+        padding-bottom: 30px;
+    }
+
+    .about-timeline {
+        margin-left: 0;
+    }
+
+    .about-timeline::before {
+        left: 8px;
+    }
+
+    .about-timeline__dot {
+        left: 0;
+    }
+
+    .about-timeline__year {
+        left: 34px;
+    }
+
+    .about-timeline__item {
+        padding-top: 26px;
+        margin-bottom: 16px;
+    }
+
+    .about-timeline__card,
+    .about-timeline__more {
+        width: calc(100% - 34px);
+        margin-left: 34px;
+    }
+
+    .about-timeline__card {
+        margin-top: 0;
+    }
+
+    .about-why__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .about-data-table__row {
+        grid-template-columns: 1fr;
+        gap: 5px;
+        margin-bottom: 17px;
+    }
+
+    .about-data-table__label,
+    .about-data-table__value {
+        font-size: 11px;
+        text-align: left;
+    }
+}
+
+@media (max-width: 480px) {
+    .about-why__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .about-why-card {
+        min-height: 132px;
+    }
+
+    .about-location-image,
+    .about-production-image {
+        width: 100%;
+    }
+}
+
+/* Readable app typography overrides */
+.about-page {
+    font-size: 16px;
+}
+
+.about-section-title,
+.about-info__title,
+.about-why h2,
+.about-team__heading h2 {
+    font-size: clamp(28px, 2.4vw, 34px);
+    line-height: 1.22;
+}
+
+.about-hero h1 {
+    font-size: clamp(30px, 2.8vw, 38px);
+}
+
+.about-hero p {
+    max-width: 520px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.about-ceo__copy p,
+.about-ceo__copy li {
+    font-size: 15px;
+    line-height: 1.72;
+}
+
+.about-ceo__copy p + p {
+    margin-top: 10px;
+}
+
+.about-ceo__lead {
+    margin-top: 14px !important;
+}
+
+.about-ceo__list {
+    margin: 8px 0 12px;
+}
+
+.about-ceo__signature strong {
+    font-size: 15px;
+}
+
+.about-ceo__signature span {
+    font-size: 13px;
+}
+
+.about-team__heading p {
+    font-size: 14px;
+    line-height: 1.55;
+}
+
+.about-team-card__body h3 {
+    font-size: 15px;
+    line-height: 1.25;
+}
+
+.about-team-card__body p {
+    font-size: 13px;
+    line-height: 1.35;
+}
+
+.about-timeline__year {
+    font-size: 14px;
+}
+
+.about-timeline__card h3 {
+    font-size: 15px;
+    line-height: 1.35;
+}
+
+.about-timeline__card p {
+    font-size: 14px;
+    line-height: 1.58;
+}
+
+.about-timeline__more {
+    height: 36px;
+    font-size: 14px;
+}
+
+.about-why-card h3 {
+    font-size: 15px;
+    line-height: 1.35;
+}
+
+.about-why-card p {
+    max-width: 210px;
+    font-size: 13px;
+    line-height: 1.55;
+}
+
+.about-data-table__label,
+.about-data-table__value {
+    font-size: 14px;
+    line-height: 1.55;
+}
+
+@media (max-width: 900px) {
+    .about-timeline__card h3,
+    .about-why-card h3 {
+        font-size: 14px;
+    }
+
+    .about-timeline__card p,
+    .about-why-card p {
+        font-size: 13px;
+        line-height: 1.55;
+    }
+}
+
+@media (max-width: 699px) {
+    .about-section-title,
+    .about-info__title,
+    .about-why h2,
+    .about-team__heading h2 {
+        font-size: 26px;
+    }
+
+    .about-ceo__copy p,
+    .about-ceo__copy li {
+        font-size: 14px;
+        line-height: 1.68;
+    }
+
+    .about-ceo__signature strong,
+    .about-data-table__label,
+    .about-data-table__value {
+        font-size: 14px;
+    }
+
+    .about-ceo__signature span {
+        font-size: 13px;
+    }
+
+    .about-team__heading p {
+        font-size: 14px;
+    }
+}

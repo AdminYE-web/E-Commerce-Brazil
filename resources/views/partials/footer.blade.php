@@ -50,7 +50,7 @@
                     <div class="footer-col">
                         <h4>{{ __('messages.footer.company_info') }}</h4>
                         <ul>
-                            <li><a href="#">{{ __('messages.footer.about_us') }}</a></li>
+                            <li><a href="{{ route('about') }}">{{ __('messages.footer.about_us') }}</a></li>
                             <li><a href="#">{{ __('messages.footer.blog') }}</a></li>
                             <li><a href="#">{{ __('messages.footer.privacy_policy') }}</a></li>
                             <li><a href="#">{{ __('messages.footer.gallery') }}</a></li>
@@ -112,7 +112,7 @@
                     <div class="footer-col">
                         <h4>{{ __('messages.footer.company_info') }}</h4>
                         <ul>
-                            <li><a href="#">{{ __('messages.footer.about_us') }}</a></li>
+                            <li><a href="{{ route('about') }}">{{ __('messages.footer.about_us') }}</a></li>
                             <li><a href="#">{{ __('messages.footer.blog') }}</a></li>
                             <li><a href="#">{{ __('messages.footer.privacy_policy') }}</a></li>
                             <li><a href="#">{{ __('messages.footer.gallery') }}</a></li>

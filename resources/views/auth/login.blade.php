@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'Login')
+@section('title', __('messages.footer.login'))
 
 @section('content')
 <div class="auth-page">
     <div class="auth-card">
-        <h1 class="auth-title">Sign in to your account</h1>
+        <h1 class="auth-title">{{ __('messages.auth.login_title') }}</h1>
 
         @if (session('message'))
             <div class="auth-alert auth-alert-success">
@@ -23,45 +23,45 @@
             @csrf
 
             <div class="auth-group">
-                <label for="email" class="auth-label">Email</label>
+                <label for="email" class="auth-label">{{ __('messages.auth.email') }}</label>
                 <input
                     type="email"
                     id="email"
                     name="email"
                     class="auth-input"
-                    placeholder="Email address"
+                    placeholder="{{ __('messages.auth.email_placeholder') }}"
                     value="{{ old('email') }}"
                     required
                 >
             </div>
 
             <div class="auth-group">
-                <label for="password" class="auth-label">Password</label>
+                <label for="password" class="auth-label">{{ __('messages.auth.password') }}</label>
                 <input
                     type="password"
                     id="password"
                     name="password"
                     class="auth-input"
-                    placeholder="Password"
+                    placeholder="{{ __('messages.auth.password_placeholder') }}"
                     required
                 >
             </div>
 
             <div class="auth-forgot-wrap">
-               <a href="{{ route('password.request') }}" class="auth-link">Forgot password ?</a>
+               <a href="{{ route('password.request') }}" class="auth-link">{{ __('messages.auth.forgot_password') }}</a>
             </div>
 
-            <button type="submit" class="auth-submit-btn">Sign In</button>
+            <button type="submit" class="auth-submit-btn">{{ __('messages.auth.sign_in') }}</button>
         </form>
 
         <div class="auth-divider">
-            <span>or</span>
+            <span>{{ __('messages.auth.or') }}</span>
         </div>
 
         <div class="auth-social-wrap">
             <a href="{{ url('/auth/google/redirect') }}" class="auth-social-btn">
                 <img class="text-start" src="{{ asset('assets/images/login/google-icon.png') }}" alt="">
-                <span>Continue with Google</span>
+                <span>{{ __('messages.auth.continue_with_google') }}</span>
             </a>
 
             {{-- <a href="{{ url('/auth/facebook/redirect') }}" class="auth-social-btn">
@@ -71,8 +71,8 @@
         </div>
 
         <p class="auth-register-text">
-            Don’t have an account yet?
-            <a href="{{ route('register') }}" class="auth-link">Register here</a>
+            {{ __('messages.auth.dont_have_account') }}
+            <a href="{{ route('register') }}" class="auth-link">{{ __('messages.auth.register_here') }}</a>
         </p>
     </div>
 </div>

@@ -1,26 +1,27 @@
 <?php
-use App\Http\Controllers\Admin\ProductPriceRuleController;
+
 use App\Http\Controllers\Admin\AdminDashboardController;
-use App\Http\Controllers\CartController;
-use App\Http\Controllers\Admin\ProductOptionVariantController;
-use App\Http\Controllers\Admin\ProductOptionAssignmentController;
-use App\Http\Controllers\Admin\ProductListBannerController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\MaterialController;
 use App\Http\Controllers\Admin\OptionDependencyController;
 use App\Http\Controllers\Admin\OptionGroupController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\ProductDetailController;
+use App\Http\Controllers\Admin\ProductListBannerController;
+use App\Http\Controllers\Admin\ProductOptionAssignmentController;
 use App\Http\Controllers\Admin\ProductOptionController;
+use App\Http\Controllers\Admin\ProductOptionVariantController;
+use App\Http\Controllers\Admin\ProductPriceRuleController;
 use App\Http\Controllers\Admin\ProductPriceTierController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
-use App\Http\Controllers\Admin\ProductDetailController;
-use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\Admin\MaterialController;
-use App\Http\Controllers\ProductListController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LanguageController;
+use App\Http\Controllers\ProductListController;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -34,23 +35,25 @@ Route::post('/contact', [ContactController::class, 'store'])
     ->name('contact.submit');
 Route::get('/contact/complete', [ContactController::class, 'complete'])
     ->name('contact.complete');
+Route::view('/about-us', 'about')->name('about');
 
 Route::get('/products', [ProductListController::class, 'index'])
     ->name('products.index');
-    Route::get('/products/{product}/description', [ProductListController::class, 'description'])
+Route::get('/products/description/{code}', [ProductListController::class, 'description'])
     ->name('products.description');
-    
 
 Route::get('/products/{product}', [ProductListController::class, 'show'])
     ->name('products.show');
-    Route::get('/hotstrap/{product}', [ProductListController::class, 'showHotstrap'])
+Route::get('/hotstrap/{product}', [ProductListController::class, 'showHotstrap'])
     ->name('products.hotstrap.show');
-    
 
 Route::get('/hotmobily/{product}', [ProductListController::class, 'showHotmobily'])
     ->name('products.hotmobily.show');
 
-    Route::get('/hotstrap/{product}/detail', [ProductListController::class, 'showHotstrap'])
+Route::get('/products/order/{code}', [ProductListController::class, 'order'])
+    ->name('products.order');
+
+Route::get('/hotstrap/{product}/detail', [ProductListController::class, 'showHotstrap'])
     ->name('products.hotstrap.show');
 
 Route::get('/hotmobily/{product}/detail', [ProductListController::class, 'showHotmobily'])
@@ -61,14 +64,12 @@ Route::post('/cart/add', [CartController::class, 'add'])
 Route::get('/cart', [CartController::class, 'index'])
     ->name('cart.index');
 
-
 Route::prefix('admin')->name('admin.')->group(function () {
-       Route::get('/', [AdminDashboardController::class, 'index'])
+    Route::get('/', [AdminDashboardController::class, 'index'])
         ->name('dashboard');
 
-
     Route::resource('products', ProductController::class);
-       Route::get('products/{product}/options', [ProductOptionAssignmentController::class, 'edit'])
+    Route::get('products/{product}/options', [ProductOptionAssignmentController::class, 'edit'])
         ->name('products.options.edit');
 
     Route::put('products/{product}/options', [ProductOptionAssignmentController::class, 'update'])
@@ -85,30 +86,29 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('product-details', ProductDetailController::class);
 
     Route::resource('categories', CategoryController::class);
-Route::resource('materials', MaterialController::class);
-Route::resource('product-list-banners', ProductListBannerController::class);
+    Route::resource('materials', MaterialController::class);
+    Route::resource('product-list-banners', ProductListBannerController::class);
 
-Route::get('product-options/{option}/variants', [ProductOptionVariantController::class, 'index'])
-    ->name('product-options.variants.index');
+    Route::get('product-options/{option}/variants', [ProductOptionVariantController::class, 'index'])
+        ->name('product-options.variants.index');
 
-Route::get('product-options/{option}/variants/create', [ProductOptionVariantController::class, 'create'])
-    ->name('product-options.variants.create');
+    Route::get('product-options/{option}/variants/create', [ProductOptionVariantController::class, 'create'])
+        ->name('product-options.variants.create');
 
-Route::post('product-options/{option}/variants', [ProductOptionVariantController::class, 'store'])
-    ->name('product-options.variants.store');
+    Route::post('product-options/{option}/variants', [ProductOptionVariantController::class, 'store'])
+        ->name('product-options.variants.store');
 
-Route::get('product-option-variants/{variant}/edit', [ProductOptionVariantController::class, 'edit'])
-    ->name('product-option-variants.edit');
+    Route::get('product-option-variants/{variant}/edit', [ProductOptionVariantController::class, 'edit'])
+        ->name('product-option-variants.edit');
 
-Route::put('product-option-variants/{variant}', [ProductOptionVariantController::class, 'update'])
-    ->name('product-option-variants.update');
+    Route::put('product-option-variants/{variant}', [ProductOptionVariantController::class, 'update'])
+        ->name('product-option-variants.update');
 
-Route::delete('product-option-variants/{variant}', [ProductOptionVariantController::class, 'destroy'])
-    ->name('product-option-variants.destroy');
+    Route::delete('product-option-variants/{variant}', [ProductOptionVariantController::class, 'destroy'])
+        ->name('product-option-variants.destroy');
 
     Route::resource('product-price-rules', ProductPriceRuleController::class);
 });
-
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'showLogin'])->name('login');
@@ -138,10 +138,9 @@ Route::get('/email/verify', function () {
     return view('auth.verify-email');
 })->middleware('auth')->name('verification.notice');
 
- Route::get('/email/verify/success', function () {
+Route::get('/email/verify/success', function () {
     return view('auth.verify-success');
 })->name('verification.success');
-
 
 Route::get('/email/verify/{id}/{hash}', function (Request $request, $id, $hash) {
     if (! $request->hasValidSignature()) {
@@ -172,7 +171,7 @@ Route::post('/email/verification-notification', function (Request $request) {
     if ($request->user()->hasVerifiedEmail()) {
         return redirect('/');
     }
-   
+
     $request->user()->sendEmailVerificationNotification();
 
     return back()->with('message', 'A new verification link has been sent to your email.');
@@ -181,4 +180,3 @@ Route::post('/email/verification-notification', function (Request $request) {
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
-

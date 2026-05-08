@@ -1,0 +1,1731 @@
+@extends('layouts.app')
+
+@section('title', 'Customize ' . $product->product_name)
+
+@section('css')
+    <style>
+        .customize-page {
+            background: #f5f6f8;
+            padding: 40px 20px;
+        }
+
+        .customize-container {
+            max-width: 1180px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1.1fr;
+            gap: 40px;
+        }
+
+        .customize-left,
+        .customize-right {
+            background: #fff;
+            padding: 24px;
+            border-radius: 8px;
+        }
+
+        .option-group {
+            margin-bottom: 28px;
+        }
+
+        .option-group h3 {
+            font-size: 18px;
+            margin-bottom: 14px;
+        }
+
+        .option-list {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .option-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 12px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .option-card:has(input:checked) {
+            border-color: #3166f6;
+            box-shadow: 0 0 0 2px rgba(49, 102, 246, 0.15);
+        }
+
+        .option-card input {
+            margin-bottom: 4px;
+        }
+
+        .customize-page {
+            background: #f5f6f8;
+            padding: 28px 20px 60px;
+        }
+
+        .customize-container {
+            max-width: 1180px;
+            margin: 0 auto;
+        }
+
+        .customize-breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #111;
+            margin-bottom: 18px;
+        }
+
+        .customize-breadcrumb img {
+            width: 14px;
+            height: 14px;
+            object-fit: contain;
+        }
+
+        .customize-breadcrumb a {
+            color: #555;
+            text-decoration: none;
+        }
+
+        .customize-hero-section {
+            margin-bottom: 36px;
+        }
+
+        .customize-hero-banner {
+            position: relative;
+            width: 100%;
+            border-radius: 14px;
+            overflow: hidden;
+            background: #0f3f86;
+        }
+
+        .customize-hero-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* overlay เผื่อให้อ่านตัวหนังสือชัด */
+        .customize-hero-banner::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg,
+                    rgba(0, 35, 90, 0.75) 0%,
+                    rgba(0, 35, 90, 0.35) 42%,
+                    rgba(0, 35, 90, 0.05) 100%);
+        }
+
+        .customize-hero-content {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            padding: 50px 80px;
+        }
+
+        .customize-hero-content h1 {
+            max-width: 430px;
+            margin: 0;
+            color: #fff;
+            font-size: 38px;
+            line-height: 1.25;
+            font-weight: 800;
+        }
+
+        .customize-page {
+            background: #f5f6f8;
+            padding: 28px 20px 70px;
+        }
+
+        .customize-container {
+            max-width: 1180px;
+            margin: 0 auto;
+        }
+
+        .customize-breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #111;
+            margin-bottom: 18px;
+        }
+
+        .customize-breadcrumb img {
+            width: 14px;
+            height: 14px;
+            object-fit: contain;
+        }
+
+        .customize-hero-section {
+            margin-bottom: 34px;
+        }
+
+        .customize-hero-banner {
+            position: relative;
+            width: 100%;
+            height: 320px;
+            border-radius: 14px;
+            overflow: hidden;
+            background: #0f3f86;
+        }
+
+        .customize-hero-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .customize-hero-banner::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg,
+                    rgba(0, 35, 90, 0.75) 0%,
+                    rgba(0, 35, 90, 0.28) 44%,
+                    rgba(0, 35, 90, 0.05) 100%);
+        }
+
+        .customize-hero-content {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            padding: 50px 80px;
+        }
+
+        .customize-hero-content h1 {
+            max-width: 440px;
+            color: #fff;
+            font-size: 38px;
+            line-height: 1.25;
+            font-weight: 800;
+            margin: 0;
+        }
+
+        .customize-layout {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 36px;
+            align-items: start;
+            margin-top: 30px;
+        }
+
+        .customize-option-group {
+            margin-bottom: 34px;
+        }
+
+        .customize-option-group h2 {
+            font-size: 28px;
+            font-weight: 600;
+            margin: 0 0 16px;
+        }
+
+        .customize-option-group .required {
+            color: #ff0000;
+        }
+
+        .info-icon {
+            font-size: 14px;
+            font-weight: 400;
+            margin-left: 4px;
+        }
+
+        .option-image-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 204px);
+            gap: 12px;
+        }
+
+        .option-image-card {
+            background: #fff;
+            border: 1px solid #d9dde7;
+            border-radius: 6px;
+            min-height: 140px;
+            padding: 10px 12px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .option-image-card input,
+        .option-button-item input,
+        .option-color-item input {
+            display: none;
+        }
+
+        .option-image-card:has(input:checked),
+        .option-button-item:has(input:checked) {
+            border-color: #3166f6;
+            box-shadow: 0 0 0 1px #3166f6;
+        }
+
+        .option-image-box {
+            height: 95px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .option-image-box img {
+            max-width: 100%;
+            max-height: 90px;
+            object-fit: contain;
+        }
+
+        .option-image-card span {
+            font-size: 16px;
+            color: #111;
+        }
+
+        .option-button-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .option-button-item {
+            min-width: 84px;
+            height: 34px;
+            border: 1px solid #d9dde7;
+            border-radius: 6px;
+            background: #fff;
+            padding: 0 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .option-button-item span {
+            font-size: 13px;
+        }
+
+        .option-color-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            max-width: 430px;
+        }
+
+        .option-color-item {
+            cursor: pointer;
+            display: inline-flex;
+        }
+
+        .color-circle {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            display: inline-block;
+        }
+
+        .option-color-item input:checked+.color-circle {
+            outline: 3px solid #3166f6;
+            outline-offset: 3px;
+        }
+
+        .add-color-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: 1px solid #d9dde7;
+            background: #fff;
+            font-size: 24px;
+            line-height: 1;
+            cursor: pointer;
+        }
+
+        .product-summary-box {
+            background: #fff;
+            border: 1px solid #d9dde7;
+            border-radius: 6px;
+            padding: 20px 18px;
+            position: sticky;
+            top: 20px;
+        }
+
+        .product-summary-box h3 {
+            font-size: 25px;
+            font-weight: 800;
+            margin: 0 0 16px;
+        }
+
+        .summary-item {
+            margin-bottom: 12px;
+        }
+
+        .summary-item span {
+            display: block;
+            font-size: 16px;
+            color: #616161;
+            margin-bottom: 4px;
+        }
+
+        .summary-item strong {
+            display: block;
+            font-size: 16px;
+            color: #616161;
+        }
+
+        .summary-divider {
+            height: 1px;
+            background: #e5e7eb;
+            margin: 16px 0;
+        }
+
+        .summary-total span {
+            display: block;
+            color: #1d3970;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .summary-total strong {
+            color: #1d3970;
+            font-size: 22px;
+        }
+
+        .no-options {
+            background: #fff;
+            padding: 20px;
+            border-radius: 6px;
+        }
+
+        @media (max-width: 900px) {
+            .customize-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .product-summary-box {
+                position: static;
+            }
+
+            .customize-hero-banner {
+                height: 240px;
+            }
+
+            .customize-hero-content {
+                padding: 30px;
+            }
+
+            .customize-hero-content h1 {
+                font-size: 28px;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .option-image-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .customize-page {
+                padding: 22px 14px 50px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .customize-hero-banner {
+                height: 230px;
+                border-radius: 10px;
+            }
+
+            .customize-hero-content {
+                padding: 30px;
+            }
+
+            .customize-hero-content h1 {
+                font-size: 28px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .customize-hero-banner {
+                height: 200px;
+            }
+
+            .customize-hero-content h1 {
+                font-size: 24px;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .customize-container {
+                grid-template-columns: 1fr;
+            }
+
+            .option-list {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .option-select-detail-box {
+            max-width: 760px;
+        }
+
+        .option-select-detail {
+            width: 100%;
+            max-width: 620px;
+            height: 42px;
+            border: 1px solid #d9dde7;
+            border-radius: 6px;
+            padding: 0 14px;
+            background: #fff;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .select-detail-preview {
+            display: grid;
+            grid-template-columns: 170px 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        .select-detail-image {
+            background: #fff;
+            border: 1px solid #d9dde7;
+            border-radius: 6px;
+            width: 170px;
+            height: 170px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .select-detail-image img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .select-detail-text {
+            font-size: 13px;
+            line-height: 1.7;
+            color: #111827;
+            white-space: normal;
+        }
+
+        @media (max-width: 600px) {
+            .select-detail-preview {
+                grid-template-columns: 1fr;
+            }
+
+            .select-detail-image {
+                width: 100%;
+            }
+        }
+
+        .option-variant-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px;
+        }
+
+        .option-variant-card {
+            width: 124px;
+            min-height: 158px;
+            background: #fff;
+            border: 1px solid #d9dde7;
+            border-radius: 10px;
+            padding: 10px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .option-variant-card input[type="radio"] {
+            display: none;
+        }
+
+        .option-variant-card:has(input[type="radio"]:checked) {
+            border-color: #3166f6;
+            box-shadow: 0 0 0 1px #3166f6;
+        }
+
+        .variant-title {
+            font-size: 13px;
+            font-weight: 600;
+            line-height: 1.2;
+            text-align: center;
+            min-height: 32px;
+            margin-bottom: 6px;
+        }
+
+        .variant-image-box {
+            height: 82px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .variant-image-box img {
+            max-height: 78px;
+            max-width: 100%;
+            object-fit: contain;
+        }
+
+        .variant-select {
+            width: 100%;
+            height: 28px;
+            border: 1px solid #d9dde7;
+            border-radius: 14px;
+            padding: 0 8px;
+            font-size: 12px;
+            margin-top: 6px;
+            background: #fff;
+        }
+
+        .variant-dropdown {
+            width: 100%;
+            margin-top: 8px;
+        }
+
+        .variant-dropdown-btn {
+            width: 100%;
+            height: 32px;
+            border: 1px solid #d9dde7;
+            border-radius: 16px;
+            background: #fff;
+            font-size: 12px;
+            padding: 4px 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .variant-dropdown-btn::after {
+            margin-left: auto;
+        }
+
+        .variant-dropdown-label {
+            margin-left: 6px;
+            margin-right: auto;
+        }
+
+        .variant-dropdown-menu {
+            width: 100%;
+            min-width: 100%;
+            padding: 4px;
+        }
+
+        .variant-dropdown-item {
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            border-radius: 6px;
+        }
+
+        .variant-color-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            display: inline-block;
+            border: 1px solid #cbd5e1;
+            flex-shrink: 0;
+        }
+
+        .custom-color-box {
+            margin-top: 18px;
+            max-width: 520px;
+        }
+
+        .custom-color-label {
+            display: block;
+            font-size: 15px;
+            margin-bottom: 10px;
+            color: #111827;
+        }
+
+        .custom-color-input-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .custom-color-input {
+            width: 100%;
+            height: 38px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 0 14px;
+            font-size: 14px;
+            background: #fff;
+        }
+
+        .custom-color-input::placeholder {
+            color: #9ca3af;
+        }
+
+        .custom-color-add-btn {
+            border: 0;
+            background: transparent;
+            font-size: 14px;
+            color: #111;
+            cursor: pointer;
+            padding: 0 4px;
+        }
+
+        .add-color-btn.is-active {
+            outline: 3px solid #3166f6;
+            outline-offset: 3px;
+        }
+
+        .option-compact-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 126px);
+            gap: 18px;
+        }
+
+        .option-compact-card {
+            background: #fff;
+            border: 1px solid #d9dde7;
+            border-radius: 10px;
+            min-height: 160px;
+            padding: 10px 8px 12px;
+            cursor: pointer;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .option-compact-card input {
+            display: none;
+        }
+
+        .option-compact-card:has(input:checked) {
+            border-color: #3166f6;
+            box-shadow: 0 0 0 1px #3166f6;
+        }
+
+        .option-compact-image {
+            height: 88px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .option-compact-image img {
+            max-width: 100%;
+            max-height: 86px;
+            object-fit: contain;
+        }
+
+        .option-compact-name {
+            font-size: 14px;
+            line-height: 1.35;
+            color: #111;
+            margin-top: 8px;
+            min-height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .option-compact-price {
+            font-size: 13px;
+            margin-top: 4px;
+            color: #111;
+        }
+
+        .option-compact-price.free {
+            color: #ff0000;
+        }
+
+        .option-view-more-wrap {
+            width: calc((126px * 4) + (18px * 3));
+            text-align: center;
+            margin-top: 16px;
+        }
+
+        .option-view-more-btn {
+            background: #3166f6;
+            color: #fff;
+            border: 0;
+            border-radius: 6px;
+            padding: 8px 28px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .option-compact-grid {
+                grid-template-columns: repeat(2, 126px);
+            }
+
+            .option-view-more-wrap {
+                width: 100%;
+                text-align: left;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .option-compact-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .info-popover-btn {
+            border: 0;
+            background: transparent;
+            padding: 0;
+            margin-left: 4px;
+            font-size: 15px;
+            line-height: 1;
+            cursor: pointer;
+            color: #111;
+        }
+
+        .popover {
+            max-width: 420px;
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+        }
+
+        .popover-body {
+            font-size: 14px;
+            line-height: 1.7;
+            color: #111;
+            padding: 12px 16px;
+        }
+
+        .grouped-buttons-wrapper {
+            margin-top: 10px;
+        }
+
+        .grouped-button-set {
+            margin-bottom: 28px;
+        }
+
+        .grouped-button-title {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 17px;
+            font-weight: 500;
+            color: #111;
+            margin-bottom: 12px;
+        }
+
+        .grouped-option-button {
+            min-width: 144px;
+            height: 50px;
+            font-size: 18px;
+            border-radius: 8px;
+        }
+
+        .grouped-option-button span {
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .info-popover-btn {
+            border: 0;
+            background: transparent;
+            padding: 0;
+            margin-left: 4px;
+            font-size: 15px;
+            line-height: 1;
+            cursor: pointer;
+            color: #111;
+        }
+
+        .popover {
+            max-width: 420px;
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+        }
+
+        .popover-body {
+            font-size: 14px;
+            line-height: 1.7;
+            color: #111;
+            padding: 12px 16px;
+        }
+
+        .quantity-add-cart-section {
+            margin-top: 46px;
+            max-width: 780px;
+        }
+
+        .quantity-label-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .quantity-label-row label {
+            color: #111;
+            font-weight: 400;
+        }
+
+        .minimum-note {
+            color: #ff1f2d;
+            font-size: 16px;
+        }
+
+        .quantity-input-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .quantity-input-row input {
+            width: 136px;
+            height: 50px;
+            border: 1px solid #cfd4dc;
+            border-radius: 10px;
+            background: #fff;
+            font-size: 22px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .quantity-input-row span {
+            font-size: 18px;
+            color: #111;
+        }
+
+        .add-to-cart-btn {
+            width: 100%;
+            height: 66px;
+            margin-top: 74px;
+            border: 0;
+            border-radius: 10px;
+            background: #2f6fc2;
+            color: #fff;
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+        }
+
+        .add-to-cart-btn:hover {
+            background: #255fac;
+        }
+
+        @media (max-width: 768px) {
+            .quantity-label-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+            }
+
+            .add-to-cart-btn {
+                margin-top: 40px;
+                height: 56px;
+                font-size: 20px;
+            }
+        }
+    </style>
+@endsection
+
+@section('content')
+    @php
+    $priceTiers = $product->priceTiers->map(function ($tier) {
+        return [
+            'min_qty' => (int) $tier->min_qty,
+            'max_qty' => $tier->max_qty ? (int) $tier->max_qty : null,
+            'unit_price' => (float) $tier->unit_price,
+        ];
+    })->values();
+
+    $defaultQuantity = old('quantity', 100);
+
+    $defaultTier = $product->priceTiers
+        ->filter(function ($tier) use ($defaultQuantity) {
+            return $defaultQuantity >= $tier->min_qty
+                && (is_null($tier->max_qty) || $defaultQuantity <= $tier->max_qty);
+        })
+        ->first();
+
+    $basePrice = $defaultTier ? (float) $defaultTier->unit_price : 0;
+@endphp
+
+
+    <section class="customize-hero-section">
+        <div class="container">
+            <div class="hotstrap-breadcrumb">
+                <a href="{{ route('products.index') }}"><img src="{{ asset('assets/images/icon/home.png') }}"
+                        alt="Home"></a>
+                <span>/</span>
+
+                @if ($product->category)
+                    <span>{{ $product->category->category_name }}</span>
+                    <span>/</span>
+                @endif
+
+                <span>{{ $product->product_name }}</span>
+            </div>
+
+            @if(!empty($product->detail->sample_image))
+                <div class="customize-hero-banner">
+                    @if ($product->detail && $product->detail->sample_image)
+                        <img src="{{ asset('storage/' . $product->detail->sample_image) }}" alt="{{ $product->product_name }}">
+                    @else
+                        <img src="{{ asset('images/no-image.png') }}" alt="No image">
+                    @endif
+                </div>
+            @endif
+
+
+
+            <div class="customize-layout">
+
+                <div class="customize-options">
+
+                    <form action="{{ route('cart.add') }}" method="POST" id="customize-form">
+                        @csrf
+
+                        <input type="hidden" name="product_id" value="{{ $product->product_id }}">
+                        @csrf
+
+                        @forelse($optionGroups as $displayGroupId => $options)
+                            @php
+                                $firstOption = $options->first();
+
+                                // group จริงของ option อาจเป็น child group
+                                $realGroup = $firstOption?->group;
+
+                                // ถ้ามี parent ให้ใช้ parent เป็นหัวข้อหลัก
+                                $group = $realGroup?->parent ?: $realGroup;
+
+                                $groupName = $group->group_name ?? 'Other';
+                                $displayType = $group->display_type ?? 'button';
+                                $isRequired = $group->is_required ?? true;
+                            @endphp
+
+                            <div class="customize-option-group">
+                                <h2>
+                                    {{ $loop->iteration }}. {{ $groupName }}
+
+                                    @if ($isRequired)
+                                        <span class="required">*</span>
+                                    @endif
+
+                                    @if (!empty($group->help_text))
+                                        <button type="button" class="info-popover-btn" data-bs-toggle="popover"
+                                            data-bs-trigger="click" data-bs-placement="top"
+                                            data-bs-content="{{ $group->help_text }}">
+                                            ⓘ
+                                        </button>
+                                    @endif
+                                </h2>
+
+                                @if ($displayType === 'image_card')
+                                    <div class="option-image-grid">
+                                        @foreach ($options as $option)
+                                            <label class="option-image-card">
+                                                <input type="radio" name="options[{{ $option->option_group_id }}]"
+                                                    value="{{ $option->option_id }}" data-group-name="{{ $groupName }}"
+                                                    data-option-name="{{ $option->option_name }}"
+                                                    data-price="{{ $option->additional_price ?? 0 }}"
+                                                    data-price-type="{{ $option->price_type }}"
+                                                    {{ $option->pivot->is_default ? 'checked' : '' }}>
+
+                                                <div class="option-image-box">
+                                                    @if ($option->mainImage)
+                                                        <img src="{{ asset('storage/' . $option->mainImage->image_path) }}"
+                                                            alt="{{ $option->option_name }}">
+                                                    @else
+                                                        <img src="{{ asset('images/no-image.png') }}" alt="No image">
+                                                    @endif
+                                                </div>
+
+                                                <span>{{ $option->option_name }}</span>
+                                            </label>
+                                        @endforeach
+                                    </div>
+                                @elseif($displayType === 'image_card_variant')
+                                    <div class="option-variant-grid">
+                                        @foreach ($options as $option)
+                                            @php
+                                                $defaultVariant =
+                                                    $option->variants->firstWhere('is_default', 1) ??
+                                                    $option->variants->first();
+
+                                                $defaultImage =
+                                                    $defaultVariant && $defaultVariant->image_path
+                                                        ? asset('storage/' . $defaultVariant->image_path)
+                                                        : ($option->mainImage
+                                                            ? asset('storage/' . $option->mainImage->image_path)
+                                                            : asset('images/no-image.png'));
+                                            @endphp
+
+                                            <label class="option-variant-card">
+                                                <input type="radio" name="options[{{ $option->option_group_id }}]"
+                                                    value="{{ $option->option_id }}" data-group-name="{{ $groupName }}"
+                                                    data-option-name="{{ $option->option_name }}"
+                                                    data-price="{{ $option->additional_price ?? 0 }}"
+                                                    data-price-type="{{ $option->price_type }}"
+                                                    {{ $option->pivot->is_default ? 'checked' : '' }}>
+
+                                                <span class="variant-title">
+                                                    {{ $option->option_name }}
+                                                </span>
+
+                                                <div class="variant-image-box">
+                                                    <img src="{{ $defaultImage }}" alt="{{ $option->option_name }}"
+                                                        class="variant-main-image">
+                                                </div>
+
+                                                @if ($option->variants && $option->variants->count())
+                                                    @php
+                                                        $selectedVariant = $defaultVariant;
+                                                    @endphp
+
+                                                    <input type="hidden" name="variants[{{ $option->option_id }}]"
+                                                        class="selected-variant-input"
+                                                        value="{{ $selectedVariant->variant_id ?? '' }}">
+
+                                                    <div class="dropdown variant-dropdown">
+                                                        <button class="btn btn-light dropdown-toggle variant-dropdown-btn"
+                                                            type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                            {{-- <span class="variant-color-dot"
+                style="background: {{ $selectedVariant->color_code ?: '#ffffff' }};">
+            </span> --}}
+
+                                                            <span class="variant-dropdown-label">
+                                                                {{ $selectedVariant->variant_name ?? 'Select color' }}
+                                                            </span>
+                                                        </button>
+
+                                                        <ul class="dropdown-menu variant-dropdown-menu">
+                                                            @foreach ($option->variants as $variant)
+                                                                <li>
+                                                                    <button type="button"
+                                                                        class="dropdown-item variant-dropdown-item"
+                                                                        data-variant-id="{{ $variant->variant_id }}"
+                                                                        data-variant-name="{{ $variant->variant_name }}"
+                                                                        data-color-code="{{ $variant->color_code ?: '#ffffff' }}"
+                                                                        data-image="{{ $variant->image_path ? asset('storage/' . $variant->image_path) : $defaultImage }}"
+                                                                        data-price="{{ $variant->additional_price ?? 0 }}">
+                                                                        {{-- <span class="variant-color-dot"
+                            style="background: {{ $variant->color_code ?: '#ffffff' }};">
+                        </span> --}}
+
+                                                                        <span>{{ $variant->variant_name }}</span>
+                                                                    </button>
+                                                                </li>
+                                                            @endforeach
+                                                        </ul>
+                                                    </div>
+                                                @endif
+                                            </label>
+                                        @endforeach
+                                    </div>
+                                @elseif($displayType === 'image_grid_compact')
+                                    <div class="option-compact-grid">
+                                        @foreach ($options as $option)
+                                            <label class="option-compact-card">
+                                                <input type="radio" name="options[{{ $option->option_group_id }}]"
+                                                    value="{{ $option->option_id }}" data-group-name="{{ $groupName }}"
+                                                    data-option-name="{{ $option->option_name }}"
+                                                    data-price="{{ $option->additional_price ?? 0 }}"
+                                                    data-price-type="{{ $option->price_type }}"
+                                                    {{ $option->pivot->is_default ? 'checked' : '' }}>
+
+                                                <div class="option-compact-image">
+                                                    @if ($option->mainImage)
+                                                        <img src="{{ asset('storage/' . $option->mainImage->image_path) }}"
+                                                            alt="{{ $option->option_name }}">
+                                                    @else
+                                                        <img src="{{ asset('images/no-image.png') }}" alt="No image">
+                                                    @endif
+                                                </div>
+
+                                                <div class="option-compact-name">
+                                                    {{ $option->option_name }}
+                                                </div>
+
+                                                @if (($option->additional_price ?? 0) > 0)
+                                                    <div class="option-compact-price">
+                                                        +¥ {{ number_format($option->additional_price, 2) }}
+                                                    </div>
+                                                @else
+                                                    <div class="option-compact-price free">
+                                                        Free
+                                                    </div>
+                                                @endif
+                                            </label>
+                                        @endforeach
+                                    </div>
+
+                                    @if ($options->count() > 8)
+                                        <div class="option-view-more-wrap">
+                                            <button type="button" class="option-view-more-btn">
+                                                View More
+                                            </button>
+                                        </div>
+                                    @endif
+                                @elseif($displayType === 'color')
+                                    <div class="option-color-list">
+                                        @foreach ($options as $option)
+                                            <label class="option-color-item" title="{{ $option->option_name }}">
+                                                <input type="radio" name="options[{{ $option->option_group_id }}]"
+                                                    value="{{ $option->option_id }}"
+                                                    data-group-name="{{ $groupName }}"
+                                                    data-option-name="{{ $option->option_name }}"
+                                                    data-price="{{ $option->additional_price ?? 0 }}"
+                                                    data-price-type="{{ $option->price_type }}"
+                                                    {{ $option->pivot->is_default ? 'checked' : '' }}>
+
+                                                <span class="color-circle"
+                                                    style="background: {{ $option->color_code ?: '#ffffff' }};"></span>
+                                            </label>
+                                        @endforeach
+
+                                        <button type="button" class="add-color-btn"
+                                            data-group-id="{{ $firstOption->option_group_id }}"
+                                            data-group-name="{{ $groupName }}">
+                                            +
+                                        </button>
+                                    </div>
+
+                                    <div class="custom-color-box"
+                                        id="custom-color-box-{{ $firstOption->option_group_id }}" style="display:none;">
+                                        <label class="custom-color-label">
+                                            Special Cord Colors
+                                            @if ($isRequired)
+                                                <span class="required">*</span>
+                                            @endif
+                                            <span class="info-icon">ⓘ</span>
+                                        </label>
+
+                                        <div class="custom-color-input-row">
+                                            <input type="text"
+                                                name="custom_colors[{{ $firstOption->option_group_id }}]"
+                                                class="custom-color-input" data-group-name="Special Cord Colors"
+                                                placeholder="Please specify Pantone color.">
+
+                                            <button type="button" class="custom-color-add-btn">
+                                                Add
+                                            </button>
+                                        </div>
+                                    </div>
+                                @elseif($displayType === 'select_detail')
+                                    @php
+                                        $defaultOption =
+                                            $options->firstWhere('pivot.is_default', 1) ?? $options->first();
+                                    @endphp
+
+                                    <div class="option-select-detail-box">
+                                        <select class="option-select-detail"
+                                            name="options[{{ $defaultOption->option_group_id }}]"
+                                            data-group-name="{{ $groupName }}">
+                                            @foreach ($options as $option)
+                                                <option value="{{ $option->option_id }}"
+                                                    data-option-name="{{ $option->option_name }}"
+                                                    data-price="{{ $option->additional_price ?? 0 }}"
+                                                    data-price-type="{{ $option->price_type }}"
+                                                    data-image="{{ $option->mainImage ? asset('storage/' . $option->mainImage->image_path) : asset('images/no-image.png') }}"
+                                                    data-detail="{{ e($option->option_detail ?? '') }}"
+                                                    {{ $option->pivot->is_default ? 'selected' : '' }}>
+                                                    {{ $option->option_name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+
+                                        <div class="select-detail-preview">
+                                            <div class="select-detail-image">
+                                                <img src="{{ $defaultOption && $defaultOption->mainImage
+                                                    ? asset('storage/' . $defaultOption->mainImage->image_path)
+                                                    : asset('images/no-image.png') }}"
+                                                    alt="{{ $defaultOption->option_name ?? '' }}">
+                                            </div>
+
+                                            <div class="select-detail-text">
+                                                {!! nl2br(e($defaultOption->option_detail ?? '')) !!}
+                                            </div>
+                                        </div>
+                                    </div>
+                                @elseif($displayType === 'grouped_buttons')
+                                    @php
+                                        $childGroups = $options->groupBy(function ($option) {
+                                            return $option->group->option_group_id ?? 0;
+                                        });
+                                    @endphp
+
+                                    <div class="grouped-buttons-wrapper">
+                                        @foreach ($childGroups as $childGroupId => $childOptions)
+                                            @php
+                                                $childGroup = $childOptions->first()?->group;
+                                                $childGroupName = $childGroup->group_name ?? 'Option';
+                                            @endphp
+
+                                            <div class="grouped-button-set">
+                                                <div class="grouped-button-title">
+                                                    <span>{{ $childGroupName }}</span>
+
+                                                    @if (!empty($childGroup->help_text))
+                                                        <button type="button" class="info-popover-btn"
+                                                            data-bs-toggle="popover" data-bs-trigger="click"
+                                                            data-bs-placement="top"
+                                                            data-bs-content="{{ $childGroup->help_text }}">
+                                                            ⓘ
+                                                        </button>
+                                                    @endif
+                                                </div>
+
+                                                <div class="option-button-list">
+                                                    @foreach ($childOptions as $option)
+                                                        <label class="option-button-item grouped-option-button">
+                                                            <input type="radio"
+                                                                name="options[{{ $childGroup->option_group_id }}]"
+                                                                value="{{ $option->option_id }}"
+                                                                data-group-name="{{ $childGroupName }}"
+                                                                data-option-name="{{ $option->option_name }}"
+                                                                data-price="{{ $option->additional_price ?? 0 }}"
+                                                                data-price-type="{{ $option->price_type }}"
+                                                                {{ $option->pivot->is_default ? 'checked' : '' }}>
+
+                                                            <span>{{ $option->option_name }}</span>
+                                                        </label>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @else
+                                    <div class="option-button-list">
+                                        @foreach ($options as $option)
+                                            <label class="option-button-item">
+                                                <input type="radio" name="options[{{ $option->option_group_id }}]"
+                                                    value="{{ $option->option_id }}"
+                                                    data-group-name="{{ $groupName }}"
+                                                    data-option-name="{{ $option->option_name }}"
+                                                    data-price="{{ $option->additional_price ?? 0 }}"
+                                                    data-price-type="{{ $option->price_type }}"
+                                                    {{ $option->pivot->is_default ? 'checked' : '' }}>
+
+                                                <span>{{ $option->option_name }}</span>
+                                            </label>
+                                        @endforeach
+                                    </div>
+                                @endif
+                            </div>
+                        @empty
+                            <div class="no-options">
+                                No options assigned to this product.
+                            </div>
+                        @endforelse
+                        <div class="quantity-add-cart-section">
+                            <div class="quantity-label-row">
+                                <label for="quantity">Quantity</label>
+
+                                <span class="minimum-note">
+                                    ** Pedido mínimo 20 unidades **
+                                </span>
+                            </div>
+
+                            <div class="quantity-input-row">
+                                <input type="number" name="quantity" id="quantity" value="{{ old('quantity', 100) }}"
+                                    min="20" step="1" required>
+
+                                <span>Unidades</span>
+                            </div>
+
+                            @error('quantity')
+                                <div style="color:red; margin-top:8px;">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+
+                            <button type="submit" class="add-to-cart-btn">
+                                ADD TO CART
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <aside class="product-summary-box">
+                    <h3>Resumo do produto</h3>
+
+                    <div class="summary-item">
+    <span>Unit Price</span>
+    <strong>¥ <span id="summary-unit-price">{{ number_format($basePrice, 2) }}</span></strong>
+</div>
+
+<div class="summary-item">
+    <span>Quantity</span>
+    <strong><span id="summary-quantity">{{ old('quantity', 100) }}</span> Unidades</strong>
+</div>
+
+<div class="summary-divider"></div>
+
+<div id="summary-options"></div>
+
+                    <div class="summary-divider"></div>
+
+                    <div class="summary-total">
+                        <span>Total:</span>
+                        <strong>¥ <span id="total-price">{{ number_format($basePrice, 2) }}</span></strong>
+                    </div>
+                </aside>
+
+            </div>
+
+
+        </div>
+    </section>
+
+
+@endsection
+
+@section('js')
+   <script>
+    const priceTiers = @json($priceTiers);
+
+    function formatPrice(price) {
+        return Number(price || 0).toFixed(2);
+    }
+
+    function getUnitPriceByQuantity(quantity) {
+    quantity = parseInt(quantity || 0);
+
+    if (!quantity || quantity <= 0) {
+        return 0;
+    }
+
+    // 1) หา tier ที่ตรงช่วงก่อน
+    const matchedTier = priceTiers.find(function(item) {
+        const minQty = parseInt(item.min_qty);
+        const maxQty = item.max_qty === null ? null : parseInt(item.max_qty);
+
+        return quantity >= minQty && (maxQty === null || quantity <= maxQty);
+    });
+
+    if (matchedTier) {
+        return parseFloat(matchedTier.unit_price);
+    }
+
+    // 2) ถ้าไม่เจอ และ quantity มากกว่าช่วงสูงสุด ให้ใช้ tier ที่ min_qty สูงสุด
+    const sortedTiers = [...priceTiers].sort(function(a, b) {
+        return parseInt(b.min_qty) - parseInt(a.min_qty);
+    });
+
+    const highestTier = sortedTiers[0];
+
+    if (highestTier && quantity > parseInt(highestTier.min_qty)) {
+        return parseFloat(highestTier.unit_price);
+    }
+
+    return 0;
+}
+
+    function updateSummary() {
+        const quantityInput = document.getElementById('quantity');
+        const quantity = parseInt(quantityInput?.value || 0);
+
+        const unitPrice = getUnitPriceByQuantity(quantity);
+        const productTotal = unitPrice * quantity;
+
+        let optionTotal = 0;
+        const summaryOptions = document.getElementById('summary-options');
+        const checkedOptions = document.querySelectorAll('#customize-form input[type="radio"]:checked');
+        const selectedOptions = document.querySelectorAll('#customize-form .option-select-detail');
+        const customColorInputs = document.querySelectorAll('.custom-color-input');
+
+        let html = '';
+
+        checkedOptions.forEach(function(input) {
+            const groupName = input.dataset.groupName || '';
+            const optionName = input.dataset.optionName || '';
+            const variantName = input.dataset.variantName || '';
+            const price = parseFloat(input.dataset.price || 0);
+            const variantPrice = parseFloat(input.dataset.variantPrice || 0);
+
+            optionTotal += price + variantPrice;
+
+            const displayName = variantName
+                ? `${optionName} - ${variantName}`
+                : optionName;
+
+            html += `
+                <div class="summary-item">
+                    <span>${groupName}</span>
+                    <strong>${displayName}</strong>
+                </div>
+            `;
+        });
+
+        selectedOptions.forEach(function(select) {
+            const selected = select.options[select.selectedIndex];
+
+            const groupName = select.dataset.groupName || '';
+            const optionName = selected.dataset.optionName || selected.textContent || '';
+            const price = parseFloat(selected.dataset.price || 0);
+
+            optionTotal += price;
+
+            html += `
+                <div class="summary-item">
+                    <span>${groupName}</span>
+                    <strong>${optionName}</strong>
+                </div>
+            `;
+        });
+
+        customColorInputs.forEach(function(input) {
+            const value = input.value.trim();
+
+            if (!value) {
+                return;
+            }
+
+            const groupName = input.dataset.groupName || 'Special Cord Colors';
+
+            html += `
+                <div class="summary-item">
+                    <span>${groupName}</span>
+                    <strong>${value}</strong>
+                </div>
+            `;
+        });
+
+        const total = productTotal + optionTotal;
+
+        if (document.getElementById('summary-unit-price')) {
+            document.getElementById('summary-unit-price').innerText = formatPrice(unitPrice);
+        }
+
+        if (document.getElementById('summary-quantity')) {
+            document.getElementById('summary-quantity').innerText = quantity;
+        }
+
+        summaryOptions.innerHTML = html;
+        document.getElementById('total-price').innerText = formatPrice(total);
+    }
+
+    document.querySelectorAll('#customize-form input[type="radio"]').forEach(function(input) {
+        input.addEventListener('change', updateSummary);
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const quantityInput = document.getElementById('quantity');
+
+        if (quantityInput) {
+            quantityInput.addEventListener('input', updateSummary);
+            quantityInput.addEventListener('change', updateSummary);
+        }
+
+        updateSummary();
+    });
+</script>
+    <script>
+        document.querySelectorAll('.option-select-detail').forEach(function(select) {
+            select.addEventListener('change', function() {
+                const selected = this.options[this.selectedIndex];
+                const wrapper = this.closest('.option-select-detail-box');
+
+                const image = selected.dataset.image || '';
+                const detail = selected.dataset.detail || '';
+
+                const imgEl = wrapper.querySelector('.select-detail-image img');
+                const textEl = wrapper.querySelector('.select-detail-text');
+
+                if (imgEl) {
+                    imgEl.src = image;
+                }
+
+                if (textEl) {
+                    textEl.innerHTML = detail.replace(/\n/g, '<br>');
+                }
+
+                updateSummary();
+            });
+        });
+    </script>
+  <script>
+    document.querySelectorAll('.variant-dropdown-item').forEach(function(item) {
+        item.addEventListener('click', function() {
+            const card = this.closest('.option-variant-card');
+
+            const variantId = this.dataset.variantId;
+            const variantName = this.dataset.variantName || '';
+            const colorCode = this.dataset.colorCode || '#ffffff';
+            const imageUrl = this.dataset.image || '';
+            const variantPrice = this.dataset.price || 0;
+
+            const img = card.querySelector('.variant-main-image');
+            const radio = card.querySelector('input[type="radio"]');
+            const hiddenInput = card.querySelector('.selected-variant-input');
+            const label = card.querySelector('.variant-dropdown-label');
+            const btnDot = card.querySelector('.variant-dropdown-btn .variant-color-dot');
+
+            if (img && imageUrl) {
+                img.src = imageUrl;
+            }
+
+            if (hiddenInput) {
+                hiddenInput.value = variantId;
+            }
+
+            if (label) {
+                label.textContent = variantName;
+            }
+
+            if (btnDot) {
+                btnDot.style.background = colorCode;
+            }
+
+            if (radio) {
+                radio.checked = true;
+                radio.dataset.variantName = variantName;
+                radio.dataset.variantPrice = variantPrice;
+                radio.dispatchEvent(new Event('change'));
+            }
+
+            updateSummary();
+        });
+    });
+
+    document.querySelectorAll('.option-variant-card').forEach(function(card) {
+        const radio = card.querySelector('input[type="radio"]');
+        const activeItem = card.querySelector('.variant-dropdown-item');
+        const label = card.querySelector('.variant-dropdown-label');
+        const hiddenInput = card.querySelector('.selected-variant-input');
+
+        if (radio && activeItem) {
+            radio.dataset.variantName = activeItem.dataset.variantName || '';
+            radio.dataset.variantPrice = activeItem.dataset.price || 0;
+
+            if (label) {
+                label.textContent = activeItem.dataset.variantName || '';
+            }
+
+            if (hiddenInput) {
+                hiddenInput.value = activeItem.dataset.variantId || '';
+            }
+        }
+    });
+
+    updateSummary();
+</script>
+    <script>
+        document.querySelectorAll('.add-color-btn').forEach(function(button) {
+            button.addEventListener('click', function() {
+                const groupId = this.dataset.groupId;
+                const box = document.getElementById('custom-color-box-' + groupId);
+
+                if (!box) {
+                    return;
+                }
+
+                const colorRadios = document.querySelectorAll(
+                    '#customize-form input[type="radio"][name="options[' + groupId + ']"]'
+                );
+
+                // ล้างสีที่เลือกอยู่
+                colorRadios.forEach(function(radio) {
+                    radio.checked = false;
+                });
+
+                // เปิดช่อง custom color
+                box.style.display = 'block';
+                this.classList.add('is-active');
+
+                const input = box.querySelector('.custom-color-input');
+
+                if (input) {
+                    input.focus();
+                }
+
+                updateSummary();
+            });
+        });
+
+        // ถ้ากลับไปเลือกสีปกติ ให้ปิด custom color และล้างค่า
+        document.querySelectorAll('.option-color-item input[type="radio"]').forEach(function(radio) {
+            radio.addEventListener('change', function() {
+                const groupId = this.name.match(/\[(.*?)\]/)?.[1];
+
+                if (!groupId) {
+                    return;
+                }
+
+                const box = document.getElementById('custom-color-box-' + groupId);
+                const addButton = document.querySelector('.add-color-btn[data-group-id="' + groupId + '"]');
+
+                if (box) {
+                    box.style.display = 'none';
+
+                    const input = box.querySelector('.custom-color-input');
+                    if (input) {
+                        input.value = '';
+                    }
+                }
+
+                if (addButton) {
+                    addButton.classList.remove('is-active');
+                }
+
+                updateSummary();
+            });
+        });
+
+        document.querySelectorAll('.custom-color-add-btn').forEach(function(button) {
+            button.addEventListener('click', function() {
+                const box = this.closest('.custom-color-box');
+                const input = box.querySelector('.custom-color-input');
+
+                if (!input || !input.value.trim()) {
+                    alert('Please specify Pantone color.');
+                    return;
+                }
+
+                updateSummary();
+            });
+        });
+
+        document.querySelectorAll('.custom-color-input').forEach(function(input) {
+            input.addEventListener('input', function() {
+                updateSummary();
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
+
+            popoverTriggerList.forEach(function(popoverTriggerEl) {
+                new bootstrap.Popover(popoverTriggerEl, {
+                    container: 'body',
+                    html: false
+                });
+            });
+
+            document.addEventListener('click', function(e) {
+                popoverTriggerList.forEach(function(popoverTriggerEl) {
+                    const popover = bootstrap.Popover.getInstance(popoverTriggerEl);
+
+                    if (
+                        popover &&
+                        !popoverTriggerEl.contains(e.target) &&
+                        !document.querySelector('.popover')?.contains(e.target)
+                    ) {
+                        popover.hide();
+                    }
+                });
+            });
+        });
+    </script>
+@endsection

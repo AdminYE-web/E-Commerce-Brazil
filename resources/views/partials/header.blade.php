@@ -302,7 +302,7 @@
                 <li><a href="#" class="mobile-menu-link"><span>{{ __('messages.header.gallery') }}</span></a></li>
                 <li><a href="#" class="mobile-menu-link"><span>{{ __('messages.header.blog') }}</span></a></li>
                 <li><a href="#" class="mobile-menu-link"><span>{{ __('messages.header.faq') }}</span></a></li>
-                <li><a href="#" class="mobile-menu-link"><span>{{ __('messages.header.about_us') }}</span></a></li>
+                <li><a href="{{ route('about') }}" class="mobile-menu-link"><span>{{ __('messages.header.about_us') }}</span></a></li>
                 <li><a href="{{ route('contact') }}" class="mobile-menu-link"><span>{{ __('messages.header.contact_us') }}</span></a></li>
                 @foreach ($supportedLanguages as $language)
                     <li><a href="{{ route('language.switch', $language) }}" class="mobile-menu-link {{ $currentLanguage === $language ? 'active' : '' }}"><span class="fi fi-{{ $languageFlags[$language] ?? $language }} lang-flag"></span><span>{{ __("messages.header.language.$language") }}</span></a></li>

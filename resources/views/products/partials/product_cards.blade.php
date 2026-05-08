@@ -22,7 +22,7 @@
             ★★★★★
         </div>
 
-      <a href="{{ route('products.description', $product->product_id) }}" class="detail-btn">
+      <a href="{{ route('products.description', $product->product_code) }}" class="detail-btn">
     <span>Ver Detalhes</span>
     <span>›</span>
 </a>
