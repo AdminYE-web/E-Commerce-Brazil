@@ -130,18 +130,18 @@
 
             <div class="type-tabs">
                 <a 
-                    href="{{ route('products.index', ['product_type' => 1]) }}" 
-                    data-product-type="1"
-                    class="type-card product-type-link {{ (int) $productType === 1 ? 'active' : '' }}"
+                    href="{{ route('products.index', ['product_type' => 2]) }}" 
+                    data-product-type="2"
+                    class="type-card product-type-link {{ (int) $productType === 2 ? 'active' : '' }}"
                 >
                     <img src="{{ asset('assets/images/icon/image-Photoroom (55) 1.png') }}" alt="">
                     <div class="label">Brindes<br>Personalizados</div>
                 </a>
 
                 <a 
-                    href="{{ route('products.index', ['product_type' => 2]) }}" 
-                    data-product-type="2"
-                    class="type-card product-type-link {{ (int) $productType === 2 ? 'active' : '' }}"
+                    href="{{ route('products.index', ['product_type' => 1]) }}" 
+                    data-product-type="1"
+                    class="type-card product-type-link {{ (int) $productType === 1 ? 'active' : '' }}"
                 >
                     <img src="{{ asset('assets/images/icon/image-Photoroom (55) 2.png') }}" alt="">
                     <div class="label">Cordão<br>Personalizado</div>
