@@ -11,6 +11,11 @@ class OptionDependency extends Model
     protected $fillable = [
         'parent_option_id',
         'child_option_id',
+        'target_type',
+        'target_group_id',
+        'target_option_id',
+        'is_active',
+        'sort_order',
     ];
 
     public function parentOption()
@@ -21,5 +26,15 @@ class OptionDependency extends Model
     public function childOption()
     {
         return $this->belongsTo(ProductOption::class, 'child_option_id', 'option_id');
+    }
+
+    public function targetGroup()
+    {
+        return $this->belongsTo(OptionGroup::class, 'target_group_id', 'option_group_id');
+    }
+
+    public function targetOption()
+    {
+        return $this->belongsTo(ProductOption::class, 'target_option_id', 'option_id');
     }
 }

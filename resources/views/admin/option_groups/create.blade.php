@@ -115,7 +115,21 @@
     </div>
 
     <br>
+<div>
+    <label>
+        <input 
+            type="checkbox" 
+            name="option_group_main" 
+            value="1"
+            {{ old('option_group_main') ? 'checked' : '' }}
+        >
+        Main Price Group
+    </label>
+    <br>
+    <small>ติ๊กถ้า option group นี้ต้องใช้เป็นเงื่อนไขหลักใน Product Price Rules</small>
+</div>
 
+<br>
     <div>
         <label>
             <input type="checkbox" name="is_required" value="1" {{ old('is_required', 1) ? 'checked' : '' }}>

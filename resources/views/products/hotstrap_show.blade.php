@@ -293,7 +293,7 @@
 
         .option-button-item {
             min-width: 84px;
-            height: 34px;
+            height: 42px;
             border: 1px solid #d9dde7;
             border-radius: 6px;
             background: #fff;
@@ -305,7 +305,7 @@
         }
 
         .option-button-item span {
-            font-size: 13px;
+            font-size: 16px;
         }
 
         .option-color-list {
@@ -554,7 +554,7 @@
         }
 
         .variant-title {
-            font-size: 13px;
+            font-size: 16px;
             font-weight: 600;
             line-height: 1.2;
             text-align: center;
@@ -889,12 +889,12 @@
         }
 
         .quantity-input-row input {
-            width: 136px;
-            height: 50px;
+            width: 110px;
+            height: 39px;
             border: 1px solid #cfd4dc;
             border-radius: 10px;
             background: #fff;
-            font-size: 22px;
+            font-size: 16px;
             font-weight: 600;
             text-align: center;
         }
@@ -939,25 +939,13 @@
 @endsection
 
 @section('content')
-    @php
-    $priceTiers = $product->priceTiers->map(function ($tier) {
-        return [
-            'min_qty' => (int) $tier->min_qty,
-            'max_qty' => $tier->max_qty ? (int) $tier->max_qty : null,
-            'unit_price' => (float) $tier->unit_price,
-        ];
-    })->values();
-
+   @php
     $defaultQuantity = old('quantity', 100);
 
-    $defaultTier = $product->priceTiers
-        ->filter(function ($tier) use ($defaultQuantity) {
-            return $defaultQuantity >= $tier->min_qty
-                && (is_null($tier->max_qty) || $defaultQuantity <= $tier->max_qty);
-        })
-        ->first();
+    $basePrice = 0;
 
-    $basePrice = $defaultTier ? (float) $defaultTier->unit_price : 0;
+    // ถ้าอยากให้ก่อนเลือก option ราคาเป็น 0
+    // ใช้ 0 ไปก่อน แล้ว JS จะคำนวณใหม่ตาม option ที่เลือก
 @endphp
 
 
@@ -1012,7 +1000,7 @@
                                 $isRequired = $group->is_required ?? true;
                             @endphp
 
-                            <div class="customize-option-group">
+                            <div class="customize-option-group" data-group-id="{{ $group->option_group_id }}">
                                 <h2>
                                     {{ $loop->iteration }}. {{ $groupName }}
 
@@ -1038,6 +1026,7 @@
                                                     data-option-name="{{ $option->option_name }}"
                                                     data-price="{{ $option->additional_price ?? 0 }}"
                                                     data-price-type="{{ $option->price_type }}"
+                                                    data-option-id="{{ $option->option_id }}"
                                                     {{ $option->pivot->is_default ? 'checked' : '' }}>
 
                                                 <div class="option-image-box">
@@ -1075,6 +1064,7 @@
                                                     data-option-name="{{ $option->option_name }}"
                                                     data-price="{{ $option->additional_price ?? 0 }}"
                                                     data-price-type="{{ $option->price_type }}"
+                                                    data-option-id="{{ $option->option_id }}"
                                                     {{ $option->pivot->is_default ? 'checked' : '' }}>
 
                                                 <span class="variant-title">
@@ -1140,6 +1130,7 @@
                                                     data-option-name="{{ $option->option_name }}"
                                                     data-price="{{ $option->additional_price ?? 0 }}"
                                                     data-price-type="{{ $option->price_type }}"
+                                                    data-option-id="{{ $option->option_id }}"
                                                     {{ $option->pivot->is_default ? 'checked' : '' }}>
 
                                                 <div class="option-compact-image">
@@ -1185,6 +1176,7 @@
                                                     data-option-name="{{ $option->option_name }}"
                                                     data-price="{{ $option->additional_price ?? 0 }}"
                                                     data-price-type="{{ $option->price_type }}"
+                                                    data-option-id="{{ $option->option_id }}"
                                                     {{ $option->pivot->is_default ? 'checked' : '' }}>
 
                                                 <span class="color-circle"
@@ -1224,18 +1216,34 @@
                                     @php
                                         $defaultOption =
                                             $options->firstWhere('pivot.is_default', 1) ?? $options->first();
+
+                                        $defaultImage =
+                                            $defaultOption && $defaultOption->mainImage
+                                                ? asset('storage/' . $defaultOption->mainImage->image_path)
+                                                : '';
+
+                                        $defaultDetail = $defaultOption->option_detail ?? '';
+
+                                        $hasDefaultImage = !empty($defaultImage);
+                                        $hasDefaultDetail = !empty(trim(strip_tags($defaultDetail)));
                                     @endphp
 
-                                    <div class="option-select-detail-box">
-                                        <select class="option-select-detail"
-                                            name="options[{{ $defaultOption->option_group_id }}]"
-                                            data-group-name="{{ $groupName }}">
+                                    <div class="option-select-detail-wrap">
+                                        <select name="options[{{ $defaultOption->option_group_id }}]"
+                                            class="option-select-detail" data-group-name="{{ $groupName }}">
                                             @foreach ($options as $option)
+                                                @php
+                                                    $imagePath = $option->mainImage
+                                                        ? asset('storage/' . $option->mainImage->image_path)
+                                                        : '';
+                                                @endphp
+
                                                 <option value="{{ $option->option_id }}"
+                                                    data-option-id="{{ $option->option_id }}"
                                                     data-option-name="{{ $option->option_name }}"
                                                     data-price="{{ $option->additional_price ?? 0 }}"
                                                     data-price-type="{{ $option->price_type }}"
-                                                    data-image="{{ $option->mainImage ? asset('storage/' . $option->mainImage->image_path) : asset('images/no-image.png') }}"
+                                                    data-image="{{ $imagePath }}"
                                                     data-detail="{{ e($option->option_detail ?? '') }}"
                                                     {{ $option->pivot->is_default ? 'selected' : '' }}>
                                                     {{ $option->option_name }}
@@ -1243,134 +1251,138 @@
                                             @endforeach
                                         </select>
 
-                                        <div class="select-detail-preview">
-                                            <div class="select-detail-image">
-                                                <img src="{{ $defaultOption && $defaultOption->mainImage
-                                                    ? asset('storage/' . $defaultOption->mainImage->image_path)
-                                                    : asset('images/no-image.png') }}"
+                                        <div class="select-detail-preview"
+                                            style="{{ !$hasDefaultImage && !$hasDefaultDetail ? 'display:none;' : '' }}">
+                                            <div class="select-detail-image-box"
+                                                style="{{ !$hasDefaultImage ? 'display:none;' : '' }}">
+                                                <img class="select-detail-image" src="{{ $defaultImage }}"
                                                     alt="{{ $defaultOption->option_name ?? '' }}">
                                             </div>
 
-                                            <div class="select-detail-text">
-                                                {!! nl2br(e($defaultOption->option_detail ?? '')) !!}
+                                            <div class="select-detail-text-box"
+                                                style="{{ !$hasDefaultDetail ? 'display:none;' : '' }}">
+                                                {!! nl2br(e($defaultDetail)) !!}
                                             </div>
                                         </div>
                                     </div>
-                                @elseif($displayType === 'grouped_buttons')
-                                    @php
-                                        $childGroups = $options->groupBy(function ($option) {
-                                            return $option->group->option_group_id ?? 0;
-                                        });
-                                    @endphp
+                                
+                            @elseif($displayType === 'grouped_buttons')
+                                @php
+                                    $childGroups = $options->groupBy(function ($option) {
+                                        return $option->group->option_group_id ?? 0;
+                                    });
+                                @endphp
 
-                                    <div class="grouped-buttons-wrapper">
-                                        @foreach ($childGroups as $childGroupId => $childOptions)
-                                            @php
-                                                $childGroup = $childOptions->first()?->group;
-                                                $childGroupName = $childGroup->group_name ?? 'Option';
-                                            @endphp
+                                <div class="grouped-buttons-wrapper">
+                                    @foreach ($childGroups as $childGroupId => $childOptions)
+                                        @php
+                                            $childGroup = $childOptions->first()?->group;
+                                            $childGroupName = $childGroup->group_name ?? 'Option';
+                                        @endphp
 
-                                            <div class="grouped-button-set">
-                                                <div class="grouped-button-title">
-                                                    <span>{{ $childGroupName }}</span>
+                                        <div class="grouped-button-set"
+                                            data-group-id="{{ $childGroup->option_group_id }}">
+                                            <div class="grouped-button-title">
+                                                <span>{{ $childGroupName }}</span>
 
-                                                    @if (!empty($childGroup->help_text))
-                                                        <button type="button" class="info-popover-btn"
-                                                            data-bs-toggle="popover" data-bs-trigger="click"
-                                                            data-bs-placement="top"
-                                                            data-bs-content="{{ $childGroup->help_text }}">
-                                                            ⓘ
-                                                        </button>
-                                                    @endif
-                                                </div>
-
-                                                <div class="option-button-list">
-                                                    @foreach ($childOptions as $option)
-                                                        <label class="option-button-item grouped-option-button">
-                                                            <input type="radio"
-                                                                name="options[{{ $childGroup->option_group_id }}]"
-                                                                value="{{ $option->option_id }}"
-                                                                data-group-name="{{ $childGroupName }}"
-                                                                data-option-name="{{ $option->option_name }}"
-                                                                data-price="{{ $option->additional_price ?? 0 }}"
-                                                                data-price-type="{{ $option->price_type }}"
-                                                                {{ $option->pivot->is_default ? 'checked' : '' }}>
-
-                                                            <span>{{ $option->option_name }}</span>
-                                                        </label>
-                                                    @endforeach
-                                                </div>
+                                                @if (!empty($childGroup->help_text))
+                                                    <button type="button" class="info-popover-btn"
+                                                        data-bs-toggle="popover" data-bs-trigger="click"
+                                                        data-bs-placement="top"
+                                                        data-bs-content="{{ $childGroup->help_text }}">
+                                                        ⓘ
+                                                    </button>
+                                                @endif
                                             </div>
-                                        @endforeach
-                                    </div>
-                                @else
-                                    <div class="option-button-list">
-                                        @foreach ($options as $option)
-                                            <label class="option-button-item">
-                                                <input type="radio" name="options[{{ $option->option_group_id }}]"
-                                                    value="{{ $option->option_id }}"
-                                                    data-group-name="{{ $groupName }}"
-                                                    data-option-name="{{ $option->option_name }}"
-                                                    data-price="{{ $option->additional_price ?? 0 }}"
-                                                    data-price-type="{{ $option->price_type }}"
-                                                    {{ $option->pivot->is_default ? 'checked' : '' }}>
 
-                                                <span>{{ $option->option_name }}</span>
-                                            </label>
-                                        @endforeach
-                                    </div>
-                                @endif
-                            </div>
-                        @empty
-                            <div class="no-options">
-                                No options assigned to this product.
-                            </div>
-                        @endforelse
-                        <div class="quantity-add-cart-section">
-                            <div class="quantity-label-row">
-                                <label for="quantity">Quantity</label>
+                                            <div class="option-button-list">
+                                                @foreach ($childOptions as $option)
+                                                    <label class="option-button-item">
+                                                        <input type="radio"
+                                                            name="options[{{ $childGroup->option_group_id }}]"
+                                                            value="{{ $option->option_id }}"
+                                                            data-group-name="{{ $childGroupName }}"
+                                                            data-option-name="{{ $option->option_name }}"
+                                                            data-price="{{ $option->additional_price ?? 0 }}"
+                                                            data-price-type="{{ $option->price_type }}"
+                                                            data-option-id="{{ $option->option_id }}"
+                                                            {{ $option->pivot->is_default ? 'checked' : '' }}>
 
-                                <span class="minimum-note">
-                                    ** Pedido mínimo 20 unidades **
-                                </span>
-                            </div>
-
-                            <div class="quantity-input-row">
-                                <input type="number" name="quantity" id="quantity" value="{{ old('quantity', 100) }}"
-                                    min="20" step="1" required>
-
-                                <span>Unidades</span>
-                            </div>
-
-                            @error('quantity')
-                                <div style="color:red; margin-top:8px;">
-                                    {{ $message }}
+                                                        <span>{{ $option->option_name }}</span>
+                                                    </label>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    @endforeach
                                 </div>
-                            @enderror
+                            @else
+                                <div class="option-button-list">
+                                    @foreach ($options as $option)
+                                        <label class="option-button-item">
+                                            <input type="radio" name="options[{{ $option->option_group_id }}]"
+                                                value="{{ $option->option_id }}" data-group-name="{{ $groupName }}"
+                                                data-option-name="{{ $option->option_name }}"
+                                                data-price="{{ $option->additional_price ?? 0 }}"
+                                                data-price-type="{{ $option->price_type }}"
+                                                data-option-id="{{ $option->option_id }}"
+                                                {{ $option->pivot->is_default ? 'checked' : '' }}>
 
-                            <button type="submit" class="add-to-cart-btn">
-                                ADD TO CART
-                            </button>
+                                            <span>{{ $option->option_name }}</span>
+                                        </label>
+                                    @endforeach
+                                </div>
+                        @endif
+                </div>
+                @empty
+                    <div class="no-options">
+                        No options assigned to this product.
+                    </div>
+                    @endforelse
+                    <div class="quantity-add-cart-section">
+                        <div class="quantity-label-row">
+                            <label for="quantity">Quantity</label>
+
+                            <span class="minimum-note">
+                                ** Pedido mínimo 20 unidades **
+                            </span>
                         </div>
+
+                        <div class="quantity-input-row">
+                            <input type="number" name="quantity" id="quantity" value="{{ old('quantity', 100) }}"
+                                min="20" step="1" required>
+
+                            <span>Unidades</span>
+                        </div>
+
+                        @error('quantity')
+                            <div style="color:red; margin-top:8px;">
+                                {{ $message }}
+                            </div>
+                        @enderror
+
+                        <button type="submit" class="add-to-cart-btn">
+                            ADD TO CART
+                        </button>
+                    </div>
                     </form>
                 </div>
 
                 <aside class="product-summary-box">
                     <h3>Resumo do produto</h3>
 
-                    <div class="summary-item">
-    <span>Unit Price</span>
-    <strong>¥ <span id="summary-unit-price">{{ number_format($basePrice, 2) }}</span></strong>
-</div>
+                    {{-- <div class="summary-item">
+                        <span>Unit Price</span>
+                        <strong>¥ <span id="summary-unit-price">{{ number_format($basePrice, 2) }}</span></strong>
+                    </div> --}}
 
-<div class="summary-item">
-    <span>Quantity</span>
-    <strong><span id="summary-quantity">{{ old('quantity', 100) }}</span> Unidades</strong>
-</div>
+                    {{-- <div class="summary-item">
+                        <span>Quantity</span>
+                        <strong><span id="summary-quantity">{{ old('quantity', 100) }}</span> Unidades</strong>
+                    </div> --}}
 
-<div class="summary-divider"></div>
+                    <div class="summary-divider"></div>
 
-<div id="summary-options"></div>
+                    <div id="summary-options"></div>
 
                     <div class="summary-divider"></div>
 
@@ -1383,76 +1395,234 @@
             </div>
 
 
-        </div>
-    </section>
+            </div>
+        </section>
 
 
-@endsection
+    @endsection
 
 @section('js')
-   <script>
-    const priceTiers = @json($priceTiers);
+<script>
+    const priceRules = @json($priceRules ?? []);
+    const optionDependencies = @json($dependencies ?? []);
+
+    console.log('priceRules:', priceRules);
+
+    let isUpdatingDependencies = false;
 
     function formatPrice(price) {
         return Number(price || 0).toFixed(2);
     }
 
-    function getUnitPriceByQuantity(quantity) {
-    quantity = parseInt(quantity || 0);
+    function getSelectedOptionIdsForPrice() {
+        const selected = [];
 
-    if (!quantity || quantity <= 0) {
+        document.querySelectorAll('#customize-form input[type="radio"]:checked').forEach(function(input) {
+            const optionId = parseInt(input.value);
+
+            if (optionId) {
+                selected.push(optionId);
+            }
+        });
+
+        document.querySelectorAll('#customize-form select.option-select-detail').forEach(function(select) {
+            if (select.closest('.customize-option-group')?.style.display === 'none') {
+                return;
+            }
+
+            const optionId = parseInt(select.value);
+
+            if (optionId) {
+                selected.push(optionId);
+            }
+        });
+
+        return selected;
+    }
+
+    function findMatchedPriceRule(selectedOptionIds) {
+        const matchedRules = priceRules.filter(function(rule) {
+            const ruleOptionIds = rule.option_ids || [];
+
+            if (!ruleOptionIds.length) {
+                return false;
+            }
+
+            return ruleOptionIds.every(function(optionId) {
+                return selectedOptionIds.includes(parseInt(optionId));
+            });
+        });
+
+        if (!matchedRules.length) {
+            return null;
+        }
+
+        matchedRules.sort(function(a, b) {
+            return (b.option_ids || []).length - (a.option_ids || []).length;
+        });
+
+        return matchedRules[0];
+    }
+
+    function getUnitPriceFromRule(rule, quantity) {
+        quantity = parseInt(quantity || 0);
+
+        if (!rule || !quantity || quantity <= 0) {
+            return 0;
+        }
+
+        const tiers = rule.tiers || [];
+
+        const matchedTier = tiers.find(function(tier) {
+            const minQty = parseInt(tier.min_qty);
+            const maxQty = tier.max_qty === null ? null : parseInt(tier.max_qty);
+
+            return quantity >= minQty && (maxQty === null || quantity <= maxQty);
+        });
+
+        if (matchedTier) {
+            return parseFloat(matchedTier.unit_price);
+        }
+
+        const sortedTiers = [...tiers].sort(function(a, b) {
+            return parseInt(b.min_qty) - parseInt(a.min_qty);
+        });
+
+        const highestTier = sortedTiers[0];
+
+        if (highestTier && quantity > parseInt(highestTier.min_qty)) {
+            return parseFloat(highestTier.unit_price);
+        }
+
         return 0;
     }
 
-    // 1) หา tier ที่ตรงช่วงก่อน
-    const matchedTier = priceTiers.find(function(item) {
-        const minQty = parseInt(item.min_qty);
-        const maxQty = item.max_qty === null ? null : parseInt(item.max_qty);
+    function isOptionInMatchedRule(optionId, matchedRule) {
+        if (!matchedRule || !matchedRule.option_ids) {
+            return false;
+        }
 
-        return quantity >= minQty && (maxQty === null || quantity <= maxQty);
-    });
-
-    if (matchedTier) {
-        return parseFloat(matchedTier.unit_price);
+        return matchedRule.option_ids
+            .map(function(id) {
+                return parseInt(id);
+            })
+            .includes(parseInt(optionId));
     }
 
-    // 2) ถ้าไม่เจอ และ quantity มากกว่าช่วงสูงสุด ให้ใช้ tier ที่ min_qty สูงสุด
-    const sortedTiers = [...priceTiers].sort(function(a, b) {
-        return parseInt(b.min_qty) - parseInt(a.min_qty);
-    });
+    function updateSingleSelectDetailPreview(select) {
+        const selected = select.options[select.selectedIndex];
+        const wrap = select.closest('.option-select-detail-wrap');
 
-    const highestTier = sortedTiers[0];
+        if (!wrap || !selected) {
+            return;
+        }
 
-    if (highestTier && quantity > parseInt(highestTier.min_qty)) {
-        return parseFloat(highestTier.unit_price);
+        const preview = wrap.querySelector('.select-detail-preview');
+        const imageBox = wrap.querySelector('.select-detail-image-box');
+        const textBox = wrap.querySelector('.select-detail-text-box');
+        const image = wrap.querySelector('.select-detail-image');
+
+        if (!preview) {
+            return;
+        }
+
+        const imageUrl = selected.dataset.image || '';
+        const detailText = selected.dataset.detail || '';
+
+        const hasImage = imageUrl.trim() !== '';
+        const hasDetail = detailText.trim() !== '';
+
+        if (!hasImage && !hasDetail) {
+            preview.style.display = 'none';
+
+            if (image) {
+                image.src = '';
+            }
+
+            if (textBox) {
+                textBox.innerHTML = '';
+            }
+
+            return;
+        }
+
+        preview.style.display = '';
+
+        if (imageBox) {
+            imageBox.style.display = hasImage ? '' : 'none';
+        }
+
+        if (image) {
+            image.src = hasImage ? imageUrl : '';
+            image.alt = selected.dataset.optionName || '';
+        }
+
+        if (textBox) {
+            textBox.style.display = hasDetail ? '' : 'none';
+            textBox.innerHTML = hasDetail ? detailText.replace(/\n/g, '<br>') : '';
+        }
     }
-
-    return 0;
-}
 
     function updateSummary() {
         const quantityInput = document.getElementById('quantity');
         const quantity = parseInt(quantityInput?.value || 0);
 
-        const unitPrice = getUnitPriceByQuantity(quantity);
+        const selectedOptionIds = getSelectedOptionIdsForPrice();
+        console.log('selectedOptionIds:', selectedOptionIds);
+
+        const matchedRule = findMatchedPriceRule(selectedOptionIds);
+        const unitPrice = getUnitPriceFromRule(matchedRule, quantity);
         const productTotal = unitPrice * quantity;
 
         let optionTotal = 0;
+        let html = '';
+
         const summaryOptions = document.getElementById('summary-options');
         const checkedOptions = document.querySelectorAll('#customize-form input[type="radio"]:checked');
         const selectedOptions = document.querySelectorAll('#customize-form .option-select-detail');
         const customColorInputs = document.querySelectorAll('.custom-color-input');
 
-        let html = '';
+        // if (matchedRule) {
+        //     html += `
+        //         <div class="summary-item">
+        //             <span>Price Rule</span>
+        //             <strong>${matchedRule.rule_name || 'Matched Rule'}</strong>
+        //         </div>
+        //     `;
+        // } else {
+        //     html += `
+        //         <div class="summary-item">
+        //             <span>Price Rule</span>
+        //             <strong style="color:#dc2626;">No matched price rule</strong>
+        //         </div>
+        //     `;
+        // }
 
         checkedOptions.forEach(function(input) {
+            const groupEl = input.closest('.customize-option-group, .grouped-button-set');
+
+            if (groupEl && groupEl.style.display === 'none') {
+                return;
+            }
+
+            const optionId = parseInt(input.value);
+
             const groupName = input.dataset.groupName || '';
             const optionName = input.dataset.optionName || '';
             const variantName = input.dataset.variantName || '';
             const price = parseFloat(input.dataset.price || 0);
             const variantPrice = parseFloat(input.dataset.variantPrice || 0);
+            const priceType = input.dataset.priceType || 'per_order';
 
-            optionTotal += price + variantPrice;
+            const isRuleOption = isOptionInMatchedRule(optionId, matchedRule);
+
+            if (!isRuleOption) {
+                if (priceType === 'per_item') {
+                    optionTotal += (price + variantPrice) * quantity;
+                } else {
+                    optionTotal += price + variantPrice;
+                }
+            }
 
             const displayName = variantName
                 ? `${optionName} - ${variantName}`
@@ -1467,13 +1637,34 @@
         });
 
         selectedOptions.forEach(function(select) {
+            const groupEl = select.closest('.customize-option-group, .grouped-button-set');
+
+            if (groupEl && groupEl.style.display === 'none') {
+                return;
+            }
+
             const selected = select.options[select.selectedIndex];
+
+            if (!selected || selected.disabled || selected.hidden || !selected.value) {
+                return;
+            }
+
+            const optionId = parseInt(selected.value);
 
             const groupName = select.dataset.groupName || '';
             const optionName = selected.dataset.optionName || selected.textContent || '';
             const price = parseFloat(selected.dataset.price || 0);
+            const priceType = selected.dataset.priceType || 'per_order';
 
-            optionTotal += price;
+            const isRuleOption = isOptionInMatchedRule(optionId, matchedRule);
+
+            if (!isRuleOption) {
+                if (priceType === 'per_item') {
+                    optionTotal += price * quantity;
+                } else {
+                    optionTotal += price;
+                }
+            }
 
             html += `
                 <div class="summary-item">
@@ -1502,58 +1693,245 @@
 
         const total = productTotal + optionTotal;
 
-        if (document.getElementById('summary-unit-price')) {
-            document.getElementById('summary-unit-price').innerText = formatPrice(unitPrice);
+        // if (document.getElementById('summary-unit-price')) {
+        //     document.getElementById('summary-unit-price').innerText = formatPrice(unitPrice);
+        // }
+
+        // if (document.getElementById('summary-quantity')) {
+        //     document.getElementById('summary-quantity').innerText = quantity;
+        // }
+
+        if (summaryOptions) {
+            summaryOptions.innerHTML = html;
         }
 
-        if (document.getElementById('summary-quantity')) {
-            document.getElementById('summary-quantity').innerText = quantity;
+        if (document.getElementById('total-price')) {
+            document.getElementById('total-price').innerText = formatPrice(total);
         }
-
-        summaryOptions.innerHTML = html;
-        document.getElementById('total-price').innerText = formatPrice(total);
     }
 
-    document.querySelectorAll('#customize-form input[type="radio"]').forEach(function(input) {
-        input.addEventListener('change', updateSummary);
-    });
+    function getSelectedOptionIds() {
+        const selected = [];
 
-    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('#customize-form input[type="radio"]:checked').forEach(function(input) {
+            const optionId = parseInt(input.value);
+
+            if (optionId) {
+                selected.push(optionId);
+            }
+        });
+
+        document.querySelectorAll('#customize-form select.option-select-detail').forEach(function(select) {
+            const optionId = parseInt(select.value);
+
+            if (optionId) {
+                selected.push(optionId);
+            }
+        });
+
+        return selected;
+    }
+
+    function clearInputsInside(element) {
+        if (!element) {
+            return;
+        }
+
+        element.querySelectorAll('input[type="radio"]').forEach(function(input) {
+            input.checked = false;
+        });
+
+        element.querySelectorAll('input[type="text"]').forEach(function(input) {
+            input.value = '';
+        });
+
+        element.querySelectorAll('select').forEach(function(select) {
+            select.selectedIndex = 0;
+            updateSingleSelectDetailPreview(select);
+        });
+    }
+
+    function hideDependentGroups() {
+        const targetGroupIds = [
+            ...new Set(
+                optionDependencies
+                    .filter(function(dep) {
+                        return dep.target_type === 'group' && dep.target_group_id;
+                    })
+                    .map(function(dep) {
+                        return parseInt(dep.target_group_id);
+                    })
+            )
+        ];
+
+        targetGroupIds.forEach(function(groupId) {
+            const groupEls = document.querySelectorAll('[data-group-id="' + groupId + '"]');
+
+            groupEls.forEach(function(groupEl) {
+                groupEl.style.display = 'none';
+                clearInputsInside(groupEl);
+            });
+        });
+    }
+
+    function hideDependentOptions() {
+        const targetOptionIds = [
+            ...new Set(
+                optionDependencies
+                    .filter(function(dep) {
+                        return dep.target_type === 'option' && dep.target_option_id;
+                    })
+                    .map(function(dep) {
+                        return parseInt(dep.target_option_id);
+                    })
+            )
+        ];
+
+        targetOptionIds.forEach(function(optionId) {
+            const radioInputs = document.querySelectorAll(
+                '#customize-form input[type="radio"][data-option-id="' + optionId + '"]'
+            );
+
+            radioInputs.forEach(function(input) {
+                const optionBox = input.closest('label');
+
+                if (optionBox) {
+                    optionBox.style.display = 'none';
+                }
+
+                input.checked = false;
+            });
+
+            const selectOptions = document.querySelectorAll(
+                '#customize-form select.option-select-detail option[data-option-id="' + optionId + '"]'
+            );
+
+            selectOptions.forEach(function(option) {
+                option.hidden = true;
+                option.disabled = true;
+            });
+        });
+    }
+
+    function showMatchedDependencies() {
+        const selectedOptionIds = getSelectedOptionIds();
+
+        optionDependencies.forEach(function(dep) {
+            const triggerOptionId = parseInt(dep.parent_option_id);
+
+            if (!selectedOptionIds.includes(triggerOptionId)) {
+                return;
+            }
+
+            if (dep.target_type === 'group' && dep.target_group_id) {
+                const groupEls = document.querySelectorAll('[data-group-id="' + dep.target_group_id + '"]');
+
+                groupEls.forEach(function(groupEl) {
+                    groupEl.style.display = '';
+                });
+            }
+
+            if (dep.target_type === 'option' && dep.target_option_id) {
+                const optionId = parseInt(dep.target_option_id);
+
+                const radioInputs = document.querySelectorAll(
+                    '#customize-form input[type="radio"][data-option-id="' + optionId + '"]'
+                );
+
+                radioInputs.forEach(function(input) {
+                    const optionBox = input.closest('label');
+
+                    if (optionBox) {
+                        optionBox.style.display = '';
+                    }
+                });
+
+                const selectOptions = document.querySelectorAll(
+                    '#customize-form select.option-select-detail option[data-option-id="' + optionId + '"]'
+                );
+
+                selectOptions.forEach(function(option) {
+                    option.hidden = false;
+                    option.disabled = false;
+                });
+            }
+        });
+    }
+
+    function fixSelectDetailAfterDependency() {
+        document.querySelectorAll('#customize-form select.option-select-detail').forEach(function(select) {
+            const selectedOption = select.options[select.selectedIndex];
+
+            if (selectedOption && selectedOption.disabled) {
+                const firstVisibleOption = Array.from(select.options).find(function(option) {
+                    return !option.disabled && !option.hidden && option.value;
+                });
+
+                if (firstVisibleOption) {
+                    select.value = firstVisibleOption.value;
+                    updateSingleSelectDetailPreview(select);
+                }
+            } else {
+                updateSingleSelectDetailPreview(select);
+            }
+        });
+    }
+
+    function updateOptionDependencies() {
+        if (isUpdatingDependencies) {
+            return;
+        }
+
+        isUpdatingDependencies = true;
+
+        hideDependentGroups();
+        hideDependentOptions();
+        showMatchedDependencies();
+        fixSelectDetailAfterDependency();
+
+        isUpdatingDependencies = false;
+
+        updateSummary();
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
         const quantityInput = document.getElementById('quantity');
+
+        document.querySelectorAll('#customize-form input[type="radio"]').forEach(function(input) {
+            input.addEventListener('change', function() {
+                updateOptionDependencies();
+                updateSummary();
+            });
+        });
+
+        document.querySelectorAll('#customize-form select.option-select-detail').forEach(function(select) {
+            select.addEventListener('change', function() {
+                updateSingleSelectDetailPreview(select);
+                updateOptionDependencies();
+                updateSummary();
+            });
+
+            updateSingleSelectDetailPreview(select);
+        });
+
+        document.querySelectorAll('#customize-form select:not(.option-select-detail)').forEach(function(select) {
+            select.addEventListener('change', function() {
+                updateOptionDependencies();
+                updateSummary();
+            });
+        });
 
         if (quantityInput) {
             quantityInput.addEventListener('input', updateSummary);
             quantityInput.addEventListener('change', updateSummary);
         }
 
+        updateOptionDependencies();
         updateSummary();
     });
 </script>
-    <script>
-        document.querySelectorAll('.option-select-detail').forEach(function(select) {
-            select.addEventListener('change', function() {
-                const selected = this.options[this.selectedIndex];
-                const wrapper = this.closest('.option-select-detail-box');
 
-                const image = selected.dataset.image || '';
-                const detail = selected.dataset.detail || '';
-
-                const imgEl = wrapper.querySelector('.select-detail-image img');
-                const textEl = wrapper.querySelector('.select-detail-text');
-
-                if (imgEl) {
-                    imgEl.src = image;
-                }
-
-                if (textEl) {
-                    textEl.innerHTML = detail.replace(/\n/g, '<br>');
-                }
-
-                updateSummary();
-            });
-        });
-    </script>
-  <script>
+<script>
     document.querySelectorAll('.variant-dropdown-item').forEach(function(item) {
         item.addEventListener('click', function() {
             const card = this.closest('.option-variant-card');
@@ -1619,112 +1997,110 @@
 
     updateSummary();
 </script>
-    <script>
-        document.querySelectorAll('.add-color-btn').forEach(function(button) {
-            button.addEventListener('click', function() {
-                const groupId = this.dataset.groupId;
-                const box = document.getElementById('custom-color-box-' + groupId);
 
-                if (!box) {
-                    return;
-                }
+<script>
+    document.querySelectorAll('.add-color-btn').forEach(function(button) {
+        button.addEventListener('click', function() {
+            const groupId = this.dataset.groupId;
+            const box = document.getElementById('custom-color-box-' + groupId);
 
-                const colorRadios = document.querySelectorAll(
-                    '#customize-form input[type="radio"][name="options[' + groupId + ']"]'
-                );
+            if (!box) {
+                return;
+            }
 
-                // ล้างสีที่เลือกอยู่
-                colorRadios.forEach(function(radio) {
-                    radio.checked = false;
-                });
+            const colorRadios = document.querySelectorAll(
+                '#customize-form input[type="radio"][name="options[' + groupId + ']"]'
+            );
 
-                // เปิดช่อง custom color
-                box.style.display = 'block';
-                this.classList.add('is-active');
+            colorRadios.forEach(function(radio) {
+                radio.checked = false;
+            });
+
+            box.style.display = 'block';
+            this.classList.add('is-active');
+
+            const input = box.querySelector('.custom-color-input');
+
+            if (input) {
+                input.focus();
+            }
+
+            updateSummary();
+        });
+    });
+
+    document.querySelectorAll('.option-color-item input[type="radio"]').forEach(function(radio) {
+        radio.addEventListener('change', function() {
+            const groupId = this.name.match(/\[(.*?)\]/)?.[1];
+
+            if (!groupId) {
+                return;
+            }
+
+            const box = document.getElementById('custom-color-box-' + groupId);
+            const addButton = document.querySelector('.add-color-btn[data-group-id="' + groupId + '"]');
+
+            if (box) {
+                box.style.display = 'none';
 
                 const input = box.querySelector('.custom-color-input');
 
                 if (input) {
-                    input.focus();
+                    input.value = '';
                 }
+            }
 
-                updateSummary();
+            if (addButton) {
+                addButton.classList.remove('is-active');
+            }
+
+            updateSummary();
+        });
+    });
+
+    document.querySelectorAll('.custom-color-add-btn').forEach(function(button) {
+        button.addEventListener('click', function() {
+            const box = this.closest('.custom-color-box');
+            const input = box.querySelector('.custom-color-input');
+
+            if (!input || !input.value.trim()) {
+                alert('Please specify Pantone color.');
+                return;
+            }
+
+            updateSummary();
+        });
+    });
+
+    document.querySelectorAll('.custom-color-input').forEach(function(input) {
+        input.addEventListener('input', updateSummary);
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
+
+        popoverTriggerList.forEach(function(popoverTriggerEl) {
+            new bootstrap.Popover(popoverTriggerEl, {
+                container: 'body',
+                html: false
             });
         });
 
-        // ถ้ากลับไปเลือกสีปกติ ให้ปิด custom color และล้างค่า
-        document.querySelectorAll('.option-color-item input[type="radio"]').forEach(function(radio) {
-            radio.addEventListener('change', function() {
-                const groupId = this.name.match(/\[(.*?)\]/)?.[1];
-
-                if (!groupId) {
-                    return;
-                }
-
-                const box = document.getElementById('custom-color-box-' + groupId);
-                const addButton = document.querySelector('.add-color-btn[data-group-id="' + groupId + '"]');
-
-                if (box) {
-                    box.style.display = 'none';
-
-                    const input = box.querySelector('.custom-color-input');
-                    if (input) {
-                        input.value = '';
-                    }
-                }
-
-                if (addButton) {
-                    addButton.classList.remove('is-active');
-                }
-
-                updateSummary();
-            });
-        });
-
-        document.querySelectorAll('.custom-color-add-btn').forEach(function(button) {
-            button.addEventListener('click', function() {
-                const box = this.closest('.custom-color-box');
-                const input = box.querySelector('.custom-color-input');
-
-                if (!input || !input.value.trim()) {
-                    alert('Please specify Pantone color.');
-                    return;
-                }
-
-                updateSummary();
-            });
-        });
-
-        document.querySelectorAll('.custom-color-input').forEach(function(input) {
-            input.addEventListener('input', function() {
-                updateSummary();
-            });
-        });
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
-
+        document.addEventListener('click', function(e) {
             popoverTriggerList.forEach(function(popoverTriggerEl) {
-                new bootstrap.Popover(popoverTriggerEl, {
-                    container: 'body',
-                    html: false
-                });
-            });
+                const popover = bootstrap.Popover.getInstance(popoverTriggerEl);
 
-            document.addEventListener('click', function(e) {
-                popoverTriggerList.forEach(function(popoverTriggerEl) {
-                    const popover = bootstrap.Popover.getInstance(popoverTriggerEl);
-
-                    if (
-                        popover &&
-                        !popoverTriggerEl.contains(e.target) &&
-                        !document.querySelector('.popover')?.contains(e.target)
-                    ) {
-                        popover.hide();
-                    }
-                });
+                if (
+                    popover &&
+                    !popoverTriggerEl.contains(e.target) &&
+                    !document.querySelector('.popover')?.contains(e.target)
+                ) {
+                    popover.hide();
+                }
             });
         });
-    </script>
+    });
+</script>
 @endsection

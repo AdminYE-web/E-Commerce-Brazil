@@ -15,6 +15,7 @@ class OptionGroup extends Model
     'help_text',
     'display_type',
     'is_required',
+     'option_group_main',
     'sort_order',
     'is_active',
 ];

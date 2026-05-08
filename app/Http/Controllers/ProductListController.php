@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\OptionDependency;
 use App\Models\Category;
 use App\Models\Material;
 use App\Models\Product;
@@ -72,18 +73,23 @@ class ProductListController extends Controller
         abort(404);
     }
 
-    $product->load([
+   $product->load([
     'mainImage',
     'images',
     'galleryImages',
     'detail',
     'category',
     'material',
-    'priceTiers',
+
+    // ใช้ของใหม่
+    'priceRules.options',
+    'priceRules.tiers',
+
     'assignedOptions.group.parent',
     'assignedOptions.mainImage',
     'assignedOptions.variants',
 ]);
+
     $optionGroups = $product->assignedOptions
         ->where('pivot.is_active', 1)
         ->sortBy(function ($option) {
@@ -103,7 +109,47 @@ class ProductListController extends Controller
             return $displayGroup?->option_group_id ?? 0;
         });
 
-    return view('products.hotstrap_show', compact('product', 'optionGroups'));
+    $dependencies = OptionDependency::where('is_active', 1)
+        ->orderBy('sort_order')
+        ->get()
+        ->map(function ($dependency) {
+            return [
+                'parent_option_id' => (int) $dependency->parent_option_id,
+                'target_type' => $dependency->target_type,
+                'target_group_id' => $dependency->target_group_id ? (int) $dependency->target_group_id : null,
+                'target_option_id' => $dependency->target_option_id ? (int) $dependency->target_option_id : null,
+            ];
+        })
+        ->values();
+        $priceRules = $product->priceRules
+    ->map(function ($rule) {
+        return [
+            'rule_id' => (int) $rule->rule_id,
+            'rule_name' => $rule->rule_name,
+            'option_ids' => $rule->options
+                ->pluck('option_id')
+                ->map(fn ($id) => (int) $id)
+                ->values(),
+            'tiers' => $rule->tiers
+                ->map(function ($tier) {
+                    return [
+                        'min_qty' => (int) $tier->min_qty,
+                        'max_qty' => $tier->max_qty ? (int) $tier->max_qty : null,
+                        'unit_price' => (float) $tier->unit_price,
+                    ];
+                })
+                ->values(),
+        ];
+    })
+    ->values();
+
+    return view('products.hotstrap_show', compact(
+        'product',
+        'optionGroups',
+        'dependencies',
+        'priceRules'
+   
+    ));
 }
 
    public function showHotmobily(Product $product)

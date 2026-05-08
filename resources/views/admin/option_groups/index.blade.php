@@ -23,6 +23,7 @@
             <th>Required</th>
             <th>Sort</th>
             <th>Required</th>
+            <th>Main Price Group</th>
             <th>Status</th>
             <th>Manage</th>
         </tr>
@@ -37,6 +38,7 @@
                 <td>{{ $group->parent->group_name ?? '-' }}</td>
                 <td>{{ $group->display_type }}</td>
                 <td>{{ $group->is_required ? 'Yes' : 'No' }}</td>
+                <td>{{ $group->option_group_main ? 'Yes' : 'No' }}</td>
                 <td>{{ $group->sort_order }}</td>
                 <td>{{ $group->is_required ? 'Yes' : 'No' }}</td>
                 <td>{{ $group->is_active ? 'Active' : 'Inactive' }}</td>

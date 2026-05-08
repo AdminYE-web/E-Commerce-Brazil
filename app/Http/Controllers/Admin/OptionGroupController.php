@@ -39,6 +39,7 @@ class OptionGroupController extends Controller
             'sort_order' => 'nullable|integer|min:0',
             'help_text' => 'nullable|string',
             'parent_group_id' => 'nullable|exists:option_groups,option_group_id',
+            'option_group_main' => 'nullable|boolean',
         ]);
 
         OptionGroup::create([
@@ -50,6 +51,7 @@ class OptionGroupController extends Controller
             'is_active' => $request->has('is_active') ? 1 : 0,
             'display_type' => $request->display_type,
             'sort_order' => $request->sort_order ?? 0,
+            'option_group_main' => $request->has('option_group_main') ? 1 : 0,
         ]);
 
         return redirect()
@@ -79,6 +81,7 @@ class OptionGroupController extends Controller
             'sort_order' => 'nullable|integer|min:0',
             'help_text' => 'nullable|string',
             'parent_group_id' => 'nullable|exists:option_groups,option_group_id',
+            'option_group_main' => 'nullable|boolean',
         ]);
 
         $optionGroup->update([
@@ -90,6 +93,7 @@ class OptionGroupController extends Controller
             'sort_order' => $request->sort_order ?? 0,
             'is_active' => $request->has('is_active') ? 1 : 0,
             'help_text' => $request->help_text,
+            'option_group_main' => $request->has('option_group_main') ? 1 : 0,
         ]);
 
         return redirect()

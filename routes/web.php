@@ -1,4 +1,5 @@
 <?php
+use App\Http\Controllers\Admin\ProductPriceRuleController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\Admin\ProductOptionVariantController;
@@ -104,6 +105,8 @@ Route::put('product-option-variants/{variant}', [ProductOptionVariantController:
 
 Route::delete('product-option-variants/{variant}', [ProductOptionVariantController::class, 'destroy'])
     ->name('product-option-variants.destroy');
+
+    Route::resource('product-price-rules', ProductPriceRuleController::class);
 });
 
 

@@ -86,5 +86,10 @@ public function assignedOptions()
     ])
     ->withTimestamps();
 }
-
+public function priceRules()
+{
+    return $this->hasMany(ProductPriceRule::class, 'product_id', 'product_id')
+        ->where('is_active', 1)
+        ->orderBy('sort_order');
+}
 }

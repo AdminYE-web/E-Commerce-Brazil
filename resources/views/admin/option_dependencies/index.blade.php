@@ -1,25 +1,32 @@
 <h1>Option Dependencies</h1>
 
-@if(session('success'))
-    <div style="color: green; margin-bottom: 15px;">
-        {{ session('success') }}
-    </div>
-@endif
+<a href="{{ route('admin.dashboard') }}">
+    Admin Dashboard
+</a>
+
+&nbsp;|&nbsp;
 
 <a href="{{ route('admin.option-dependencies.create') }}">
-    Add Option Dependency
+    Add Dependency
 </a>
 
 <br><br>
+
+@if(session('success'))
+    <div style="color:green; margin-bottom:15px;">
+        {{ session('success') }}
+    </div>
+@endif
 
 <table border="1" cellpadding="8" cellspacing="0">
     <thead>
         <tr>
             <th>ID</th>
-            <th>Parent Group</th>
-            <th>Parent Option</th>
-            <th>Child Group</th>
-            <th>Child Option</th>
+            <th>Trigger Option</th>
+            <th>Target Type</th>
+            <th>Target</th>
+            <th>Sort</th>
+            <th>Status</th>
             <th>Manage</th>
         </tr>
     </thead>
@@ -31,19 +38,27 @@
 
                 <td>
                     {{ $dependency->parentOption->group->group_name ?? '-' }}
+                    /
+                    <strong>{{ $dependency->parentOption->option_name ?? '-' }}</strong>
                 </td>
 
-                <td>
-                    {{ $dependency->parentOption->option_name ?? '-' }}
-                </td>
+                <td>{{ $dependency->target_type }}</td>
 
                 <td>
-                    {{ $dependency->childOption->group->group_name ?? '-' }}
+                    @if($dependency->target_type === 'group')
+                        Group:
+                        <strong>{{ $dependency->targetGroup->group_name ?? '-' }}</strong>
+                    @else
+                        Option:
+                        {{ $dependency->targetOption->group->group_name ?? '-' }}
+                        /
+                        <strong>{{ $dependency->targetOption->option_name ?? '-' }}</strong>
+                    @endif
                 </td>
 
-                <td>
-                    {{ $dependency->childOption->option_name ?? '-' }}
-                </td>
+                <td>{{ $dependency->sort_order }}</td>
+
+                <td>{{ $dependency->is_active ? 'Active' : 'Inactive' }}</td>
 
                 <td>
                     <a href="{{ route('admin.option-dependencies.edit', $dependency->dependency_id) }}">
@@ -58,10 +73,7 @@
                         @csrf
                         @method('DELETE')
 
-                        <button 
-                            type="submit" 
-                            onclick="return confirm('Delete this dependency?')"
-                        >
+                        <button type="submit" onclick="return confirm('Delete this dependency?')">
                             Delete
                         </button>
                     </form>
@@ -69,8 +81,8 @@
             </tr>
         @empty
             <tr>
-                <td colspan="6" align="center">
-                    No option dependencies found.
+                <td colspan="7" align="center">
+                    No dependencies found.
                 </td>
             </tr>
         @endforelse
