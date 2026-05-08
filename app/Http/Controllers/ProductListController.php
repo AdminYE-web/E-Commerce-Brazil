@@ -190,6 +190,8 @@ class ProductListController extends Controller
             'material',
         ])->where('product_code', $code)->firstOrFail();
 
+        // dd($product);
+
         $relatedProducts = Product::with('mainImage')
             ->where('is_active', 1)
             ->where('category_id', $product->category_id)

@@ -63,6 +63,14 @@ Route::post('/cart/add', [CartController::class, 'add'])
 
 Route::get('/cart', [CartController::class, 'index'])
     ->name('cart.index');
+    Route::get('/cart/edit/{cartItemId}', [CartController::class, 'edit'])
+    ->name('cart.edit');
+
+Route::post('/cart/update-quantity', [CartController::class, 'updateQuantity'])
+    ->name('cart.updateQuantity');
+
+Route::post('/cart/remove', [CartController::class, 'remove'])
+    ->name('cart.remove');
 
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [AdminDashboardController::class, 'index'])

@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Models;
-
+use App\Models\ProductPriceRule;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\ProductDetail;
 use App\Models\ProductPriceTier;
@@ -90,6 +90,7 @@ public function priceRules()
 {
     return $this->hasMany(ProductPriceRule::class, 'product_id', 'product_id')
         ->where('is_active', 1)
-        ->orderBy('sort_order');
+        ->orderBy('sort_order')
+        ->orderBy('rule_id');
 }
 }
