@@ -948,13 +948,6 @@
         ];
     })->values();
 
-    // dd($product);
-
-    // echo "<pre>";
-    // print_r($product);
-    // echo "</pre>";
-    // die;
-
     $defaultQuantity = old('quantity', 100);
 
     $defaultTier = $product->priceTiers
@@ -1562,8 +1555,24 @@
         });
     </script>
   <script>
+    document.querySelectorAll('.variant-dropdown-btn').forEach(function(button) {
+        button.addEventListener('click', function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            if (!window.bootstrap || !bootstrap.Dropdown) {
+                return;
+            }
+
+            bootstrap.Dropdown.getOrCreateInstance(button).toggle();
+        });
+    });
+
     document.querySelectorAll('.variant-dropdown-item').forEach(function(item) {
-        item.addEventListener('click', function() {
+        item.addEventListener('click', function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+
             const card = this.closest('.option-variant-card');
 
             const variantId = this.dataset.variantId;
@@ -1602,6 +1611,12 @@
             }
 
             updateSummary();
+
+            const dropdownButton = this.closest('.dropdown')?.querySelector('.variant-dropdown-btn');
+
+            if (dropdownButton && window.bootstrap && bootstrap.Dropdown) {
+                bootstrap.Dropdown.getOrCreateInstance(dropdownButton).hide();
+            }
         });
     });
 

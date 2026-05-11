@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\ProductArtworkTemplateController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\MaterialController;
@@ -73,6 +75,34 @@ Route::post('/cart/update-quantity', [CartController::class, 'updateQuantity'])
 Route::post('/cart/remove', [CartController::class, 'remove'])
     ->name('cart.remove');
 
+       Route::get('/checkout', [OrderController::class, 'checkout'])
+    ->name('checkout.index');
+
+
+    Route::post('/checkout/upload-artwork', [OrderController::class, 'storeArtworkStep'])
+    ->name('checkout.storeArtworkStep');
+
+Route::get('/checkout/address', [OrderController::class, 'address'])
+    ->name('checkout.address');
+
+Route::post('/checkout/address', [OrderController::class, 'storeAddressStep'])
+    ->name('checkout.storeAddressStep');
+
+Route::get('/checkout/payment', [OrderController::class, 'payment'])
+    ->name('checkout.payment');
+
+    Route::post('/checkout/payment', [OrderController::class, 'storePaymentStep'])
+    ->name('checkout.storePaymentStep');
+
+Route::get('/checkout/review', [OrderController::class, 'review'])
+    ->name('checkout.review');
+
+    Route::post('/checkout/place-order', [OrderController::class, 'placeOrder'])
+    ->name('checkout.placeOrder');
+
+Route::get('/checkout/success/{order}', [OrderController::class, 'success'])
+    ->name('checkout.success');
+
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [AdminDashboardController::class, 'index'])
         ->name('dashboard');
@@ -117,6 +147,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         ->name('product-option-variants.destroy');
 
     Route::resource('product-price-rules', ProductPriceRuleController::class);
+    Route::resource('product-artwork-templates', ProductArtworkTemplateController::class);
 });
 
 Route::middleware('guest')->group(function () {

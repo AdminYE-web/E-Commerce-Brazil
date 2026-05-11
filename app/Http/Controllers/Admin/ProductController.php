@@ -47,6 +47,12 @@ class ProductController extends Controller
 
         'images.*' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         'gallery_images.*' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        'can_upload_artwork' => 'nullable|boolean',
+'artwork_required' => 'nullable|boolean',
+'allow_no_artwork' => 'nullable|boolean',
+'allow_text_print' => 'nullable|boolean',
+'allow_font_select' => 'nullable|boolean',
+'allow_template_select' => 'nullable|boolean',
     ]);
 
     $product = Product::create([
@@ -58,6 +64,12 @@ class ProductController extends Controller
         'is_antivirus_included' => $request->has('is_antivirus_included') ? 1 : 0,
         'is_active' => $request->has('is_active') ? 1 : 0,
         'product_type' => $request->product_type,
+        'can_upload_artwork' => $request->has('can_upload_artwork') ? 1 : 0,
+'artwork_required' => $request->has('artwork_required') ? 1 : 0,
+'allow_no_artwork' => $request->has('allow_no_artwork') ? 1 : 0,
+'allow_text_print' => $request->has('allow_text_print') ? 1 : 0,
+'allow_font_select' => $request->has('allow_font_select') ? 1 : 0,
+'allow_template_select' => $request->has('allow_template_select') ? 1 : 0,
     ]);
 
     // Main images
@@ -127,6 +139,12 @@ class ProductController extends Controller
         'is_active' => 'nullable|boolean',
 
         'images.*' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        'can_upload_artwork' => 'nullable|boolean',
+'artwork_required' => 'nullable|boolean',
+'allow_no_artwork' => 'nullable|boolean',
+'allow_text_print' => 'nullable|boolean',
+'allow_font_select' => 'nullable|boolean',
+'allow_template_select' => 'nullable|boolean',
     ]);
     
 
@@ -139,6 +157,12 @@ class ProductController extends Controller
         'description' => $request->description,
         'is_antivirus_included' => $request->has('is_antivirus_included') ? 1 : 0,
         'is_active' => $request->has('is_active') ? 1 : 0,
+        'can_upload_artwork' => $request->has('can_upload_artwork') ? 1 : 0,
+'artwork_required' => $request->has('artwork_required') ? 1 : 0,
+'allow_no_artwork' => $request->has('allow_no_artwork') ? 1 : 0,
+'allow_text_print' => $request->has('allow_text_print') ? 1 : 0,
+'allow_font_select' => $request->has('allow_font_select') ? 1 : 0,
+'allow_template_select' => $request->has('allow_template_select') ? 1 : 0,
     ]);
     if ($request->filled('main_image_id')) {
     $product->images()->update([

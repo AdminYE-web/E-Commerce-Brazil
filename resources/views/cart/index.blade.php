@@ -302,7 +302,9 @@
                         </div>
 
                         <div class="d-grid gap-2 mt-4">
-                            <button class="btn btn-primary cart-checkout-btn">Finalizar Compra</button>
+                            <a href="{{ route('checkout.index') }}" class="btn btn-primary cart-checkout-btn">
+    Finalizar Compra
+</a>
                             <a href="{{ route('products.index') }}" class="btn btn-outline-secondary">Continuar
                                 Comprando</a>
                         </div>

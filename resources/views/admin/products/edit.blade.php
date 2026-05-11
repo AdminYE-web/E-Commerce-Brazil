@@ -172,6 +172,91 @@
     </div>
 
     <br>
+    <hr>
+
+<h3>Artwork / Template Setting</h3>
+
+<div>
+    <label>
+        <input 
+            type="checkbox" 
+            name="can_upload_artwork" 
+            value="1"
+            {{ old('can_upload_artwork', $product->can_upload_artwork ?? 0) ? 'checked' : '' }}
+        >
+        Allow Upload Artwork
+    </label>
+</div>
+
+<br>
+
+<div>
+    <label>
+        <input 
+            type="checkbox" 
+            name="artwork_required" 
+            value="1"
+            {{ old('artwork_required', $product->artwork_required ?? 0) ? 'checked' : '' }}
+        >
+        Artwork Required
+    </label>
+</div>
+
+<br>
+
+<div>
+    <label>
+        <input 
+            type="checkbox" 
+            name="allow_no_artwork" 
+            value="1"
+            {{ old('allow_no_artwork', $product->allow_no_artwork ?? 1) ? 'checked' : '' }}
+        >
+        Allow “No Artwork”
+    </label>
+</div>
+
+<br>
+
+<div>
+    <label>
+        <input 
+            type="checkbox" 
+            name="allow_text_print" 
+            value="1"
+            {{ old('allow_text_print', $product->allow_text_print ?? 0) ? 'checked' : '' }}
+        >
+        Allow Text Printing
+    </label>
+</div>
+
+<br>
+
+<div>
+    <label>
+        <input 
+            type="checkbox" 
+            name="allow_font_select" 
+            value="1"
+            {{ old('allow_font_select', $product->allow_font_select ?? 0) ? 'checked' : '' }}
+        >
+        Allow Font Selection
+    </label>
+</div>
+
+<br>
+
+<div>
+    <label>
+        <input 
+            type="checkbox" 
+            name="allow_template_select" 
+            value="1"
+            {{ old('allow_template_select', $product->allow_template_select ?? 0) ? 'checked' : '' }}
+        >
+        Allow Template Selection
+    </label>
+</div>
 
     <div>
         <label>

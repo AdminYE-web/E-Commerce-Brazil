@@ -158,6 +158,11 @@
                 <h3>Product Price Rules</h3>
                 <p>จัดการราคาตามชุด option ที่ลูกค้าเลือก เช่น 20mm + One Side</p>
             </a>
+            <a href="{{ route('admin.product-artwork-templates.index') }}" class="admin-menu-card">
+    <div class="admin-menu-icon">🎨</div>
+    <h3>Artwork Templates</h3>
+    <p>จัดการ template สำหรับหน้า Upload de Arte ของสินค้าแต่ละตัว</p>
+</a>
 
         </div>
 

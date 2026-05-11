@@ -5,6 +5,7 @@ use App\Models\ProductPriceRule;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\ProductDetail;
 use App\Models\ProductPriceTier;
+use App\Models\ProductArtworkTemplate;
 
 class Product extends Model
 {
@@ -19,6 +20,12 @@ class Product extends Model
     'description',
     'is_antivirus_included',
     'is_active',
+    'can_upload_artwork',
+'artwork_required',
+'allow_no_artwork',
+'allow_text_print',
+'allow_font_select',
+'allow_template_select',
 ];
     public function priceTiers()
 {
@@ -92,5 +99,11 @@ public function priceRules()
         ->where('is_active', 1)
         ->orderBy('sort_order')
         ->orderBy('rule_id');
+}
+public function artworkTemplates()
+{
+    return $this->hasMany(ProductArtworkTemplate::class, 'product_id', 'product_id')
+        ->where('is_active', 1)
+        ->orderBy('sort_order');
 }
 }
