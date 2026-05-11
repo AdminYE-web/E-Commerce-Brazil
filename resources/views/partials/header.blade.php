@@ -7,6 +7,18 @@
 @endphp
 
 <header class="site-header">
+    <div class="announcement-bar" id="announcementBar">
+        <div class="announcement-track">
+            <span>Sua referência em brindes no Japão, com suporte total em português</span>
+            <span>Produção rápida e entrega em todo o Japão. Peça seus brindes personalizados hoje!</span>
+            <span>Crie seus brindes personalizados em poucos cliques. Simples, rápido e de alta qualidade.</span>
+
+            {{-- duplicate สำหรับให้วิ่งต่อเนื่องไม่กระตุก --}}
+            <span>Sua referência em brindes no Japão, com suporte total em português</span>
+            <span>Produção rápida e entrega em todo o Japão. Peça seus brindes personalizados hoje!</span>
+            <span>Crie seus brindes personalizados em poucos cliques. Simples, rápido e de alta qualidade.</span>
+        </div>
+    </div>
 
     <!-- ================= DESKTOP ================= -->
     <div class="desktop-header d-none d-lg-block">
@@ -93,7 +105,7 @@
                             <li><a href="#">{{ __('messages.header.mega.antibacterial_lanyards') }}</a></li>
                         </ul>
 
-                        <a href="products" class="mega-menu-view-all">{{ __('messages.header.view_all') }} <i class="bi bi-arrow-right"></i></a>
+                        <a href="{{ route('products.index') }}" class="mega-menu-view-all">{{ __('messages.header.view_all') }} <i class="bi bi-arrow-right"></i></a>
                     </div>
 
                     <!-- column 2 -->

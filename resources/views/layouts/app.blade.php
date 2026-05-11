@@ -219,6 +219,26 @@ async function LoadGeoCode(zipcode = '')
 }
 
 </script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const announcementBar = document.getElementById('announcementBar');
+
+    if (!announcementBar) {
+        return;
+    }
+
+    function toggleAnnouncementBar() {
+        if (window.scrollY > 0) {
+            announcementBar.classList.add('is-hidden');
+        } else {
+            announcementBar.classList.remove('is-hidden');
+        }
+    }
+
+    window.addEventListener('scroll', toggleAnnouncementBar);
+    toggleAnnouncementBar();
+});
+</script>
 </body>
 
 @yield('js')

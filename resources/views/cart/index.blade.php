@@ -3,44 +3,44 @@
 @section('title', 'Carrinho')
 
 @section('content')
-   @php
-    $cartItems = collect($cart);
+    @php
+        $cartItems = collect($cart);
 
-    $totalItems = $cartItems->count();
-    $totalQty = $cartItems->sum(fn($item) => (int) ($item['quantity'] ?? 0));
-    $subtotal = $cartItems->sum(fn($item) => (float) ($item['item_total'] ?? 0));
+        $totalItems = $cartItems->count();
+        $totalQty = $cartItems->sum(fn($item) => (int) ($item['quantity'] ?? 0));
+        $subtotal = $cartItems->sum(fn($item) => (float) ($item['item_total'] ?? 0));
 
-    $shipping = $subtotal > 10000 ? 0 : ($totalItems > 0 ? 800 : 0);
-    $estimatedTax = $totalItems > 0 ? 20 : 0;
-    $grandTotal = $subtotal + $shipping + $estimatedTax;
-@endphp
-<div class="cart-page py-4">
-    <div class="container">
+        $shipping = $subtotal > 10000 ? 0 : ($totalItems > 0 ? 800 : 0);
+        $estimatedTax = $totalItems > 0 ? 20 : 0;
+        $grandTotal = $subtotal + $shipping + $estimatedTax;
+    @endphp
+    <div class="cart-page py-4">
+        <div class="container">
 
-        <h2 class="cart-title mb-3">Carrinho</h2>
+            <h2 class="cart-title mb-3">Carrinho</h2>
 
-        @if($cartItems->isEmpty())
-            <div class="empty-cart-wrapper">
-                <div class="empty-cart-illustration">
-                    <img src="{{ asset('assets/images/icon/emtry-cart.png') }}" alt="Empty cart">
+            @if ($cartItems->isEmpty())
+                <div class="empty-cart-wrapper">
+                    <div class="empty-cart-illustration">
+                        <img src="{{ asset('assets/images/icon/emtry-cart.png') }}" alt="Empty cart">
+                    </div>
+
+                    <div class="empty-cart-text">
+                        Your cart is empty
+                    </div>
+
+                    <a href="{{ route('products.index') }}" class="empty-cart-btn">
+                        Go Shopping
+                    </a>
                 </div>
+            @else
+                <div class="row g-4">
+                    {{-- LEFT cart items --}}
+                    <div class="col-lg-8">
+                        <div class="cart-left">
 
-                <div class="empty-cart-text">
-                    Your cart is empty
-                </div>
 
-                <a href="{{ route('products.index') }}" class="empty-cart-btn">
-                    Go Shopping
-                </a>
-            </div>
-        @else
-            <div class="row g-4">
-                {{-- LEFT cart items --}}
-                <div class="col-lg-8">
-                   <div class="cart-left">
-                       
-
-                        {{-- @if (session('success'))
+                            {{-- @if (session('success'))
                             <div class="alert alert-success">{{ session('success') }}</div>
                         @endif
 
@@ -48,274 +48,296 @@
                             <div class="alert alert-danger">{{ session('error') }}</div>
                         @endif --}}
 
-                        @if ($cartItems->count())
-                            <div class="cart-select-all mb-3">
-                                <label class="d-flex align-items-center gap-2">
-                                    <input type="checkbox" id="selectAllCart" checked>
-                                    <span class="numselect">Selecionar tudo <span
-                                            class="countnum">({{ $cartItems->count() }})</span></span>
-                                </label>
-                            </div>
+                            @if ($cartItems->count())
+                                <div class="cart-select-all mb-3">
+                                    <label class="d-flex align-items-center gap-2">
+                                        <input type="checkbox" id="selectAllCart" checked>
+                                        <span class="numselect">Selecionar tudo <span
+                                                class="countnum">({{ $cartItems->count() }})</span></span>
+                                    </label>
+                                </div>
 
-                            <div id="cartItemsWrap">
-                                @foreach ($cartItems as $item)
-                                    @php
-                                        $cartItemId = $item['cart_item_id'];
-                                        $productName = $item['product_name'] ?? '-';
-                                        $productImage = $item['product_image'] ?? null;
-                                        $quantity = (int) ($item['quantity'] ?? 1);
-                                        $unitPrice = (float) ($item['unit_price'] ?? ($item['base_price'] ?? 0));
-                                        $itemTotal = (float) ($item['item_total'] ?? $unitPrice * $quantity);
-                                        $options = $item['options'] ?? [];
-                                        $customColors = $item['custom_colors'] ?? [];
-                                    @endphp
+                                <div id="cartItemsWrap">
+                                    @foreach ($cartItems as $item)
+                                        @php
+                                            $cartItemId = $item['cart_item_id'];
+                                            $productName = $item['product_name'] ?? '-';
+                                            $productImage = $item['product_image'] ?? null;
+                                            $quantity = (int) ($item['quantity'] ?? 1);
+                                            $unitPrice = (float) ($item['unit_price'] ?? ($item['base_price'] ?? 0));
+                                            $itemTotal = (float) ($item['item_total'] ?? $unitPrice * $quantity);
+                                            $options = $item['options'] ?? [];
+                                            $customColors = $item['custom_colors'] ?? [];
+                                        @endphp
 
-                                    <div class="cart-card mb-3" data-cart-item-id="{{ $cartItemId }}"
-                                        data-quantity="{{ $quantity }}" data-item-total="{{ $itemTotal }}">
+                                        <div class="cart-card mb-3" data-cart-item-id="{{ $cartItemId }}"
+                                            data-quantity="{{ $quantity }}" data-item-total="{{ $itemTotal }}">
 
-                                        <div class="row g-3 align-items-start">
-                                            <div class="col-auto">
-                                                <div class="cart-check-wrap">
-                                                    <input type="checkbox" class="cart-item-checkbox" checked
-                                                        data-item-total="{{ $itemTotal }}"
-                                                        data-quantity="{{ $quantity }}">
-                                                </div>
-                                            </div>
-
-                                            <div class="col-auto">
-                                                <div class="cart-thumb">
-                                                    @if ($productImage)
-                                                        <img src="{{ asset('storage/' . $productImage) }}"
-                                                            alt="{{ $productName }}">
-                                                    @else
-                                                        <img src="{{ asset('images/no-image.png') }}" alt="No image">
-                                                    @endif
-                                                </div>
-                                            </div>
-
-                                            <div class="col">
-                                                <div class="cart-card-main">
-                                                    <div
-                                                        class="cart-card-top d-flex justify-content-between gap-3 flex-wrap">
-                                                        <div class="cart-product-info">
-                                                            <div class="cart-category small text-muted">
-                                                                Cordão
-                                                            </div>
-
-                                                            <h4 class="cart-product-name">
-                                                                {{ $productName }}
-                                                            </h4>
-
-                                                            <div class="cart-qty-inline">
-                                                                <span>Qtd:</span>
-
-                                                                <form action="{{ route('cart.updateQuantity') }}"
-                                                                    method="POST"
-                                                                    class="cart-qty-form d-flex align-items-center">
-                                                                    @csrf
-
-                                                                    <input type="hidden" name="cart_item_id"
-                                                                        value="{{ $cartItemId }}">
-
-                                                                    <button type="button"
-                                                                        class="qty-btn qty-minus">-</button>
-
-                                                                    <input type="number" name="quantity" class="qty-input"
-                                                                        value="{{ $quantity }}" min="1">
-
-                                                                    <button type="button"
-                                                                        class="qty-btn qty-plus">+</button>
-                                                                </form>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="cart-price-info text-end">
-                                                            <div class="small text-muted">Preço Unitário</div>
-                                                            <div class="cart-unit-price">¥
-                                                                {{ number_format($unitPrice, 2) }} /un</div>
-
-                                                            <div class="small text-muted mt-2">Total do Item</div>
-                                                            <div class="cart-item-total-text">¥
-                                                                {{ number_format($itemTotal, 2) }}</div>
-                                                        </div>
+                                            <div class="row g-3 align-items-start">
+                                                <div class="col-auto">
+                                                    <div class="cart-check-wrap">
+                                                        <input type="checkbox" class="cart-item-checkbox" checked
+                                                            data-item-total="{{ $itemTotal }}"
+                                                            data-quantity="{{ $quantity }}">
                                                     </div>
+                                                </div>
 
-                                                    <div
-                                                        class="cart-card-bottom d-flex justify-content-between align-items-end gap-3 flex-wrap mt-3">
-                                                        <div>
-
-
-                                                            <div class="cart-actions d-flex align-items-center gap-2">
-                                                                <a href="{{ route('cart.edit', $cartItemId) }}"
-                                                                    class="cart-icon-link" aria-label="Edit">
-                                                                    <img src="{{ asset('assets/images/icon/edit-icon.png') }}"
-                                                                        alt="">
-                                                                </a>
-
-                                                                <form action="{{ route('cart.remove') }}" method="POST"
-                                                                    style="display:inline;">
-                                                                    @csrf
-                                                                    <input type="hidden" name="cart_item_id"
-                                                                        value="{{ $cartItemId }}">
-                                                                    <button type="submit" class="cart-delete-btn"
-                                                                        aria-label="Delete">
-                                                                        <img src="{{ asset('assets/images/icon/delete-icon.png') }}"
-                                                                            alt="">
-                                                                    </button>
-                                                                </form>
-                                                            </div>
-                                                        </div>
-
-                                                        <div>
-                                                            <button type="button"
-                                                                class="cart-detail-link toggle-detail-btn"
-                                                                data-target="#detail-{{ $loop->index }}">
-                                                                Details
-                                                            </button>
-                                                        </div>
+                                                <div class="col-auto">
+                                                    <div class="cart-thumb">
+                                                        @if ($productImage)
+                                                            <img src="{{ asset('storage/' . $productImage) }}"
+                                                                alt="{{ $productName }}">
+                                                        @else
+                                                            <img src="{{ asset('images/no-image.png') }}" alt="No image">
+                                                        @endif
                                                     </div>
+                                                </div>
 
-                                                    @php
-                                                        $groupedOptions = collect($options)->groupBy('group_name');
-                                                    @endphp
-
-                                                    <div class="cart-detail-box mt-3" id="detail-{{ $loop->index }}">
-
-                                                        @foreach ($groupedOptions as $groupName => $groupItems)
-                                                            <div class="cart-detail-row">
-                                                                <div class="cart-detail-label">
-                                                                    {{ $groupName }}
+                                                <div class="col">
+                                                    <div class="cart-card-main">
+                                                        <div
+                                                            class="cart-card-top d-flex justify-content-between gap-3 flex-wrap">
+                                                            <div class="cart-product-info">
+                                                                <div class="cart-category small text-muted">
+                                                                    Cordão
                                                                 </div>
 
-                                                                <div class="cart-detail-value">
-                                                                    @if (str_contains(strtolower($groupName), 'cor') || str_contains(strtolower($groupName), 'color'))
-                                                                        <div class="cart-color-list">
+                                                                <h4 class="cart-product-name">
+                                                                    {{ $productName }}
+                                                                </h4>
+
+                                                                <div class="cart-qty-inline">
+                                                                    <span>Qtd:</span>
+
+                                                                    <form action="{{ route('cart.updateQuantity') }}"
+                                                                        method="POST"
+                                                                        class="cart-qty-form d-flex align-items-center">
+                                                                        @csrf
+
+                                                                        <input type="hidden" name="cart_item_id"
+                                                                            value="{{ $cartItemId }}">
+
+                                                                        <button type="button"
+                                                                            class="qty-btn qty-minus">-</button>
+
+                                                                        <input type="number" name="quantity"
+                                                                            class="qty-input" value="{{ $quantity }}"
+                                                                            min="1">
+
+                                                                        <button type="button"
+                                                                            class="qty-btn qty-plus">+</button>
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="cart-price-info text-end">
+                                                                <div class="small text-muted">Preço Unitário</div>
+                                                                <div class="cart-unit-price">¥
+                                                                    {{ number_format($unitPrice, 2) }} /un</div>
+
+                                                                <div class="small text-muted mt-2">Total do Item</div>
+                                                                <div class="cart-item-total-text">¥
+                                                                    {{ number_format($itemTotal, 2) }}</div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div
+                                                            class="cart-card-bottom d-flex justify-content-between align-items-end gap-3 flex-wrap mt-3">
+                                                            <div>
+
+
+                                                                <div class="cart-actions d-flex align-items-center gap-2">
+                                                                    <a href="{{ route('cart.edit', $cartItemId) }}"
+                                                                        class="cart-icon-link" aria-label="Edit">
+                                                                        <img src="{{ asset('assets/images/icon/edit-icon.png') }}"
+                                                                            alt="">
+                                                                    </a>
+
+                                                                    <form action="{{ route('cart.remove') }}"
+                                                                        method="POST" style="display:inline;">
+                                                                        @csrf
+                                                                        <input type="hidden" name="cart_item_id"
+                                                                            value="{{ $cartItemId }}">
+                                                                        <button type="submit" class="cart-delete-btn"
+                                                                            aria-label="Delete">
+                                                                            <img src="{{ asset('assets/images/icon/delete-icon.png') }}"
+                                                                                alt="">
+                                                                        </button>
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+
+                                                            <div>
+                                                                <button type="button"
+                                                                    class="cart-detail-link toggle-detail-btn"
+                                                                    data-target="#detail-{{ $loop->index }}">
+                                                                    Details
+                                                                </button>
+                                                            </div>
+                                                        </div>
+
+                                                        @php
+                                                            $groupedOptions = collect($options)->groupBy('group_name');
+                                                        @endphp
+
+                                                        <div class="cart-detail-box mt-3" id="detail-{{ $loop->index }}">
+
+                                                            @foreach ($groupedOptions as $groupName => $groupItems)
+                                                                @php
+                                                                    $hasRealColorCode = collect($groupItems)->contains(
+                                                                        function ($opt) {
+                                                                            return !empty($opt['color_code']) ||
+                                                                                !empty($opt['variant_color_code']);
+                                                                        },
+                                                                    );
+                                                                @endphp
+
+                                                                <div class="cart-detail-row">
+                                                                    <div class="cart-detail-label">
+                                                                        {{ $groupName }}
+                                                                    </div>
+
+                                                                    <div class="cart-detail-value">
+                                                                        @if ($hasRealColorCode)
+                                                                            <div class="cart-color-list">
+                                                                                @foreach ($groupItems as $opt)
+                                                                                    @php
+                                                                                        $dotColor =
+                                                                                            $opt['color_code'] ??
+                                                                                            ($opt[
+                                                                                                'variant_color_code'
+                                                                                            ] ??
+                                                                                                null);
+                                                                                    @endphp
+
+                                                                                    <div class="cart-color-item">
+                                                                                        @if ($dotColor)
+                                                                                            <span class="cart-color-dot"
+                                                                                                style="background: {{ $dotColor }};">
+                                                                                            </span>
+                                                                                        @endif
+
+                                                                                        <span>
+                                                                                            {{ $opt['option_name'] ?? '-' }}
+                                                                                            @if (!empty($opt['variant_name']))
+                                                                                                -
+                                                                                                {{ $opt['variant_name'] }}
+                                                                                            @endif
+                                                                                        </span>
+                                                                                    </div>
+                                                                                @endforeach
+                                                                            </div>
+                                                                        @else
                                                                             @foreach ($groupItems as $opt)
+                                                                                <div class="cart-detail-text">
+                                                                                    {{ $opt['option_name'] ?? '-' }}
+                                                                                    @if (!empty($opt['variant_name']))
+                                                                                        - {{ $opt['variant_name'] }}
+                                                                                    @endif
+                                                                                </div>
+                                                                            @endforeach
+                                                                        @endif
+                                                                    </div>
+                                                                </div>
+                                                            @endforeach
+
+                                                            @if (!empty($customColors))
+                                                                <div class="cart-detail-row">
+                                                                    <div class="cart-detail-label">
+                                                                        Cor do Cordão:
+                                                                    </div>
+
+                                                                    <div class="cart-detail-value">
+                                                                        <div class="cart-color-list">
+                                                                            @foreach ($customColors as $color)
                                                                                 <div class="cart-color-item">
                                                                                     <span class="cart-color-dot"
-                                                                                        style="background: {{ $opt['color_code'] ?? ($opt['variant_color_code'] ?? '#5b9b4c') }};">
-                                                                                    </span>
-
-                                                                                    <span>
-                                                                                        {{ $opt['option_name'] ?? '-' }}
-                                                                                        @if (!empty($opt['variant_name']))
-                                                                                            , {{ $opt['variant_name'] }}
-                                                                                        @endif
-                                                                                    </span>
+                                                                                        style="background:#5b9b4c;"></span>
+                                                                                    <span>{{ $color['value'] ?? '-' }}</span>
                                                                                 </div>
                                                                             @endforeach
                                                                         </div>
-                                                                    @else
-                                                                        @foreach ($groupItems as $opt)
-                                                                            <div class="cart-detail-text">
-                                                                                {{ $opt['option_name'] ?? '-' }}
-                                                                                @if (!empty($opt['variant_name']))
-                                                                                    - {{ $opt['variant_name'] }}
-                                                                                @endif
-                                                                            </div>
-                                                                        @endforeach
-                                                                    @endif
-                                                                </div>
-                                                            </div>
-                                                        @endforeach
-
-                                                        @if (!empty($customColors))
-                                                            <div class="cart-detail-row">
-                                                                <div class="cart-detail-label">
-                                                                    Cor do Cordão:
-                                                                </div>
-
-                                                                <div class="cart-detail-value">
-                                                                    <div class="cart-color-list">
-                                                                        @foreach ($customColors as $color)
-                                                                            <div class="cart-color-item">
-                                                                                <span class="cart-color-dot"
-                                                                                    style="background:#5b9b4c;"></span>
-                                                                                <span>{{ $color['value'] ?? '-' }}</span>
-                                                                            </div>
-                                                                        @endforeach
                                                                     </div>
                                                                 </div>
-                                                            </div>
-                                                        @endif
+                                                            @endif
 
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        @else
-                            <div class="alert alert-info">
-                                Your cart is empty.
-                            </div>
-                        @endif
-                    </div>
-                </div>
-
-                {{-- RIGHT summary --}}
-                <div class="col-lg-4">
-                    <div class="cart-summary">
-                        <h3 class="cart-summary-title">Finalizar Compra</h3>
-                        <div class="small fw-semibold mb-3">Resumo do Pedido</div>
-
-                        <div class="summary-line">
-                            <span>Itens :</span>
-                            <strong><span id="summaryItems">{{ $totalItems }}</span> products</strong>
-                        </div>
-
-                        <div class="summary-line">
-                            <span>Quantidade Total :</span>
-                            <strong><span id="summaryQty">{{ $totalQty }}</span> pcs</strong>
-                        </div>
-
-                        <div class="summary-line">
-                            <span>Subtotal :</span>
-                            <strong>¥ <span id="summarySubtotal">{{ number_format($subtotal, 2) }}</span></strong>
-                        </div>
-
-                        <div class="summary-line">
-                            <span>Frete :</span>
-                            <strong>¥ <span id="summaryShipping">{{ number_format($shipping, 2) }}</span></strong>
-                        </div>
-
-                        <div class="summary-line">
-                            <span>Imposto Estimado :</span>
-                            <strong>¥ <span id="summaryTax">{{ number_format($estimatedTax, 2) }}</span></strong>
-                        </div>
-
-                        <div class="summary-total">
-                            <span>Total</span>
-                            <strong>¥ <span id="summaryGrandTotal">{{ number_format($grandTotal, 2) }}</span></strong>
-                        </div>
-
-                        <div class="cart-tip-box">
-                            💡 Dica: Frete ¥800. Grátis em pedidos acima de ¥10,000 (valor bruto).
-                        </div>
-
-                        <div class="coupon-box mt-3">
-                            <div class="input-group">
-                                <input type="text" class="form-control" placeholder="Cartão Presente ou Cupom">
-                                <button class="btn btn-primary" type="button">›</button>
-                            </div>
-                        </div>
-
-                        <div class="d-grid gap-2 mt-4">
-                            <a href="{{ route('checkout.index') }}" class="btn btn-primary cart-checkout-btn">
-    Finalizar Compra
-</a>
-                            <a href="{{ route('products.index') }}" class="btn btn-outline-secondary">Continuar
-                                Comprando</a>
+                                    @endforeach
+                                </div>
+                            @else
+                                <div class="alert alert-info">
+                                    Your cart is empty.
+                                </div>
+                            @endif
                         </div>
                     </div>
-                </div>
-            </div>
-        @endif
 
+                    {{-- RIGHT summary --}}
+                    <div class="col-lg-4">
+                        <div class="cart-summary">
+                            <h3 class="cart-summary-title">Finalizar Compra</h3>
+                            <div class="small fw-semibold mb-3">Resumo do Pedido</div>
+
+                            <div class="summary-line">
+                                <span>Itens :</span>
+                                <strong><span id="summaryItems">{{ $totalItems }}</span> products</strong>
+                            </div>
+
+                            <div class="summary-line">
+                                <span>Quantidade Total :</span>
+                                <strong><span id="summaryQty">{{ $totalQty }}</span> pcs</strong>
+                            </div>
+
+                            <div class="summary-line">
+                                <span>Subtotal :</span>
+                                <strong>¥ <span id="summarySubtotal">{{ number_format($subtotal, 2) }}</span></strong>
+                            </div>
+
+                            <div class="summary-line">
+                                <span>Frete :</span>
+                                <strong>¥ <span id="summaryShipping">{{ number_format($shipping, 2) }}</span></strong>
+                            </div>
+
+                            <div class="summary-line">
+                                <span>Imposto Estimado :</span>
+                                <strong>¥ <span id="summaryTax">{{ number_format($estimatedTax, 2) }}</span></strong>
+                            </div>
+
+                            <div class="summary-total">
+                                <span>Total</span>
+                                <strong>¥ <span id="summaryGrandTotal">{{ number_format($grandTotal, 2) }}</span></strong>
+                            </div>
+
+                            <div class="cart-tip-box">
+                                💡 Dica: Frete ¥800. Grátis em pedidos acima de ¥10,000 (valor bruto).
+                            </div>
+
+                            <div class="coupon-box mt-3">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Cartão Presente ou Cupom">
+                                    <button class="btn btn-primary" type="button">›</button>
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2 mt-4">
+                                <a href="{{ route('checkout.index') }}" class="btn btn-primary cart-checkout-btn">
+                                    Finalizar Compra
+                                </a>
+                                <a href="{{ route('products.index') }}" class="btn btn-outline-secondary">Continuar
+                                    Comprando</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
+        </div>
     </div>
-</div>
-    
+
 @endsection
 
 @section('css')
@@ -686,56 +708,57 @@
             outline: none;
             font-size: 14px;
         }
+
         .empty-cart-wrapper {
-    min-height: 520px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
+            min-height: 520px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
 
-.empty-cart-illustration {
-    width: 170px;
-    height: 170px;
-    margin-bottom: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
+        .empty-cart-illustration {
+            width: 170px;
+            height: 170px;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-.empty-cart-illustration img {
-    width: 170px;
-    height: 170px;
-    display: block;
-    object-fit: contain;
-}
+        .empty-cart-illustration img {
+            width: 170px;
+            height: 170px;
+            display: block;
+            object-fit: contain;
+        }
 
-.empty-cart-text {
-    font-size: 14px;
-    font-weight: 700;
-    color: #111;
-    margin-bottom: 18px;
-}
+        .empty-cart-text {
+            font-size: 14px;
+            font-weight: 700;
+            color: #111;
+            margin-bottom: 18px;
+        }
 
-.empty-cart-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 118px;
-    height: 40px;
-    padding: 0 22px;
-    border-radius: 8px;
-    background: #2f6fc2;
-    color: #fff;
-    font-size: 14px;
-    font-weight: 700;
-    text-decoration: none;
-}
+        .empty-cart-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 118px;
+            height: 40px;
+            padding: 0 22px;
+            border-radius: 8px;
+            background: #2f6fc2;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+        }
 
-.empty-cart-btn:hover {
-    background: #255fac;
-    color: #fff;
-}
+        .empty-cart-btn:hover {
+            background: #255fac;
+            color: #fff;
+        }
     </style>
 @endsection
 

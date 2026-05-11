@@ -935,6 +935,25 @@
                 font-size: 20px;
             }
         }
+
+        .option-required-error {
+            margin-top: 10px;
+            color: #dc2626;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* .customize-option-group.has-error h2 {
+            color: #dc2626;
+        } */
+
+        /* .customize-option-group.has-error .option-button-item,
+        .customize-option-group.has-error .option-image-card,
+        .customize-option-group.has-error .option-variant-card,
+        .customize-option-group.has-error .option-compact-card,
+        .customize-option-group.has-error .option-select-detail {
+            border-color: #dc2626;
+        } */
     </style>
 @endsection
 
@@ -992,7 +1011,7 @@
 
                 <div class="customize-options">
 
-                    <form action="{{ route('cart.add') }}" method="POST" id="customize-form">
+                    <form action="{{ route('cart.add') }}" method="POST" id="customize-form" novalidate>
                         @csrf
 
 
@@ -1020,7 +1039,8 @@
                                 $isRequired = $group->is_required ?? true;
                             @endphp
 
-                            <div class="customize-option-group" data-group-id="{{ $group->option_group_id }}">
+                            <div class="customize-option-group" data-group-id="{{ $group->option_group_id }}"
+                                data-required="{{ $isRequired ? 1 : 0 }}">
                                 <h2>
                                     {{ $loop->iteration }}. {{ $groupName }}
 
@@ -1043,7 +1063,7 @@
                                             <label class="option-image-card">
                                                 <input type="radio" name="options[{{ $option->option_group_id }}]"
                                                     value="{{ $option->option_id }}" data-group-name="{{ $groupName }}"
-                                                    data-option-name="{{ $option->option_name }}"
+                                                    class="js-option-input" data-option-name="{{ $option->option_name }}"
                                                     data-price="{{ $option->additional_price ?? 0 }}"
                                                     data-price-type="{{ $option->price_type }}"
                                                     data-option-id="{{ $option->option_id }}"
@@ -1081,7 +1101,7 @@
                                             <label class="option-variant-card">
                                                 <input type="radio" name="options[{{ $option->option_group_id }}]"
                                                     value="{{ $option->option_id }}" data-group-name="{{ $groupName }}"
-                                                    data-option-name="{{ $option->option_name }}"
+                                                    class="js-option-input" data-option-name="{{ $option->option_name }}"
                                                     data-price="{{ $option->additional_price ?? 0 }}"
                                                     data-price-type="{{ $option->price_type }}"
                                                     data-option-id="{{ $option->option_id }}"
@@ -1097,15 +1117,19 @@
                                                 </div>
 
                                                 @if ($option->variants && $option->variants->count())
-                                                  @php
-    $editingVariantId = $editingVariants[$option->option_id] ?? null;
+                                                    @php
+                                                        $editingVariantId =
+                                                            $editingVariants[$option->option_id] ?? null;
 
-    $selectedVariant = $editingVariantId
-        ? $option->variants->firstWhere('variant_id', $editingVariantId)
-        : $defaultVariant;
+                                                        $selectedVariant = $editingVariantId
+                                                            ? $option->variants->firstWhere(
+                                                                'variant_id',
+                                                                $editingVariantId,
+                                                            )
+                                                            : $defaultVariant;
 
-    $selectedVariant = $selectedVariant ?? $defaultVariant;
-@endphp
+                                                        $selectedVariant = $selectedVariant ?? $defaultVariant;
+                                                    @endphp
 
                                                     <input type="hidden" name="variants[{{ $option->option_id }}]"
                                                         class="selected-variant-input"
@@ -1153,7 +1177,7 @@
                                             <label class="option-compact-card">
                                                 <input type="radio" name="options[{{ $option->option_group_id }}]"
                                                     value="{{ $option->option_id }}" data-group-name="{{ $groupName }}"
-                                                    data-option-name="{{ $option->option_name }}"
+                                                    class="js-option-input" data-option-name="{{ $option->option_name }}"
                                                     data-price="{{ $option->additional_price ?? 0 }}"
                                                     data-price-type="{{ $option->price_type }}"
                                                     data-option-id="{{ $option->option_id }}"
@@ -1197,7 +1221,7 @@
                                         @foreach ($options as $option)
                                             <label class="option-color-item" title="{{ $option->option_name }}">
                                                 <input type="radio" name="options[{{ $option->option_group_id }}]"
-                                                    value="{{ $option->option_id }}"
+                                                    value="{{ $option->option_id }}" class="js-option-input"
                                                     data-group-name="{{ $groupName }}"
                                                     data-option-name="{{ $option->option_name }}"
                                                     data-price="{{ $option->additional_price ?? 0 }}"
@@ -1230,7 +1254,8 @@
                                         <div class="custom-color-input-row">
                                             <input type="text"
                                                 name="custom_colors[{{ $firstOption->option_group_id }}]"
-                                                class="custom-color-input" data-group-name="Special Cord Colors"
+                                                class="custom-color-input js-custom-color-input"
+                                                data-group-name="Special Cord Colors"
                                                 placeholder="Please specify Pantone color.">
 
                                             <button type="button" class="custom-color-add-btn">
@@ -1256,7 +1281,8 @@
 
                                     <div class="option-select-detail-wrap">
                                         <select name="options[{{ $defaultOption->option_group_id }}]"
-                                            class="option-select-detail" data-group-name="{{ $groupName }}">
+                                            class="option-select-detail js-option-input"
+                                            data-group-name="{{ $groupName }}">
                                             @foreach ($options as $option)
                                                 @php
                                                     $imagePath = $option->mainImage
@@ -1264,18 +1290,16 @@
                                                         : '';
                                                 @endphp
 
-                                               <option 
-    value="{{ $option->option_id }}"
-    data-option-id="{{ $option->option_id }}"
-    data-option-name="{{ $option->option_name }}"
-    data-price="{{ $option->additional_price ?? 0 }}"
-    data-price-type="{{ $option->price_type }}"
-    data-image="{{ $imagePath }}"
-    data-detail="{{ e($option->option_detail ?? '') }}"
-    {{ old("options.{$option->option_group_id}", $editingOptions[$option->option_group_id] ?? null) == $option->option_id || (!$editingCartItem && $option->pivot->is_default) ? 'selected' : '' }}
->
-    {{ $option->option_name }}
-</option>
+                                                <option value="{{ $option->option_id }}"
+                                                    data-option-id="{{ $option->option_id }}"
+                                                    data-option-name="{{ $option->option_name }}"
+                                                    data-price="{{ $option->additional_price ?? 0 }}"
+                                                    data-price-type="{{ $option->price_type }}"
+                                                    data-image="{{ $imagePath }}"
+                                                    data-detail="{{ e($option->option_detail ?? '') }}"
+                                                    {{ old("options.{$option->option_group_id}", $editingOptions[$option->option_group_id] ?? null) == $option->option_id || (!$editingCartItem && $option->pivot->is_default) ? 'selected' : '' }}>
+                                                    {{ $option->option_name }}
+                                                </option>
                                             @endforeach
                                         </select>
 
@@ -1327,7 +1351,7 @@
                                                         <label class="option-button-item">
                                                             <input type="radio"
                                                                 name="options[{{ $childGroup->option_group_id }}]"
-                                                                value="{{ $option->option_id }}"
+                                                                value="{{ $option->option_id }}" class="js-option-input"
                                                                 data-group-name="{{ $childGroupName }}"
                                                                 data-option-name="{{ $option->option_name }}"
                                                                 data-price="{{ $option->additional_price ?? 0 }}"
@@ -1347,7 +1371,7 @@
                                         @foreach ($options as $option)
                                             <label class="option-button-item">
                                                 <input type="radio" name="options[{{ $option->option_group_id }}]"
-                                                    value="{{ $option->option_id }}"
+                                                    value="{{ $option->option_id }}" class="js-option-input"
                                                     data-group-name="{{ $groupName }}"
                                                     data-option-name="{{ $option->option_name }}"
                                                     data-price="{{ $option->additional_price ?? 0 }}"
@@ -1955,10 +1979,134 @@
             showMatchedDependencies();
             fixSelectDetailAfterDependency();
 
+            applyRequiredRules();
+
             isUpdatingDependencies = false;
 
             updateSummary();
         }
+
+      function applyRequiredRules() {
+    document.querySelectorAll('.customize-option-group').forEach(function(groupEl) {
+        const radios = groupEl.querySelectorAll('input[type="radio"].js-option-input');
+        const selects = groupEl.querySelectorAll('select.js-option-input');
+        const customInputs = groupEl.querySelectorAll('.js-custom-color-input');
+
+        radios.forEach(function(radio) {
+            radio.required = false;
+        });
+
+        selects.forEach(function(select) {
+            select.required = false;
+        });
+
+        customInputs.forEach(function(input) {
+            input.required = false;
+        });
+    });
+}
+function clearRequiredErrors() {
+    document.querySelectorAll('.customize-option-group').forEach(function(groupEl) {
+        groupEl.classList.remove('has-error');
+
+        const oldError = groupEl.querySelector('.option-required-error');
+
+        if (oldError) {
+            oldError.remove();
+        }
+    });
+}
+
+function showRequiredError(groupEl, message) {
+    groupEl.classList.add('has-error');
+
+    let errorBox = groupEl.querySelector('.option-required-error');
+
+    if (!errorBox) {
+        errorBox = document.createElement('div');
+        errorBox.className = 'option-required-error';
+        errorBox.textContent = message;
+
+        const h2 = groupEl.querySelector('h2');
+
+        if (h2) {
+            h2.insertAdjacentElement('afterend', errorBox);
+        } else {
+            groupEl.prepend(errorBox);
+        }
+    }
+}
+
+function validateRequiredOptions() {
+    clearRequiredErrors();
+
+    const requiredGroups = document.querySelectorAll('.customize-option-group[data-required="1"]');
+
+    for (const groupEl of requiredGroups) {
+        if (groupEl.style.display === 'none') {
+            continue;
+        }
+
+        const visibleRadios = Array.from(
+            groupEl.querySelectorAll('input[type="radio"].js-option-input')
+        ).filter(function(radio) {
+            const label = radio.closest('label');
+            return !label || label.style.display !== 'none';
+        });
+
+        const visibleSelects = Array.from(
+            groupEl.querySelectorAll('select.js-option-input')
+        ).filter(function(select) {
+            return select.offsetParent !== null;
+        });
+
+        const customColorInput = groupEl.querySelector('.js-custom-color-input');
+        const customColorBox = customColorInput ? customColorInput.closest('.custom-color-box') : null;
+        const customColorVisible = customColorBox && customColorBox.style.display !== 'none';
+        const hasCustomColorValue = customColorVisible && customColorInput.value.trim() !== '';
+
+        let isValid = true;
+
+        if (visibleRadios.length > 0) {
+            const radioNames = [...new Set(
+                visibleRadios.map(function(radio) {
+                    return radio.name;
+                })
+            )];
+
+            for (const name of radioNames) {
+                const checked = groupEl.querySelector(
+                    'input[type="radio"][name="' + name + '"]:checked'
+                );
+
+                if (!checked && !hasCustomColorValue) {
+                    isValid = false;
+                    break;
+                }
+            }
+        }
+
+        for (const select of visibleSelects) {
+            if (!select.value) {
+                isValid = false;
+                break;
+            }
+        }
+
+        if (!isValid) {
+            showRequiredError(groupEl, 'Please select this required option.');
+
+            groupEl.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+
+            return false;
+        }
+    }
+
+    return true;
+}
 
         document.addEventListener('DOMContentLoaded', function() {
             const quantityInput = document.getElementById('quantity');
@@ -1994,6 +2142,7 @@
             }
 
             updateOptionDependencies();
+            applyRequiredRules();
             updateSummary();
         });
     </script>
@@ -2111,6 +2260,10 @@
                 const input = box.querySelector('.custom-color-input');
 
                 if (input) {
+                    const groupEl = this.closest('.customize-option-group');
+                    const isRequired = groupEl && groupEl.dataset.required === '1';
+
+                    input.required = isRequired;
                     input.focus();
                 }
 
@@ -2136,6 +2289,7 @@
 
                     if (input) {
                         input.value = '';
+                        input.required = false;
                     }
                 }
 
@@ -2191,5 +2345,27 @@
                 });
             });
         });
+    </script>
+    <script>
+       document.addEventListener('DOMContentLoaded', function() {
+    const customizeForm = document.getElementById('customize-form');
+
+    if (!customizeForm) {
+        return;
+    }
+
+    customizeForm.addEventListener('submit', function(e) {
+        applyRequiredRules();
+
+        const isValid = validateRequiredOptions();
+
+        if (!isValid) {
+            e.preventDefault();
+            e.stopPropagation();
+            alert('Please select all required options.');
+            return false;
+        }
+    });
+});
     </script>
 @endsection
