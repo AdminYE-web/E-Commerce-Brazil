@@ -17,6 +17,7 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\HomeController;
@@ -63,7 +64,7 @@ Route::post('/cart/add', [CartController::class, 'add'])
 
 Route::get('/cart', [CartController::class, 'index'])
     ->name('cart.index');
-    Route::get('/cart/edit/{cartItemId}', [CartController::class, 'edit'])
+Route::get('/cart/edit/{cartItemId}', [CartController::class, 'edit'])
     ->name('cart.edit');
 
 Route::post('/cart/update-quantity', [CartController::class, 'updateQuantity'])
@@ -136,9 +137,15 @@ Route::middleware('guest')->group(function () {
 
     Route::post('/reset-password', [ResetPasswordController::class, 'resetPassword'])
         ->name('password.update');
+
+    // Google OAuth
+    Route::get('/auth/google/redirect', [SocialAuthController::class, 'redirectToGoogle'])
+        ->name('auth.google.redirect');
+    Route::get('/auth/google/callback', [SocialAuthController::class, 'handleGoogleCallback'])
+        ->name('auth.google.callback');
 });
 
-Route::post('/logout', [LoginController::class, 'logout'])
+Route::get('/logout', [LoginController::class, 'logout'])
     ->middleware('auth')
     ->name('logout');
 

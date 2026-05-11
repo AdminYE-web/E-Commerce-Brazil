@@ -5,7 +5,6 @@
 @section('content')
 
     @php
-
         $mainImage = $product->mainImage;
 
         $galleryImages = $product->galleryImages ?? collect();
@@ -16,11 +15,7 @@
             $detailItems = $product->detail->detail_content;
         }
 
-        if ($product->product_type == PRODUCT_HOTSTRAP) {
-            $customizeRoute = route('products.order', $product->product_code);
-        } elseif ($product->product_type == PRODUCT_HOTMOBILY) {
-            $customizeRoute = route('products.order', $product->product_code);
-        }
+        $customizeRoute = route('products.hotstrap.show', $product->product_id);
 
         $specItems = [];
 

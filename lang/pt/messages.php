@@ -251,5 +251,8 @@ return [
         'reset_password_desc' => 'Insira o endereço de e-mail da sua conta para receber um código de verificação para redefinir sua senha.',
         'send_verification' => 'Enviar código de verificação',
         'back_to_login' => 'Voltar ao login',
+        'already_have_account' => 'Já possui uma conta?',
+        'login_here' => 'Entre aqui',
+        'google_login_failed' => 'Não foi possível fazer login com o Google. Por favor, tente novamente.',
     ],
 ];

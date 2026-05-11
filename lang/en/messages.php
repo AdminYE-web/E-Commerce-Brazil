@@ -252,5 +252,8 @@ return [
         'reset_password_desc' => 'Enter your account email address to receive a verification code to reset your password.',
         'send_verification' => 'Send Verification Code',
         'back_to_login' => 'Back to login',
+        'already_have_account' => 'Already have an account?',
+        'login_here' => 'Log in here',
+        'google_login_failed' => 'Unable to login with Google. Please try again.',
     ],
 ];

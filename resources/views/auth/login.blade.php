@@ -59,7 +59,7 @@
         </div>
 
         <div class="auth-social-wrap">
-            <a href="{{ url('/auth/google/redirect') }}" class="auth-social-btn">
+            <a href="{{ route('auth.google.redirect') }}" class="auth-social-btn">
                 <img class="text-start" src="{{ asset('assets/images/login/google-icon.png') }}" alt="">
                 <span>{{ __('messages.auth.continue_with_google') }}</span>
             </a>

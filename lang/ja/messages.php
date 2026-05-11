@@ -252,5 +252,8 @@ return [
         'reset_password_desc' => 'アカウントのメールアドレスを入力してください。パスワード再設定用の認証コードをお送りします。',
         'send_verification' => '認証コードを送信',
         'back_to_login' => 'ログインに戻る',
+        'already_have_account' => 'すでにアカウントをお持ちですか？',
+        'login_here' => 'ここからログイン',
+        'google_login_failed' => 'Googleでログインできませんでした。もう一度お試しください。',
     ],
 ];

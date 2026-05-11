@@ -128,6 +128,22 @@
                     {{ __('messages.auth.create_account') }}
                 </button>
             </form>
+
+            <div class="auth-divider">
+                <span>{{ __('messages.auth.or') }}</span>
+            </div>
+
+            <div class="auth-social-wrap">
+                <a href="{{ route('auth.google.redirect') }}" class="auth-social-btn">
+                    <img class="text-start" src="{{ asset('assets/images/login/google-icon.png') }}" alt="">
+                    <span>{{ __('messages.auth.continue_with_google') }}</span>
+                </a>
+            </div>
+
+            <p class="auth-register-text">
+                {{ __('messages.auth.already_have_account') }}
+                <a href="{{ route('login') }}" class="auth-link">{{ __('messages.auth.login_here') }}</a>
+            </p>
         </div>
     </div>
 </div>
