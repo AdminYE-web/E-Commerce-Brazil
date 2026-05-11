@@ -7,7 +7,8 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     public function up(): void
-    {
+{
+    if (!Schema::hasTable('order_artworks')) {
         Schema::create('order_artworks', function (Blueprint $table) {
             $table->id('order_artwork_id');
 
@@ -15,16 +16,13 @@ return new class extends Migration
             $table->unsignedBigInteger('order_item_id')->nullable();
             $table->unsignedBigInteger('product_id')->nullable();
 
-            // เก็บ cart item id เดิมไว้เพื่อ trace กับ session
             $table->string('cart_item_id')->nullable();
 
-            // file upload
             $table->string('file_path')->nullable();
             $table->string('original_name')->nullable();
             $table->string('mime_type')->nullable();
             $table->unsignedBigInteger('file_size')->nullable();
 
-            // artwork options / instructions
             $table->tinyInteger('no_artwork')->default(0);
             $table->text('print_text')->nullable();
             $table->string('font_option')->nullable();
@@ -56,9 +54,12 @@ return new class extends Migration
                 ->onDelete('set null');
         });
     }
+}
 
-    public function down(): void
-    {
+public function down(): void
+{
+    if (Schema::hasTable('order_artworks')) {
         Schema::dropIfExists('order_artworks');
     }
+}
 };
