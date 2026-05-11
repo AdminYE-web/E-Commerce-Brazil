@@ -148,7 +148,6 @@ class ProductListController extends Controller
             'optionGroups',
             'dependencies',
             'priceRules'
-
         ));
     }
 
@@ -218,22 +217,72 @@ class ProductListController extends Controller
             'detail',
             'category',
             'material',
-            'assignedOptions.group',
+            'priceRules.options',
+            'priceRules.tiers',
+            'assignedOptions.group.parent',
             'assignedOptions.mainImage',
+            'assignedOptions.variants',
+
         ])->where('product_code', $code)->firstOrFail();
 
         $optionGroups = $product->assignedOptions
             ->where('pivot.is_active', 1)
-            ->sortBy('pivot.sort_order')
+            ->sortBy(function ($option) {
+                $group = $option->group;
+                $parent = $group?->parent;
+
+                return [
+                    $parent->sort_order ?? $group->sort_order ?? 999,
+                    $group->sort_order ?? 999,
+                    $option->pivot->sort_order ?? 0,
+                ];
+            })
             ->groupBy(function ($option) {
-                return $option->group->group_name ?? 'Other';
+                $group = $option->group;
+                $displayGroup = $group?->parent ?: $group;
+
+                return $displayGroup?->option_group_id ?? 0;
             });
+
+        $dependencies = OptionDependency::where('is_active', 1)
+            ->orderBy('sort_order')
+            ->get()
+            ->map(function ($dependency) {
+                return [
+                    'parent_option_id' => (int) $dependency->parent_option_id,
+                    'target_type' => $dependency->target_type,
+                    'target_group_id' => $dependency->target_group_id ? (int) $dependency->target_group_id : null,
+                    'target_option_id' => $dependency->target_option_id ? (int) $dependency->target_option_id : null,
+                ];
+            })
+            ->values();
+        $priceRules = $product->priceRules
+            ->map(function ($rule) {
+                return [
+                    'rule_id' => (int) $rule->rule_id,
+                    'rule_name' => $rule->rule_name,
+                    'option_ids' => $rule->options
+                        ->pluck('option_id')
+                        ->map(fn ($id) => (int) $id)
+                        ->values(),
+                    'tiers' => $rule->tiers
+                        ->map(function ($tier) {
+                            return [
+                                'min_qty' => (int) $tier->min_qty,
+                                'max_qty' => $tier->max_qty ? (int) $tier->max_qty : null,
+                                'unit_price' => (float) $tier->unit_price,
+                            ];
+                        })
+                        ->values(),
+                ];
+            })
+            ->values();
 
         $views = 'products.hotstrap_show';
         if ($product->product_type === PRODUCT_HOTMOBILY) {
             $views = 'products.hotmobily_show';
         }
 
-        return view($views, compact('product', 'optionGroups'));
+        return view($views, compact('product', 'optionGroups', 'dependencies', 'priceRules'));
     }
 }

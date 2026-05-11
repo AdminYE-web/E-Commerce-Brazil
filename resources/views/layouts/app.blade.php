@@ -27,9 +27,8 @@
 
     @include('partials.footer')
     <script src="{{ asset('assets/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const mainMenuPanel = document.getElementById('mainMenuPanel');
@@ -181,6 +180,44 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 });
+
+async function LoadGeoCode(zipcode = '') 
+{
+    if (!zipcode) return null;
+
+    const token = '{{ env('GOOGLE_GEOCODE_KEY') }}';
+    const apiUrl = 'https://maps.googleapis.com/maps/api/geocode/json?key='+token+'&address='+zipcode+'&language=ja&sensor=false';
+    let data = {
+        'mainArea': '',
+        'subArea': ''
+    };
+    
+    try {
+        const response = await $.ajax({
+            url: apiUrl,
+            type: 'GET',
+            dataType: 'json'
+        });
+
+        if (response.status == 'OK') {
+            [...response.results[0].address_components].reverse().forEach(function(component) {
+                if (component.types.includes('administrative_area_level_1')) {
+                    data['mainArea'] = component.long_name;
+                }
+                if (component.types.includes('locality') || component.types.includes('sublocality')) {
+                    data['subArea'] = component.long_name;
+                }
+            });
+        }
+        
+        return data;
+        
+    } catch (error) {
+        console.error("Geocode error:", error);
+        return data;
+    }
+}
+
 </script>
 </body>
 

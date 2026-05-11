@@ -948,6 +948,13 @@
         ];
     })->values();
 
+    // dd($product);
+
+    // echo "<pre>";
+    // print_r($product);
+    // echo "</pre>";
+    // die;
+
     $defaultQuantity = old('quantity', 100);
 
     $defaultTier = $product->priceTiers

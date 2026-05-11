@@ -15,7 +15,7 @@
             $detailItems = $product->detail->detail_content;
         }
 
-        $customizeRoute = route('products.hotstrap.show', $product->product_id);
+        $customizeRoute = route('products.order', $product->product_code);
 
         $specItems = [];
 
