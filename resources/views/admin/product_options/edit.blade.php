@@ -143,7 +143,7 @@
 
     @if($option->images && $option->images->count())
         @foreach($option->images as $image)
-            <div style="display:inline-block; margin-right:10px; margin-bottom:10px;">
+            <div style="display:inline-block; margin-right:10px; margin-bottom:10px; border:1px solid #ddd; padding:8px;">
                 <img 
                     src="{{ asset('storage/' . $image->image_path) }}" 
                     width="100"
@@ -151,8 +151,17 @@
                 >
 
                 @if($image->is_main)
-                    <small>Main Image</small>
+                    <small>Main Image</small><br>
                 @endif
+
+                <label style="color:red;">
+                    <input 
+        type="checkbox" 
+        name="delete_images[]" 
+        value="{{ $image->image_id }}"
+    >
+                    Remove image
+                </label>
             </div>
         @endforeach
     @else

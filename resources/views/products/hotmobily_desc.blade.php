@@ -2,6 +2,10 @@
 
 @section('title', $product->product_name)
 
+@section('css')
+
+@endsection
+
 @section('content')
 
     @php
@@ -126,12 +130,7 @@
         <section class="hotstrap-spec-section">
             <div class="hotstrap-spec-grid">
 
-                <div class="hotstrap-spec-image">
-                    @if ($product->detail->specification_image)
-                        <img src="{{ asset('storage/' . $product->detail->specification_image) }}"
-                            alt="{{ $product->product_name }}">
-                    @endif
-                </div>
+             
 
                 <div class="hotstrap-spec-content">
                     <h2>Product Details</h2>
@@ -165,6 +164,12 @@
                             </div>
                         @endforeach
                     </div>
+                </div>
+                <div class="hotstrap-spec-image">
+                    @if ($product->detail->specification_image)
+                        <img src="{{ asset('storage/' . $product->detail->specification_image) }}"
+                            alt="{{ $product->product_name }}">
+                    @endif
                 </div>
 
             </div>

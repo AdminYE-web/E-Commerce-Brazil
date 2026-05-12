@@ -2,8 +2,25 @@
 
 @section('title', __('messages.home.page_title'))
 
+
+@section('css')
+<style>
+
+
+.home-banner-section .carousel-item img {
+
+    object-fit: cover;
+}
+
+@media (max-width: 768px) {
+    .home-banner-section .carousel-item img {
+     
+    }
+}
+</style>
+@endsection
 @section('content')
-    <section class="hero-banner">
+    {{-- <section class="hero-banner">
         <div class="container-fluid p-0">
             <div id="homeBannerCarousel" class="carousel slide hero-carousel" data-bs-ride="carousel">
 
@@ -100,7 +117,86 @@
 
             </div>
         </div>
-    </section>
+    </section> --}}
+   @if($homeBanners->count())
+<section class="home-banner-section">
+    <div class="container-fluid">
+
+        <div id="homeBannerCarousel" class="carousel slide" data-bs-ride="carousel">
+
+            @if($homeBanners->count() > 1)
+                <div class="carousel-indicators">
+                    @foreach($homeBanners as $index => $banner)
+                        <button 
+                            type="button" 
+                            data-bs-target="#homeBannerCarousel" 
+                            data-bs-slide-to="{{ $index }}" 
+                            class="{{ $index === 0 ? 'active' : '' }}"
+                            aria-current="{{ $index === 0 ? 'true' : 'false' }}"
+                            aria-label="Slide {{ $index + 1 }}"
+                        ></button>
+                    @endforeach
+                </div>
+            @endif
+
+            <div class="carousel-inner rounded-4 overflow-hidden">
+
+                @foreach($homeBanners as $index => $banner)
+                    <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
+
+                        @php
+                            $pcImage = $banner->image_pc 
+                                ? asset('storage/' . $banner->image_pc) 
+                                : asset('images/no-image.png');
+
+                            $mobileImage = $banner->image_mobile 
+                                ? asset('storage/' . $banner->image_mobile) 
+                                : $pcImage;
+                        @endphp
+
+                        @if($banner->link_url)
+                            <a href="{{ $banner->link_url }}">
+                        @endif
+
+                            <picture>
+                                {{-- มือถือ + iPad ใช้รูป mobile --}}
+                                <source 
+                                    media="(max-width: 1024px)" 
+                                    srcset="{{ $mobileImage }}"
+                                >
+
+                                {{-- Desktop ใช้รูป PC --}}
+                                <img 
+                                    src="{{ $pcImage }}" 
+                                    class="d-block w-100 home-banner-img" 
+                                    alt="{{ $banner->title ?? 'Home Banner' }}"
+                                >
+                            </picture>
+
+                        @if($banner->link_url)
+                            </a>
+                        @endif
+
+                    </div>
+                @endforeach
+
+            </div>
+
+            @if($homeBanners->count() > 1)
+                <button class="carousel-control-prev" type="button" data-bs-target="#homeBannerCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon"></span>
+                </button>
+
+                <button class="carousel-control-next" type="button" data-bs-target="#homeBannerCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon"></span>
+                </button>
+            @endif
+
+        </div>
+
+    </div>
+</section>
+@endif
     <section class="feature-bar">
         <div class="container-fluid">
             <div class="feature-bar-inner">
@@ -148,84 +244,50 @@
                 <div class="swiper recommended-swiper">
                     <div class="swiper-wrapper">
 
-                        <div class="swiper-slide">
-                            <div class="recommended-card">
-                                <h3>{{ __('messages.home.recommend_rubber') }}</h3>
+                        @forelse($recommendedProducts as $product)
+                            @php
+                                $productImage = $product->mainImage?->image_path;
+                            @endphp
 
-                                <div class="stars">
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                </div>
+                            <div class="swiper-slide">
+                                <a href="{{ route('products.description', ['code' => $product->product_code]) }}"
+                                    class="recommended-card-link">
+                                    <div class="recommended-card">
+                                        <h3>{{ $product->product_name }}</h3>
 
-                                <div class="product-img-wrap">
-                                    <img src="{{ asset('assets/images/home/Group 21.png') }}" alt="{{ __('messages.home.recommend_rubber') }}">
+                                        <div class="stars">
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                        </div>
+
+                                        <div class="product-img-wrap">
+                                            @if ($productImage)
+                                                <img src="{{ asset('storage/' . $productImage) }}"
+                                                    alt="{{ $product->product_name }}">
+                                            @else
+                                                <img src="{{ asset('images/no-image.png') }}" alt="No image">
+                                            @endif
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        @empty
+                            <div class="swiper-slide">
+                                <div class="recommended-card">
+                                    <h3>No recommended products</h3>
+
+                                    <div class="product-img-wrap">
+                                        <img src="{{ asset('images/no-image.png') }}" alt="No image">
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="swiper-slide">
-                            <div class="recommended-card">
-                                <h3>{{ __('messages.home.recommend_acrylic') }}</h3>
-
-                                <div class="stars">
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                </div>
-
-                                <div class="product-img-wrap">
-                                    <img src="{{ asset('assets/images/home/lanyard-polyester.png') }}"
-                                        alt="{{ __('messages.home.recommend_acrylic') }}">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="swiper-slide">
-                            <div class="recommended-card">
-                                <h3>{{ __('messages.home.recommend_lanyard_poly') }}</h3>
-
-                                <div class="stars">
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                </div>
-
-                                <div class="product-img-wrap">
-
-                                    <img src="{{ asset('assets/images/home/Group 971.png') }}" alt="{{ __('messages.home.recommend_lanyard_poly') }}">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="swiper-slide">
-                            <div class="recommended-card">
-                                <h3>{{ __('messages.home.recommend_yoyo') }}</h3>
-
-                                <div class="stars">
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                </div>
-
-                                <div class="product-img-wrap">
-                                    <img src="{{ asset('assets/images/home/yoyo.png') }}" alt="{{ __('messages.home.recommend_yoyo') }}">
-                                </div>
-                            </div>
-                        </div>
+                        @endforelse
 
                     </div>
                 </div>
-
-                {{-- <div class="recommended-swiper-pagination"></div> --}}
             </div>
         </div>
     </section>
@@ -298,86 +360,50 @@
                 <div class="swiper recommended-swiper">
                     <div class="swiper-wrapper">
 
-                        <div class="swiper-slide">
-                            <div class="recommended-card">
-                                <h3>{{ __('messages.home.recommend_lanyard_poly') }}</h3>
+                        @forelse($recommendedType1Products as $product)
+                            @php
+                                $productImage = $product->mainImage?->image_path;
+                            @endphp
 
-                                <div class="stars">
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                </div>
+                            <div class="swiper-slide">
+                                <a href="{{ route('products.description', ['code' => $product->product_code]) }}"
+                                    class="recommended-card-link">
+                                    <div class="recommended-card">
+                                        <h3>{{ $product->product_name }}</h3>
 
-                                <div class="product-img-wrap">
+                                        <div class="stars">
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                        </div>
 
-                                    <img src="{{ asset('assets/images/home/acrylic-keychain.png') }}"
-                                        alt="{{ __('messages.home.recommend_lanyard_poly') }}">
+                                        <div class="product-img-wrap">
+                                            @if ($productImage)
+                                                <img src="{{ asset('storage/' . $productImage) }}"
+                                                    alt="{{ $product->product_name }}">
+                                            @else
+                                                <img src="{{ asset('images/no-image.png') }}" alt="No image">
+                                            @endif
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        @empty
+                            <div class="swiper-slide">
+                                <div class="recommended-card">
+                                    <h3>No recommended products</h3>
+
+                                    <div class="product-img-wrap">
+                                        <img src="{{ asset('images/no-image.png') }}" alt="No image">
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        @endforelse
 
-                        <div class="swiper-slide">
-                            <div class="recommended-card">
-                                <h3>{{ __('messages.home.recommend_lanyard_fullcolor') }}</h3>
-
-                                <div class="stars">
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                </div>
-
-                                <div class="product-img-wrap">
-
-                                    <img src="{{ asset('assets/images/home/Group 973.png') }}" alt="{{ __('messages.home.recommend_lanyard_fullcolor') }}">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="swiper-slide">
-                            <div class="recommended-card">
-                                <h3>{{ __('messages.home.recommend_lanyard_snap_yoyo') }}</h3>
-
-                                <div class="stars">
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                </div>
-
-                                <div class="product-img-wrap">
-
-                                    <img src="{{ asset('assets/images/home/image-Photoroom (39) 1.png') }}"
-                                        alt="{{ __('messages.home.recommend_lanyard_snap_yoyo') }}">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="swiper-slide">
-                            <div class="recommended-card">
-                                <h3>{{ __('messages.home.recommend_yoyo') }}</h3>
-
-                                <div class="stars">
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                </div>
-
-                                <div class="product-img-wrap">
-
-                                    <img src="{{ asset('assets/images/home/Group 22 (1).png') }}" alt="{{ __('messages.home.recommend_yoyo') }}">
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
-
 
                 {{-- <div class="recommended-swiper-pagination"></div> --}}
             </div>
@@ -403,85 +429,50 @@
                 <div class="swiper recommended-swiper">
                     <div class="swiper-wrapper">
 
-                        <div class="swiper-slide">
-                            <div class="recommended-card">
-                                <h3>{{ __('messages.home.recommend_rubber') }}</h3>
+                        @forelse($recommendedType2Products as $product)
+                            @php
+                                $productImage = $product->mainImage?->image_path;
+                            @endphp
 
-                                <div class="stars">
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                </div>
+                            <div class="swiper-slide">
+                                <a href="{{ route('products.description', ['code' => $product->product_code]) }}"
+                                    class="recommended-card-link">
+                                    <div class="recommended-card">
+                                        <h3>{{ $product->product_name }}</h3>
 
-                                <div class="product-img-wrap">
+                                        <div class="stars">
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                        </div>
 
-                                    <img src="{{ asset('assets/images/home/Group 21.png') }}" alt="{{ __('messages.home.recommend_rubber') }}">
+                                        <div class="product-img-wrap">
+                                            @if ($productImage)
+                                                <img src="{{ asset('storage/' . $productImage) }}"
+                                                    alt="{{ $product->product_name }}">
+                                            @else
+                                                <img src="{{ asset('images/no-image.png') }}" alt="No image">
+                                            @endif
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        @empty
+                            <div class="swiper-slide">
+                                <div class="recommended-card">
+                                    <h3>No recommended products</h3>
+
+                                    <div class="product-img-wrap">
+                                        <img src="{{ asset('images/no-image.png') }}" alt="No image">
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        @endforelse
 
-                        <div class="swiper-slide">
-                            <div class="recommended-card">
-                                <h3>{{ __('messages.home.recommend_acrylic') }}</h3>
-
-                                <div class="stars">
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                </div>
-
-                                <div class="product-img-wrap">
-
-                                    <img src="{{ asset('assets/images/home/lanyard-polyester.png') }}"
-                                        alt="{{ __('messages.home.recommend_lanyard_fullcolor') }}">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="swiper-slide">
-                            <div class="recommended-card">
-                                <h3>{{ __('messages.home.promotional_standee') }}</h3>
-
-                                <div class="stars">
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                </div>
-
-                                <div class="product-img-wrap">
-
-                                    <img src="{{ asset('assets/images/home/Group 972.png') }}" alt="{{ __('messages.home.promotional_standee') }}">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="swiper-slide">
-                            <div class="recommended-card">
-                                <h3>{{ __('messages.home.promotional_phonestand') }}</h3>
-
-                                <div class="stars">
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                </div>
-
-                                <div class="product-img-wrap">
-
-                                    <img src="{{ asset('assets/images/home/Group 18.png') }}" alt="{{ __('messages.home.promotional_phonestand') }}">
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
-
 
                 {{-- <div class="recommended-swiper-pagination"></div> --}}
             </div>
@@ -502,82 +493,27 @@
             </div>
 
             <div class="materials-grid">
-
+@foreach($materialHomes as $item)
                 <div class="material-card">
                     <div class="material-image">
-                        <img src="{{ asset('assets/images/home/material-rubber-pvc.png') }}" alt="Rubber & PVC">
+                        <a href="{{ route('products.index', ['materials' => [$item->material_id]]) }}"><img src="{{ asset('storage/' . $item->image_path) }}" alt="{{ $item->title }}"></a>
+                        
                     </div>
                     <div class="material-content">
-                        <h3>{{ __('messages.home.material_rubber_pvc') }}</h3>
+                        <h3>{{ $item->title }}</h3>
                         <p>
-                            {{ __('messages.home.material_rubber_pvc_desc') }}
+                            {{ $item->description }}
                         </p>
                     </div>
                 </div>
-
-                <div class="material-card">
-                    <div class="material-image">
-                        <img src="{{ asset('assets/images/home/material-acrylic.png') }}" alt="Acrylic">
-                    </div>
-                    <div class="material-content">
-                        <h3>{{ __('messages.home.material_acrylic') }}</h3>
-                        <p>
-                            {{ __('messages.home.material_acrylic_desc') }}
-                        </p>
-                    </div>
-                </div>
-
-                <div class="material-card">
-                    <div class="material-image">
-                        <img src="{{ asset('assets/images/home/material-textile.png') }}" alt="Textile">
-                    </div>
-                    <div class="material-content">
-                        <h3>{{ __('messages.home.material_textile') }}</h3>
-                        <p>
-                            {{ __('messages.home.material_textile_desc') }}
-                        </p>
-                    </div>
-                </div>
-
-                <div class="material-card">
-                    <div class="material-image">
-                        <img src="{{ asset('assets/images/home/material-polyester.png') }}" alt="Polyester">
-                    </div>
-                    <div class="material-content">
-                        <h3>{{ __('messages.home.material_polyester') }}</h3>
-                        <p>
-                            {{ __('messages.home.material_polyester_desc') }}
-                        </p>
-                    </div>
-                </div>
-
-                <div class="material-card">
-                    <div class="material-image">
-                        <img src="{{ asset('assets/images/home/material-sublimation.png') }}" alt="Sublimation">
-                    </div>
-                    <div class="material-content">
-                        <h3>{{ __('messages.home.material_sublimation') }}</h3>
-                        <p>
-                            {{ __('messages.home.material_sublimation_desc') }}
-                        </p>
-                    </div>
-                </div>
-
-                <div class="material-card">
-                    <div class="material-image">
-                        <img src="{{ asset('assets/images/home/material-nylon.png') }}" alt="Nylon">
-                    </div>
-                    <div class="material-content">
-                        <h3>{{ __('messages.home.material_nylon') }}</h3>
-                        <p>
-                            {{ __('messages.home.material_nylon_desc') }}
-                        </p>
-                    </div>
-                </div>
+@endforeach
+                
 
                 <div class="material-card material-card-wide">
                     <div class="material-image">
-                        <img src="{{ asset('assets/images/home/material-other.png') }}" alt="Other Materials">
+                        <a href="{{ route('products.index') }}">
+                            <img src="{{ asset('assets/images/home/material-other.png') }}" alt="Other Materials">
+                        </a>
                     </div>
                     <div class="material-content">
                         <h3>{{ __('messages.home.material_other') }}</h3>
@@ -712,11 +648,13 @@
                                 <div class="blog-content">
                                     <h3>Teste</h3>
                                     <p>
-                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam
+                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+                                        incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam
                                     </p>
 
                                     <div class="blog-meta">
-                                        <span class="blog-tag blog-tag-blue">{{ __('messages.home.blog_tag_brindes') }}</span>
+                                        <span
+                                            class="blog-tag blog-tag-blue">{{ __('messages.home.blog_tag_brindes') }}</span>
                                         <span class="blog-date">24/04/2026</span>
                                     </div>
                                 </div>
@@ -732,11 +670,13 @@
                                 <div class="blog-content">
                                     <h3>Teste</h3>
                                     <p>
-                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam
+                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+                                        incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam
                                     </p>
 
                                     <div class="blog-meta">
-                                        <span class="blog-tag blog-tag-yellow">{{ __('messages.home.blog_tag_mercado') }}</span>
+                                        <span
+                                            class="blog-tag blog-tag-yellow">{{ __('messages.home.blog_tag_mercado') }}</span>
                                         <span class="blog-date">24/04/2026</span>
                                     </div>
                                 </div>
@@ -752,11 +692,13 @@
                                 <div class="blog-content">
                                     <h3>Teste</h3>
                                     <p>
-                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam
+                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+                                        incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam
                                     </p>
 
                                     <div class="blog-meta">
-                                        <span class="blog-tag blog-tag-blue">{{ __('messages.home.blog_tag_design') }}</span>
+                                        <span
+                                            class="blog-tag blog-tag-blue">{{ __('messages.home.blog_tag_design') }}</span>
                                         <span class="blog-date">24/04/2026</span>
                                     </div>
                                 </div>
@@ -772,11 +714,13 @@
                                 <div class="blog-content">
                                     <h3>Teste</h3>
                                     <p>
-                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam
+                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+                                        incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam
                                     </p>
 
                                     <div class="blog-meta">
-                                        <span class="blog-tag blog-tag-blue">{{ __('messages.home.blog_tag_design') }}</span>
+                                        <span
+                                            class="blog-tag blog-tag-blue">{{ __('messages.home.blog_tag_design') }}</span>
                                         <span class="blog-date">24/04/2026</span>
                                     </div>
                                 </div>

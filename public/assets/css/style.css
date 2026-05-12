@@ -2131,10 +2131,11 @@ body {
 
 .recommended-swiper .swiper-slide {
     height: auto;
-}
+} 
 
 .recommended-swiper .recommended-card {
     height: 100%;
+    min-height: 391px;
 }
 .recommended-slider-wrap,
 .recommended-swiper,
@@ -5137,7 +5138,15 @@ body {
     height: 0;
     opacity: 0;
 }
+.recommended-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
 
+.recommended-card-link:hover {
+    color: inherit;
+}
 .announcement-track {
     display: flex;
     align-items: center;

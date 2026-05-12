@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\OptionGroup;
 use App\Models\ProductOption;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use App\Models\OptionImage;
 
 class ProductOptionController extends Controller
@@ -87,6 +88,7 @@ if ($request->hasFile('images')) {
 
     public function update(Request $request, ProductOption $productOption)
     {
+         $option = $productOption;
         $request->validate([
             'option_group_id' => 'required|exists:option_groups,option_group_id',
             'option_code' => 'nullable|string|max:100',
@@ -96,6 +98,21 @@ if ($request->hasFile('images')) {
             'price_type' => 'required|in:per_item,per_order',
            'option_detail' => 'nullable|string',
         ]);
+        if ($request->has('delete_images')) {
+    $deleteImageIds = $request->input('delete_images', []);
+
+   $images = OptionImage::whereIn('image_id', $deleteImageIds)
+    ->where('option_id', $option->option_id)
+    ->get();
+
+    foreach ($images as $image) {
+        if ($image->image_path && Storage::disk('public')->exists($image->image_path)) {
+            Storage::disk('public')->delete($image->image_path);
+        }
+
+        $image->delete();
+    }
+}
 
         $productOption->update([
             'option_group_id' => $request->option_group_id,

@@ -100,6 +100,9 @@
 <option value="grouped_buttons" {{ old('display_type', $optionGroup->display_type) == 'grouped_buttons' ? 'selected' : '' }}>
     grouped_buttons - หัวข้อหลักพร้อมคำถามย่อยหลายชุด
 </option>
+<option value="previous_order_design" {{ old('display_type', $optionGroup->display_type ?? '') == 'previous_order_design' ? 'selected' : '' }}>
+    previous_order_design - Yes/No + Previous Order No
+</option>
     </select>
 
     @error('display_type')

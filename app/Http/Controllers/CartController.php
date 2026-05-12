@@ -23,6 +23,7 @@ class CartController extends Controller
 
             'custom_colors' => 'nullable|array',
             'custom_colors.*' => 'nullable|string|max:255',
+            
         ]);
 
         $product = Product::with([
@@ -64,6 +65,7 @@ class CartController extends Controller
 
             $optionPrice = (float) ($option->additional_price ?? 0);
             $variantPrice = (float) ($variant->additional_price ?? 0);
+            $previousOrderNos = $request->input('previous_order_no', []);
 
             $selectedOptions[] = [
                 'group_id' => $option->option_group_id,
@@ -183,6 +185,7 @@ class CartController extends Controller
 
             'options' => $selectedOptions,
             'custom_colors' => $customColors,
+            'previous_order_no' => $previousOrderNos,
         ];
 
         session()->put('cart', $cart);

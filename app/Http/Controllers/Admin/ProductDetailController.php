@@ -55,15 +55,15 @@ class ProductDetailController extends Controller
             'detail_icon_images.*' => 'nullable|image|mimes:jpg,jpeg,png,webp,svg|max:2048',
             'specification_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
             'accordion_content' => 'nullable|array',
-'accordion_content.*.title' => 'nullable|string|max:255',
-'accordion_content.*.content' => 'nullable|string',
+            'accordion_content.*.title' => 'nullable|string|max:255',
+            'accordion_content.*.content' => 'nullable|string',
 
             'specification_content' => 'nullable|array',
             'specification_content.*.title' => 'nullable|string|max:255',
             'specification_content.*.desc' => 'nullable|string',
             'specification_content.*.icon_image' => 'nullable|string',
             'specification_content.*.link_text' => 'nullable|string|max:255',
-'specification_content.*.link_url' => 'nullable|string|max:500',
+            'specification_content.*.link_url' => 'nullable|string|max:500',
 
             'spec_icon_images' => 'nullable|array',
             'spec_icon_images.*' => 'nullable|image|mimes:jpg,jpeg,png,webp,svg|max:2048',
@@ -117,7 +117,7 @@ class ProductDetailController extends Controller
             'specification_image' => $specificationImagePath,
             'detail_content' => $detailContent,
             'specification_content' => $specificationContent,
-                'accordion_content' => $accordionContent,
+            'accordion_content' => $accordionContent,
             'is_active' => $request->has('is_active') ? 1 : 0,
         ]);
 
@@ -141,7 +141,7 @@ class ProductDetailController extends Controller
     public function update(Request $request, ProductDetail $productDetail)
     {
         $request->validate([
-            'product_id' => 'required|exists:products,product_id|unique:product_details,product_id,' . $productDetail->product_detail_id . ',product_detail_id',
+            'product_id' => 'required|exists:products,product_id|unique:product_details,product_id,'.$productDetail->product_detail_id.',product_detail_id',
             'sample_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'detail_content' => 'nullable|array',
             'detail_content.*.headline' => 'nullable|string|max:255',
@@ -150,18 +150,18 @@ class ProductDetailController extends Controller
             'detail_icon_images' => 'nullable|array',
             'detail_icon_images.*' => 'nullable|image|mimes:jpg,jpeg,png,webp,svg|max:2048',
             'specification_content' => 'nullable|array',
-'specification_content.*.title' => 'nullable|string|max:255',
-'specification_content.*.desc' => 'nullable|string',
-'specification_content.*.icon_image' => 'nullable|string',
-'specification_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
-'specification_content.*.link_text' => 'nullable|string|max:255',
-'specification_content.*.link_url' => 'nullable|string|max:500',
-'accordion_content' => 'nullable|array',
-'accordion_content.*.title' => 'nullable|string|max:255',
-'accordion_content.*.content' => 'nullable|string',
+            'specification_content.*.title' => 'nullable|string|max:255',
+            'specification_content.*.desc' => 'nullable|string',
+            'specification_content.*.icon_image' => 'nullable|string',
+            'specification_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
+            'specification_content.*.link_text' => 'nullable|string|max:255',
+            'specification_content.*.link_url' => 'nullable|string|max:500',
+            'accordion_content' => 'nullable|array',
+            'accordion_content.*.title' => 'nullable|string|max:255',
+            'accordion_content.*.content' => 'nullable|string',
 
-'spec_icon_images' => 'nullable|array',
-'spec_icon_images.*' => 'nullable|image|mimes:jpg,jpeg,png,webp,svg|max:2048',
+            'spec_icon_images' => 'nullable|array',
+            'spec_icon_images.*' => 'nullable|image|mimes:jpg,jpeg,png,webp,svg|max:2048',
             'is_active' => 'nullable|boolean',
         ]);
 
@@ -177,14 +177,14 @@ class ProductDetailController extends Controller
         }
         $specificationImagePath = $productDetail->specification_image;
 
-if ($request->hasFile('specification_image')) {
-    if ($productDetail->specification_image) {
-        Storage::disk('public')->delete($productDetail->specification_image);
-    }
+        if ($request->hasFile('specification_image')) {
+            if ($productDetail->specification_image) {
+                Storage::disk('public')->delete($productDetail->specification_image);
+            }
 
-    $specificationImagePath = $request->file('specification_image')
-        ->store('products/specifications', 'public');
-}
+            $specificationImagePath = $request->file('specification_image')
+                ->store('products/specifications', 'public');
+        }
         $detailContent = $request->detail_content ?? [];
 
         if ($request->hasFile('detail_icon_images')) {
@@ -200,32 +200,31 @@ if ($request->hasFile('specification_image')) {
         }
         $specificationContent = $request->specification_content ?? [];
 
-if ($request->hasFile('spec_icon_images')) {
-    foreach ($request->file('spec_icon_images') as $index => $iconImage) {
-        if ($iconImage) {
-            $iconPath = $iconImage->store('products/spec-icons', 'public');
+        if ($request->hasFile('spec_icon_images')) {
+            foreach ($request->file('spec_icon_images') as $index => $iconImage) {
+                if ($iconImage) {
+                    $iconPath = $iconImage->store('products/spec-icons', 'public');
 
-            if (isset($specificationContent[$index])) {
-                $specificationContent[$index]['icon_image'] = $iconPath;
+                    if (isset($specificationContent[$index])) {
+                        $specificationContent[$index]['icon_image'] = $iconPath;
+                    }
+                }
             }
         }
-    }
-}
-$accordionContent = $request->accordion_content ?? [];
+        $accordionContent = $request->accordion_content ?? [];
 
-
-     $productDetail->update([
-    'product_id' => $request->product_id,
-    'sample_image' => $sampleImagePath,
-    'specification_image' => $specificationImagePath,
-    'detail_content' => $detailContent,
-    'specification_content' => $specificationContent,
-    'accordion_content' => $accordionContent,
-    'is_active' => $request->has('is_active') ? 1 : 0,
-]);
+        $productDetail->update([
+            'product_id' => $request->product_id,
+            'sample_image' => $sampleImagePath,
+            'specification_image' => $specificationImagePath,
+            'detail_content' => $detailContent,
+            'specification_content' => $specificationContent,
+            'accordion_content' => $accordionContent,
+            'is_active' => $request->has('is_active') ? 1 : 0,
+        ]);
 
         return redirect()
-            ->route('admin.product-details.index')
+            ->route('admin.products.index')
             ->with('success', 'แก้ไขรายละเอียดสินค้าเรียบร้อยแล้ว');
     }
 

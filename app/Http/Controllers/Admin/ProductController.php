@@ -33,189 +33,195 @@ class ProductController extends Controller
         return view('admin.products.create', compact('categories', 'materials'));
     }
 
- public function store(Request $request)
-{
-    $request->validate([
-        'product_code' => 'nullable|string|max:100',
-        'category_id' => 'nullable|exists:categories,category_id',
-        'material_id' => 'nullable|exists:materials,material_id',
-        'product_type' => 'required|integer|in:1,2',
-        'product_name' => 'required|string|max:255',
-        'description' => 'nullable|string',
-        'is_antivirus_included' => 'nullable|boolean',
-        'is_active' => 'nullable|boolean',
+    public function store(Request $request)
+    {
+        $request->validate([
+            'product_code' => 'nullable|string|max:100',
+            'category_id' => 'nullable|exists:categories,category_id',
+            'material_id' => 'nullable|exists:materials,material_id',
+            'product_type' => 'required|integer|in:1,2',
+            'product_name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'is_antivirus_included' => 'nullable|boolean',
+            'is_active' => 'nullable|boolean',
+            'product_recomend' => 'nullable|boolean',
+'product_premium' => 'nullable|boolean',
 
-        'images.*' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-        'gallery_images.*' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-        'can_upload_artwork' => 'nullable|boolean',
-'artwork_required' => 'nullable|boolean',
-'allow_no_artwork' => 'nullable|boolean',
-'allow_text_print' => 'nullable|boolean',
-'allow_font_select' => 'nullable|boolean',
-'allow_template_select' => 'nullable|boolean',
-    ]);
+            'images.*' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'gallery_images.*' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'can_upload_artwork' => 'nullable|boolean',
+            'artwork_required' => 'nullable|boolean',
+            'allow_no_artwork' => 'nullable|boolean',
+            'allow_text_print' => 'nullable|boolean',
+            'allow_font_select' => 'nullable|boolean',
+            'allow_template_select' => 'nullable|boolean',
+        ]);
 
-    $product = Product::create([
-        'product_code' => $request->product_code,
-        'category_id' => $request->category_id,
-        'material_id' => $request->material_id,
-        'product_name' => $request->product_name,
-        'description' => $request->description,
-        'is_antivirus_included' => $request->has('is_antivirus_included') ? 1 : 0,
-        'is_active' => $request->has('is_active') ? 1 : 0,
-        'product_type' => $request->product_type,
-        'can_upload_artwork' => $request->has('can_upload_artwork') ? 1 : 0,
-'artwork_required' => $request->has('artwork_required') ? 1 : 0,
-'allow_no_artwork' => $request->has('allow_no_artwork') ? 1 : 0,
-'allow_text_print' => $request->has('allow_text_print') ? 1 : 0,
-'allow_font_select' => $request->has('allow_font_select') ? 1 : 0,
-'allow_template_select' => $request->has('allow_template_select') ? 1 : 0,
-    ]);
+        $product = Product::create([
+            'product_code' => $request->product_code,
+            'category_id' => $request->category_id,
+            'material_id' => $request->material_id,
+            'product_name' => $request->product_name,
+            'description' => $request->description,
+            'is_antivirus_included' => $request->has('is_antivirus_included') ? 1 : 0,
+            'is_active' => $request->has('is_active') ? 1 : 0,
+            'product_recomend' => $request->has('product_recomend') ? 1 : 0,
+'product_premium' => $request->has('product_premium') ? 1 : 0,
+            'product_type' => $request->product_type,
+            'can_upload_artwork' => $request->has('can_upload_artwork') ? 1 : 0,
+            'artwork_required' => $request->has('artwork_required') ? 1 : 0,
+            'allow_no_artwork' => $request->has('allow_no_artwork') ? 1 : 0,
+            'allow_text_print' => $request->has('allow_text_print') ? 1 : 0,
+            'allow_font_select' => $request->has('allow_font_select') ? 1 : 0,
+            'allow_template_select' => $request->has('allow_template_select') ? 1 : 0,
+        ]);
 
-    // Main images
-    if ($request->hasFile('images')) {
-        foreach ($request->file('images') as $index => $image) {
-            $path = $image->store('products', 'public');
+        // Main images
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $index => $image) {
+                $path = $image->store('products', 'public');
 
-            ProductImage::create([
-                'product_id' => $product->product_id,
-                'image_path' => $path,
-                'image_alt' => $product->product_name,
-                'image_type' => 'main',
-                'is_main' => $index === 0 ? 1 : 0,
-                'sort_order' => $index + 1,
-            ]);
+                ProductImage::create([
+                    'product_id' => $product->product_id,
+                    'image_path' => $path,
+                    'image_alt' => $product->product_name,
+                    'image_type' => 'main',
+                    'is_main' => $index === 0 ? 1 : 0,
+                    'sort_order' => $index + 1,
+                ]);
+            }
         }
-    }
 
-    // Gallery images
-    if ($request->hasFile('gallery_images')) {
-        foreach ($request->file('gallery_images') as $index => $image) {
-            $path = $image->store('products/gallery', 'public');
+        // Gallery images
+        if ($request->hasFile('gallery_images')) {
+            foreach ($request->file('gallery_images') as $index => $image) {
+                $path = $image->store('products/gallery', 'public');
 
-            ProductImage::create([
-                'product_id' => $product->product_id,
-                'image_path' => $path,
-                'image_alt' => $product->product_name,
-                'image_type' => 'gallery',
-                'is_main' => 0,
-                'sort_order' => $index + 1,
-            ]);
+                ProductImage::create([
+                    'product_id' => $product->product_id,
+                    'image_path' => $path,
+                    'image_alt' => $product->product_name,
+                    'image_type' => 'gallery',
+                    'is_main' => 0,
+                    'sort_order' => $index + 1,
+                ]);
+            }
         }
-    }
 
-    return redirect()
-        ->route('admin.products.index')
-        ->with('success', 'Product created successfully.');
-}
+        return redirect()
+            ->route('admin.products.index')
+            ->with('success', 'Product created successfully.');
+    }
 
     public function edit(Product $product)
-{
-    $product->load(['images', 'galleryImages']);
+    {
+        $product->load(['images', 'galleryImages']);
 
-    $categories = Category::where('is_active', 1)
-        ->orderBy('category_name')
-        ->get();
+        $categories = Category::where('is_active', 1)
+            ->orderBy('category_name')
+            ->get();
 
-    $materials = Material::where('is_active', 1)
-        ->orderBy('material_name')
-        ->get();
+        $materials = Material::where('is_active', 1)
+            ->orderBy('material_name')
+            ->get();
 
-    return view('admin.products.edit', compact('product', 'categories', 'materials'));
-}
+        return view('admin.products.edit', compact('product', 'categories', 'materials'));
+    }
 
     public function update(Request $request, Product $product)
-{
-    $request->validate([
-        'product_code' => 'nullable|string|max:100',
-        'category_id' => 'nullable|exists:categories,category_id',
-        'material_id' => 'nullable|exists:materials,material_id',
-        'main_image_id' => 'nullable|exists:product_images,image_id',
-        'product_type' => 'required|integer|in:1,2',
-        'product_name' => 'required|string|max:255',
-        'gallery_images.*' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-        'description' => 'nullable|string',
-        'is_antivirus_included' => 'nullable|boolean',
-        'is_active' => 'nullable|boolean',
+    {
+        $request->validate([
+            'product_code' => 'nullable|string|max:100',
+            'category_id' => 'nullable|exists:categories,category_id',
+            'material_id' => 'nullable|exists:materials,material_id',
+            'main_image_id' => 'nullable|exists:product_images,image_id',
+            'product_type' => 'required|integer|in:1,2',
+            'product_name' => 'required|string|max:255',
+            'gallery_images.*' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'description' => 'nullable|string',
+            'is_antivirus_included' => 'nullable|boolean',
+            'is_active' => 'nullable|boolean',
+            'product_recomend' => 'nullable|boolean',
+'product_premium' => 'nullable|boolean',
 
-        'images.*' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-        'can_upload_artwork' => 'nullable|boolean',
-'artwork_required' => 'nullable|boolean',
-'allow_no_artwork' => 'nullable|boolean',
-'allow_text_print' => 'nullable|boolean',
-'allow_font_select' => 'nullable|boolean',
-'allow_template_select' => 'nullable|boolean',
-    ]);
-    
-
-    $product->update([
-        'product_code' => $request->product_code,
-        'category_id' => $request->category_id,
-        'material_id' => $request->material_id,
-        'product_type' => $request->product_type,
-        'product_name' => $request->product_name,
-        'description' => $request->description,
-        'is_antivirus_included' => $request->has('is_antivirus_included') ? 1 : 0,
-        'is_active' => $request->has('is_active') ? 1 : 0,
-        'can_upload_artwork' => $request->has('can_upload_artwork') ? 1 : 0,
-'artwork_required' => $request->has('artwork_required') ? 1 : 0,
-'allow_no_artwork' => $request->has('allow_no_artwork') ? 1 : 0,
-'allow_text_print' => $request->has('allow_text_print') ? 1 : 0,
-'allow_font_select' => $request->has('allow_font_select') ? 1 : 0,
-'allow_template_select' => $request->has('allow_template_select') ? 1 : 0,
-    ]);
-    if ($request->filled('main_image_id')) {
-    $product->images()->update([
-        'is_main' => 0,
-    ]);
-
-    $product->images()
-        ->where('image_id', $request->main_image_id)
-        ->update([
-            'is_main' => 1,
-            'image_type' => 'main',
+            'images.*' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'can_upload_artwork' => 'nullable|boolean',
+            'artwork_required' => 'nullable|boolean',
+            'allow_no_artwork' => 'nullable|boolean',
+            'allow_text_print' => 'nullable|boolean',
+            'allow_font_select' => 'nullable|boolean',
+            'allow_template_select' => 'nullable|boolean',
         ]);
-}
 
-    if ($request->hasFile('images')) {
-        $currentMaxSort = $product->images()->max('sort_order') ?? 0;
-        $hasMainImage = $product->images()->where('is_main', 1)->exists();
-
-        foreach ($request->file('images') as $index => $image) {
-            $path = $image->store('products', 'public');
-
-            ProductImage::create([
-                'product_id' => $product->product_id,
-                'image_path' => $path,
-                'image_type' => 'main',
-                'image_alt' => $product->product_name,
-                'is_main' => !$hasMainImage && $index === 0 ? 1 : 0,
-                'sort_order' => $currentMaxSort + $index + 1,
+        $product->update([
+            'product_code' => $request->product_code,
+            'category_id' => $request->category_id,
+            'material_id' => $request->material_id,
+            'product_type' => $request->product_type,
+            'product_name' => $request->product_name,
+            'description' => $request->description,
+            'is_antivirus_included' => $request->has('is_antivirus_included') ? 1 : 0,
+            'is_active' => $request->has('is_active') ? 1 : 0,
+            'product_recomend' => $request->has('product_recomend') ? 1 : 0,
+'product_premium' => $request->has('product_premium') ? 1 : 0,
+            'can_upload_artwork' => $request->has('can_upload_artwork') ? 1 : 0,
+            'artwork_required' => $request->has('artwork_required') ? 1 : 0,
+            'allow_no_artwork' => $request->has('allow_no_artwork') ? 1 : 0,
+            'allow_text_print' => $request->has('allow_text_print') ? 1 : 0,
+            'allow_font_select' => $request->has('allow_font_select') ? 1 : 0,
+            'allow_template_select' => $request->has('allow_template_select') ? 1 : 0,
+        ]);
+        if ($request->filled('main_image_id')) {
+            $product->images()->update([
+                'is_main' => 0,
             ]);
+
+            $product->images()
+                ->where('image_id', $request->main_image_id)
+                ->update([
+                    'is_main' => 1,
+                    'image_type' => 'main',
+                ]);
         }
+
+        if ($request->hasFile('images')) {
+            $currentMaxSort = $product->images()->max('sort_order') ?? 0;
+            $hasMainImage = $product->images()->where('is_main', 1)->exists();
+
+            foreach ($request->file('images') as $index => $image) {
+                $path = $image->store('products', 'public');
+
+                ProductImage::create([
+                    'product_id' => $product->product_id,
+                    'image_path' => $path,
+                    'image_type' => 'main',
+                    'image_alt' => $product->product_name,
+                    'is_main' => ! $hasMainImage && $index === 0 ? 1 : 0,
+                    'sort_order' => $currentMaxSort + $index + 1,
+                ]);
+            }
+        }
+        if ($request->hasFile('gallery_images')) {
+            $currentMaxSort = $product->galleryImages()->max('sort_order') ?? 0;
+
+            foreach ($request->file('gallery_images') as $index => $image) {
+                $path = $image->store('products/gallery', 'public');
+
+                ProductImage::create([
+                    'product_id' => $product->product_id,
+                    'image_path' => $path,
+                    'image_alt' => $product->product_name,
+                    'image_type' => 'gallery',
+                    'is_main' => 0,
+                    'sort_order' => $currentMaxSort + $index + 1,
+                ]);
+            }
+        }
+
+        return redirect()
+            ->route('admin.products.index')
+            ->with('success', 'Product updated successfully.');
     }
-    if ($request->hasFile('gallery_images')) {
-    $currentMaxSort = $product->galleryImages()->max('sort_order') ?? 0;
-
-    foreach ($request->file('gallery_images') as $index => $image) {
-        $path = $image->store('products/gallery', 'public');
-
-        ProductImage::create([
-            'product_id' => $product->product_id,
-            'image_path' => $path,
-            'image_alt' => $product->product_name,
-            'image_type' => 'gallery',
-            'is_main' => 0,
-            'sort_order' => $currentMaxSort + $index + 1,
-        ]);
-    }
-}
-    
-
-    return redirect()
-        ->route('admin.products.index')
-        ->with('success', 'Product updated successfully.');
-}
 
     public function destroy(Product $product)
     {

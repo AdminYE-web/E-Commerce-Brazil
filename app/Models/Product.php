@@ -20,6 +20,8 @@ class Product extends Model
     'description',
     'is_antivirus_included',
     'is_active',
+    'product_recomend',
+'product_premium',
     'can_upload_artwork',
 'artwork_required',
 'allow_no_artwork',
@@ -106,4 +108,5 @@ public function artworkTemplates()
         ->where('is_active', 1)
         ->orderBy('sort_order');
 }
+
 }

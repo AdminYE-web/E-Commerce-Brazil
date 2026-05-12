@@ -944,16 +944,72 @@
         }
 
         /* .customize-option-group.has-error h2 {
-            color: #dc2626;
-        } */
+                        color: #dc2626;
+                    } */
 
         /* .customize-option-group.has-error .option-button-item,
-        .customize-option-group.has-error .option-image-card,
-        .customize-option-group.has-error .option-variant-card,
-        .customize-option-group.has-error .option-compact-card,
-        .customize-option-group.has-error .option-select-detail {
-            border-color: #dc2626;
-        } */
+                    .customize-option-group.has-error .option-image-card,
+                    .customize-option-group.has-error .option-variant-card,
+                    .customize-option-group.has-error .option-compact-card,
+                    .customize-option-group.has-error .option-select-detail {
+                        border-color: #dc2626;
+                    } */
+        .previous-order-box {
+            max-width: 620px;
+        }
+
+        .previous-order-choice-list {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .previous-order-choice {
+            min-width: 110px;
+            height: 44px;
+            border: 1px solid #d9dde7;
+            border-radius: 8px;
+            background: #fff;
+            padding: 0 22px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .previous-order-choice input {
+            display: none;
+        }
+
+        .previous-order-choice:has(input:checked) {
+            border-color: #3166f6;
+            box-shadow: 0 0 0 1px #3166f6;
+        }
+
+        .previous-order-input-box {
+            margin-top: 14px;
+            display: none;
+        }
+
+        .previous-order-input-box.is-open {
+            display: block;
+        }
+
+        .previous-order-input-box label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: #111;
+        }
+
+        .previous-order-input-box input {
+            width: 100%;
+            height: 42px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 0 14px;
+            font-size: 14px;
+        }
     </style>
 @endsection
 
@@ -1366,6 +1422,62 @@
                                             </div>
                                         @endforeach
                                     </div>
+                                @elseif($displayType === 'previous_order_design')
+                                    @php
+                                        $defaultOption =
+                                            $options->firstWhere('pivot.is_default', 1) ?? $options->first();
+
+                                        $selectedOptionId = old(
+                                            "options.{$firstOption->option_group_id}",
+                                            $editingOptions[$firstOption->option_group_id] ??
+                                                ($defaultOption->option_id ?? null),
+                                        );
+
+                                        $yesOption = $options->first(function ($option) {
+                                            return strtolower(trim($option->option_name)) === 'yes';
+                                        });
+
+                                        $previousOrderValue = old(
+                                            "previous_order_no.{$firstOption->option_group_id}",
+                                            $editingCartItem['previous_order_no'][$firstOption->option_group_id] ?? '',
+                                        );
+                                    @endphp
+
+                                    <div class="previous-order-box">
+                                        <div class="previous-order-choice-list">
+                                            @foreach ($options as $option)
+                                                <label class="previous-order-choice">
+                                                    <input type="radio" name="options[{{ $option->option_group_id }}]"
+                                                        value="{{ $option->option_id }}"
+                                                        class="js-option-input previous-order-radio"
+                                                        data-group-name="{{ $groupName }}"
+                                                        data-option-name="{{ $option->option_name }}"
+                                                        data-price="{{ $option->additional_price ?? 0 }}"
+                                                        data-price-type="{{ $option->price_type }}"
+                                                        data-option-id="{{ $option->option_id }}"
+                                                        data-is-yes="{{ strtolower(trim($option->option_name)) === 'yes' ? 1 : 0 }}"
+                                                        {{ (int) $selectedOptionId === (int) $option->option_id ? 'checked' : '' }}>
+
+                                                    <span>{{ $option->option_name }}</span>
+                                                </label>
+                                            @endforeach
+                                        </div>
+
+                                        <div class="previous-order-input-box {{ $yesOption && (int) $selectedOptionId === (int) $yesOption->option_id ? 'is-open' : '' }}"
+                                            data-previous-order-box="{{ $firstOption->option_group_id }}">
+                                            <label>
+                                                Previous Order No.
+                                                @if ($isRequired)
+                                                    <span class="required">*</span>
+                                                @endif
+                                            </label>
+
+                                            <input type="text"
+                                                name="previous_order_no[{{ $firstOption->option_group_id }}]"
+                                                class="previous-order-input" value="{{ $previousOrderValue }}"
+                                                placeholder="Ex: ORD202605110001">
+                                        </div>
+                                    </div>
                                 @else
                                     <div class="option-button-list">
                                         @foreach ($options as $option)
@@ -1680,12 +1792,26 @@
                     `${optionName} - ${variantName}` :
                     optionName;
 
+                let extraText = '';
+
+                if (input.classList.contains('previous-order-radio') && input.dataset.isYes === '1') {
+                    const groupId = input.name.match(/\[(.*?)\]/)?.[1];
+
+                    const previousInput = document.querySelector(
+                        '[data-previous-order-box="' + groupId + '"] .previous-order-input'
+                    );
+
+                    if (previousInput && previousInput.value.trim()) {
+                        extraText = `<br><small>Order No: ${previousInput.value.trim()}</small>`;
+                    }
+                }
+
                 html += `
-                <div class="summary-item">
-                    <span>${groupName}</span>
-                    <strong>${displayName}</strong>
-                </div>
-            `;
+    <div class="summary-item">
+        <span>${groupName}</span>
+        <strong>${displayName}${extraText}</strong>
+    </div>
+`;
             });
 
             selectedOptions.forEach(function(select) {
@@ -1802,29 +1928,54 @@
                 updateSingleSelectDetailPreview(select);
             });
         }
+        function getActiveDependencyTargetGroupIds() {
+    const selectedOptionIds = getSelectedOptionIds();
+    const activeGroupIds = [];
+
+    optionDependencies.forEach(function(dep) {
+        const triggerOptionId = parseInt(dep.parent_option_id);
+
+        if (!selectedOptionIds.includes(triggerOptionId)) {
+            return;
+        }
+
+        if (dep.target_type === 'group' && dep.target_group_id) {
+            activeGroupIds.push(parseInt(dep.target_group_id));
+        }
+    });
+
+    return activeGroupIds;
+}
 
         function hideDependentGroups() {
-            const targetGroupIds = [
-                ...new Set(
-                    optionDependencies
-                    .filter(function(dep) {
-                        return dep.target_type === 'group' && dep.target_group_id;
-                    })
-                    .map(function(dep) {
-                        return parseInt(dep.target_group_id);
-                    })
-                )
-            ];
+    const activeGroupIds = getActiveDependencyTargetGroupIds();
 
-            targetGroupIds.forEach(function(groupId) {
-                const groupEls = document.querySelectorAll('[data-group-id="' + groupId + '"]');
+    const targetGroupIds = [
+        ...new Set(
+            optionDependencies
+                .filter(function(dep) {
+                    return dep.target_type === 'group' && dep.target_group_id;
+                })
+                .map(function(dep) {
+                    return parseInt(dep.target_group_id);
+                })
+        )
+    ];
 
-                groupEls.forEach(function(groupEl) {
-                    groupEl.style.display = 'none';
-                    clearInputsInside(groupEl);
-                });
-            });
-        }
+    targetGroupIds.forEach(function(groupId) {
+        const groupEls = document.querySelectorAll('[data-group-id="' + groupId + '"]');
+
+        groupEls.forEach(function(groupEl) {
+            if (activeGroupIds.includes(parseInt(groupId))) {
+                groupEl.style.display = '';
+                return;
+            }
+
+            groupEl.style.display = 'none';
+            clearInputsInside(groupEl);
+        });
+    });
+}
 
         function hideDependentOptions() {
             const targetOptionIds = [
@@ -1986,127 +2137,145 @@
             updateSummary();
         }
 
-      function applyRequiredRules() {
-    document.querySelectorAll('.customize-option-group').forEach(function(groupEl) {
-        const radios = groupEl.querySelectorAll('input[type="radio"].js-option-input');
-        const selects = groupEl.querySelectorAll('select.js-option-input');
-        const customInputs = groupEl.querySelectorAll('.js-custom-color-input');
+        function applyRequiredRules() {
+            document.querySelectorAll('.customize-option-group').forEach(function(groupEl) {
+                const radios = groupEl.querySelectorAll('input[type="radio"].js-option-input');
+                const selects = groupEl.querySelectorAll('select.js-option-input');
+                const customInputs = groupEl.querySelectorAll('.js-custom-color-input');
 
-        radios.forEach(function(radio) {
-            radio.required = false;
-        });
+                radios.forEach(function(radio) {
+                    radio.required = false;
+                });
 
-        selects.forEach(function(select) {
-            select.required = false;
-        });
+                selects.forEach(function(select) {
+                    select.required = false;
+                });
 
-        customInputs.forEach(function(input) {
-            input.required = false;
-        });
-    });
-}
-function clearRequiredErrors() {
-    document.querySelectorAll('.customize-option-group').forEach(function(groupEl) {
-        groupEl.classList.remove('has-error');
-
-        const oldError = groupEl.querySelector('.option-required-error');
-
-        if (oldError) {
-            oldError.remove();
-        }
-    });
-}
-
-function showRequiredError(groupEl, message) {
-    groupEl.classList.add('has-error');
-
-    let errorBox = groupEl.querySelector('.option-required-error');
-
-    if (!errorBox) {
-        errorBox = document.createElement('div');
-        errorBox.className = 'option-required-error';
-        errorBox.textContent = message;
-
-        const h2 = groupEl.querySelector('h2');
-
-        if (h2) {
-            h2.insertAdjacentElement('afterend', errorBox);
-        } else {
-            groupEl.prepend(errorBox);
-        }
-    }
-}
-
-function validateRequiredOptions() {
-    clearRequiredErrors();
-
-    const requiredGroups = document.querySelectorAll('.customize-option-group[data-required="1"]');
-
-    for (const groupEl of requiredGroups) {
-        if (groupEl.style.display === 'none') {
-            continue;
+                customInputs.forEach(function(input) {
+                    input.required = false;
+                });
+            });
         }
 
-        const visibleRadios = Array.from(
-            groupEl.querySelectorAll('input[type="radio"].js-option-input')
-        ).filter(function(radio) {
-            const label = radio.closest('label');
-            return !label || label.style.display !== 'none';
-        });
+        function clearRequiredErrors() {
+            document.querySelectorAll('.customize-option-group').forEach(function(groupEl) {
+                groupEl.classList.remove('has-error');
 
-        const visibleSelects = Array.from(
-            groupEl.querySelectorAll('select.js-option-input')
-        ).filter(function(select) {
-            return select.offsetParent !== null;
-        });
+                const oldError = groupEl.querySelector('.option-required-error');
 
-        const customColorInput = groupEl.querySelector('.js-custom-color-input');
-        const customColorBox = customColorInput ? customColorInput.closest('.custom-color-box') : null;
-        const customColorVisible = customColorBox && customColorBox.style.display !== 'none';
-        const hasCustomColorValue = customColorVisible && customColorInput.value.trim() !== '';
+                if (oldError) {
+                    oldError.remove();
+                }
+            });
+        }
 
-        let isValid = true;
+        function showRequiredError(groupEl, message) {
+            groupEl.classList.add('has-error');
 
-        if (visibleRadios.length > 0) {
-            const radioNames = [...new Set(
-                visibleRadios.map(function(radio) {
-                    return radio.name;
-                })
-            )];
+            let errorBox = groupEl.querySelector('.option-required-error');
 
-            for (const name of radioNames) {
-                const checked = groupEl.querySelector(
-                    'input[type="radio"][name="' + name + '"]:checked'
-                );
+            if (!errorBox) {
+                errorBox = document.createElement('div');
+                errorBox.className = 'option-required-error';
+                errorBox.textContent = message;
 
-                if (!checked && !hasCustomColorValue) {
-                    isValid = false;
-                    break;
+                const h2 = groupEl.querySelector('h2');
+
+                if (h2) {
+                    h2.insertAdjacentElement('afterend', errorBox);
+                } else {
+                    groupEl.prepend(errorBox);
                 }
             }
         }
 
-        for (const select of visibleSelects) {
-            if (!select.value) {
-                isValid = false;
-                break;
+        function validateRequiredOptions() {
+            clearRequiredErrors();
+
+            const requiredGroups = document.querySelectorAll('.customize-option-group[data-required="1"]');
+
+            for (const groupEl of requiredGroups) {
+                if (groupEl.style.display === 'none') {
+                    continue;
+                }
+
+                const visibleRadios = Array.from(
+                    groupEl.querySelectorAll('input[type="radio"].js-option-input')
+                ).filter(function(radio) {
+                    const label = radio.closest('label');
+                    return !label || label.style.display !== 'none';
+                });
+
+                const visibleSelects = Array.from(
+                    groupEl.querySelectorAll('select.js-option-input')
+                ).filter(function(select) {
+                    return select.offsetParent !== null;
+                });
+
+                const customColorInput = groupEl.querySelector('.js-custom-color-input');
+                const customColorBox = customColorInput ? customColorInput.closest('.custom-color-box') : null;
+                const customColorVisible = customColorBox && customColorBox.style.display !== 'none';
+                const hasCustomColorValue = customColorVisible && customColorInput.value.trim() !== '';
+
+                let isValid = true;
+
+                if (visibleRadios.length > 0) {
+                    const radioNames = [...new Set(
+                        visibleRadios.map(function(radio) {
+                            return radio.name;
+                        })
+                    )];
+
+                    for (const name of radioNames) {
+                        const checked = groupEl.querySelector(
+                            'input[type="radio"][name="' + name + '"]:checked'
+                        );
+
+                        if (!checked && !hasCustomColorValue) {
+                            isValid = false;
+                            break;
+                        }
+                    }
+                }
+
+                for (const select of visibleSelects) {
+                    if (!select.value) {
+                        isValid = false;
+                        break;
+                    }
+                }
+
+                if (!isValid) {
+                    showRequiredError(groupEl, 'Please select this required option.');
+
+                    groupEl.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+
+                    return false;
+                }
             }
+            const previousOrderBoxes = document.querySelectorAll('.previous-order-input-box.is-open');
+
+            for (const box of previousOrderBoxes) {
+                const input = box.querySelector('.previous-order-input');
+                const groupEl = box.closest('.customize-option-group');
+
+                if (input && input.required && !input.value.trim()) {
+                    showRequiredError(groupEl, 'Please enter your previous order number.');
+
+                    groupEl.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+
+                    return false;
+                }
+            }
+
+            return true;
         }
-
-        if (!isValid) {
-            showRequiredError(groupEl, 'Please select this required option.');
-
-            groupEl.scrollIntoView({
-                behavior: 'smooth',
-                block: 'center'
-            });
-
-            return false;
-        }
-    }
-
-    return true;
-}
 
         document.addEventListener('DOMContentLoaded', function() {
             const quantityInput = document.getElementById('quantity');
@@ -2347,25 +2516,92 @@ function validateRequiredOptions() {
         });
     </script>
     <script>
-       document.addEventListener('DOMContentLoaded', function() {
-    const customizeForm = document.getElementById('customize-form');
+        document.addEventListener('DOMContentLoaded', function() {
+            const customizeForm = document.getElementById('customize-form');
 
-    if (!customizeForm) {
-        return;
+            if (!customizeForm) {
+                return;
+            }
+
+            customizeForm.addEventListener('submit', function(e) {
+                applyRequiredRules();
+
+                const isValid = validateRequiredOptions();
+
+                if (!isValid) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    alert('Please select all required options.');
+                    return false;
+                }
+            });
+        });
+    </script>
+   <script>
+document.addEventListener('DOMContentLoaded', function() {
+    function togglePreviousOrderBox(groupId) {
+        const radios = document.querySelectorAll(
+            'input.previous-order-radio[name="options[' + groupId + ']"]'
+        );
+
+        const box = document.querySelector(
+            '[data-previous-order-box="' + groupId + '"]'
+        );
+
+        if (!box) {
+            return;
+        }
+
+        const input = box.querySelector('.previous-order-input');
+
+        let selectedIsYes = false;
+
+        radios.forEach(function(radio) {
+            if (radio.checked && radio.dataset.isYes === '1') {
+                selectedIsYes = true;
+            }
+        });
+
+        if (selectedIsYes) {
+            box.classList.add('is-open');
+
+            if (input) {
+                input.required = true;
+            }
+        } else {
+            box.classList.remove('is-open');
+
+            if (input) {
+                input.required = false;
+                input.value = '';
+            }
+        }
     }
 
-    customizeForm.addEventListener('submit', function(e) {
-        applyRequiredRules();
+    document.querySelectorAll('.previous-order-radio').forEach(function(radio) {
+        const groupId = radio.name.match(/\[(.*?)\]/)?.[1];
 
-        const isValid = validateRequiredOptions();
-
-        if (!isValid) {
-            e.preventDefault();
-            e.stopPropagation();
-            alert('Please select all required options.');
-            return false;
+        if (groupId) {
+            togglePreviousOrderBox(groupId);
         }
+
+        radio.addEventListener('change', function() {
+            const groupId = this.name.match(/\[(.*?)\]/)?.[1];
+
+            if (groupId) {
+                togglePreviousOrderBox(groupId);
+            }
+
+            updateSummary();
+        });
+    });
+
+    // เพิ่มตรงนี้
+    document.querySelectorAll('.previous-order-input').forEach(function(input) {
+        input.addEventListener('input', function() {
+            updateSummary();
+        });
     });
 });
-    </script>
+</script>
 @endsection

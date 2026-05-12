@@ -471,6 +471,7 @@ class OrderController extends Controller
         $customer = session()->get('checkout_customer', []);
         $payment = session()->get('checkout_payment', []);
         $artworks = session()->get('checkout_artworks', []);
+        
 
         if (empty($cart)) {
             return redirect()
@@ -558,13 +559,16 @@ class OrderController extends Controller
                 ]);
 
                 $orderItemMap[$cartItemId] = $orderItem->order_item_id;
-
                 /*
-|--------------------------------------------------------------------------
-| Order Item Options
-|--------------------------------------------------------------------------
-*/
+                |--------------------------------------------------------------------------
+                | Order Item Options
+                |--------------------------------------------------------------------------
+                */
+               $previousOrderNos = $item['previous_order_no'] ?? [];
+
 foreach (($item['options'] ?? []) as $option) {
+    $groupId = $option['group_id'] ?? null;
+
     $additionalPrice = (float) ($option['price'] ?? 0);
     $variantPrice = (float) ($option['variant_price'] ?? 0);
     $totalOptionPrice = $additionalPrice + $variantPrice;
@@ -572,7 +576,7 @@ foreach (($item['options'] ?? []) as $option) {
     OrderItemOption::create([
         'order_item_id' => $orderItem->order_item_id,
 
-        'option_group_id' => $option['group_id'] ?? null,
+        'option_group_id' => $groupId,
         'option_id' => $option['option_id'] ?? null,
 
         'group_name_snapshot' => $option['group_name'] ?? null,
@@ -584,7 +588,8 @@ foreach (($item['options'] ?? []) as $option) {
         'additional_price' => $totalOptionPrice,
         'price_type' => $option['price_type'] ?? null,
 
-        'custom_value' => null,
+        'custom_value' => $previousOrderNos[$groupId] ?? null,
+
         'total_price' => $totalOptionPrice,
     ]);
 }

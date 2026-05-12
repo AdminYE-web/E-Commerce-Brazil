@@ -293,7 +293,7 @@
 
         .option-button-item {
             min-width: 84px;
-            height: 34px;
+            height: 42px;
             border: 1px solid #d9dde7;
             border-radius: 6px;
             background: #fff;
@@ -305,7 +305,7 @@
         }
 
         .option-button-item span {
-            font-size: 13px;
+            font-size: 16px;
         }
 
         .option-color-list {
@@ -554,7 +554,7 @@
         }
 
         .variant-title {
-            font-size: 13px;
+            font-size: 16px;
             font-weight: 600;
             line-height: 1.2;
             text-align: center;
@@ -889,12 +889,12 @@
         }
 
         .quantity-input-row input {
-            width: 136px;
-            height: 50px;
+            width: 110px;
+            height: 39px;
             border: 1px solid #cfd4dc;
             border-radius: 10px;
             background: #fff;
-            font-size: 22px;
+            font-size: 16px;
             font-weight: 600;
             text-align: center;
         }
@@ -935,30 +935,106 @@
                 font-size: 20px;
             }
         }
+
+        .option-required-error {
+            margin-top: 10px;
+            color: #dc2626;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* .customize-option-group.has-error h2 {
+                        color: #dc2626;
+                    } */
+
+        /* .customize-option-group.has-error .option-button-item,
+                    .customize-option-group.has-error .option-image-card,
+                    .customize-option-group.has-error .option-variant-card,
+                    .customize-option-group.has-error .option-compact-card,
+                    .customize-option-group.has-error .option-select-detail {
+                        border-color: #dc2626;
+                    } */
+        .previous-order-box {
+            max-width: 620px;
+        }
+
+        .previous-order-choice-list {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .previous-order-choice {
+            min-width: 110px;
+            height: 44px;
+            border: 1px solid #d9dde7;
+            border-radius: 8px;
+            background: #fff;
+            padding: 0 22px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .previous-order-choice input {
+            display: none;
+        }
+
+        .previous-order-choice:has(input:checked) {
+            border-color: #3166f6;
+            box-shadow: 0 0 0 1px #3166f6;
+        }
+
+        .previous-order-input-box {
+            margin-top: 14px;
+            display: none;
+        }
+
+        .previous-order-input-box.is-open {
+            display: block;
+        }
+
+        .previous-order-input-box label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: #111;
+        }
+
+        .previous-order-input-box input {
+            width: 100%;
+            height: 42px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 0 14px;
+            font-size: 14px;
+        }
     </style>
 @endsection
 
 @section('content')
     @php
-    $priceTiers = $product->priceTiers->map(function ($tier) {
-        return [
-            'min_qty' => (int) $tier->min_qty,
-            'max_qty' => $tier->max_qty ? (int) $tier->max_qty : null,
-            'unit_price' => (float) $tier->unit_price,
-        ];
-    })->values();
+        $editingCartItemId = session('editing_cart_item_id');
+        $editingCartItem = session('editing_cart_item');
 
-    $defaultQuantity = old('quantity', 100);
+        $editingOptions = collect($editingCartItem['options'] ?? [])
+            ->pluck('option_id', 'group_id')
+            ->toArray();
 
-    $defaultTier = $product->priceTiers
-        ->filter(function ($tier) use ($defaultQuantity) {
-            return $defaultQuantity >= $tier->min_qty
-                && (is_null($tier->max_qty) || $defaultQuantity <= $tier->max_qty);
-        })
-        ->first();
+        $editingVariants = collect($editingCartItem['options'] ?? [])
+            ->filter(fn($item) => !empty($item['variant_id']))
+            ->pluck('variant_id', 'option_id')
+            ->toArray();
 
-    $basePrice = $defaultTier ? (float) $defaultTier->unit_price : 0;
-@endphp
+        $editingCustomColors = collect($editingCartItem['custom_colors'] ?? [])
+            ->pluck('value', 'group_id')
+            ->toArray();
+
+        $defaultQuantity = old('quantity', $editingCartItem['quantity'] ?? 100);
+
+        $basePrice = 0;
+    @endphp
 
 
     <section class="customize-hero-section">
@@ -975,16 +1051,15 @@
 
                 <span>{{ $product->product_name }}</span>
             </div>
+            <div class="customize-hero-banner">
+                @if ($product->detail && $product->detail->sample_image)
+                    <img src="{{ asset('storage/' . $product->detail->sample_image) }}" alt="{{ $product->product_name }}">
+                @else
+                    <img src="{{ asset('images/no-image.png') }}" alt="No image">
+                @endif
 
-            @if(!empty($product->detail->sample_image))
-                <div class="customize-hero-banner">
-                    @if ($product->detail && $product->detail->sample_image)
-                        <img src="{{ asset('storage/' . $product->detail->sample_image) }}" alt="{{ $product->product_name }}">
-                    @else
-                        <img src="{{ asset('images/no-image.png') }}" alt="No image">
-                    @endif
-                </div>
-            @endif
+
+            </div>
 
 
 
@@ -992,8 +1067,15 @@
 
                 <div class="customize-options">
 
-                    <form action="{{ route('cart.add') }}" method="POST" id="customize-form">
+                    <form action="{{ route('cart.add') }}" method="POST" id="customize-form" novalidate>
                         @csrf
+
+
+                        <input type="hidden" name="product_id" value="{{ $product->product_id }}">
+
+                        @if ($editingCartItemId)
+                            <input type="hidden" name="cart_item_id" value="{{ $editingCartItemId }}">
+                        @endif
 
                         <input type="hidden" name="product_id" value="{{ $product->product_id }}">
                         @csrf
@@ -1013,7 +1095,8 @@
                                 $isRequired = $group->is_required ?? true;
                             @endphp
 
-                            <div class="customize-option-group">
+                            <div class="customize-option-group" data-group-id="{{ $group->option_group_id }}"
+                                data-required="{{ $isRequired ? 1 : 0 }}">
                                 <h2>
                                     {{ $loop->iteration }}. {{ $groupName }}
 
@@ -1036,10 +1119,11 @@
                                             <label class="option-image-card">
                                                 <input type="radio" name="options[{{ $option->option_group_id }}]"
                                                     value="{{ $option->option_id }}" data-group-name="{{ $groupName }}"
-                                                    data-option-name="{{ $option->option_name }}"
+                                                    class="js-option-input" data-option-name="{{ $option->option_name }}"
                                                     data-price="{{ $option->additional_price ?? 0 }}"
                                                     data-price-type="{{ $option->price_type }}"
-                                                    {{ $option->pivot->is_default ? 'checked' : '' }}>
+                                                    data-option-id="{{ $option->option_id }}"
+                                                    {{ old("options.{$option->option_group_id}", $editingOptions[$option->option_group_id] ?? null) == $option->option_id || (!$editingCartItem && $option->pivot->is_default) ? 'checked' : '' }}>
 
                                                 <div class="option-image-box">
                                                     @if ($option->mainImage)
@@ -1073,10 +1157,11 @@
                                             <label class="option-variant-card">
                                                 <input type="radio" name="options[{{ $option->option_group_id }}]"
                                                     value="{{ $option->option_id }}" data-group-name="{{ $groupName }}"
-                                                    data-option-name="{{ $option->option_name }}"
+                                                    class="js-option-input" data-option-name="{{ $option->option_name }}"
                                                     data-price="{{ $option->additional_price ?? 0 }}"
                                                     data-price-type="{{ $option->price_type }}"
-                                                    {{ $option->pivot->is_default ? 'checked' : '' }}>
+                                                    data-option-id="{{ $option->option_id }}"
+                                                    {{ old("options.{$option->option_group_id}", $editingOptions[$option->option_group_id] ?? null) == $option->option_id || (!$editingCartItem && $option->pivot->is_default) ? 'checked' : '' }}>
 
                                                 <span class="variant-title">
                                                     {{ $option->option_name }}
@@ -1089,7 +1174,17 @@
 
                                                 @if ($option->variants && $option->variants->count())
                                                     @php
-                                                        $selectedVariant = $defaultVariant;
+                                                        $editingVariantId =
+                                                            $editingVariants[$option->option_id] ?? null;
+
+                                                        $selectedVariant = $editingVariantId
+                                                            ? $option->variants->firstWhere(
+                                                                'variant_id',
+                                                                $editingVariantId,
+                                                            )
+                                                            : $defaultVariant;
+
+                                                        $selectedVariant = $selectedVariant ?? $defaultVariant;
                                                     @endphp
 
                                                     <input type="hidden" name="variants[{{ $option->option_id }}]"
@@ -1138,10 +1233,11 @@
                                             <label class="option-compact-card">
                                                 <input type="radio" name="options[{{ $option->option_group_id }}]"
                                                     value="{{ $option->option_id }}" data-group-name="{{ $groupName }}"
-                                                    data-option-name="{{ $option->option_name }}"
+                                                    class="js-option-input" data-option-name="{{ $option->option_name }}"
                                                     data-price="{{ $option->additional_price ?? 0 }}"
                                                     data-price-type="{{ $option->price_type }}"
-                                                    {{ $option->pivot->is_default ? 'checked' : '' }}>
+                                                    data-option-id="{{ $option->option_id }}"
+                                                    {{ old("options.{$option->option_group_id}", $editingOptions[$option->option_group_id] ?? null) == $option->option_id || (!$editingCartItem && $option->pivot->is_default) ? 'checked' : '' }}>
 
                                                 <div class="option-compact-image">
                                                     @if ($option->mainImage)
@@ -1181,12 +1277,13 @@
                                         @foreach ($options as $option)
                                             <label class="option-color-item" title="{{ $option->option_name }}">
                                                 <input type="radio" name="options[{{ $option->option_group_id }}]"
-                                                    value="{{ $option->option_id }}"
+                                                    value="{{ $option->option_id }}" class="js-option-input"
                                                     data-group-name="{{ $groupName }}"
                                                     data-option-name="{{ $option->option_name }}"
                                                     data-price="{{ $option->additional_price ?? 0 }}"
                                                     data-price-type="{{ $option->price_type }}"
-                                                    {{ $option->pivot->is_default ? 'checked' : '' }}>
+                                                    data-option-id="{{ $option->option_id }}"
+                                                    {{ old("options.{$option->option_group_id}", $editingOptions[$option->option_group_id] ?? null) == $option->option_id || (!$editingCartItem && $option->pivot->is_default) ? 'checked' : '' }}>
 
                                                 <span class="color-circle"
                                                     style="background: {{ $option->color_code ?: '#ffffff' }};"></span>
@@ -1213,7 +1310,8 @@
                                         <div class="custom-color-input-row">
                                             <input type="text"
                                                 name="custom_colors[{{ $firstOption->option_group_id }}]"
-                                                class="custom-color-input" data-group-name="Special Cord Colors"
+                                                class="custom-color-input js-custom-color-input"
+                                                data-group-name="Special Cord Colors"
                                                 placeholder="Please specify Pantone color.">
 
                                             <button type="button" class="custom-color-add-btn">
@@ -1225,35 +1323,53 @@
                                     @php
                                         $defaultOption =
                                             $options->firstWhere('pivot.is_default', 1) ?? $options->first();
+
+                                        $defaultImage =
+                                            $defaultOption && $defaultOption->mainImage
+                                                ? asset('storage/' . $defaultOption->mainImage->image_path)
+                                                : '';
+
+                                        $defaultDetail = $defaultOption->option_detail ?? '';
+
+                                        $hasDefaultImage = !empty($defaultImage);
+                                        $hasDefaultDetail = !empty(trim(strip_tags($defaultDetail)));
                                     @endphp
 
-                                    <div class="option-select-detail-box">
-                                        <select class="option-select-detail"
-                                            name="options[{{ $defaultOption->option_group_id }}]"
+                                    <div class="option-select-detail-wrap">
+                                        <select name="options[{{ $defaultOption->option_group_id }}]"
+                                            class="option-select-detail js-option-input"
                                             data-group-name="{{ $groupName }}">
                                             @foreach ($options as $option)
+                                                @php
+                                                    $imagePath = $option->mainImage
+                                                        ? asset('storage/' . $option->mainImage->image_path)
+                                                        : '';
+                                                @endphp
+
                                                 <option value="{{ $option->option_id }}"
+                                                    data-option-id="{{ $option->option_id }}"
                                                     data-option-name="{{ $option->option_name }}"
                                                     data-price="{{ $option->additional_price ?? 0 }}"
                                                     data-price-type="{{ $option->price_type }}"
-                                                    data-image="{{ $option->mainImage ? asset('storage/' . $option->mainImage->image_path) : asset('images/no-image.png') }}"
+                                                    data-image="{{ $imagePath }}"
                                                     data-detail="{{ e($option->option_detail ?? '') }}"
-                                                    {{ $option->pivot->is_default ? 'selected' : '' }}>
+                                                    {{ old("options.{$option->option_group_id}", $editingOptions[$option->option_group_id] ?? null) == $option->option_id || (!$editingCartItem && $option->pivot->is_default) ? 'selected' : '' }}>
                                                     {{ $option->option_name }}
                                                 </option>
                                             @endforeach
                                         </select>
 
-                                        <div class="select-detail-preview">
-                                            <div class="select-detail-image">
-                                                <img src="{{ $defaultOption && $defaultOption->mainImage
-                                                    ? asset('storage/' . $defaultOption->mainImage->image_path)
-                                                    : asset('images/no-image.png') }}"
+                                        <div class="select-detail-preview"
+                                            style="{{ !$hasDefaultImage && !$hasDefaultDetail ? 'display:none;' : '' }}">
+                                            <div class="select-detail-image-box"
+                                                style="{{ !$hasDefaultImage ? 'display:none;' : '' }}">
+                                                <img class="select-detail-image" src="{{ $defaultImage }}"
                                                     alt="{{ $defaultOption->option_name ?? '' }}">
                                             </div>
 
-                                            <div class="select-detail-text">
-                                                {!! nl2br(e($defaultOption->option_detail ?? '')) !!}
+                                            <div class="select-detail-text-box"
+                                                style="{{ !$hasDefaultDetail ? 'display:none;' : '' }}">
+                                                {!! nl2br(e($defaultDetail)) !!}
                                             </div>
                                         </div>
                                     </div>
@@ -1271,7 +1387,8 @@
                                                 $childGroupName = $childGroup->group_name ?? 'Option';
                                             @endphp
 
-                                            <div class="grouped-button-set">
+                                            <div class="grouped-button-set"
+                                                data-group-id="{{ $childGroup->option_group_id }}">
                                                 <div class="grouped-button-title">
                                                     <span>{{ $childGroupName }}</span>
 
@@ -1287,15 +1404,16 @@
 
                                                 <div class="option-button-list">
                                                     @foreach ($childOptions as $option)
-                                                        <label class="option-button-item grouped-option-button">
+                                                        <label class="option-button-item">
                                                             <input type="radio"
                                                                 name="options[{{ $childGroup->option_group_id }}]"
-                                                                value="{{ $option->option_id }}"
+                                                                value="{{ $option->option_id }}" class="js-option-input"
                                                                 data-group-name="{{ $childGroupName }}"
                                                                 data-option-name="{{ $option->option_name }}"
                                                                 data-price="{{ $option->additional_price ?? 0 }}"
                                                                 data-price-type="{{ $option->price_type }}"
-                                                                {{ $option->pivot->is_default ? 'checked' : '' }}>
+                                                                data-option-id="{{ $option->option_id }}"
+                                                                {{ old("options.{$option->option_group_id}", $editingOptions[$option->option_group_id] ?? null) == $option->option_id || (!$editingCartItem && $option->pivot->is_default) ? 'checked' : '' }}>
 
                                                             <span>{{ $option->option_name }}</span>
                                                         </label>
@@ -1304,17 +1422,74 @@
                                             </div>
                                         @endforeach
                                     </div>
+                                @elseif($displayType === 'previous_order_design')
+                                    @php
+                                        $defaultOption =
+                                            $options->firstWhere('pivot.is_default', 1) ?? $options->first();
+
+                                        $selectedOptionId = old(
+                                            "options.{$firstOption->option_group_id}",
+                                            $editingOptions[$firstOption->option_group_id] ??
+                                                ($defaultOption->option_id ?? null),
+                                        );
+
+                                        $yesOption = $options->first(function ($option) {
+                                            return strtolower(trim($option->option_name)) === 'yes';
+                                        });
+
+                                        $previousOrderValue = old(
+                                            "previous_order_no.{$firstOption->option_group_id}",
+                                            $editingCartItem['previous_order_no'][$firstOption->option_group_id] ?? '',
+                                        );
+                                    @endphp
+
+                                    <div class="previous-order-box">
+                                        <div class="previous-order-choice-list">
+                                            @foreach ($options as $option)
+                                                <label class="previous-order-choice">
+                                                    <input type="radio" name="options[{{ $option->option_group_id }}]"
+                                                        value="{{ $option->option_id }}"
+                                                        class="js-option-input previous-order-radio"
+                                                        data-group-name="{{ $groupName }}"
+                                                        data-option-name="{{ $option->option_name }}"
+                                                        data-price="{{ $option->additional_price ?? 0 }}"
+                                                        data-price-type="{{ $option->price_type }}"
+                                                        data-option-id="{{ $option->option_id }}"
+                                                        data-is-yes="{{ strtolower(trim($option->option_name)) === 'yes' ? 1 : 0 }}"
+                                                        {{ (int) $selectedOptionId === (int) $option->option_id ? 'checked' : '' }}>
+
+                                                    <span>{{ $option->option_name }}</span>
+                                                </label>
+                                            @endforeach
+                                        </div>
+
+                                        <div class="previous-order-input-box {{ $yesOption && (int) $selectedOptionId === (int) $yesOption->option_id ? 'is-open' : '' }}"
+                                            data-previous-order-box="{{ $firstOption->option_group_id }}">
+                                            <label>
+                                                Previous Order No.
+                                                @if ($isRequired)
+                                                    <span class="required">*</span>
+                                                @endif
+                                            </label>
+
+                                            <input type="text"
+                                                name="previous_order_no[{{ $firstOption->option_group_id }}]"
+                                                class="previous-order-input" value="{{ $previousOrderValue }}"
+                                                placeholder="Ex: ORD202605110001">
+                                        </div>
+                                    </div>
                                 @else
                                     <div class="option-button-list">
                                         @foreach ($options as $option)
                                             <label class="option-button-item">
                                                 <input type="radio" name="options[{{ $option->option_group_id }}]"
-                                                    value="{{ $option->option_id }}"
+                                                    value="{{ $option->option_id }}" class="js-option-input"
                                                     data-group-name="{{ $groupName }}"
                                                     data-option-name="{{ $option->option_name }}"
                                                     data-price="{{ $option->additional_price ?? 0 }}"
                                                     data-price-type="{{ $option->price_type }}"
-                                                    {{ $option->pivot->is_default ? 'checked' : '' }}>
+                                                    data-option-id="{{ $option->option_id }}"
+                                                    {{ old("options.{$option->option_group_id}", $editingOptions[$option->option_group_id] ?? null) == $option->option_id || (!$editingCartItem && $option->pivot->is_default) ? 'checked' : '' }}>
 
                                                 <span>{{ $option->option_name }}</span>
                                             </label>
@@ -1337,7 +1512,7 @@
                             </div>
 
                             <div class="quantity-input-row">
-                                <input type="number" name="quantity" id="quantity" value="{{ old('quantity', 100) }}"
+                                <input type="number" name="quantity" id="quantity" value="{{ $defaultQuantity }}"
                                     min="20" step="1" required>
 
                                 <span>Unidades</span>
@@ -1350,7 +1525,7 @@
                             @enderror
 
                             <button type="submit" class="add-to-cart-btn">
-                                ADD TO CART
+                                {{ $editingCartItemId ? 'UPDATE CART' : 'ADD TO CART' }}
                             </button>
                         </div>
                     </form>
@@ -1359,19 +1534,19 @@
                 <aside class="product-summary-box">
                     <h3>Resumo do produto</h3>
 
-                    <div class="summary-item">
-    <span>Unit Price</span>
-    <strong>¥ <span id="summary-unit-price">{{ number_format($basePrice, 2) }}</span></strong>
-</div>
+                    {{-- <div class="summary-item">
+                        <span>Unit Price</span>
+                        <strong>¥ <span id="summary-unit-price">{{ number_format($basePrice, 2) }}</span></strong>
+                    </div> --}}
 
-<div class="summary-item">
-    <span>Quantity</span>
-    <strong><span id="summary-quantity">{{ old('quantity', 100) }}</span> Unidades</strong>
-</div>
+                    {{-- <div class="summary-item">
+                        <span>Quantity</span>
+                        <strong><span id="summary-quantity">{{ old('quantity', 100) }}</span> Unidades</strong>
+                    </div> --}}
 
-<div class="summary-divider"></div>
+                    <div class="summary-divider"></div>
 
-<div id="summary-options"></div>
+                    <div id="summary-options"></div>
 
                     <div class="summary-divider"></div>
 
@@ -1391,257 +1566,845 @@
 @endsection
 
 @section('js')
-   <script>
-    const priceTiers = @json($priceTiers);
+    <script>
+        const priceRules = @json($priceRules ?? []);
+        const optionDependencies = @json($dependencies ?? []);
 
-    function formatPrice(price) {
-        return Number(price || 0).toFixed(2);
-    }
+        console.log('priceRules:', priceRules);
 
-    function getUnitPriceByQuantity(quantity) {
-    quantity = parseInt(quantity || 0);
+        let isUpdatingDependencies = false;
 
-    if (!quantity || quantity <= 0) {
-        return 0;
-    }
+        function formatPrice(price) {
+            return Number(price || 0).toFixed(2);
+        }
 
-    // 1) หา tier ที่ตรงช่วงก่อน
-    const matchedTier = priceTiers.find(function(item) {
-        const minQty = parseInt(item.min_qty);
-        const maxQty = item.max_qty === null ? null : parseInt(item.max_qty);
+        function getSelectedOptionIdsForPrice() {
+            const selected = [];
 
-        return quantity >= minQty && (maxQty === null || quantity <= maxQty);
-    });
+            document.querySelectorAll('#customize-form input[type="radio"]:checked').forEach(function(input) {
+                const optionId = parseInt(input.value);
 
-    if (matchedTier) {
-        return parseFloat(matchedTier.unit_price);
-    }
+                if (optionId) {
+                    selected.push(optionId);
+                }
+            });
 
-    // 2) ถ้าไม่เจอ และ quantity มากกว่าช่วงสูงสุด ให้ใช้ tier ที่ min_qty สูงสุด
-    const sortedTiers = [...priceTiers].sort(function(a, b) {
-        return parseInt(b.min_qty) - parseInt(a.min_qty);
-    });
+            document.querySelectorAll('#customize-form select.option-select-detail').forEach(function(select) {
+                if (select.closest('.customize-option-group')?.style.display === 'none') {
+                    return;
+                }
 
-    const highestTier = sortedTiers[0];
+                const optionId = parseInt(select.value);
 
-    if (highestTier && quantity > parseInt(highestTier.min_qty)) {
-        return parseFloat(highestTier.unit_price);
-    }
+                if (optionId) {
+                    selected.push(optionId);
+                }
+            });
 
-    return 0;
-}
+            return selected;
+        }
 
-    function updateSummary() {
-        const quantityInput = document.getElementById('quantity');
-        const quantity = parseInt(quantityInput?.value || 0);
+        function findMatchedPriceRule(selectedOptionIds) {
+            const matchedRules = priceRules.filter(function(rule) {
+                const ruleOptionIds = rule.option_ids || [];
 
-        const unitPrice = getUnitPriceByQuantity(quantity);
-        const productTotal = unitPrice * quantity;
+                if (!ruleOptionIds.length) {
+                    return false;
+                }
 
-        let optionTotal = 0;
-        const summaryOptions = document.getElementById('summary-options');
-        const checkedOptions = document.querySelectorAll('#customize-form input[type="radio"]:checked');
-        const selectedOptions = document.querySelectorAll('#customize-form .option-select-detail');
-        const customColorInputs = document.querySelectorAll('.custom-color-input');
+                return ruleOptionIds.every(function(optionId) {
+                    return selectedOptionIds.includes(parseInt(optionId));
+                });
+            });
 
-        let html = '';
+            if (!matchedRules.length) {
+                return null;
+            }
 
-        checkedOptions.forEach(function(input) {
-            const groupName = input.dataset.groupName || '';
-            const optionName = input.dataset.optionName || '';
-            const variantName = input.dataset.variantName || '';
-            const price = parseFloat(input.dataset.price || 0);
-            const variantPrice = parseFloat(input.dataset.variantPrice || 0);
+            matchedRules.sort(function(a, b) {
+                return (b.option_ids || []).length - (a.option_ids || []).length;
+            });
 
-            optionTotal += price + variantPrice;
+            return matchedRules[0];
+        }
 
-            const displayName = variantName
-                ? `${optionName} - ${variantName}`
-                : optionName;
+        function getUnitPriceFromRule(rule, quantity) {
+            quantity = parseInt(quantity || 0);
 
-            html += `
-                <div class="summary-item">
-                    <span>${groupName}</span>
-                    <strong>${displayName}</strong>
-                </div>
-            `;
-        });
+            if (!rule || !quantity || quantity <= 0) {
+                return 0;
+            }
 
-        selectedOptions.forEach(function(select) {
+            const tiers = rule.tiers || [];
+
+            const matchedTier = tiers.find(function(tier) {
+                const minQty = parseInt(tier.min_qty);
+                const maxQty = tier.max_qty === null ? null : parseInt(tier.max_qty);
+
+                return quantity >= minQty && (maxQty === null || quantity <= maxQty);
+            });
+
+            if (matchedTier) {
+                return parseFloat(matchedTier.unit_price);
+            }
+
+            const sortedTiers = [...tiers].sort(function(a, b) {
+                return parseInt(b.min_qty) - parseInt(a.min_qty);
+            });
+
+            const highestTier = sortedTiers[0];
+
+            if (highestTier && quantity > parseInt(highestTier.min_qty)) {
+                return parseFloat(highestTier.unit_price);
+            }
+
+            return 0;
+        }
+
+        function isOptionInMatchedRule(optionId, matchedRule) {
+            if (!matchedRule || !matchedRule.option_ids) {
+                return false;
+            }
+
+            return matchedRule.option_ids
+                .map(function(id) {
+                    return parseInt(id);
+                })
+                .includes(parseInt(optionId));
+        }
+
+        function updateSingleSelectDetailPreview(select) {
             const selected = select.options[select.selectedIndex];
+            const wrap = select.closest('.option-select-detail-wrap');
 
-            const groupName = select.dataset.groupName || '';
-            const optionName = selected.dataset.optionName || selected.textContent || '';
-            const price = parseFloat(selected.dataset.price || 0);
+            if (!wrap || !selected) {
+                return;
+            }
 
-            optionTotal += price;
+            const preview = wrap.querySelector('.select-detail-preview');
+            const imageBox = wrap.querySelector('.select-detail-image-box');
+            const textBox = wrap.querySelector('.select-detail-text-box');
+            const image = wrap.querySelector('.select-detail-image');
 
-            html += `
+            if (!preview) {
+                return;
+            }
+
+            const imageUrl = selected.dataset.image || '';
+            const detailText = selected.dataset.detail || '';
+
+            const hasImage = imageUrl.trim() !== '';
+            const hasDetail = detailText.trim() !== '';
+
+            if (!hasImage && !hasDetail) {
+                preview.style.display = 'none';
+
+                if (image) {
+                    image.src = '';
+                }
+
+                if (textBox) {
+                    textBox.innerHTML = '';
+                }
+
+                return;
+            }
+
+            preview.style.display = '';
+
+            if (imageBox) {
+                imageBox.style.display = hasImage ? '' : 'none';
+            }
+
+            if (image) {
+                image.src = hasImage ? imageUrl : '';
+                image.alt = selected.dataset.optionName || '';
+            }
+
+            if (textBox) {
+                textBox.style.display = hasDetail ? '' : 'none';
+                textBox.innerHTML = hasDetail ? detailText.replace(/\n/g, '<br>') : '';
+            }
+        }
+
+        function updateSummary() {
+            const quantityInput = document.getElementById('quantity');
+            const quantity = parseInt(quantityInput?.value || 0);
+
+            const selectedOptionIds = getSelectedOptionIdsForPrice();
+            console.log('selectedOptionIds:', selectedOptionIds);
+
+            const matchedRule = findMatchedPriceRule(selectedOptionIds);
+            const unitPrice = getUnitPriceFromRule(matchedRule, quantity);
+            const productTotal = unitPrice * quantity;
+
+            let optionTotal = 0;
+            let html = '';
+
+            const summaryOptions = document.getElementById('summary-options');
+            const checkedOptions = document.querySelectorAll('#customize-form input[type="radio"]:checked');
+            const selectedOptions = document.querySelectorAll('#customize-form .option-select-detail');
+            const customColorInputs = document.querySelectorAll('.custom-color-input');
+
+            // if (matchedRule) {
+            //     html += `
+        //         <div class="summary-item">
+        //             <span>Price Rule</span>
+        //             <strong>${matchedRule.rule_name || 'Matched Rule'}</strong>
+        //         </div>
+        //     `;
+            // } else {
+            //     html += `
+        //         <div class="summary-item">
+        //             <span>Price Rule</span>
+        //             <strong style="color:#dc2626;">No matched price rule</strong>
+        //         </div>
+        //     `;
+            // }
+
+            checkedOptions.forEach(function(input) {
+                const groupEl = input.closest('.customize-option-group, .grouped-button-set');
+
+                if (groupEl && groupEl.style.display === 'none') {
+                    return;
+                }
+
+                const optionId = parseInt(input.value);
+
+                const groupName = input.dataset.groupName || '';
+                const optionName = input.dataset.optionName || '';
+                const variantName = input.dataset.variantName || '';
+                const price = parseFloat(input.dataset.price || 0);
+                const variantPrice = parseFloat(input.dataset.variantPrice || 0);
+                const priceType = input.dataset.priceType || 'per_order';
+
+                const isRuleOption = isOptionInMatchedRule(optionId, matchedRule);
+
+                if (!isRuleOption) {
+                    if (priceType === 'per_item') {
+                        optionTotal += (price + variantPrice) * quantity;
+                    } else {
+                        optionTotal += price + variantPrice;
+                    }
+                }
+
+                const displayName = variantName ?
+                    `${optionName} - ${variantName}` :
+                    optionName;
+
+                let extraText = '';
+
+                if (input.classList.contains('previous-order-radio') && input.dataset.isYes === '1') {
+                    const groupId = input.name.match(/\[(.*?)\]/)?.[1];
+
+                    const previousInput = document.querySelector(
+                        '[data-previous-order-box="' + groupId + '"] .previous-order-input'
+                    );
+
+                    if (previousInput && previousInput.value.trim()) {
+                        extraText = `<br><small>Order No: ${previousInput.value.trim()}</small>`;
+                    }
+                }
+
+                html += `
+    <div class="summary-item">
+        <span>${groupName}</span>
+        <strong>${displayName}${extraText}</strong>
+    </div>
+`;
+            });
+
+            selectedOptions.forEach(function(select) {
+                const groupEl = select.closest('.customize-option-group, .grouped-button-set');
+
+                if (groupEl && groupEl.style.display === 'none') {
+                    return;
+                }
+
+                const selected = select.options[select.selectedIndex];
+
+                if (!selected || selected.disabled || selected.hidden || !selected.value) {
+                    return;
+                }
+
+                const optionId = parseInt(selected.value);
+
+                const groupName = select.dataset.groupName || '';
+                const optionName = selected.dataset.optionName || selected.textContent || '';
+                const price = parseFloat(selected.dataset.price || 0);
+                const priceType = selected.dataset.priceType || 'per_order';
+
+                const isRuleOption = isOptionInMatchedRule(optionId, matchedRule);
+
+                if (!isRuleOption) {
+                    if (priceType === 'per_item') {
+                        optionTotal += price * quantity;
+                    } else {
+                        optionTotal += price;
+                    }
+                }
+
+                html += `
                 <div class="summary-item">
                     <span>${groupName}</span>
                     <strong>${optionName}</strong>
                 </div>
             `;
-        });
+            });
 
-        customColorInputs.forEach(function(input) {
-            const value = input.value.trim();
+            customColorInputs.forEach(function(input) {
+                const value = input.value.trim();
 
-            if (!value) {
-                return;
-            }
+                if (!value) {
+                    return;
+                }
 
-            const groupName = input.dataset.groupName || 'Special Cord Colors';
+                const groupName = input.dataset.groupName || 'Special Cord Colors';
 
-            html += `
+                html += `
                 <div class="summary-item">
                     <span>${groupName}</span>
                     <strong>${value}</strong>
                 </div>
             `;
-        });
-
-        const total = productTotal + optionTotal;
-
-        if (document.getElementById('summary-unit-price')) {
-            document.getElementById('summary-unit-price').innerText = formatPrice(unitPrice);
-        }
-
-        if (document.getElementById('summary-quantity')) {
-            document.getElementById('summary-quantity').innerText = quantity;
-        }
-
-        summaryOptions.innerHTML = html;
-        document.getElementById('total-price').innerText = formatPrice(total);
-    }
-
-    document.querySelectorAll('#customize-form input[type="radio"]').forEach(function(input) {
-        input.addEventListener('change', updateSummary);
-    });
-
-    document.addEventListener('DOMContentLoaded', function () {
-        const quantityInput = document.getElementById('quantity');
-
-        if (quantityInput) {
-            quantityInput.addEventListener('input', updateSummary);
-            quantityInput.addEventListener('change', updateSummary);
-        }
-
-        updateSummary();
-    });
-</script>
-    <script>
-        document.querySelectorAll('.option-select-detail').forEach(function(select) {
-            select.addEventListener('change', function() {
-                const selected = this.options[this.selectedIndex];
-                const wrapper = this.closest('.option-select-detail-box');
-
-                const image = selected.dataset.image || '';
-                const detail = selected.dataset.detail || '';
-
-                const imgEl = wrapper.querySelector('.select-detail-image img');
-                const textEl = wrapper.querySelector('.select-detail-text');
-
-                if (imgEl) {
-                    imgEl.src = image;
-                }
-
-                if (textEl) {
-                    textEl.innerHTML = detail.replace(/\n/g, '<br>');
-                }
-
-                updateSummary();
             });
-        });
-    </script>
-  <script>
-    document.querySelectorAll('.variant-dropdown-btn').forEach(function(button) {
-        button.addEventListener('click', function(event) {
-            event.preventDefault();
-            event.stopPropagation();
 
-            if (!window.bootstrap || !bootstrap.Dropdown) {
+            const total = productTotal + optionTotal;
+
+            // if (document.getElementById('summary-unit-price')) {
+            //     document.getElementById('summary-unit-price').innerText = formatPrice(unitPrice);
+            // }
+
+            // if (document.getElementById('summary-quantity')) {
+            //     document.getElementById('summary-quantity').innerText = quantity;
+            // }
+
+            if (summaryOptions) {
+                summaryOptions.innerHTML = html;
+            }
+
+            if (document.getElementById('total-price')) {
+                document.getElementById('total-price').innerText = formatPrice(total);
+            }
+        }
+
+        function getSelectedOptionIds() {
+            const selected = [];
+
+            document.querySelectorAll('#customize-form input[type="radio"]:checked').forEach(function(input) {
+                const optionId = parseInt(input.value);
+
+                if (optionId) {
+                    selected.push(optionId);
+                }
+            });
+
+            document.querySelectorAll('#customize-form select.option-select-detail').forEach(function(select) {
+                const optionId = parseInt(select.value);
+
+                if (optionId) {
+                    selected.push(optionId);
+                }
+            });
+
+            return selected;
+        }
+
+        function clearInputsInside(element) {
+            if (!element) {
                 return;
             }
 
-            bootstrap.Dropdown.getOrCreateInstance(button).toggle();
-        });
-    });
+            element.querySelectorAll('input[type="radio"]').forEach(function(input) {
+                input.checked = false;
+            });
 
-    document.querySelectorAll('.variant-dropdown-item').forEach(function(item) {
-        item.addEventListener('click', function(event) {
-            event.preventDefault();
-            event.stopPropagation();
+            element.querySelectorAll('input[type="text"]').forEach(function(input) {
+                input.value = '';
+            });
 
-            const card = this.closest('.option-variant-card');
+            element.querySelectorAll('select').forEach(function(select) {
+                select.selectedIndex = 0;
+                updateSingleSelectDetailPreview(select);
+            });
+        }
+        function getActiveDependencyTargetGroupIds() {
+    const selectedOptionIds = getSelectedOptionIds();
+    const activeGroupIds = [];
 
-            const variantId = this.dataset.variantId;
-            const variantName = this.dataset.variantName || '';
-            const colorCode = this.dataset.colorCode || '#ffffff';
-            const imageUrl = this.dataset.image || '';
-            const variantPrice = this.dataset.price || 0;
+    optionDependencies.forEach(function(dep) {
+        const triggerOptionId = parseInt(dep.parent_option_id);
 
-            const img = card.querySelector('.variant-main-image');
-            const radio = card.querySelector('input[type="radio"]');
-            const hiddenInput = card.querySelector('.selected-variant-input');
-            const label = card.querySelector('.variant-dropdown-label');
-            const btnDot = card.querySelector('.variant-dropdown-btn .variant-color-dot');
+        if (!selectedOptionIds.includes(triggerOptionId)) {
+            return;
+        }
 
-            if (img && imageUrl) {
-                img.src = imageUrl;
-            }
-
-            if (hiddenInput) {
-                hiddenInput.value = variantId;
-            }
-
-            if (label) {
-                label.textContent = variantName;
-            }
-
-            if (btnDot) {
-                btnDot.style.background = colorCode;
-            }
-
-            if (radio) {
-                radio.checked = true;
-                radio.dataset.variantName = variantName;
-                radio.dataset.variantPrice = variantPrice;
-                radio.dispatchEvent(new Event('change'));
-            }
-
-            updateSummary();
-
-            const dropdownButton = this.closest('.dropdown')?.querySelector('.variant-dropdown-btn');
-
-            if (dropdownButton && window.bootstrap && bootstrap.Dropdown) {
-                bootstrap.Dropdown.getOrCreateInstance(dropdownButton).hide();
-            }
-        });
-    });
-
-    document.querySelectorAll('.option-variant-card').forEach(function(card) {
-        const radio = card.querySelector('input[type="radio"]');
-        const activeItem = card.querySelector('.variant-dropdown-item');
-        const label = card.querySelector('.variant-dropdown-label');
-        const hiddenInput = card.querySelector('.selected-variant-input');
-
-        if (radio && activeItem) {
-            radio.dataset.variantName = activeItem.dataset.variantName || '';
-            radio.dataset.variantPrice = activeItem.dataset.price || 0;
-
-            if (label) {
-                label.textContent = activeItem.dataset.variantName || '';
-            }
-
-            if (hiddenInput) {
-                hiddenInput.value = activeItem.dataset.variantId || '';
-            }
+        if (dep.target_type === 'group' && dep.target_group_id) {
+            activeGroupIds.push(parseInt(dep.target_group_id));
         }
     });
 
-    updateSummary();
-</script>
+    return activeGroupIds;
+}
+
+        function hideDependentGroups() {
+    const activeGroupIds = getActiveDependencyTargetGroupIds();
+
+    const targetGroupIds = [
+        ...new Set(
+            optionDependencies
+                .filter(function(dep) {
+                    return dep.target_type === 'group' && dep.target_group_id;
+                })
+                .map(function(dep) {
+                    return parseInt(dep.target_group_id);
+                })
+        )
+    ];
+
+    targetGroupIds.forEach(function(groupId) {
+        const groupEls = document.querySelectorAll('[data-group-id="' + groupId + '"]');
+
+        groupEls.forEach(function(groupEl) {
+            if (activeGroupIds.includes(parseInt(groupId))) {
+                groupEl.style.display = '';
+                return;
+            }
+
+            groupEl.style.display = 'none';
+            clearInputsInside(groupEl);
+        });
+    });
+}
+
+        function hideDependentOptions() {
+            const targetOptionIds = [
+                ...new Set(
+                    optionDependencies
+                    .filter(function(dep) {
+                        return dep.target_type === 'option' && dep.target_option_id;
+                    })
+                    .map(function(dep) {
+                        return parseInt(dep.target_option_id);
+                    })
+                )
+            ];
+
+            targetOptionIds.forEach(function(optionId) {
+                const radioInputs = document.querySelectorAll(
+                    '#customize-form input[type="radio"][data-option-id="' + optionId + '"]'
+                );
+
+                radioInputs.forEach(function(input) {
+                    const optionBox = input.closest('label');
+
+                    if (optionBox) {
+                        optionBox.style.display = 'none';
+                    }
+
+                    input.checked = false;
+                });
+
+                const selectOptions = document.querySelectorAll(
+                    '#customize-form select.option-select-detail option[data-option-id="' + optionId + '"]'
+                );
+
+                selectOptions.forEach(function(option) {
+                    option.hidden = true;
+                    option.disabled = true;
+
+                    const select = option.closest('select');
+
+                    if (select && select.value == option.value) {
+                        const firstVisibleOption = Array.from(select.options).find(function(item) {
+                            return item.value && !item.disabled && !item.hidden;
+                        });
+
+                        if (firstVisibleOption) {
+                            select.value = firstVisibleOption.value;
+                        } else {
+                            select.value = '';
+                        }
+
+                        updateSingleSelectDetailPreview(select);
+                    }
+                });
+            });
+        }
+
+        function showMatchedDependencies() {
+            const selectedOptionIds = getSelectedOptionIds();
+
+            optionDependencies.forEach(function(dep) {
+                const triggerOptionId = parseInt(dep.parent_option_id);
+
+                if (!selectedOptionIds.includes(triggerOptionId)) {
+                    return;
+                }
+
+                if (dep.target_type === 'group' && dep.target_group_id) {
+                    const groupEls = document.querySelectorAll('[data-group-id="' + dep.target_group_id + '"]');
+
+                    groupEls.forEach(function(groupEl) {
+                        groupEl.style.display = '';
+                    });
+                }
+
+                if (dep.target_type === 'option' && dep.target_option_id) {
+                    const optionId = parseInt(dep.target_option_id);
+
+                    const radioInputs = document.querySelectorAll(
+                        '#customize-form input[type="radio"][data-option-id="' + optionId + '"]'
+                    );
+
+                    radioInputs.forEach(function(input) {
+                        const optionBox = input.closest('label');
+
+                        if (optionBox) {
+                            optionBox.style.display = '';
+                        }
+                    });
+
+                    const selectOptions = document.querySelectorAll(
+                        '#customize-form select.option-select-detail option[data-option-id="' + optionId + '"]'
+                    );
+
+                    selectOptions.forEach(function(option) {
+                        option.hidden = false;
+                        option.disabled = false;
+                    });
+                }
+            });
+        }
+
+        function fixSelectDetailAfterDependency() {
+            document.querySelectorAll('#customize-form select.option-select-detail').forEach(function(select) {
+                const groupEl = select.closest('.customize-option-group');
+
+                if (groupEl && groupEl.style.display === 'none') {
+                    return;
+                }
+
+                const selectedOption = select.options[select.selectedIndex];
+
+                const selectedIsInvalid = !selectedOption ||
+                    selectedOption.disabled ||
+                    selectedOption.hidden ||
+                    !selectedOption.value;
+
+                if (selectedIsInvalid) {
+                    const firstVisibleOption = Array.from(select.options).find(function(option) {
+                        return option.value && !option.disabled && !option.hidden;
+                    });
+
+                    if (firstVisibleOption) {
+                        select.value = firstVisibleOption.value;
+                        updateSingleSelectDetailPreview(select);
+                    } else {
+                        select.value = '';
+
+                        const wrap = select.closest('.option-select-detail-wrap');
+                        const preview = wrap?.querySelector('.select-detail-preview');
+
+                        if (preview) {
+                            preview.style.display = 'none';
+                        }
+                    }
+
+                    return;
+                }
+
+                updateSingleSelectDetailPreview(select);
+            });
+        }
+
+        function updateOptionDependencies() {
+            if (isUpdatingDependencies) {
+                return;
+            }
+
+            isUpdatingDependencies = true;
+
+            hideDependentGroups();
+            hideDependentOptions();
+            showMatchedDependencies();
+            fixSelectDetailAfterDependency();
+
+            applyRequiredRules();
+
+            isUpdatingDependencies = false;
+
+            updateSummary();
+        }
+
+        function applyRequiredRules() {
+            document.querySelectorAll('.customize-option-group').forEach(function(groupEl) {
+                const radios = groupEl.querySelectorAll('input[type="radio"].js-option-input');
+                const selects = groupEl.querySelectorAll('select.js-option-input');
+                const customInputs = groupEl.querySelectorAll('.js-custom-color-input');
+
+                radios.forEach(function(radio) {
+                    radio.required = false;
+                });
+
+                selects.forEach(function(select) {
+                    select.required = false;
+                });
+
+                customInputs.forEach(function(input) {
+                    input.required = false;
+                });
+            });
+        }
+
+        function clearRequiredErrors() {
+            document.querySelectorAll('.customize-option-group').forEach(function(groupEl) {
+                groupEl.classList.remove('has-error');
+
+                const oldError = groupEl.querySelector('.option-required-error');
+
+                if (oldError) {
+                    oldError.remove();
+                }
+            });
+        }
+
+        function showRequiredError(groupEl, message) {
+            groupEl.classList.add('has-error');
+
+            let errorBox = groupEl.querySelector('.option-required-error');
+
+            if (!errorBox) {
+                errorBox = document.createElement('div');
+                errorBox.className = 'option-required-error';
+                errorBox.textContent = message;
+
+                const h2 = groupEl.querySelector('h2');
+
+                if (h2) {
+                    h2.insertAdjacentElement('afterend', errorBox);
+                } else {
+                    groupEl.prepend(errorBox);
+                }
+            }
+        }
+
+        function validateRequiredOptions() {
+            clearRequiredErrors();
+
+            const requiredGroups = document.querySelectorAll('.customize-option-group[data-required="1"]');
+
+            for (const groupEl of requiredGroups) {
+                if (groupEl.style.display === 'none') {
+                    continue;
+                }
+
+                const visibleRadios = Array.from(
+                    groupEl.querySelectorAll('input[type="radio"].js-option-input')
+                ).filter(function(radio) {
+                    const label = radio.closest('label');
+                    return !label || label.style.display !== 'none';
+                });
+
+                const visibleSelects = Array.from(
+                    groupEl.querySelectorAll('select.js-option-input')
+                ).filter(function(select) {
+                    return select.offsetParent !== null;
+                });
+
+                const customColorInput = groupEl.querySelector('.js-custom-color-input');
+                const customColorBox = customColorInput ? customColorInput.closest('.custom-color-box') : null;
+                const customColorVisible = customColorBox && customColorBox.style.display !== 'none';
+                const hasCustomColorValue = customColorVisible && customColorInput.value.trim() !== '';
+
+                let isValid = true;
+
+                if (visibleRadios.length > 0) {
+                    const radioNames = [...new Set(
+                        visibleRadios.map(function(radio) {
+                            return radio.name;
+                        })
+                    )];
+
+                    for (const name of radioNames) {
+                        const checked = groupEl.querySelector(
+                            'input[type="radio"][name="' + name + '"]:checked'
+                        );
+
+                        if (!checked && !hasCustomColorValue) {
+                            isValid = false;
+                            break;
+                        }
+                    }
+                }
+
+                for (const select of visibleSelects) {
+                    if (!select.value) {
+                        isValid = false;
+                        break;
+                    }
+                }
+
+                if (!isValid) {
+                    showRequiredError(groupEl, 'Please select this required option.');
+
+                    groupEl.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+
+                    return false;
+                }
+            }
+            const previousOrderBoxes = document.querySelectorAll('.previous-order-input-box.is-open');
+
+            for (const box of previousOrderBoxes) {
+                const input = box.querySelector('.previous-order-input');
+                const groupEl = box.closest('.customize-option-group');
+
+                if (input && input.required && !input.value.trim()) {
+                    showRequiredError(groupEl, 'Please enter your previous order number.');
+
+                    groupEl.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const quantityInput = document.getElementById('quantity');
+
+            document.querySelectorAll('#customize-form input[type="radio"]').forEach(function(input) {
+                input.addEventListener('change', function() {
+                    updateOptionDependencies();
+                    updateSummary();
+                });
+            });
+
+            document.querySelectorAll('#customize-form select.option-select-detail').forEach(function(select) {
+                select.addEventListener('change', function() {
+                    updateSingleSelectDetailPreview(select);
+                    updateOptionDependencies();
+                    updateSummary();
+                });
+
+                updateSingleSelectDetailPreview(select);
+            });
+
+            document.querySelectorAll('#customize-form select:not(.option-select-detail)').forEach(function(
+                select) {
+                select.addEventListener('change', function() {
+                    updateOptionDependencies();
+                    updateSummary();
+                });
+            });
+
+            if (quantityInput) {
+                quantityInput.addEventListener('input', updateSummary);
+                quantityInput.addEventListener('change', updateSummary);
+            }
+
+            updateOptionDependencies();
+            applyRequiredRules();
+            updateSummary();
+        });
+    </script>
+
+    <script>
+        document.querySelectorAll('.variant-dropdown-btn').forEach(function(button) {
+            button.addEventListener('click', function(event) {
+                event.preventDefault();
+                event.stopPropagation();
+
+                if (!window.bootstrap || !bootstrap.Dropdown) {
+                    return;
+                }
+
+                bootstrap.Dropdown.getOrCreateInstance(button).toggle();
+            });
+        });
+
+        document.querySelectorAll('.variant-dropdown-item').forEach(function(item) {
+            item.addEventListener('click', function(event) {
+                event.preventDefault();
+                event.stopPropagation();
+
+                const card = this.closest('.option-variant-card');
+
+                const variantId = this.dataset.variantId;
+                const variantName = this.dataset.variantName || '';
+                const colorCode = this.dataset.colorCode || '#ffffff';
+                const imageUrl = this.dataset.image || '';
+                const variantPrice = this.dataset.price || 0;
+
+                const img = card.querySelector('.variant-main-image');
+                const radio = card.querySelector('input[type="radio"]');
+                const hiddenInput = card.querySelector('.selected-variant-input');
+                const label = card.querySelector('.variant-dropdown-label');
+                const btnDot = card.querySelector('.variant-dropdown-btn .variant-color-dot');
+
+                if (img && imageUrl) {
+                    img.src = imageUrl;
+                }
+
+                if (hiddenInput) {
+                    hiddenInput.value = variantId;
+                }
+
+                if (label) {
+                    label.textContent = variantName;
+                }
+
+                if (btnDot) {
+                    btnDot.style.background = colorCode;
+                }
+
+                if (radio) {
+                    radio.checked = true;
+                    radio.dataset.variantName = variantName;
+                    radio.dataset.variantPrice = variantPrice;
+                    radio.dispatchEvent(new Event('change'));
+                }
+
+                updateSummary();
+
+                const dropdownButton = this.closest('.dropdown')?.querySelector('.variant-dropdown-btn');
+
+                if (dropdownButton && window.bootstrap && bootstrap.Dropdown) {
+                    bootstrap.Dropdown.getOrCreateInstance(dropdownButton).hide();
+                }
+            });
+        });
+
+        document.querySelectorAll('.option-variant-card').forEach(function(card) {
+            const radio = card.querySelector('input[type="radio"]');
+            const activeItem = card.querySelector('.variant-dropdown-item');
+            const label = card.querySelector('.variant-dropdown-label');
+            const hiddenInput = card.querySelector('.selected-variant-input');
+
+            if (radio && activeItem) {
+                radio.dataset.variantName = activeItem.dataset.variantName || '';
+                radio.dataset.variantPrice = activeItem.dataset.price || 0;
+
+                if (label) {
+                    label.textContent = activeItem.dataset.variantName || '';
+                }
+
+                if (hiddenInput) {
+                    hiddenInput.value = activeItem.dataset.variantId || '';
+                }
+            }
+        });
+
+        updateSummary();
+    </script>
+
     <script>
         document.querySelectorAll('.add-color-btn').forEach(function(button) {
             button.addEventListener('click', function() {
@@ -1656,18 +2419,20 @@
                     '#customize-form input[type="radio"][name="options[' + groupId + ']"]'
                 );
 
-                // ล้างสีที่เลือกอยู่
                 colorRadios.forEach(function(radio) {
                     radio.checked = false;
                 });
 
-                // เปิดช่อง custom color
                 box.style.display = 'block';
                 this.classList.add('is-active');
 
                 const input = box.querySelector('.custom-color-input');
 
                 if (input) {
+                    const groupEl = this.closest('.customize-option-group');
+                    const isRequired = groupEl && groupEl.dataset.required === '1';
+
+                    input.required = isRequired;
                     input.focus();
                 }
 
@@ -1675,7 +2440,6 @@
             });
         });
 
-        // ถ้ากลับไปเลือกสีปกติ ให้ปิด custom color และล้างค่า
         document.querySelectorAll('.option-color-item input[type="radio"]').forEach(function(radio) {
             radio.addEventListener('change', function() {
                 const groupId = this.name.match(/\[(.*?)\]/)?.[1];
@@ -1691,8 +2455,10 @@
                     box.style.display = 'none';
 
                     const input = box.querySelector('.custom-color-input');
+
                     if (input) {
                         input.value = '';
+                        input.required = false;
                     }
                 }
 
@@ -1719,11 +2485,10 @@
         });
 
         document.querySelectorAll('.custom-color-input').forEach(function(input) {
-            input.addEventListener('input', function() {
-                updateSummary();
-            });
+            input.addEventListener('input', updateSummary);
         });
     </script>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
@@ -1750,4 +2515,93 @@
             });
         });
     </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const customizeForm = document.getElementById('customize-form');
+
+            if (!customizeForm) {
+                return;
+            }
+
+            customizeForm.addEventListener('submit', function(e) {
+                applyRequiredRules();
+
+                const isValid = validateRequiredOptions();
+
+                if (!isValid) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    alert('Please select all required options.');
+                    return false;
+                }
+            });
+        });
+    </script>
+   <script>
+document.addEventListener('DOMContentLoaded', function() {
+    function togglePreviousOrderBox(groupId) {
+        const radios = document.querySelectorAll(
+            'input.previous-order-radio[name="options[' + groupId + ']"]'
+        );
+
+        const box = document.querySelector(
+            '[data-previous-order-box="' + groupId + '"]'
+        );
+
+        if (!box) {
+            return;
+        }
+
+        const input = box.querySelector('.previous-order-input');
+
+        let selectedIsYes = false;
+
+        radios.forEach(function(radio) {
+            if (radio.checked && radio.dataset.isYes === '1') {
+                selectedIsYes = true;
+            }
+        });
+
+        if (selectedIsYes) {
+            box.classList.add('is-open');
+
+            if (input) {
+                input.required = true;
+            }
+        } else {
+            box.classList.remove('is-open');
+
+            if (input) {
+                input.required = false;
+                input.value = '';
+            }
+        }
+    }
+
+    document.querySelectorAll('.previous-order-radio').forEach(function(radio) {
+        const groupId = radio.name.match(/\[(.*?)\]/)?.[1];
+
+        if (groupId) {
+            togglePreviousOrderBox(groupId);
+        }
+
+        radio.addEventListener('change', function() {
+            const groupId = this.name.match(/\[(.*?)\]/)?.[1];
+
+            if (groupId) {
+                togglePreviousOrderBox(groupId);
+            }
+
+            updateSummary();
+        });
+    });
+
+    // เพิ่มตรงนี้
+    document.querySelectorAll('.previous-order-input').forEach(function(input) {
+        input.addEventListener('input', function() {
+            updateSummary();
+        });
+    });
+});
+</script>
 @endsection

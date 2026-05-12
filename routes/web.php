@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminAuthController;
+use App\Http\Controllers\Admin\HomeBannerController;
+use App\Http\Controllers\Admin\MaterialHomeController;
 use App\Http\Controllers\Admin\ProductArtworkTemplateController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\Admin\AdminDashboardController;
@@ -42,7 +45,7 @@ Route::view('/about-us', 'about')->name('about');
 
 Route::get('/products', [ProductListController::class, 'index'])
     ->name('products.index');
-Route::get('/products/description/{code}', [ProductListController::class, 'description'])
+Route::get('/products/description/{code?}', [ProductListController::class, 'description'])
     ->name('products.description');
 
 Route::get('/products/{product}', [ProductListController::class, 'show'])
@@ -75,11 +78,11 @@ Route::post('/cart/update-quantity', [CartController::class, 'updateQuantity'])
 Route::post('/cart/remove', [CartController::class, 'remove'])
     ->name('cart.remove');
 
-       Route::get('/checkout', [OrderController::class, 'checkout'])
+Route::get('/checkout', [OrderController::class, 'checkout'])
     ->name('checkout.index');
 
 
-    Route::post('/checkout/upload-artwork', [OrderController::class, 'storeArtworkStep'])
+Route::post('/checkout/upload-artwork', [OrderController::class, 'storeArtworkStep'])
     ->name('checkout.storeArtworkStep');
 
 Route::get('/checkout/address', [OrderController::class, 'address'])
@@ -91,20 +94,31 @@ Route::post('/checkout/address', [OrderController::class, 'storeAddressStep'])
 Route::get('/checkout/payment', [OrderController::class, 'payment'])
     ->name('checkout.payment');
 
-    Route::post('/checkout/payment', [OrderController::class, 'storePaymentStep'])
+Route::post('/checkout/payment', [OrderController::class, 'storePaymentStep'])
     ->name('checkout.storePaymentStep');
 
 Route::get('/checkout/review', [OrderController::class, 'review'])
     ->name('checkout.review');
 
-    Route::post('/checkout/place-order', [OrderController::class, 'placeOrder'])
+Route::post('/checkout/place-order', [OrderController::class, 'placeOrder'])
     ->name('checkout.placeOrder');
 
 Route::get('/checkout/success/{order}', [OrderController::class, 'success'])
     ->name('checkout.success');
 
 Route::prefix('admin')->name('admin.')->group(function () {
-    Route::get('/', [AdminDashboardController::class, 'index'])
+      Route::get('/login', [AdminAuthController::class, 'showLoginForm'])
+        ->name('login');
+
+    Route::post('/login', [AdminAuthController::class, 'login'])
+        ->name('login.submit');
+
+    Route::post('/logout', [AdminAuthController::class, 'logout'])
+        ->name('logout');
+
+
+        Route::middleware('admin.auth')->group(function () {
+        Route::get('/', [AdminDashboardController::class, 'index'])
         ->name('dashboard');
 
     Route::resource('products', ProductController::class);
@@ -148,6 +162,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::resource('product-price-rules', ProductPriceRuleController::class);
     Route::resource('product-artwork-templates', ProductArtworkTemplateController::class);
+    Route::resource('material-homes', MaterialHomeController::class);
+    Route::resource('home-banners', HomeBannerController::class);
+    });
+    
+    
 });
 
 Route::middleware('guest')->group(function () {
