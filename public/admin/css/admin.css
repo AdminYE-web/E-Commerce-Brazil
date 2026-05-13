@@ -604,3 +604,33 @@
     font-family: inherit;
     text-align: left;
 }
+.has-dropdown .sub-nav {
+    display: none;
+}
+
+.has-dropdown.open .sub-nav {
+    display: block;
+}
+
+.dropdown-toggle {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    font-family: inherit;
+    cursor: pointer;
+    text-align: left;
+}
+
+.dropdown-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.dropdown-arrow {
+    transition: transform .2s ease;
+}
+
+.has-dropdown.open .dropdown-arrow {
+    transform: rotate(180deg);
+}

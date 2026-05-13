@@ -354,7 +354,7 @@
     @endphp
 
     <form action="{{ route('checkout.placeOrder') }}" method="POST">
-    @csrf
+        @csrf
 
         <div class="checkout-page">
             <div class="container">
@@ -407,7 +407,8 @@
                                             <button type="button" class="review-detail-link js-review-detail-toggle"
                                                 data-target-id="review-detail-{{ $loop->index }}">
                                                 <img class="review-detail-arrow"
-                                                    src="{{ asset('assets/images/icon/weui_arrow-filled.png') }}" alt="">
+                                                    src="{{ asset('assets/images/icon/weui_arrow-filled.png') }}"
+                                                    alt="">
                                                 <span class="review-detail-text">Detalhes</span>
                                             </button>
                                         </div>
@@ -575,23 +576,25 @@
                         </div>
 
                     </div>
-                    @if(session('error'))
-    <div style="background:#fee2e2; color:#b91c1c; padding:12px 16px; border-radius:8px; margin-bottom:16px;">
-        {{ session('error') }}
-    </div>
-@endif
+                    {{-- @if (session('error'))
+                        <div
+                            style="background:#fee2e2; color:#b91c1c; padding:12px 16px; border-radius:8px; margin-bottom:16px;">
+                            {{ session('error') }}
+                        </div>
+                    @endif
 
-@if(session('success'))
-    <div style="background:#dcfce7; color:#166534; padding:12px 16px; border-radius:8px; margin-bottom:16px;">
-        {{ session('success') }}
-    </div>
-@endif
+                    @if (session('success'))
+                        <div
+                            style="background:#dcfce7; color:#166534; padding:12px 16px; border-radius:8px; margin-bottom:16px;">
+                            {{ session('success') }}
+                        </div>
+                    @endif --}}
 
-                  @include('checkout.partials.summary-sidebar', [
-    'backRoute' => route('checkout.payment'),
-    'backText' => 'Voltar ao Pagamento',
-    'nextText' => 'FINALIZAR PEDIDO →',
-])
+                    @include('checkout.partials.summary-sidebar', [
+                        'backRoute' => route('checkout.payment'),
+                        'backText' => 'Voltar ao Pagamento',
+                        'nextText' => 'FINALIZAR PEDIDO →',
+                    ])
                 </div>
             </div>
         </div>

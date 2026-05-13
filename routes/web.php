@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\OrderAdminController;
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\HomeBannerController;
 use App\Http\Controllers\Admin\MaterialHomeController;
@@ -164,6 +165,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('product-artwork-templates', ProductArtworkTemplateController::class);
     Route::resource('material-homes', MaterialHomeController::class);
     Route::resource('home-banners', HomeBannerController::class);
+     Route::get('orders', [OrderAdminController::class, 'index'])
+        ->name('orders.index');
+
+    Route::get('orders/{order}', [OrderAdminController::class, 'show'])
+        ->name('orders.show');
+
+    Route::put('orders/{order}/status', [OrderAdminController::class, 'updateStatus'])
+        ->name('orders.updateStatus');
     });
     
     
