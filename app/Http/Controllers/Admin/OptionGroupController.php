@@ -11,8 +11,7 @@ class OptionGroupController extends Controller
     public function index()
 {
     $groups = OptionGroup::with('parent')
-        ->orderBy('sort_order')
-        ->orderBy('option_group_id', 'desc')
+        ->latest()
         ->paginate(10);
 
     return view('admin.option_groups.index', compact('groups'));
