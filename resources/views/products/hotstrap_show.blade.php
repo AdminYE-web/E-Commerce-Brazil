@@ -350,7 +350,7 @@
             border-radius: 6px;
             padding: 20px 18px;
             position: sticky;
-            top: 20px;
+            top: 111px;
         }
 
         .product-summary-box h3 {
