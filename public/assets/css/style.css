@@ -4640,7 +4640,7 @@ body {
     gap: 6px;
     font-size: 13px;
     color: #111;
-    margin-bottom: 22px;
+    margin: 22px 0;
 }
 
 .hotstrap-breadcrumb a {
