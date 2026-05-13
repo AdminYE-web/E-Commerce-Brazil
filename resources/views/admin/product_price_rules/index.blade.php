@@ -185,6 +185,10 @@
 
                     <td style="text-align: right;">
                         <div class="action-btns" style="justify-content: flex-end;">
+                            <a href="{{ route('admin.product-price-rules.show', $rule->rule_id) }}"
+                               class="action-link">
+                                Detail
+                            </a>
                             <a href="{{ route('admin.product-price-rules.edit', $rule->rule_id) }}"
                                class="action-link">
                                 Edit

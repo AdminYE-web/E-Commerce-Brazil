@@ -1,88 +1,235 @@
-<h1>Product Artwork Templates</h1>
+@extends('admin.layouts.app')
 
-<a href="{{ route('admin.dashboard') }}">Admin Dashboard</a>
-&nbsp;|&nbsp;
-<a href="{{ route('admin.product-artwork-templates.create') }}">Add Artwork Template</a>
+@section('title', 'Product Artwork Templates | Indigo Admin')
 
-<br><br>
+@section('css')
+<style>
+    .alert-success {
+        margin: 0 24px 16px;
+        padding: 12px 16px;
+        background: #ecfdf5;
+        color: #047857;
+        border: 1px solid #a7f3d0;
+        border-radius: 8px;
+        font-size: 14px;
+    }
 
-@if(session('success'))
-    <div style="color:green; margin-bottom:15px;">
-        {{ session('success') }}
+    .btn-primary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 38px;
+        padding: 9px 18px;
+        border-radius: 8px;
+        background: var(--accent);
+        border: 1px solid var(--accent);
+        color: #fff;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        font-family: inherit;
+        line-height: 1;
+    }
+
+    .btn-primary:hover {
+        background: var(--accent-hover);
+    }
+
+    .artwork-image {
+        width: 120px;
+        height: 70px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        object-fit: contain;
+        background: #fff;
+        padding: 4px;
+    }
+
+    .sort-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 36px;
+        height: 28px;
+        border-radius: 999px;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--fg);
+    }
+
+    .action-link {
+        border: none;
+        background: none;
+        color: var(--accent);
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        padding: 0;
+        font-family: inherit;
+    }
+
+    .action-link:hover {
+        text-decoration: underline;
+    }
+
+    .action-link.delete {
+        color: #dc2626;
+    }
+
+    .template-name {
+        font-weight: 600;
+        color: var(--fg-dark);
+    }
+
+    .template-sub {
+        display: block;
+        margin-top: 4px;
+        font-size: 12px;
+        color: var(--muted);
+    }
+
+    @media (max-width: 900px) {
+        .table-card {
+            overflow-x: auto;
+        }
+
+        table {
+            min-width: 1000px;
+        }
+
+        .table-header {
+            align-items: flex-start;
+            gap: 14px;
+            flex-direction: column;
+        }
+    }
+</style>
+@endsection
+
+@section('content')
+
+<div class="table-card">
+    <div class="table-header">
+        <div>
+            <div class="table-title">Product Artwork Templates</div>
+            <div class="showing-text">
+                Manage artwork templates, preview images, sorting and status.
+            </div>
+        </div>
+
+        <div class="table-actions">
+            <a href="{{ route('admin.dashboard') }}" class="btn-outline">
+                Dashboard
+            </a>
+
+            <a href="{{ route('admin.product-artwork-templates.create') }}" class="btn-primary">
+                + Add Artwork Template
+            </a>
+        </div>
     </div>
-@endif
 
-<table border="1" cellpadding="8" cellspacing="0" width="100%">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Product</th>
-            <th>Template Name</th>
-            <th>Image</th>
-            <th>Sort Order</th>
-            <th>Status</th>
-            <th>Manage</th>
-        </tr>
-    </thead>
+    @if(session('success'))
+        <div class="alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
 
-    <tbody>
-        @forelse($templates as $template)
+    <table>
+        <thead>
             <tr>
-                <td>{{ $template->template_id }}</td>
-
-                <td>
-                    {{ $template->product->product_name ?? '-' }}
-                </td>
-
-                <td>
-                    {{ $template->template_name }}
-                </td>
-
-                <td>
-                    @if($template->image_path)
-                        <img 
-                            src="{{ asset('storage/' . $template->image_path) }}" 
-                            width="120"
-                            style="max-height:70px; object-fit:contain;"
-                        >
-                    @else
-                        No image
-                    @endif
-                </td>
-
-                <td>{{ $template->sort_order }}</td>
-
-                <td>{{ $template->is_active ? 'Active' : 'Inactive' }}</td>
-
-                <td>
-                    <a href="{{ route('admin.product-artwork-templates.edit', $template->template_id) }}">
-                        Edit
-                    </a>
-
-                    <form 
-                        action="{{ route('admin.product-artwork-templates.destroy', $template->template_id) }}" 
-                        method="POST" 
-                        style="display:inline;"
-                    >
-                        @csrf
-                        @method('DELETE')
-
-                        <button type="submit" onclick="return confirm('Delete this template?')">
-                            Delete
-                        </button>
-                    </form>
-                </td>
+                <th>Template</th>
+                <th>Product</th>
+                <th>Preview</th>
+                <th>Sort</th>
+                <th>Status</th>
+                <th style="text-align:right;">Manage</th>
             </tr>
-        @empty
-            <tr>
-                <td colspan="7" align="center">
-                    No artwork templates found.
-                </td>
-            </tr>
-        @endforelse
-    </tbody>
-</table>
+        </thead>
 
-<br>
+        <tbody>
+            @forelse($templates as $template)
+                <tr>
+                    <td>
+                        <div class="product-details">
+                            <span class="template-name">
+                                {{ $template->template_name }}
+                            </span>
 
-{{ $templates->links() }}
+                            <span class="template-sub">
+                                ID: {{ $template->template_id }}
+                            </span>
+                        </div>
+                    </td>
+
+                    <td>
+                        {{ $template->product->product_name ?? '-' }}
+                    </td>
+
+                    <td>
+                        @if($template->image_path)
+                            <img
+                                src="{{ asset('storage/' . $template->image_path) }}"
+                                class="artwork-image"
+                                alt="{{ $template->template_name }}"
+                            >
+                        @else
+                            <span class="template-sub">No image</span>
+                        @endif
+                    </td>
+
+                    <td>
+                        <span class="sort-badge">
+                            {{ $template->sort_order }}
+                        </span>
+                    </td>
+
+                    <td>
+                        @if($template->is_active)
+                            <span class="status-pill status-active">Active</span>
+                        @else
+                            <span class="status-pill status-inactive">Inactive</span>
+                        @endif
+                    </td>
+
+                    <td style="text-align:right;">
+                        <div class="action-btns" style="justify-content:flex-end;">
+                            <a href="{{ route('admin.product-artwork-templates.edit', $template->template_id) }}"
+                               class="action-link">
+                                Edit
+                            </a>
+
+                            <form action="{{ route('admin.product-artwork-templates.destroy', $template->template_id) }}"
+                                  method="POST"
+                                  style="display:inline;">
+                                @csrf
+                                @method('DELETE')
+
+                                <button type="submit"
+                                        class="action-link delete"
+                                        onclick="return confirm('Delete this template?')">
+                                    Delete
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="6" style="text-align:center; padding:32px;">
+                        No artwork templates found.
+                    </td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
+
+    <div class="pagination-container">
+        {{ $templates->links() }}
+    </div>
+</div>
+
+@endsection

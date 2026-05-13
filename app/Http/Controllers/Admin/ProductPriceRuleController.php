@@ -164,4 +164,16 @@ class ProductPriceRuleController extends Controller
             ->route('admin.product-price-rules.index')
             ->with('success', 'Product price rule deleted successfully.');
     }
+    public function show($id)
+{
+    $rule = ProductPriceRule::with([
+            'product',
+            'options.group',
+            'tiers',
+        ])
+        ->where('rule_id', $id)
+        ->firstOrFail();
+
+    return view('admin.product_price_rules.show', compact('rule'));
+}
 }

@@ -122,7 +122,7 @@ class ProductDetailController extends Controller
         ]);
 
         return redirect()
-            ->route('admin.product-details.index')
+            ->route('admin.products.index')
             ->with('success', 'เพิ่มรายละเอียดสินค้าเรียบร้อยแล้ว');
     }
 

@@ -36,6 +36,19 @@
 
             <ul class="sub-nav">
                 <li>
+                    <a href="{{ route('admin.categories.index') }}"
+                        class="sub-nav-link {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
+                        Categories
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ route('admin.materials.index') }}"
+                        class="sub-nav-link {{ request()->routeIs('admin.materials.*') ? 'active' : '' }}">
+                        Materials
+                    </a>
+                </li>
+                <li>
                     <a href="{{ route('admin.products.index') }}"
                         class="sub-nav-link {{ request()->routeIs('admin.products.*') ? 'active' : '' }}">
                         Products
@@ -77,17 +90,11 @@
                     </a>
                 </li>
 
+                
                 <li>
-                    <a href="{{ route('admin.categories.index') }}"
-                        class="sub-nav-link {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
-                        Categories
-                    </a>
-                </li>
-
-                <li>
-                    <a href="{{ route('admin.materials.index') }}"
-                        class="sub-nav-link {{ request()->routeIs('admin.materials.*') ? 'active' : '' }}">
-                        Materials
+                    <a href="{{ route('admin.product-artwork-templates.index') }}"
+                        class="sub-nav-link {{ request()->routeIs('admin.product-artwork-templates.*') ? 'active' : '' }}">
+                        Product Artwork Templates
                     </a>
                 </li>
 
