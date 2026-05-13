@@ -944,16 +944,16 @@
         }
 
         /* .customize-option-group.has-error h2 {
-                        color: #dc2626;
-                    } */
+                            color: #dc2626;
+                        } */
 
         /* .customize-option-group.has-error .option-button-item,
-                    .customize-option-group.has-error .option-image-card,
-                    .customize-option-group.has-error .option-variant-card,
-                    .customize-option-group.has-error .option-compact-card,
-                    .customize-option-group.has-error .option-select-detail {
-                        border-color: #dc2626;
-                    } */
+                        .customize-option-group.has-error .option-image-card,
+                        .customize-option-group.has-error .option-variant-card,
+                        .customize-option-group.has-error .option-compact-card,
+                        .customize-option-group.has-error .option-select-detail {
+                            border-color: #dc2626;
+                        } */
         .previous-order-box {
             max-width: 620px;
         }
@@ -1141,6 +1141,7 @@
                                 @elseif($displayType === 'image_card_variant')
                                     <div class="option-variant-grid">
                                         @foreach ($options as $option)
+                                    
                                             @php
                                                 $defaultVariant =
                                                     $option->variants->firstWhere('is_default', 1) ??
@@ -1154,7 +1155,7 @@
                                                             : asset('images/no-image.png'));
                                             @endphp
 
-                                            <label class="option-variant-card">
+                                            <div class="option-variant-card">
                                                 <input type="radio" name="options[{{ $option->option_group_id }}]"
                                                     value="{{ $option->option_id }}" data-group-name="{{ $groupName }}"
                                                     class="js-option-input" data-option-name="{{ $option->option_name }}"
@@ -1187,44 +1188,22 @@
                                                         $selectedVariant = $selectedVariant ?? $defaultVariant;
                                                     @endphp
 
-                                                    <input type="hidden" name="variants[{{ $option->option_id }}]"
-                                                        class="selected-variant-input"
-                                                        value="{{ $selectedVariant->variant_id ?? '' }}">
 
-                                                    <div class="dropdown variant-dropdown">
-                                                        <button class="btn btn-light dropdown-toggle variant-dropdown-btn"
-                                                            type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                            {{-- <span class="variant-color-dot"
-                style="background: {{ $selectedVariant->color_code ?: '#ffffff' }};">
-            </span> --}}
 
-                                                            <span class="variant-dropdown-label">
-                                                                {{ $selectedVariant->variant_name ?? 'Select color' }}
-                                                            </span>
-                                                        </button>
-
-                                                        <ul class="dropdown-menu variant-dropdown-menu">
-                                                            @foreach ($option->variants as $variant)
-                                                                <li>
-                                                                    <button type="button"
-                                                                        class="dropdown-item variant-dropdown-item"
-                                                                        data-variant-id="{{ $variant->variant_id }}"
-                                                                        data-variant-name="{{ $variant->variant_name }}"
-                                                                        data-color-code="{{ $variant->color_code ?: '#ffffff' }}"
-                                                                        data-image="{{ $variant->image_path ? asset('storage/' . $variant->image_path) : $defaultImage }}"
-                                                                        data-price="{{ $variant->additional_price ?? 0 }}">
-                                                                        {{-- <span class="variant-color-dot"
-                            style="background: {{ $variant->color_code ?: '#ffffff' }};">
-                        </span> --}}
-
-                                                                        <span>{{ $variant->variant_name }}</span>
-                                                                    </button>
-                                                                </li>
-                                                            @endforeach
-                                                        </ul>
-                                                    </div>
+                                                    <select name="variants[{{ $option->option_id }}]"
+                                                        class="variant-select js-variant-select">
+                                                        @foreach ($option->variants as $variant)
+                                                            <option value="{{ $variant->variant_id }}"
+                                                                data-variant-name="{{ $variant->variant_name }}"
+                                                                data-image="{{ $variant->image_path ? asset('storage/' . $variant->image_path) : $defaultImage }}"
+                                                                data-price="{{ $variant->additional_price ?? 0 }}"
+                                                                {{ $selectedVariant && (int) $selectedVariant->variant_id === (int) $variant->variant_id ? 'selected' : '' }}>
+                                                                {{ $variant->variant_name }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
                                                 @endif
-                                            </label>
+                                            </div>
                                         @endforeach
                                     </div>
                                 @elseif($displayType === 'image_grid_compact')
@@ -1928,54 +1907,55 @@
                 updateSingleSelectDetailPreview(select);
             });
         }
+
         function getActiveDependencyTargetGroupIds() {
-    const selectedOptionIds = getSelectedOptionIds();
-    const activeGroupIds = [];
+            const selectedOptionIds = getSelectedOptionIds();
+            const activeGroupIds = [];
 
-    optionDependencies.forEach(function(dep) {
-        const triggerOptionId = parseInt(dep.parent_option_id);
+            optionDependencies.forEach(function(dep) {
+                const triggerOptionId = parseInt(dep.parent_option_id);
 
-        if (!selectedOptionIds.includes(triggerOptionId)) {
-            return;
+                if (!selectedOptionIds.includes(triggerOptionId)) {
+                    return;
+                }
+
+                if (dep.target_type === 'group' && dep.target_group_id) {
+                    activeGroupIds.push(parseInt(dep.target_group_id));
+                }
+            });
+
+            return activeGroupIds;
         }
-
-        if (dep.target_type === 'group' && dep.target_group_id) {
-            activeGroupIds.push(parseInt(dep.target_group_id));
-        }
-    });
-
-    return activeGroupIds;
-}
 
         function hideDependentGroups() {
-    const activeGroupIds = getActiveDependencyTargetGroupIds();
+            const activeGroupIds = getActiveDependencyTargetGroupIds();
 
-    const targetGroupIds = [
-        ...new Set(
-            optionDependencies
-                .filter(function(dep) {
-                    return dep.target_type === 'group' && dep.target_group_id;
-                })
-                .map(function(dep) {
-                    return parseInt(dep.target_group_id);
-                })
-        )
-    ];
+            const targetGroupIds = [
+                ...new Set(
+                    optionDependencies
+                    .filter(function(dep) {
+                        return dep.target_type === 'group' && dep.target_group_id;
+                    })
+                    .map(function(dep) {
+                        return parseInt(dep.target_group_id);
+                    })
+                )
+            ];
 
-    targetGroupIds.forEach(function(groupId) {
-        const groupEls = document.querySelectorAll('[data-group-id="' + groupId + '"]');
+            targetGroupIds.forEach(function(groupId) {
+                const groupEls = document.querySelectorAll('[data-group-id="' + groupId + '"]');
 
-        groupEls.forEach(function(groupEl) {
-            if (activeGroupIds.includes(parseInt(groupId))) {
-                groupEl.style.display = '';
-                return;
-            }
+                groupEls.forEach(function(groupEl) {
+                    if (activeGroupIds.includes(parseInt(groupId))) {
+                        groupEl.style.display = '';
+                        return;
+                    }
 
-            groupEl.style.display = 'none';
-            clearInputsInside(groupEl);
-        });
-    });
-}
+                    groupEl.style.display = 'none';
+                    clearInputsInside(groupEl);
+                });
+            });
+        }
 
         function hideDependentOptions() {
             const targetOptionIds = [
@@ -2118,43 +2098,44 @@
             });
         }
 
-       function updateOptionDependencies() {
-    if (isUpdatingDependencies) {
-        return;
-    }
+        function updateOptionDependencies() {
+            if (isUpdatingDependencies) {
+                return;
+            }
 
-    isUpdatingDependencies = true;
+            isUpdatingDependencies = true;
 
-    hideDependentGroups();
-    hideDependentOptions();
-    showMatchedDependencies();
-    fixSelectDetailAfterDependency();
+            hideDependentGroups();
+            hideDependentOptions();
+            showMatchedDependencies();
+            fixSelectDetailAfterDependency();
 
-    applyRequiredRules();
-    updateVisibleGroupNumbers();
+            applyRequiredRules();
+            updateVisibleGroupNumbers();
 
-    isUpdatingDependencies = false;
+            isUpdatingDependencies = false;
 
-    updateSummary();
-}
+            updateSummary();
+        }
+
         function updateVisibleGroupNumbers() {
-    let number = 1;
+            let number = 1;
 
-    document.querySelectorAll('.customize-option-group').forEach(function(groupEl) {
-        const isVisible = groupEl.style.display !== 'none';
+            document.querySelectorAll('.customize-option-group').forEach(function(groupEl) {
+                const isVisible = groupEl.style.display !== 'none';
 
-        const numberEl = groupEl.querySelector('.visible-group-number');
+                const numberEl = groupEl.querySelector('.visible-group-number');
 
-        if (!numberEl) {
-            return;
+                if (!numberEl) {
+                    return;
+                }
+
+                if (isVisible) {
+                    numberEl.innerText = number;
+                    number++;
+                }
+            });
         }
-
-        if (isVisible) {
-            numberEl.innerText = number;
-            number++;
-        }
-    });
-}
 
         function applyRequiredRules() {
             document.querySelectorAll('.customize-option-group').forEach(function(groupEl) {
@@ -2336,7 +2317,7 @@
         });
     </script>
 
-    <script>
+    {{-- <script>
         document.querySelectorAll('.variant-dropdown-btn').forEach(function(button) {
             button.addEventListener('click', function(event) {
                 event.preventDefault();
@@ -2423,6 +2404,64 @@
         });
 
         updateSummary();
+    </script> --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.js-variant-select').forEach(function(select) {
+                function applyVariant() {
+                    const card = select.closest('.option-variant-card');
+                    const selected = select.options[select.selectedIndex];
+
+                    if (!card || !selected) {
+                        return;
+                    }
+
+                    const radio = card.querySelector('input[type="radio"]');
+                    const img = card.querySelector('.variant-main-image');
+
+                    const variantName = selected.dataset.variantName || '';
+                    const variantPrice = selected.dataset.price || 0;
+                    const imageUrl = selected.dataset.image || '';
+
+                    if (img && imageUrl) {
+                        img.src = imageUrl;
+                    }
+
+                    if (radio) {
+                        radio.checked = true;
+                        radio.dataset.variantName = variantName;
+                        radio.dataset.variantPrice = variantPrice;
+                        radio.dispatchEvent(new Event('change'));
+                    }
+
+                    if (typeof updateSummary === 'function') {
+                        updateSummary();
+                    }
+                }
+
+                select.addEventListener('change', function(e) {
+                    e.stopPropagation();
+                    applyVariant();
+                });
+
+                applyVariant();
+            });
+
+            document.querySelectorAll('.option-variant-card').forEach(function(card) {
+                card.addEventListener('click', function(e) {
+                    if (e.target.closest('.js-variant-select')) {
+                        return;
+                    }
+
+                    const radio = card.querySelector('input[type="radio"]');
+
+                    if (radio) {
+                        radio.checked = true;
+                        radio.dispatchEvent(new Event('change'));
+                    }
+                });
+            });
+        });
     </script>
 
     <script>
@@ -2557,71 +2596,85 @@
             });
         });
     </script>
-   <script>
-document.addEventListener('DOMContentLoaded', function() {
-    function togglePreviousOrderBox(groupId) {
-        const radios = document.querySelectorAll(
-            'input.previous-order-radio[name="options[' + groupId + ']"]'
-        );
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            function togglePreviousOrderBox(groupId) {
+                const radios = document.querySelectorAll(
+                    'input.previous-order-radio[name="options[' + groupId + ']"]'
+                );
 
-        const box = document.querySelector(
-            '[data-previous-order-box="' + groupId + '"]'
-        );
+                const box = document.querySelector(
+                    '[data-previous-order-box="' + groupId + '"]'
+                );
 
-        if (!box) {
-            return;
-        }
+                if (!box) {
+                    return;
+                }
 
-        const input = box.querySelector('.previous-order-input');
+                const input = box.querySelector('.previous-order-input');
 
-        let selectedIsYes = false;
+                let selectedIsYes = false;
 
-        radios.forEach(function(radio) {
-            if (radio.checked && radio.dataset.isYes === '1') {
-                selectedIsYes = true;
+                radios.forEach(function(radio) {
+                    if (radio.checked && radio.dataset.isYes === '1') {
+                        selectedIsYes = true;
+                    }
+                });
+
+                if (selectedIsYes) {
+                    box.classList.add('is-open');
+
+                    if (input) {
+                        input.required = true;
+                    }
+                } else {
+                    box.classList.remove('is-open');
+
+                    if (input) {
+                        input.required = false;
+                        input.value = '';
+                    }
+                }
             }
+
+            document.querySelectorAll('.previous-order-radio').forEach(function(radio) {
+                const groupId = radio.name.match(/\[(.*?)\]/)?.[1];
+
+                if (groupId) {
+                    togglePreviousOrderBox(groupId);
+                }
+
+                radio.addEventListener('change', function() {
+                    const groupId = this.name.match(/\[(.*?)\]/)?.[1];
+
+                    if (groupId) {
+                        togglePreviousOrderBox(groupId);
+                    }
+
+                    updateSummary();
+                });
+            });
+
+            // เพิ่มตรงนี้
+            document.querySelectorAll('.previous-order-input').forEach(function(input) {
+                input.addEventListener('input', function() {
+                    updateSummary();
+                });
+            });
         });
+        document.querySelectorAll('.option-variant-card').forEach(function(card) {
+            card.addEventListener('click', function(e) {
+                if (e.target.closest('.variant-dropdown')) {
+                    return;
+                }
 
-        if (selectedIsYes) {
-            box.classList.add('is-open');
+                const radio = card.querySelector('input[type="radio"]');
 
-            if (input) {
-                input.required = true;
-            }
-        } else {
-            box.classList.remove('is-open');
-
-            if (input) {
-                input.required = false;
-                input.value = '';
-            }
-        }
-    }
-
-    document.querySelectorAll('.previous-order-radio').forEach(function(radio) {
-        const groupId = radio.name.match(/\[(.*?)\]/)?.[1];
-
-        if (groupId) {
-            togglePreviousOrderBox(groupId);
-        }
-
-        radio.addEventListener('change', function() {
-            const groupId = this.name.match(/\[(.*?)\]/)?.[1];
-
-            if (groupId) {
-                togglePreviousOrderBox(groupId);
-            }
-
-            updateSummary();
+                if (radio) {
+                    radio.checked = true;
+                    radio.dispatchEvent(new Event('change'));
+                }
+            });
         });
-    });
-
-    // เพิ่มตรงนี้
-    document.querySelectorAll('.previous-order-input').forEach(function(input) {
-        input.addEventListener('input', function() {
-            updateSummary();
-        });
-    });
-});
-</script>
+    </script>
 @endsection
