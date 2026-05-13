@@ -273,7 +273,7 @@
 
 @endsection
 
-@section('scripts')
+@section('js')
 <script>
     function toggleTargetType() {
         const type = document.getElementById('target_type').value;
