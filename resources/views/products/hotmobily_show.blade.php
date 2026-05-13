@@ -1455,7 +1455,7 @@
                                                         data-price="{{ $option->additional_price ?? 0 }}"
                                                         data-price-type="{{ $option->price_type }}"
                                                         data-option-id="{{ $option->option_id }}"
-                                                        data-is-yes="{{ strtolower(trim($option->option_name)) === 'yes' ? 1 : 0 }}"
+                                                        data-is-yes="{{ in_array(strtolower(trim($option->option_name)), ['yes', 'sim']) ? 1 : 0 }}"
                                                         {{ (int) $selectedOptionId === (int) $option->option_id ? 'checked' : '' }}>
 
                                                     <span>{{ $option->option_name }}</span>
