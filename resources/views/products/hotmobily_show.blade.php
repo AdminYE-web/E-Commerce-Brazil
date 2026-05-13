@@ -1098,7 +1098,7 @@
                             <div class="customize-option-group" data-group-id="{{ $group->option_group_id }}"
                                 data-required="{{ $isRequired ? 1 : 0 }}">
                                 <h2>
-                                    {{ $loop->iteration }}. {{ $groupName }}
+                                    <span class="visible-group-number"></span>. {{ $groupName }}
 
                                     @if ($isRequired)
                                         <span class="required">*</span>
@@ -2118,24 +2118,43 @@
             });
         }
 
-        function updateOptionDependencies() {
-            if (isUpdatingDependencies) {
-                return;
-            }
+       function updateOptionDependencies() {
+    if (isUpdatingDependencies) {
+        return;
+    }
 
-            isUpdatingDependencies = true;
+    isUpdatingDependencies = true;
 
-            hideDependentGroups();
-            hideDependentOptions();
-            showMatchedDependencies();
-            fixSelectDetailAfterDependency();
+    hideDependentGroups();
+    hideDependentOptions();
+    showMatchedDependencies();
+    fixSelectDetailAfterDependency();
 
-            applyRequiredRules();
+    applyRequiredRules();
+    updateVisibleGroupNumbers();
 
-            isUpdatingDependencies = false;
+    isUpdatingDependencies = false;
 
-            updateSummary();
+    updateSummary();
+}
+        function updateVisibleGroupNumbers() {
+    let number = 1;
+
+    document.querySelectorAll('.customize-option-group').forEach(function(groupEl) {
+        const isVisible = groupEl.style.display !== 'none';
+
+        const numberEl = groupEl.querySelector('.visible-group-number');
+
+        if (!numberEl) {
+            return;
         }
+
+        if (isVisible) {
+            numberEl.innerText = number;
+            number++;
+        }
+    });
+}
 
         function applyRequiredRules() {
             document.querySelectorAll('.customize-option-group').forEach(function(groupEl) {
@@ -2312,6 +2331,7 @@
 
             updateOptionDependencies();
             applyRequiredRules();
+            updateVisibleGroupNumbers();
             updateSummary();
         });
     </script>
