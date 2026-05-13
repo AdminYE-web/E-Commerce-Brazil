@@ -8,12 +8,12 @@ use Illuminate\Support\Facades\Auth;
 
 class AdminAuth
 {
-  public function handle($request, Closure $next)
-{
-    if (!session()->has('admin_id')) {
-        return redirect()->route('admin.login');
-    }
+    public function handle(Request $request, Closure $next)
+    {
+        if (!Auth::guard('admin')->check()) {
+            return redirect()->route('admin.login');
+        }
 
-    return $next($request);
-}
+        return $next($request);
+    }
 }
