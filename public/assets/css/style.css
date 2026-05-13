@@ -777,6 +777,13 @@ body {
     color: #8b4dff;
 }
 
+.account-icon-link img {
+    width: 22px;
+    height: 22px;
+    display: block;
+    object-fit: contain;
+}
+
 .language-box {
     display: flex;
     align-items: center;

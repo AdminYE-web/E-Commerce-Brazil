@@ -227,7 +227,9 @@ return [
     'auth' => [
         'login_title' => 'アカウントにサインイン',
         'email' => 'メールアドレス',
+        'phone' => '電話番号',
         'email_placeholder' => 'メールアドレス',
+        'phone_placeholder' => '電話番号',
         'password' => 'パスワード',
         'password_placeholder' => 'パスワード',
         'forgot_password' => 'パスワードをお忘れですか？',

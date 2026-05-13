@@ -324,11 +324,11 @@
                             </div>
 
                             <div class="d-grid gap-2 mt-4">
-                                <a href="{{ route('checkout.index') }}" class="btn btn-primary cart-checkout-btn">
-                                    Finalizar Compra
-                                </a>
-                                <a href="{{ route('products.index') }}" class="btn btn-outline-secondary">Continuar
-                                    Comprando</a>
+                               <a href="{{ auth()->check() ? route('checkout.index') : route('checkout.authChoice') }}"
+    class="btn btn-primary cart-checkout-btn">
+    Finalizar Compra
+</a>
+                                <a href="{{ route('products.index') }}" class="btn btn-outline-secondary">Continuar Comprando</a>
                             </div>
                         </div>
                     </div>

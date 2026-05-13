@@ -10,10 +10,14 @@ use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller
 {
-    public function showLogin()
-    {
-        return view('auth.login');
+    public function showLogin(Request $request)
+{
+    if ($request->filled('redirect')) {
+        session()->put('url.intended', $request->redirect);
     }
+
+    return view('auth.login');
+}
 
    public function login(Request $request)
 {
@@ -44,7 +48,7 @@ class LoginController extends Controller
         'last_login_at' => now(),
     ]);
 
-    return redirect()->intended('/');
+    return redirect()->intended(route('checkout.index'));
 }
 
     public function logout(Request $request)

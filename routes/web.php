@@ -1,5 +1,6 @@
 <?php
-
+use App\Http\Controllers\AccountController;
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\Admin\OrderAdminController;
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\HomeBannerController;
@@ -106,6 +107,22 @@ Route::post('/checkout/place-order', [OrderController::class, 'placeOrder'])
 
 Route::get('/checkout/success/{order}', [OrderController::class, 'success'])
     ->name('checkout.success');
+
+    Route::get('/checkout/auth-choice', [CheckoutController::class, 'authChoice'])
+    ->name('checkout.authChoice');
+
+Route::get('/checkout/continue-guest', [CheckoutController::class, 'continueGuest'])
+    ->name('checkout.continueGuest');
+
+    Route::middleware('auth')->group(function () {
+    Route::get('/account', [AccountController::class, 'index'])
+        ->name('account.index');
+
+    Route::post('/account/avatar', [AccountController::class, 'updateAvatar'])
+        ->name('account.avatar.update');
+        Route::put('/account/name', [AccountController::class, 'updateName'])
+    ->name('account.name.update');
+});
 
 Route::prefix('admin')->name('admin.')->group(function () {
       Route::get('/login', [AdminAuthController::class, 'showLoginForm'])

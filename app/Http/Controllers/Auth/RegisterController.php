@@ -20,6 +20,7 @@ class RegisterController extends Controller
     'first_name' => ['required', 'string', 'max:100'],
     'last_name' => ['required', 'string', 'max:100'],
     'email' => ['required', 'email', 'max:255', 'unique:users,email'],
+    'phone' => ['required', 'string', 'max:50'],
     'password' => [
         'required',
         'confirmed',
@@ -41,6 +42,7 @@ $user = User::create([
     'last_name' => $request->last_name,
     'name' => $fullName,
     'email' => strtolower($request->email),
+    'phone' => $request->phone,
     'password' => $request->password,
     'status' => 2,
     'term_policy' => $request->boolean('term_policy'),

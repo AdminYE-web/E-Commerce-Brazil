@@ -396,8 +396,8 @@ class OrderController extends Controller
     {
         $cartItems = collect($cart);
 
-        $subtotal = $cartItems->sum(fn ($item) => (float) ($item['item_total'] ?? 0));
-        $totalQty = $cartItems->sum(fn ($item) => (int) ($item['quantity'] ?? 0));
+        $subtotal = $cartItems->sum(fn($item) => (float) ($item['item_total'] ?? 0));
+        $totalQty = $cartItems->sum(fn($item) => (int) ($item['quantity'] ?? 0));
         $totalItems = $cartItems->count();
 
         $shipping = $subtotal > 10000 ? 0 : ($totalItems > 0 ? 800 : 0);
@@ -421,8 +421,8 @@ class OrderController extends Controller
 
         $cartItems = collect($cart);
 
-        $subtotal = $cartItems->sum(fn ($item) => (float) ($item['item_total'] ?? 0));
-        $totalQty = $cartItems->sum(fn ($item) => (int) ($item['quantity'] ?? 0));
+        $subtotal = $cartItems->sum(fn($item) => (float) ($item['item_total'] ?? 0));
+        $totalQty = $cartItems->sum(fn($item) => (int) ($item['quantity'] ?? 0));
         $totalItems = $cartItems->count();
 
         $shipping = $subtotal > 10000 ? 0 : ($totalItems > 0 ? 800 : 0);
@@ -435,6 +435,24 @@ class OrderController extends Controller
         $shippingAddress = $customer['shipping'] ?? [];
         $billing = $customer['billing'] ?? [];
         $billingSame = $customer['billing_same_as_shipping'] ?? true;
+
+        /*
+|--------------------------------------------------------------------------
+| Prefill personal info from logged-in user
+|--------------------------------------------------------------------------
+| ถ้า login แล้ว และยังไม่มีข้อมูลใน session checkout_customer
+| ให้ดึงจาก table users มาเติมในหน้า Address
+*/
+        if (auth()->check()) {
+            $user = auth()->user();
+
+            $personal = array_merge([
+                'first_name' => $user->first_name ?? '',
+                'last_name' => $user->last_name ?? '',
+                'phone' => $user->phone ?? '',
+                'email' => $user->email ?? '',
+            ], $personal);
+        }
 
         $artworks = session('checkout_artworks', []);
 
@@ -471,7 +489,7 @@ class OrderController extends Controller
         $customer = session()->get('checkout_customer', []);
         $payment = session()->get('checkout_payment', []);
         $artworks = session()->get('checkout_artworks', []);
-        
+
 
         if (empty($cart)) {
             return redirect()
@@ -493,11 +511,11 @@ class OrderController extends Controller
 
         $cartItems = collect($cart);
 
-        $subtotal = $cartItems->sum(fn ($item) => (float) ($item['item_total'] ?? 0));
-        $totalQty = $cartItems->sum(fn ($item) => (int) ($item['quantity'] ?? 0));
+        $subtotal = $cartItems->sum(fn($item) => (float) ($item['item_total'] ?? 0));
+        $totalQty = $cartItems->sum(fn($item) => (int) ($item['quantity'] ?? 0));
         $totalItems = $cartItems->count();
 
-        $optionTotal = $cartItems->sum(fn ($item) => (float) ($item['option_total'] ?? 0));
+        $optionTotal = $cartItems->sum(fn($item) => (float) ($item['option_total'] ?? 0));
 
         $shipping = $subtotal > 10000 ? 0 : ($totalItems > 0 ? 800 : 0);
 
@@ -564,58 +582,58 @@ class OrderController extends Controller
                 | Order Item Options
                 |--------------------------------------------------------------------------
                 */
-               $previousOrderNos = $item['previous_order_no'] ?? [];
+                $previousOrderNos = $item['previous_order_no'] ?? [];
 
-foreach (($item['options'] ?? []) as $option) {
-    $groupId = $option['group_id'] ?? null;
+                foreach (($item['options'] ?? []) as $option) {
+                    $groupId = $option['group_id'] ?? null;
 
-    $additionalPrice = (float) ($option['price'] ?? 0);
-    $variantPrice = (float) ($option['variant_price'] ?? 0);
-    $totalOptionPrice = $additionalPrice + $variantPrice;
+                    $additionalPrice = (float) ($option['price'] ?? 0);
+                    $variantPrice = (float) ($option['variant_price'] ?? 0);
+                    $totalOptionPrice = $additionalPrice + $variantPrice;
 
-    OrderItemOption::create([
-        'order_item_id' => $orderItem->order_item_id,
+                    OrderItemOption::create([
+                        'order_item_id' => $orderItem->order_item_id,
 
-        'option_group_id' => $groupId,
-        'option_id' => $option['option_id'] ?? null,
+                        'option_group_id' => $groupId,
+                        'option_id' => $option['option_id'] ?? null,
 
-        'group_name_snapshot' => $option['group_name'] ?? null,
-        'option_name_snapshot' => trim(
-            ($option['option_name'] ?? '') .
-            (!empty($option['variant_name']) ? ' - ' . $option['variant_name'] : '')
-        ),
+                        'group_name_snapshot' => $option['group_name'] ?? null,
+                        'option_name_snapshot' => trim(
+                            ($option['option_name'] ?? '') .
+                                (!empty($option['variant_name']) ? ' - ' . $option['variant_name'] : '')
+                        ),
 
-        'additional_price' => $totalOptionPrice,
-        'price_type' => $option['price_type'] ?? null,
+                        'additional_price' => $totalOptionPrice,
+                        'price_type' => $option['price_type'] ?? null,
 
-        'custom_value' => $previousOrderNos[$groupId] ?? null,
+                        'custom_value' => $previousOrderNos[$groupId] ?? null,
 
-        'total_price' => $totalOptionPrice,
-    ]);
-}
+                        'total_price' => $totalOptionPrice,
+                    ]);
+                }
 
-/*
+                /*
 |--------------------------------------------------------------------------
 | Custom Colors
 |--------------------------------------------------------------------------
 */
-foreach (($item['custom_colors'] ?? []) as $customColor) {
-    OrderItemOption::create([
-        'order_item_id' => $orderItem->order_item_id,
+                foreach (($item['custom_colors'] ?? []) as $customColor) {
+                    OrderItemOption::create([
+                        'order_item_id' => $orderItem->order_item_id,
 
-        'option_group_id' => $customColor['group_id'] ?? null,
-        'option_id' => null,
+                        'option_group_id' => $customColor['group_id'] ?? null,
+                        'option_id' => null,
 
-        'group_name_snapshot' => $customColor['group_name'] ?? 'Custom Color',
-        'option_name_snapshot' => 'Custom Color',
+                        'group_name_snapshot' => $customColor['group_name'] ?? 'Custom Color',
+                        'option_name_snapshot' => 'Custom Color',
 
-        'additional_price' => 0,
-        'price_type' => null,
+                        'additional_price' => 0,
+                        'price_type' => null,
 
-        'custom_value' => $customColor['value'] ?? null,
-        'total_price' => 0,
-    ]);
-}
+                        'custom_value' => $customColor['value'] ?? null,
+                        'total_price' => 0,
+                    ]);
+                }
             }
 
             /*
@@ -722,7 +740,6 @@ foreach (($item['custom_colors'] ?? []) as $customColor) {
             return redirect()
                 ->route('checkout.success', $order->order_id)
                 ->with('success', 'Order placed successfully.');
-
         } catch (\Throwable $e) {
             DB::rollBack();
 
@@ -745,18 +762,18 @@ foreach (($item['custom_colors'] ?? []) as $customColor) {
 
     private function generateOrderNo(): string
     {
-        $prefix = 'ORD'.now()->format('Ymd');
+        $prefix = 'ORD' . now()->format('Ymd');
 
-        $latestOrder = Order::where('order_no', 'like', $prefix.'%')
+        $latestOrder = Order::where('order_no', 'like', $prefix . '%')
             ->orderBy('order_id', 'desc')
             ->first();
 
         if (! $latestOrder) {
-            return $prefix.'0001';
+            return $prefix . '0001';
         }
 
         $latestNumber = (int) substr($latestOrder->order_no, -4);
 
-        return $prefix.str_pad($latestNumber + 1, 4, '0', STR_PAD_LEFT);
+        return $prefix . str_pad($latestNumber + 1, 4, '0', STR_PAD_LEFT);
     }
 }

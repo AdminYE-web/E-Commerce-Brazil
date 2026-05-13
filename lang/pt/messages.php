@@ -226,7 +226,9 @@ return [
     'auth' => [
         'login_title' => 'Faça login em sua conta',
         'email' => 'E-mail',
+        'phone' => 'Telefone',
         'email_placeholder' => 'Endereço de e-mail',
+        'phone_placeholder' => 'Número de telefone',
         'password' => 'Senha',
         'password_placeholder' => 'Senha',
         'forgot_password' => 'Esqueceu a senha?',

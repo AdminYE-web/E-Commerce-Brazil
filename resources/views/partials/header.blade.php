@@ -58,11 +58,11 @@
                         <i class="bi bi-envelope"></i>
                     </a>
 
-                    <a href="#" class="icon-link">
+                    <a href="{{ route('cart.index') }}" class="icon-link">
                         <i class="bi bi-cart"></i>
                     </a>
 
-                   <div class="language-dropdown">
+                    <div class="language-dropdown">
                         <button type="button" class="language-toggle">
                             <span class="fi fi-{{ $currentLanguageFlag }} lang-flag-toggle"></span>
                             <i class="bi bi-chevron-down"></i>
@@ -77,6 +77,11 @@
                             @endforeach
                         </div>
                     </div>
+
+                    <a href="{{ auth()->check() ? route('account.index') : route('login') }}" class="icon-link account-icon-link"
+                        aria-label="{{ __('messages.footer.account') }}" title="{{ __('messages.footer.account') }}">
+                        <img src="{{ asset('assets/images/icon/account-icon.png') }}" alt="">
+                    </a>
                 </div>
 
             </nav>
@@ -255,9 +260,13 @@
                 <a href="{{ route('contact') }}" class="icon-link">
                     <i class="bi bi-envelope"></i>
                 </a>
-                <a href="#" class="icon-link">
+                <a href="{{ route('cart.index') }}" class="icon-link">
                     <i class="bi bi-cart"></i>
                 </a>
+                <a href="{{ auth()->check() ? route('account.index') : route('login') }}" class="icon-link account-icon-link"
+                        aria-label="{{ __('messages.footer.account') }}" title="{{ __('messages.footer.account') }}">
+                        <img src="{{ asset('assets/images/icon/account-icon.png') }}" alt="">
+                    </a>
             </div>
         </div>
 

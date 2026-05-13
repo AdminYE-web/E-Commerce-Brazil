@@ -227,7 +227,9 @@ return [
     'auth' => [
         'login_title' => 'Sign in to your account',
         'email' => 'Email',
+        'phone' => 'Phone',
         'email_placeholder' => 'Email address',
+        'phone_placeholder' => 'Phone number',
         'password' => 'Password',
         'password_placeholder' => 'Password',
         'forgot_password' => 'Forgot password ?',
