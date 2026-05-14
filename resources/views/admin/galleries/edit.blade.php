@@ -247,6 +247,15 @@
                 <label>Purpose</label>
                 <textarea name="purpose" rows="4">{{ old('purpose', $gallery->purpose) }}</textarea>
             </div>
+            <div class="form-group full">
+    <label>Product Link</label>
+    <input
+        type="text"
+        name="product_link"
+        value="{{ old('product_link', $gallery->product_link) }}"
+        placeholder="https://example.com/products/..."
+    >
+</div>
 
             <div class="form-group">
                 <label>Date</label>

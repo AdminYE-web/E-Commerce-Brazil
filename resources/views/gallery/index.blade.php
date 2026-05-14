@@ -10,48 +10,48 @@
         }
 
         .gallery-filter-wrap {
-    position: sticky;
-    top: 89px;
-    z-index: 50;
-    isolation: isolate;
+            position: sticky;
+            top: 89px;
+            z-index: 50;
+            isolation: isolate;
 
-    background: #f4f4f4;
-    border-radius: 9px;
-    padding: 19px 30px;
-    margin-bottom: 30px;
+            background: #f4f4f4;
+            border-radius: 9px;
+            padding: 19px 30px;
+            margin-bottom: 30px;
 
-    transition: border-radius 0.35s ease, box-shadow 0.35s ease;
-}
+            transition: border-radius 0.35s ease, box-shadow 0.35s ease;
+        }
 
-.gallery-filter-wrap::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 50%;
-    width: 100vw;
-    transform: translateX(-50%) scaleX(0);
-    transform-origin: center;
-    background: #f4f4f4;
-    z-index: -1;
-    opacity: 0;
-    transition: transform 0.45s ease, opacity 0.25s ease;
-}
+        .gallery-filter-wrap::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            width: 100vw;
+            transform: translateX(-50%) scaleX(0);
+            transform-origin: center;
+            background: #f4f4f4;
+            z-index: -1;
+            opacity: 0;
+            transition: transform 0.45s ease, opacity 0.25s ease;
+        }
 
-.gallery-filter-wrap.is-sticky-full {
-    border-radius: 0;
-    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.04);
-}
+        .gallery-filter-wrap.is-sticky-full {
+            border-radius: 0;
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.04);
+        }
 
-.gallery-filter-wrap.is-sticky-full::before {
-    transform: translateX(-50%) scaleX(1);
-    opacity: 1;
-}
+        .gallery-filter-wrap.is-sticky-full::before {
+            transform: translateX(-50%) scaleX(1);
+            opacity: 1;
+        }
 
-.gallery-filter-form {
-    position: relative;
-    z-index: 1;
-}
+        .gallery-filter-form {
+            position: relative;
+            z-index: 1;
+        }
 
         .gallery-filter-form {
             display: grid;
@@ -152,24 +152,24 @@
         }
 
         @media (max-width: 768px) {
-    .gallery-filter-wrap {
-        position: relative;
-        top: auto;
-        z-index: auto;
-        padding: 14px;
-        border-radius: 9px;
-        box-shadow: none;
-    }
+            .gallery-filter-wrap {
+                position: relative;
+                top: auto;
+                z-index: auto;
+                padding: 14px;
+                border-radius: 9px;
+                box-shadow: none;
+            }
 
-    .gallery-filter-wrap::before {
-        display: none;
-    }
+            .gallery-filter-wrap::before {
+                display: none;
+            }
 
-    .gallery-filter-wrap.is-sticky-full {
-        border-radius: 9px;
-        box-shadow: none;
-    }
-}
+            .gallery-filter-wrap.is-sticky-full {
+                border-radius: 9px;
+                box-shadow: none;
+            }
+        }
 
         @media (max-width: 480px) {
             .gallery-grid {
@@ -556,13 +556,9 @@
                         data-material="{{ $gallery->material->material_name ?? '-' }}"
                         data-purpose="{{ $gallery->purpose ?? '-' }}"
                         data-date="{{ $gallery->gallery_date ? $gallery->gallery_date->format('d/m/Y') : '-' }}"
+                        data-product-link="{{ $gallery->product_link ?: '#' }}"
                         data-cover="{{ $gallery->cover_image ? asset('storage/' . $gallery->cover_image) : asset('assets/images/no-image.png') }}"
-                        data-images='@json(
-    $gallery->images
-        ->map(fn($img) => asset("storage/" . $img->image_path))
-        ->filter()
-        ->values()
-)'>
+                        data-images='@json($gallery->images->map(fn($img) => asset('storage/' . $img->image_path))->filter()->values())'>
                         <div class="gallery-image-box">
                             @if ($gallery->cover_image)
                                 <img src="{{ asset('storage/' . $gallery->cover_image) }}" alt="{{ $gallery->title }}">
@@ -648,11 +644,11 @@
                         </div>
                     </div>
 
-                    <a href="#" class="gallery-modal-primary-btn">
-                        Ver Detalhes
-                    </a>
+                    <a href="#" class="gallery-modal-primary-btn" id="galleryModalProductLink">
+    Ver Detalhes
+</a>
 
-                    <a href="https://wa.me/819012344567" target="_blank" rel="noopener"
+                    <a href="{{ route('contact') }}" target="_blank" rel="noopener"
                         class="gallery-modal-outline-btn">
                         Fale conosco
                     </a>
@@ -691,6 +687,8 @@
 
             const prevBtn = document.getElementById('galleryPrevBtn');
             const nextBtn = document.getElementById('galleryNextBtn');
+
+            const productLinkBtn = document.getElementById('galleryModalProductLink');
 
             let currentImages = [];
             let currentIndex = 0;
@@ -736,12 +734,21 @@
             }
 
             function openModal(card) {
+                
                 titleEl.textContent = card.dataset.title || '';
                 categoryEl.textContent = card.dataset.category || '-';
                 materialEl.textContent = card.dataset.material || '-';
                 purposeEl.textContent = card.dataset.purpose || '-';
                 dateEl.textContent = card.dataset.date || '-';
+if (productLinkBtn) {
+    productLinkBtn.href = card.dataset.productLink || '#';
 
+    if (!card.dataset.productLink || card.dataset.productLink === '#') {
+        productLinkBtn.style.display = 'none';
+    } else {
+        productLinkBtn.style.display = 'flex';
+    }
+}
                 try {
                     currentImages = JSON.parse(card.dataset.images || '[]');
                 } catch (e) {
@@ -818,58 +825,58 @@
             });
         });
     </script>
-   <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const filterWrap = document.querySelector('.gallery-filter-wrap');
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterWrap = document.querySelector('.gallery-filter-wrap');
 
-    if (!filterWrap) {
-        return;
-    }
+            if (!filterWrap) {
+                return;
+            }
 
-    let stickyPoint = 0;
+            let stickyPoint = 0;
 
-    function isMobile() {
-        return window.innerWidth <= 768;
-    }
+            function isMobile() {
+                return window.innerWidth <= 768;
+            }
 
-    function getTopOffset() {
-        return 89;
-    }
+            function getTopOffset() {
+                return 89;
+            }
 
-    function updateStickyPoint() {
-        if (isMobile()) {
-            filterWrap.classList.remove('is-sticky-full');
-            return;
-        }
+            function updateStickyPoint() {
+                if (isMobile()) {
+                    filterWrap.classList.remove('is-sticky-full');
+                    return;
+                }
 
-        filterWrap.classList.remove('is-sticky-full');
+                filterWrap.classList.remove('is-sticky-full');
 
-        const rect = filterWrap.getBoundingClientRect();
-        stickyPoint = window.scrollY + rect.top - getTopOffset();
-    }
+                const rect = filterWrap.getBoundingClientRect();
+                stickyPoint = window.scrollY + rect.top - getTopOffset();
+            }
 
-    function toggleStickyFull() {
-        if (isMobile()) {
-            filterWrap.classList.remove('is-sticky-full');
-            return;
-        }
+            function toggleStickyFull() {
+                if (isMobile()) {
+                    filterWrap.classList.remove('is-sticky-full');
+                    return;
+                }
 
-        if (window.scrollY >= stickyPoint) {
-            filterWrap.classList.add('is-sticky-full');
-        } else {
-            filterWrap.classList.remove('is-sticky-full');
-        }
-    }
+                if (window.scrollY >= stickyPoint) {
+                    filterWrap.classList.add('is-sticky-full');
+                } else {
+                    filterWrap.classList.remove('is-sticky-full');
+                }
+            }
 
-    updateStickyPoint();
-    toggleStickyFull();
+            updateStickyPoint();
+            toggleStickyFull();
 
-    window.addEventListener('scroll', toggleStickyFull);
+            window.addEventListener('scroll', toggleStickyFull);
 
-    window.addEventListener('resize', function () {
-        updateStickyPoint();
-        toggleStickyFull();
-    });
-});
-</script>
+            window.addEventListener('resize', function() {
+                updateStickyPoint();
+                toggleStickyFull();
+            });
+        });
+    </script>
 @endsection

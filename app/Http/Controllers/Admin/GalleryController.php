@@ -56,6 +56,7 @@ class GalleryController extends Controller
             'gallery_images.*' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp,gif', 'max:4096'],
             'is_active' => ['nullable', 'boolean'],
             'sort_order' => ['nullable', 'integer'],
+            'product_link' => ['nullable', 'string', 'max:255'],
         ]);
 
         $coverImagePath = null;
@@ -73,6 +74,7 @@ class GalleryController extends Controller
             'cover_image' => $coverImagePath,
             'is_active' => $request->has('is_active') ? 1 : 0,
             'sort_order' => $request->sort_order ?? 0,
+            'product_link' => $request->product_link,
         ]);
 
         if ($request->hasFile('gallery_images')) {
@@ -119,6 +121,7 @@ class GalleryController extends Controller
             'remove_cover_image' => ['nullable', 'boolean'],
             'is_active' => ['nullable', 'boolean'],
             'sort_order' => ['nullable', 'integer'],
+            'product_link' => ['nullable', 'string', 'max:255'],
         ]);
 
         $coverImagePath = $gallery->cover_image;
@@ -148,6 +151,7 @@ class GalleryController extends Controller
             'cover_image' => $coverImagePath,
             'is_active' => $request->has('is_active') ? 1 : 0,
             'sort_order' => $request->sort_order ?? 0,
+            'product_link' => $request->product_link,
         ]);
 
         if ($request->filled('delete_gallery_images')) {

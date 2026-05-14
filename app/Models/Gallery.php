@@ -13,6 +13,7 @@ class Gallery extends Model
         'category_id',
         'material_id',
         'purpose',
+        'product_link',
         'gallery_date',
         'cover_image',
         'is_active',
