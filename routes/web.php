@@ -1,4 +1,8 @@
 <?php
+
+use App\Http\Controllers\AccountOrderController;
+use App\Http\Controllers\AccountAddressController;
+use App\Http\Controllers\AccountContactController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\Admin\OrderAdminController;
@@ -108,24 +112,70 @@ Route::post('/checkout/place-order', [OrderController::class, 'placeOrder'])
 Route::get('/checkout/success/{order}', [OrderController::class, 'success'])
     ->name('checkout.success');
 
-    Route::get('/checkout/auth-choice', [CheckoutController::class, 'authChoice'])
+Route::get('/checkout/auth-choice', [CheckoutController::class, 'authChoice'])
     ->name('checkout.authChoice');
 
 Route::get('/checkout/continue-guest', [CheckoutController::class, 'continueGuest'])
     ->name('checkout.continueGuest');
 
-    Route::middleware('auth')->group(function () {
+
+
+Route::middleware('auth')->group(function () {
     Route::get('/account', [AccountController::class, 'index'])
         ->name('account.index');
 
     Route::post('/account/avatar', [AccountController::class, 'updateAvatar'])
         ->name('account.avatar.update');
-        Route::put('/account/name', [AccountController::class, 'updateName'])
-    ->name('account.name.update');
+    Route::put('/account/name', [AccountController::class, 'updateName'])
+        ->name('account.name.update');
+        Route::put('/account/password', [AccountController::class, 'updatePassword'])
+        ->name('account.password.update');
+           Route::get('/account/contacts', [AccountContactController::class, 'index'])
+        ->name('account.contacts.index');
+
+    Route::get('/account/contacts/create', [AccountContactController::class, 'create'])
+        ->name('account.contacts.create');
+
+    Route::post('/account/contacts', [AccountContactController::class, 'store'])
+        ->name('account.contacts.store');
+
+    Route::put('/account/contacts/{contact}/main', [AccountContactController::class, 'setMain'])
+        ->name('account.contacts.setMain');
+        Route::get('/account/contacts/{contact}/edit', [AccountContactController::class, 'edit'])
+    ->name('account.contacts.edit');
+
+Route::put('/account/contacts/{contact}', [AccountContactController::class, 'update'])
+    ->name('account.contacts.update');
+
+    Route::delete('/account/contacts/{contact}', [AccountContactController::class, 'destroy'])
+        ->name('account.contacts.destroy');
+         Route::get('/account/addresses/{type?}', [AccountAddressController::class, 'index'])
+        ->name('account.addresses.index');
+
+    Route::get('/account/addresses/{type}/create', [AccountAddressController::class, 'create'])
+        ->name('account.addresses.create');
+
+    Route::post('/account/addresses/{type}', [AccountAddressController::class, 'store'])
+        ->name('account.addresses.store');
+
+    Route::put('/account/addresses/{address}/main', [AccountAddressController::class, 'setMain'])
+        ->name('account.addresses.setMain');
+        Route::get('/account/addresses/{address}/edit', [AccountAddressController::class, 'edit'])
+    ->name('account.addresses.edit');
+
+Route::put('/account/addresses/{address}', [AccountAddressController::class, 'update'])
+    ->name('account.addresses.update');
+
+    Route::delete('/account/addresses/{address}', [AccountAddressController::class, 'destroy'])
+        ->name('account.addresses.destroy');
+        Route::get('/account/orders', [AccountOrderController::class, 'index'])
+        ->name('account.orders.index');
 });
 
+
+
 Route::prefix('admin')->name('admin.')->group(function () {
-      Route::get('/login', [AdminAuthController::class, 'showLoginForm'])
+    Route::get('/login', [AdminAuthController::class, 'showLoginForm'])
         ->name('login');
 
     Route::post('/login', [AdminAuthController::class, 'login'])
@@ -135,64 +185,62 @@ Route::prefix('admin')->name('admin.')->group(function () {
         ->name('logout');
 
 
-        Route::middleware('admin.auth')->group(function () {
+    Route::middleware('admin.auth')->group(function () {
         Route::get('/', [AdminDashboardController::class, 'index'])
-        ->name('dashboard');
+            ->name('dashboard');
 
-    Route::resource('products', ProductController::class);
-    Route::get('products/{product}/options', [ProductOptionAssignmentController::class, 'edit'])
-        ->name('products.options.edit');
+        Route::resource('products', ProductController::class);
+        Route::get('products/{product}/options', [ProductOptionAssignmentController::class, 'edit'])
+            ->name('products.options.edit');
 
-    Route::put('products/{product}/options', [ProductOptionAssignmentController::class, 'update'])
-        ->name('products.options.update');
+        Route::put('products/{product}/options', [ProductOptionAssignmentController::class, 'update'])
+            ->name('products.options.update');
 
-    Route::resource('product-price-tiers', ProductPriceTierController::class);
+        Route::resource('product-price-tiers', ProductPriceTierController::class);
 
-    Route::resource('option-groups', OptionGroupController::class);
+        Route::resource('option-groups', OptionGroupController::class);
 
-    Route::resource('product-options', ProductOptionController::class);
+        Route::resource('product-options', ProductOptionController::class);
 
-    Route::resource('option-dependencies', OptionDependencyController::class);
+        Route::resource('option-dependencies', OptionDependencyController::class);
 
-    Route::resource('product-details', ProductDetailController::class);
+        Route::resource('product-details', ProductDetailController::class);
 
-    Route::resource('categories', CategoryController::class);
-    Route::resource('materials', MaterialController::class);
-    Route::resource('product-list-banners', ProductListBannerController::class);
+        Route::resource('categories', CategoryController::class);
+        Route::resource('materials', MaterialController::class);
+        Route::resource('product-list-banners', ProductListBannerController::class);
 
-    Route::get('product-options/{option}/variants', [ProductOptionVariantController::class, 'index'])
-        ->name('product-options.variants.index');
+        Route::get('product-options/{option}/variants', [ProductOptionVariantController::class, 'index'])
+            ->name('product-options.variants.index');
 
-    Route::get('product-options/{option}/variants/create', [ProductOptionVariantController::class, 'create'])
-        ->name('product-options.variants.create');
+        Route::get('product-options/{option}/variants/create', [ProductOptionVariantController::class, 'create'])
+            ->name('product-options.variants.create');
 
-    Route::post('product-options/{option}/variants', [ProductOptionVariantController::class, 'store'])
-        ->name('product-options.variants.store');
+        Route::post('product-options/{option}/variants', [ProductOptionVariantController::class, 'store'])
+            ->name('product-options.variants.store');
 
-    Route::get('product-option-variants/{variant}/edit', [ProductOptionVariantController::class, 'edit'])
-        ->name('product-option-variants.edit');
+        Route::get('product-option-variants/{variant}/edit', [ProductOptionVariantController::class, 'edit'])
+            ->name('product-option-variants.edit');
 
-    Route::put('product-option-variants/{variant}', [ProductOptionVariantController::class, 'update'])
-        ->name('product-option-variants.update');
+        Route::put('product-option-variants/{variant}', [ProductOptionVariantController::class, 'update'])
+            ->name('product-option-variants.update');
 
-    Route::delete('product-option-variants/{variant}', [ProductOptionVariantController::class, 'destroy'])
-        ->name('product-option-variants.destroy');
+        Route::delete('product-option-variants/{variant}', [ProductOptionVariantController::class, 'destroy'])
+            ->name('product-option-variants.destroy');
 
-    Route::resource('product-price-rules', ProductPriceRuleController::class);
-    Route::resource('product-artwork-templates', ProductArtworkTemplateController::class);
-    Route::resource('material-homes', MaterialHomeController::class);
-    Route::resource('home-banners', HomeBannerController::class);
-     Route::get('orders', [OrderAdminController::class, 'index'])
-        ->name('orders.index');
+        Route::resource('product-price-rules', ProductPriceRuleController::class);
+        Route::resource('product-artwork-templates', ProductArtworkTemplateController::class);
+        Route::resource('material-homes', MaterialHomeController::class);
+        Route::resource('home-banners', HomeBannerController::class);
+        Route::get('orders', [OrderAdminController::class, 'index'])
+            ->name('orders.index');
 
-    Route::get('orders/{order}', [OrderAdminController::class, 'show'])
-        ->name('orders.show');
+        Route::get('orders/{order}', [OrderAdminController::class, 'show'])
+            ->name('orders.show');
 
-    Route::put('orders/{order}/status', [OrderAdminController::class, 'updateStatus'])
-        ->name('orders.updateStatus');
+        Route::put('orders/{order}/status', [OrderAdminController::class, 'updateStatus'])
+            ->name('orders.updateStatus');
     });
-    
-    
 });
 
 Route::middleware('guest')->group(function () {
@@ -221,9 +269,7 @@ Route::middleware('guest')->group(function () {
         ->name('auth.google.callback');
 });
 
-Route::get('/logout', [LoginController::class, 'logout'])
-    ->middleware('auth')
-    ->name('logout');
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::get('/email/verify', function () {
     return view('auth.verify-email');

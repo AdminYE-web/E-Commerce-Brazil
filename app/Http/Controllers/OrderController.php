@@ -444,15 +444,16 @@ class OrderController extends Controller
 | ให้ดึงจาก table users มาเติมในหน้า Address
 */
         if (auth()->check()) {
-            $user = auth()->user();
+    $user = auth()->user();
+    $mainContact = $user->mainContact;
 
-            $personal = array_merge([
-                'first_name' => $user->first_name ?? '',
-                'last_name' => $user->last_name ?? '',
-                'phone' => $user->phone ?? '',
-                'email' => $user->email ?? '',
-            ], $personal);
-        }
+    $personal = array_merge([
+        'first_name' => $mainContact->first_name ?? $user->first_name ?? '',
+        'last_name' => $mainContact->last_name ?? $user->last_name ?? '',
+        'phone' => $mainContact->phone ?? $user->phone ?? '',
+        'email' => $mainContact->email ?? $user->email ?? '',
+    ], $personal);
+}
 
         $artworks = session('checkout_artworks', []);
 

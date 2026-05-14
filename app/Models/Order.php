@@ -40,4 +40,5 @@ class Order extends Model
     {
         return $this->hasMany(OrderArtwork::class, 'order_id', 'order_id');
     }
+    
 }

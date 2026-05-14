@@ -38,4 +38,8 @@ class OrderItem extends Model
         'options' => 'array',
         'custom_colors' => 'array',
     ];
+    public function optionDetails()
+{
+    return $this->hasMany(OrderItemOption::class, 'order_item_id', 'order_item_id');
+}
 }

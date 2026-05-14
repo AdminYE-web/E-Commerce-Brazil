@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Models;
-
+use App\Models\UserContact;
 use App\Notifications\VerifyEmailCustom;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -64,4 +64,32 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(SocialAccount::class, 'user_id', 'user_id');
     }
+    public function contacts()
+{
+    return $this->hasMany(UserContact::class, 'user_id', 'user_id');
+}
+
+public function mainContact()
+{
+    return $this->hasOne(UserContact::class, 'user_id', 'user_id')
+        ->where('is_main', 1);
+}
+public function addresses()
+{
+    return $this->hasMany(UserAddress::class, 'user_id', 'user_id');
+}
+
+public function mainShippingAddress()
+{
+    return $this->hasOne(UserAddress::class, 'user_id', 'user_id')
+        ->where('address_type', 'shipping')
+        ->where('is_main', 1);
+}
+
+public function mainBillingAddress()
+{
+    return $this->hasOne(UserAddress::class, 'user_id', 'user_id')
+        ->where('address_type', 'billing')
+        ->where('is_main', 1);
+}
 }
