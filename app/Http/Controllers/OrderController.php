@@ -11,6 +11,9 @@ use App\Models\OrderPayment;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Mail\OrderConfirmationMail;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
@@ -730,6 +733,35 @@ class OrderController extends Controller
             }
 
             DB::commit();
+
+            /*
+|--------------------------------------------------------------------------
+| Send order confirmation email
+|--------------------------------------------------------------------------
+*/
+try {
+    $order->load([
+        'items.optionDetails',
+        'customer',
+        'payment',
+        'artworks',
+    ]);
+
+    $customerEmail = $order->customer->personal_email
+        ?? $order->customer->billing_email
+        ?? null;
+
+    if ($customerEmail) {
+        Mail::to($customerEmail)->send(new OrderConfirmationMail($order));
+    }
+
+} catch (\Throwable $mailError) {
+    Log::error('Send order confirmation email failed', [
+        'order_id' => $order->order_id ?? null,
+        'order_no' => $order->order_no ?? null,
+        'error' => $mailError->getMessage(),
+    ]);
+}
 
             session()->forget([
                 'cart',

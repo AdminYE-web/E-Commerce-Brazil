@@ -287,28 +287,57 @@ Route::get('/email/verify/success', function () {
 })->name('verification.success');
 
 Route::get('/email/verify/{id}/{hash}', function (Request $request, $id, $hash) {
+    /*
+    |--------------------------------------------------------------------------
+    | 1. Check signed URL / expired link
+    |--------------------------------------------------------------------------
+    */
     if (! $request->hasValidSignature()) {
         abort(403, 'Invalid or expired verification link.');
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | 2. Find user
+    |--------------------------------------------------------------------------
+    */
     $user = User::where('user_id', $id)->firstOrFail();
 
+    /*
+    |--------------------------------------------------------------------------
+    | 3. Check hash
+    |--------------------------------------------------------------------------
+    */
     if (! hash_equals((string) $hash, sha1($user->email))) {
         abort(403, 'Invalid verification link.');
     }
 
-    if (is_null($user->email_verified_at)) {
-        $user->forceFill([
-            'email_verified_at' => now(),
-            'status' => 1,
-        ])->save();
-    } else {
-        $user->update([
-            'status' => 1,
-        ]);
+    /*
+    |--------------------------------------------------------------------------
+    | 4. Prevent using the same verification link again
+    |--------------------------------------------------------------------------
+    | ถ้า email_verified_at มีค่าแล้ว หรือ status = 1
+    | แปลว่าเคย verify ไปแล้ว ห้ามใช้ link ซ้ำ
+    |--------------------------------------------------------------------------
+    */
+    if (! is_null($user->email_verified_at) || (int) $user->status === 1) {
+        return redirect()
+            ->route('login')
+            ->with('message', 'This verification link has already been used. Please login to continue.');
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | 5. Verify account
+    |--------------------------------------------------------------------------
+    */
+    $user->forceFill([
+        'email_verified_at' => now(),
+        'status' => 1,
+    ])->save();
+
     return redirect()->route('verification.success');
+
 })->middleware('signed')->name('verification.verify');
 
 Route::post('/email/verification-notification', function (Request $request) {
