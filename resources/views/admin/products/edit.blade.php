@@ -187,6 +187,15 @@
         flex-direction: column;
     }
 }
+.delete-image-label {
+    margin-top: 6px;
+    font-size: 12px;
+    color: #dc2626;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
 </style>
 @endsection
 @section('content')
@@ -295,19 +304,28 @@
             <input type="file" name="images[]" multiple accept="image/*">
         </div>
 
-        <div class="image-panel">
-            <label>Current Gallery Images</label>
+       <div class="image-panel">
+    <label>Current Gallery Images</label>
 
-            <div class="image-grid">
-                @forelse ($product->galleryImages as $image)
-                    <div class="image-box">
-                        <img src="{{ asset('storage/' . $image->image_path) }}" alt="Gallery image">
-                    </div>
-                @empty
-                    <p class="muted-text">No gallery images</p>
-                @endforelse
+    <div class="image-grid">
+        @forelse ($product->galleryImages as $image)
+            <div class="image-box">
+                <img src="{{ asset('storage/' . $image->image_path) }}" alt="Gallery image">
+
+                <label class="delete-image-label">
+                    <input 
+                        type="checkbox" 
+                        name="delete_gallery_images[]" 
+                        value="{{ $image->image_id }}"
+                    >
+                    Delete
+                </label>
             </div>
-        </div>
+        @empty
+            <p class="muted-text">No gallery images</p>
+        @endforelse
+    </div>
+</div>
 
         <div class="form-group">
             <label>Add Gallery Images</label>

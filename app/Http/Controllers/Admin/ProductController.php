@@ -8,6 +8,8 @@ use App\Models\Material;
 use App\Models\Product;
 use App\Models\ProductImage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+
 
 class ProductController extends Controller
 {
@@ -164,6 +166,8 @@ class ProductController extends Controller
             'allow_text_print' => 'nullable|boolean',
             'allow_font_select' => 'nullable|boolean',
             'allow_template_select' => 'nullable|boolean',
+            'delete_gallery_images' => 'nullable|array',
+'delete_gallery_images.*' => 'integer',
         ]);
 
         $product->update([
@@ -184,6 +188,20 @@ class ProductController extends Controller
             'allow_font_select' => $request->has('allow_font_select') ? 1 : 0,
             'allow_template_select' => $request->has('allow_template_select') ? 1 : 0,
         ]);
+        if ($request->filled('delete_gallery_images')) {
+    $galleryImages = ProductImage::where('product_id', $product->product_id)
+        ->where('image_type', 'gallery')
+        ->whereIn('image_id', $request->delete_gallery_images)
+        ->get();
+
+    foreach ($galleryImages as $galleryImage) {
+        if ($galleryImage->image_path && Storage::disk('public')->exists($galleryImage->image_path)) {
+            Storage::disk('public')->delete($galleryImage->image_path);
+        }
+
+        $galleryImage->delete();
+    }
+}
         if ($request->filled('main_image_id')) {
             $product->images()->update([
                 'is_main' => 0,
