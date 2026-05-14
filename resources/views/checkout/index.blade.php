@@ -606,6 +606,202 @@
             margin-top: 3px;
             white-space: nowrap;
         }
+        @media (max-width: 991.98px) {
+    .checkout-layout {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    .checkout-summary {
+        position: static;
+        top: auto;
+    }
+
+    .checkout-stepper {
+        max-width: 100%;
+        padding: 0 10px;
+    }
+}
+
+@media (max-width: 768px) {
+   
+    .checkout-page {
+        padding: 18px 0 36px;
+    }
+
+    .checkout-stepper {
+        margin-bottom: 20px;
+    }
+
+    .checkout-stepper::before,
+    .checkout-stepper::after {
+        top: 18px;
+        left: 38px;
+        right: 38px;
+    }
+
+    .checkout-step {
+        width: 72px;
+    }
+
+    .step-circle {
+        width: 38px;
+        height: 38px;
+        font-size: 16px;
+        margin-bottom: 6px;
+    }
+
+    .checkout-step.completed .step-circle {
+        font-size: 22px;
+    }
+
+    .step-label {
+        font-size: 11px;
+        line-height: 1.2;
+    }
+
+    .order-product-card {
+        padding: 14px;
+        border-radius: 10px;
+        margin-bottom: 14px;
+    }
+
+    .order-product-header {
+        gap: 12px;
+        align-items: flex-start;
+    }
+
+    .order-product-image {
+        width: 72px;
+        height: 72px;
+        flex-shrink: 0;
+    }
+
+    .order-product-category {
+        font-size: 12px;
+    }
+
+    .order-product-header strong {
+        display: block;
+        font-size: 14px;
+        line-height: 1.25;
+        margin-bottom: 4px;
+    }
+
+    .order-product-header div {
+        font-size: 13px;
+    }
+
+    .upload-file-box {
+        min-height: 118px;
+        padding: 18px 12px;
+    }
+
+    .upload-empty-state p {
+        font-size: 13px;
+        text-align: center;
+        margin: 0;
+        line-height: 1.4;
+    }
+
+    .upload-note {
+        font-size: 11px;
+    }
+
+    .artwork-collapse-toggle {
+        height: 40px;
+        font-size: 13px;
+        padding: 0 12px;
+    }
+
+    .artwork-collapse-content.is-open {
+        padding: 12px;
+    }
+
+    .artwork-field-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .template-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .template-card {
+        padding: 8px;
+    }
+
+    .template-image {
+        height: 58px;
+    }
+
+    .template-card span {
+        font-size: 11px;
+    }
+
+    .uploaded-file-state {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .uploaded-file-pill {
+        max-width: 100%;
+        width: 100%;
+        font-size: 13px;
+    }
+
+    .uploaded-file-name {
+        max-width: 190px;
+    }
+
+    .add-more-file-btn {
+        font-size: 13px;
+    }
+
+    .checkout-summary {
+        padding: 18px;
+        border-radius: 10px;
+    }
+
+    .checkout-summary h3 {
+        font-size: 20px;
+    }
+
+    .summary-line {
+        font-size: 13px;
+    }
+
+    .summary-total {
+        font-size: 18px;
+    }
+
+    .checkout-next-btn,
+    .checkout-back-btn {
+        height: 40px;
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 420px) {
+    .checkout-step {
+        width: 62px;
+    }
+
+    .step-label {
+        font-size: 10px;
+    }
+
+    .checkout-stepper::before,
+    .checkout-stepper::after {
+        left: 32px;
+        right: 32px;
+    }
+
+    .template-grid {
+        grid-template-columns: 1fr;
+    }
+}
     </style>
 @endsection
 

@@ -2,7 +2,7 @@
 
 return [
     'header' => [
-        'lanyard' => 'Lanyard',
+        'product' => 'Products',
         'other_product' => 'Other Product',
         'additional_lanyard_details' => 'Additional Lanyard Details',
         'search' => 'Search',

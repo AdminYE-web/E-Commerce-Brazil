@@ -2,7 +2,7 @@
 
 return [
     'header' => [
-        'lanyard' => 'Cordão',
+        'product' => 'Produtos',
         'other_product' => 'Outro produto',
         'additional_lanyard_details' => 'Detalhes adicionais do cordão',
         'search' => 'Procurar',
@@ -11,7 +11,7 @@ return [
         'blog' => 'Blog',
         'faq' => 'FAQ',
         'about_us' => 'Sobre nos',
-        'contact_us' => 'Fale conosco',
+        'contact_us' => 'Contato ',
         'view_all' => 'Ver tudo',
         'language' => [
             'pt' => 'Português (BR)',

@@ -148,6 +148,14 @@
     background: #255fac;
     color: #fff;
 }
+@media (max-width: 768px) {
+    .step-label {
+    font-size: 9px;
+  
+}
+
+}
+
 </style>
 <aside class="checkout-summary">
     <h3>Finalizar Compra</h3>

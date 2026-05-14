@@ -35,15 +35,31 @@
 
                     <li class="nav-item">
                         <button type="button" class="nav-link desktop-menu-toggle " data-target="lanyardMegaMenu">
-                            {{ __('messages.header.lanyard') }}
+                            {{ __('messages.header.product') }}<img src="{{ asset('assets/images/icon/Polygon 28.png') }}" alt="" aria-hidden="true" class="desktop-menu-toggle-icon">
                         </button>
                     </li>
 
-                    <li class="nav-item">
+                    {{-- <li class="nav-item">
                         <button type="button" class="nav-link desktop-menu-toggle" data-target="otherProductMegaMenu">
                             {{ __('messages.header.other_product') }}
                         </button>
+                    </li> --}}
+                    <li class="nav-item">
+                        <a href="{{ route('gallery.index') }}" class="nav-link">
+                            {{ __('messages.header.gallery') }}
+                        </a>
                     </li>
+                    <li class="nav-item">
+                        <a href="{{ route('about') }}" class="nav-link">
+                            {{ __('messages.header.about_us') }}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('contact') }}" class="nav-link">
+                            {{ __('messages.header.contact_us') }}
+                        </a>
+                    </li>
+
                 </ul>
 
                 <!-- Search -->
@@ -300,7 +316,7 @@
             <ul class="mobile-menu-list">
                 <li>
                     <button type="button" class="mobile-menu-link open-submenu" data-target="lanyardMenuPanel">
-                        <span>{{ __('messages.header.lanyard') }}</span>
+                        <span>{{ __('messages.header.product') }}</span>
                         <i class="bi bi-chevron-right"></i>
                     </button>
                 </li>

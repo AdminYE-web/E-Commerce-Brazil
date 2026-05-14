@@ -759,6 +759,20 @@
             background: #255fac;
             color: #fff;
         }
+         @media (max-width: 768px) {
+            .cart-product-name {
+    font-size: 14px;
+ 
+}
+.cart-icon-link img {
+    width: 18px;
+  
+}
+.cart-delete-btn img {
+    width: 15px;
+  
+}
+         }
     </style>
 @endsection
 

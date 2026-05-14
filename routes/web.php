@@ -1,5 +1,9 @@
 <?php
 
+
+use App\Http\Controllers\Admin\GalleryBannerController;
+use App\Http\Controllers\GalleryPageController;
+use App\Http\Controllers\Admin\GalleryController;
 use App\Http\Controllers\AccountOrderController;
 use App\Http\Controllers\AccountAddressController;
 use App\Http\Controllers\AccountContactController;
@@ -118,7 +122,8 @@ Route::get('/checkout/auth-choice', [CheckoutController::class, 'authChoice'])
 Route::get('/checkout/continue-guest', [CheckoutController::class, 'continueGuest'])
     ->name('checkout.continueGuest');
 
-
+Route::get('/gallery', [GalleryPageController::class, 'index'])
+    ->name('gallery.index');
 
 Route::middleware('auth')->group(function () {
     Route::get('/account', [AccountController::class, 'index'])
@@ -174,7 +179,7 @@ Route::put('/account/addresses/{address}', [AccountAddressController::class, 'up
 
 
 
-Route::prefix('admin')->name('admin.')->group(function () {
+Route::prefix('admin-panel')->name('admin.')->group(function () {
     Route::get('/login', [AdminAuthController::class, 'showLoginForm'])
         ->name('login');
 
@@ -240,6 +245,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::put('orders/{order}/status', [OrderAdminController::class, 'updateStatus'])
             ->name('orders.updateStatus');
+            Route::resource('galleries', GalleryController::class);
+            Route::resource('gallery-banners', GalleryBannerController::class);
     });
 });
 

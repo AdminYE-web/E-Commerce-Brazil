@@ -923,6 +923,13 @@
         }
 
         @media (max-width: 768px) {
+            .customize-option-group h2 {
+    font-size: 14px;
+   
+}
+.option-button-item span {
+    font-size: 13px;
+}
             .quantity-label-row {
                 flex-direction: column;
                 align-items: flex-start;
@@ -932,7 +939,7 @@
             .add-to-cart-btn {
                 margin-top: 40px;
                 height: 56px;
-                font-size: 20px;
+                font-size: 16px;
             }
         }
 

@@ -29,7 +29,6 @@
                 'admin.option-dependencies.*',
                 'admin.product-price-rules.*',
                 'admin.product-artwork-templates.*',
-  
             );
         @endphp
 
@@ -106,9 +105,44 @@
                         Material Homes
                     </a>
                 </li>
+                <li>
+                    <a href="{{ route('admin.galleries.index') }}"
+                        class="sub-nav-link {{ request()->routeIs('admin.galleries.*') ? 'active' : '' }}">
+                        Galleries
+                    </a>
+                </li>
             </ul>
         </li>
-         <li class="nav-item">
+        @php
+               $galleryMenuActive = request()->routeIs(
+       
+                'admin.galleries.*',
+                'admin.gallery-banners.*',
+            );
+        @endphp
+        <li class="nav-item has-dropdown {{ $galleryMenuActive ? 'open' : '' }}">
+            <button type="button" class="nav-link dropdown-toggle {{ $galleryMenuActive ? 'active' : '' }}"
+                onclick="this.closest('.has-dropdown').classList.toggle('open')">
+                <span>Galleries</span>
+                <span class="dropdown-arrow">▾</span>
+            </button>
+
+            <ul class="sub-nav">
+                <li>
+                    <a href="{{ route('admin.galleries.index') }}"
+                        class="sub-nav-link {{ request()->routeIs('admin.galleries.*') ? 'active' : '' }}">
+                        Galleries
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('admin.gallery-banners.index') }}"
+                        class="sub-nav-link {{ request()->routeIs('admin.gallery-banners.*') ? 'active' : '' }}">
+                        Gallery Banners
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <li class="nav-item">
             <a href="{{ route('admin.orders.index') }}"
                 class="nav-link {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
                 Orders

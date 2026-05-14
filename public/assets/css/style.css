@@ -1071,7 +1071,7 @@ body {
 /* ทุก panel อยู่ซ้อนกันเต็มพื้นที่ */
 .mobile-menu-panel {
     position: absolute;
-    top: 0;
+    top: 104px;
     left: 0;
     width: 100%;
     min-height: 100%;
@@ -1165,6 +1165,7 @@ body {
         border-bottom: 1px solid #e7e7e7;
     }
 }
+
 
 .hero-banner {
     background: #f4f7ff;
@@ -2501,11 +2502,20 @@ body {
 .main-menu .nav-link.desktop-menu-toggle {
     border: 0;
     background: transparent;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     padding: 0;
     font-size: 16px;
     font-weight: 700;
     color: #111;
     line-height: 1;
+}
+
+.main-menu .desktop-menu-toggle-icon {
+    width: 10px;
+    height: 10px;
+    object-fit: contain;
 }
 
 .main-menu .nav-link.desktop-menu-toggle.active,
@@ -4265,14 +4275,14 @@ body {
         }
 
         .type-tabs {
-            flex-direction: column;
+            /* flex-direction: column; */
             align-items: center;
         }
     }
 
     @media (max-width: 520px) {
         .products-grid {
-            grid-template-columns: 1fr;
+             grid-template-columns: repeat(2, 1fr);
         }
 
         .type-card {

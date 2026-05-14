@@ -2,7 +2,7 @@
 
 return [
     'header' => [
-        'lanyard' => 'ネックストラップ',
+        'product' => '商品',
         'other_product' => 'その他の商品',
         'additional_lanyard_details' => 'ネックストラップの詳細',
         'search' => '検索',
