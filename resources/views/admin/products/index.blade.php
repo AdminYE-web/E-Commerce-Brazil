@@ -33,6 +33,7 @@
 .action-link.delete {
     color: #dc2626;
 }
+
 </style>
 @endsection
 @section('content')
@@ -50,6 +51,27 @@
             </a>
         </div>
     </div>
+    <form method="GET" action="{{ route('admin.products.index') }}" class="product-search-form">
+    <div class="product-search-row">
+        <input
+            type="text"
+            name="search"
+            value="{{ request('search') }}"
+            class="product-search-input"
+            placeholder="Search by product name or product code..."
+        >
+
+        <button type="submit" class="product-search-btn">
+            Search
+        </button>
+
+        @if(request('search'))
+            <a href="{{ route('admin.products.index') }}" class="product-reset-btn">
+                Reset
+            </a>
+        @endif
+    </div>
+</form>
 
     @if (session('success'))
         <div class="alert-success">

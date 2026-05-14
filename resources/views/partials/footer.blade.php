@@ -83,7 +83,7 @@
 
                 </div>
             </div>
-             <div class="d-block d-md-block d-lg-none">
+            <div class="d-block d-md-block d-lg-none">
                 <div class="footer-grid">
 
                     <!-- Logo / Social -->
@@ -151,5 +151,10 @@
             <p>{{ __('messages.footer.copyright') }}</p>
         </div>
     </section>
+
+    {{-- WhatsApp Float --}}
+    <a href="https://wa.me/819012344567" class="whatsapp-float" target="_blank" rel="noopener">
+        <i class="bi bi-whatsapp"></i>
+    </a>
 
 </footer>

@@ -8,13 +8,23 @@ use Illuminate\Http\Request;
 
 class OptionGroupController extends Controller
 {
-    public function index()
+  public function index(Request $request)
 {
-    $groups = OptionGroup::with('parent')
-        ->latest()
-        ->paginate(10);
+    $search = $request->input('search');
 
-    return view('admin.option_groups.index', compact('groups'));
+    $groups = OptionGroup::with('parent')
+        ->when($search, function ($query) use ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('group_name', 'like', '%' . $search . '%')
+                  ->orWhere('group_code', 'like', '%' . $search . '%');
+            });
+        })
+        ->orderBy('sort_order')
+        ->orderBy('option_group_id', 'desc')
+        ->paginate(15)
+        ->withQueryString();
+
+    return view('admin.option_groups.index', compact('groups', 'search'));
 }
 
    public function create()

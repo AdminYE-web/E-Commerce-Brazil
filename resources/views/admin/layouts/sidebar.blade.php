@@ -27,11 +27,9 @@
                 'admin.product-options.*',
                 'admin.product-option-variants.*',
                 'admin.option-dependencies.*',
-                'admin.product-list-banners.*',
                 'admin.product-price-rules.*',
                 'admin.product-artwork-templates.*',
-                'admin.home-banners.*',
-                'admin.material-homes.*',
+  
             );
         @endphp
 

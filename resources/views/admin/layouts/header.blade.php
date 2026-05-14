@@ -3,10 +3,10 @@
 @endphp
 
 <header class="header">
-    <form class="search-bar" method="GET">
+    {{-- <form class="search-bar" method="GET">
         <input type="text" name="search" placeholder="Search products, orders, or categories..."
                value="{{ request('search') }}">
-    </form>
+    </form> --}}
 
     <div class="header-actions">
         <div class="user-profile">

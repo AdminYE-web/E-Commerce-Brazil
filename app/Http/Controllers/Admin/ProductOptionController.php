@@ -11,14 +11,30 @@ use App\Models\OptionImage;
 
 class ProductOptionController extends Controller
 {
-    public function index()
-    {
-      $options = ProductOption::with(['group', 'mainImage'])
-    ->orderBy('option_id', 'desc')
-    ->paginate(10);
+    public function index(Request $request)
+{
+    $search = $request->input('search');
 
-        return view('admin.product_options.index', compact('options'));
-    }
+    $options = ProductOption::with([
+            'group',
+            'mainImage',
+        ])
+        ->when($search, function ($query) use ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('option_name', 'like', '%' . $search . '%')
+                  ->orWhere('option_code', 'like', '%' . $search . '%')
+                  ->orWhereHas('group', function ($groupQuery) use ($search) {
+                      $groupQuery->where('group_name', 'like', '%' . $search . '%')
+                                 ->orWhere('group_code', 'like', '%' . $search . '%');
+                  });
+            });
+        })
+        ->orderBy('option_id', 'desc')
+        ->paginate(15)
+        ->withQueryString();
+
+    return view('admin.product_options.index', compact('options', 'search'));
+}
 
     public function create()
     {

@@ -199,6 +199,53 @@
     opacity: .45;
     pointer-events: none;
 }
+.option-group-search-form {
+    margin: 0 24px 18px;
+}
+
+.option-group-search-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.option-group-search-input {
+    width: 360px;
+    max-width: 100%;
+    height: 38px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0 12px;
+    font-size: 14px;
+    background: #fff;
+}
+
+.option-group-search-btn,
+.option-group-reset-btn {
+    height: 38px;
+    border-radius: 8px;
+    padding: 0 16px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.option-group-search-btn {
+    border: 0;
+    background: var(--accent);
+    color: #fff;
+    cursor: pointer;
+}
+
+.option-group-reset-btn {
+    border: 1px solid var(--border);
+    background: #fff;
+    color: var(--fg);
+}
 </style>
 @endsection
 @section('content')
@@ -218,6 +265,27 @@
             </a>
         </div>
     </div>
+    <form method="GET" action="{{ route('admin.option-groups.index') }}" class="option-group-search-form">
+    <div class="option-group-search-row">
+        <input
+            type="text"
+            name="search"
+            value="{{ request('search') }}"
+            class="option-group-search-input"
+            placeholder="Search by group name or group code..."
+        >
+
+        <button type="submit" class="option-group-search-btn">
+            Search
+        </button>
+
+        @if(request('search'))
+            <a href="{{ route('admin.option-groups.index') }}" class="option-group-reset-btn">
+                Reset
+            </a>
+        @endif
+    </div>
+</form>
 
     @if (session('success'))
         <div class="alert-success">

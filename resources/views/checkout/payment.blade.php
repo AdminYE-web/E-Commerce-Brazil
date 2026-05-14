@@ -347,6 +347,11 @@
         grid-column: 1 / -1;
     }
 }
+.payment-card.is-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
 </style>
 @endsection
 
@@ -372,7 +377,7 @@
                         </div>
                     @endif
 
-                    <label class="payment-card {{ $selectedPayment === 'paypal' ? 'is-selected' : '' }}">
+                    {{-- <label class="payment-card {{ $selectedPayment === 'paypal' ? 'is-selected' : '' }}">
                         <div class="payment-card-header">
                             <div class="payment-logo paypal-text">
                                 PayPal
@@ -391,7 +396,29 @@
                                 {{ $selectedPayment === 'paypal' ? 'checked' : '' }}
                             >
                         </div>
-                    </label>
+                    </label> --}}
+                    <label class="payment-card is-disabled">
+    <div class="payment-card-header">
+        <div class="payment-logo paypal-text">
+            PayPal
+        </div>
+
+        <div>
+            <div class="payment-title">PayPal</div>
+            <div class="payment-desc">
+                Under maintenance
+            </div>
+        </div>
+
+        <input
+            type="radio"
+            name="payment_method"
+            value="paypal"
+            class="payment-check"
+            disabled
+        >
+    </div>
+</label>
 
                     <label class="payment-card {{ $selectedPayment === 'bank_transfer' ? 'is-selected' : '' }}">
                         <div class="payment-card-header">

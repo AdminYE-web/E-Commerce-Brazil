@@ -139,6 +139,53 @@
 .pagination-container .pagination {
     margin-top: 8px;
 }
+.product-option-search-form {
+    margin: 0 24px 18px;
+}
+
+.product-option-search-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.product-option-search-input {
+    width: 420px;
+    max-width: 100%;
+    height: 38px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0 12px;
+    font-size: 14px;
+    background: #fff;
+}
+
+.product-option-search-btn,
+.product-option-reset-btn {
+    height: 38px;
+    border-radius: 8px;
+    padding: 0 16px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.product-option-search-btn {
+    border: 0;
+    background: var(--accent);
+    color: #fff;
+    cursor: pointer;
+}
+
+.product-option-reset-btn {
+    border: 1px solid var(--border);
+    background: #fff;
+    color: var(--fg);
+}
     </style>
 @endsection
 
@@ -159,6 +206,27 @@
                 </a>
             </div>
         </div>
+        <form method="GET" action="{{ route('admin.product-options.index') }}" class="product-option-search-form">
+    <div class="product-option-search-row">
+        <input
+            type="text"
+            name="search"
+            value="{{ request('search') }}"
+            class="product-option-search-input"
+            placeholder="Search by option name, option code or group..."
+        >
+
+        <button type="submit" class="product-option-search-btn">
+            Search
+        </button>
+
+        @if(request('search'))
+            <a href="{{ route('admin.product-options.index') }}" class="product-option-reset-btn">
+                Reset
+            </a>
+        @endif
+    </div>
+</form>
 
         @if (session('success'))
             <div class="alert-success">

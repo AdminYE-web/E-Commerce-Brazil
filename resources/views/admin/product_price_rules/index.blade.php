@@ -101,6 +101,53 @@
             flex-wrap: wrap;
         }
     }
+    .rule-search-form {
+    margin: 0 24px 18px;
+}
+
+.rule-search-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.rule-search-input {
+    width: 420px;
+    max-width: 100%;
+    height: 38px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0 12px;
+    font-size: 14px;
+    background: #fff;
+}
+
+.rule-search-btn,
+.rule-reset-btn {
+    height: 38px;
+    border-radius: 8px;
+    padding: 0 16px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.rule-search-btn {
+    border: 0;
+    background: var(--accent);
+    color: #fff;
+    cursor: pointer;
+}
+
+.rule-reset-btn {
+    border: 1px solid var(--border);
+    background: #fff;
+    color: var(--fg);
+}
 </style>
 @endsection
 @section('content')
@@ -124,6 +171,27 @@
             </a>
         </div>
     </div>
+    <form method="GET" action="{{ route('admin.product-price-rules.index') }}" class="rule-search-form">
+    <div class="rule-search-row">
+        <input
+            type="text"
+            name="search"
+            value="{{ request('search') }}"
+            class="rule-search-input"
+            placeholder="Search by rule name, product name or product code..."
+        >
+
+        <button type="submit" class="rule-search-btn">
+            Search
+        </button>
+
+        @if(request('search'))
+            <a href="{{ route('admin.product-price-rules.index') }}" class="rule-reset-btn">
+                Reset
+            </a>
+        @endif
+    </div>
+</form>
 
     @if (session('success'))
         <div class="alert-success">

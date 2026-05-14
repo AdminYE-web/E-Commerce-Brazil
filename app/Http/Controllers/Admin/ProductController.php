@@ -11,15 +11,28 @@ use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    public function index()
-    {
-        $products = Product::with(['mainImage', 'detail', 'category', 'material'])
-            ->orderBy('product_id', 'desc')
-            ->paginate(10);
+   public function index(Request $request)
+{
+    $search = $request->input('search');
 
-        return view('admin.products.index', compact('products'));
-    }
+    $products = Product::with([
+            'category',
+            'material',
+            'mainImage',
+            'detail',
+        ])
+        ->when($search, function ($query) use ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('product_name', 'like', '%' . $search . '%')
+                  ->orWhere('product_code', 'like', '%' . $search . '%');
+            });
+        })
+        ->orderBy('product_id', 'desc')
+        ->paginate(15)
+        ->withQueryString();
 
+    return view('admin.products.index', compact('products', 'search'));
+}
     public function create()
     {
         $categories = Category::where('is_active', 1)

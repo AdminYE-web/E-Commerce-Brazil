@@ -12,14 +12,24 @@ use Illuminate\Http\Request;
 
 class ProductPriceRuleController extends Controller
 {
-    public function index()
-    {
-        $rules = ProductPriceRule::with(['product', 'options.group', 'tiers'])
-            ->orderBy('rule_id', 'desc')
-            ->paginate(20);
+    public function index(Request $request)
+{
+    $search = $request->input('search');
 
-        return view('admin.product_price_rules.index', compact('rules'));
-    }
+    $rules = ProductPriceRule::with(['product'])
+        ->when($search, function ($query) use ($search) {
+            $query->where('rule_name', 'like', '%' . $search . '%')
+                ->orWhereHas('product', function ($productQuery) use ($search) {
+                    $productQuery->where('product_name', 'like', '%' . $search . '%')
+                        ->orWhere('product_code', 'like', '%' . $search . '%');
+                });
+        })
+        ->orderBy('rule_id', 'desc')
+        ->paginate(15)
+        ->withQueryString();
+
+    return view('admin.product_price_rules.index', compact('rules', 'search'));
+}
 
     public function create()
     {
