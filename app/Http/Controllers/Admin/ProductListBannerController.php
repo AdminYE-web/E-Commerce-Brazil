@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ProductListBanner;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
 
 class ProductListBannerController extends Controller
 {
@@ -51,6 +52,7 @@ class ProductListBannerController extends Controller
             'sort_order' => $request->sort_order ?? 0,
             'is_active' => $request->has('is_active') ? 1 : 0,
         ]);
+        Cache::forget('product_list_shared_components');
 
         return redirect()
             ->route('admin.product-list-banners.index')
@@ -96,6 +98,7 @@ class ProductListBannerController extends Controller
             'sort_order' => $request->sort_order ?? 0,
             'is_active' => $request->has('is_active') ? 1 : 0,
         ]);
+        Cache::forget('product_list_shared_components');
 
         return redirect()
             ->route('admin.product-list-banners.index')
@@ -109,6 +112,7 @@ class ProductListBannerController extends Controller
         }
 
         $productListBanner->delete();
+        Cache::forget('product_list_shared_components');
 
         return redirect()
             ->route('admin.product-list-banners.index')

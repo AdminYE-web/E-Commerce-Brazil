@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\HomeBanner;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
 
 class HomeBannerController extends Controller
 {
@@ -53,6 +54,8 @@ class HomeBannerController extends Controller
             'is_active' => $request->has('is_active') ? 1 : 0,
             'sort_order' => $request->sort_order ?? 0,
         ]);
+
+        Cache::forget('home_page_data');
 
         return redirect()
             ->route('admin.home-banners.index')
@@ -125,6 +128,8 @@ class HomeBannerController extends Controller
             'sort_order' => $request->sort_order ?? 0,
         ]);
 
+        Cache::forget('home_page_data');
+
         return redirect()
             ->route('admin.home-banners.index')
             ->with('success', 'Home banner updated successfully.');
@@ -132,6 +137,8 @@ class HomeBannerController extends Controller
 
     public function destroy(HomeBanner $homeBanner)
     {
+        Cache::forget('home_page_data');
+
         if ($homeBanner->image_pc && Storage::disk('public')->exists($homeBanner->image_pc)) {
             Storage::disk('public')->delete($homeBanner->image_pc);
         }
@@ -141,6 +148,7 @@ class HomeBannerController extends Controller
         }
 
         $homeBanner->delete();
+       
 
         return redirect()
             ->route('admin.home-banners.index')

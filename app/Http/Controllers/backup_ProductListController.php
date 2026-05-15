@@ -8,67 +8,57 @@ use App\Models\OptionDependency;
 use App\Models\Product;
 use App\Models\ProductListBanner;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 
 class ProductListController extends Controller
 {
     public function index(Request $request)
-{
-    $categoryIds = $request->input('categories', []);
-    $materialIds = $request->input('materials', []);
-    $productType = $request->input('product_type', 1);
+    {
+        $categoryIds = $request->input('categories', []);
+        $materialIds = $request->input('materials', []);
+        $productType = $request->input('product_type', 1);
+        $banners = ProductListBanner::where('is_active', 1)
+            ->orderBy('sort_order')
+            ->orderBy('banner_id', 'desc')
+            ->get();
 
-    // --- ส่วนที่ทำ Cache แยกไว้ ---
-    // เก็บไว้ 24 ชั่วโมง เพราะข้อมูลพวกนี้เปลี่ยนไม่บ่อย
-    $sharedData = Cache::remember('product_list_shared_components', 86400, function () {
-        return [
-            'banners' => ProductListBanner::where('is_active', 1)
-                ->orderBy('sort_order')
-                ->orderBy('banner_id', 'desc')
-                ->get(),
+        $categories = Category::where('is_active', 1)
+            ->orderBy('sort_order')
+            ->orderBy('category_id', 'desc')
+            ->get();
 
-            'categories' => Category::where('is_active', 1)
-                ->orderBy('sort_order')
-                ->orderBy('category_id', 'desc')
-                ->get(),
+        $materials = Material::where('is_active', 1)
+            ->orderBy('material_name')
+            ->get();
 
-            'materials' => Material::where('is_active', 1)
-                ->orderBy('material_name')
-                ->get(),
-        ];
-    });
+        $products = Product::with(['mainImage', 'category', 'material', 'detail'])
+            ->where('is_active', 1)
+            ->where('product_type', $productType)
+            ->when(! empty($categoryIds), function ($query) use ($categoryIds) {
+                $query->whereIn('category_id', $categoryIds);
+            })
+            ->when(! empty($materialIds), function ($query) use ($materialIds) {
+                $query->whereIn('material_id', $materialIds);
+            })
+            ->orderBy('product_id', 'desc')
+            ->paginate(12)
+            ->withQueryString();
+        if ($request->ajax() && $request->input('_ajax') == 1) {
+            return response()->json([
+                'html' => view('products.partials.product_cards', compact('products'))->render(),
+                'pagination' => $products->links()->render(),
+            ]);
+        }
 
-    // ดึงตัวแปรออกมาจาก Array ที่แคชไว้
-    $banners = $sharedData['banners'];
-    $categories = $sharedData['categories'];
-    $materials = $sharedData['materials'];
-    // ----------------------------
-
-    
-    $products = Product::with(['mainImage', 'category', 'material', 'detail'])
-        ->where('is_active', 1)
-        ->where('product_type', $productType)
-        ->when(! empty($categoryIds), function ($query) use ($categoryIds) {
-            $query->whereIn('category_id', $categoryIds);
-        })
-        ->when(! empty($materialIds), function ($query) use ($materialIds) {
-            $query->whereIn('material_id', $materialIds);
-        })
-        ->orderBy('product_id', 'desc')
-        ->paginate(12)
-        ->withQueryString();
-
-    if ($request->ajax() && $request->input('_ajax') == 1) {
-        return response()->json([
-            'html' => view('products.partials.product_cards', compact('products'))->render(),
-            'pagination' => $products->links()->render(),
-        ]);
+        return view('products.index', compact(
+            'products',
+            'categories',
+            'materials',
+            'categoryIds',
+            'materialIds',
+            'productType',
+            'banners'
+        ));
     }
-
-    return view('products.index', compact(
-        'products', 'categories', 'materials', 'categoryIds', 'materialIds', 'productType', 'banners'
-    ));
-}
 
     public function show(Product $product)
     {

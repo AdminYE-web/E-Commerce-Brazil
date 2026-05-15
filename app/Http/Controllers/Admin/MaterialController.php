@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Material;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class MaterialController extends Controller
 {
@@ -34,6 +35,8 @@ class MaterialController extends Controller
             'is_active' => $request->has('is_active') ? 1 : 0,
         ]);
 
+        Cache::forget('home_page_data');
+
         return redirect()
             ->route('admin.materials.index')
             ->with('success', 'เพิ่ม Material เรียบร้อยแล้ว');
@@ -58,6 +61,8 @@ class MaterialController extends Controller
             'is_active' => $request->has('is_active') ? 1 : 0,
         ]);
 
+        Cache::forget('home_page_data');
+
         return redirect()
             ->route('admin.materials.index')
             ->with('success', 'แก้ไข Material เรียบร้อยแล้ว');
@@ -66,6 +71,8 @@ class MaterialController extends Controller
     public function destroy(Material $material)
     {
         $material->delete();
+
+        Cache::forget('home_page_data');
 
         return redirect()
             ->route('admin.materials.index')

@@ -270,7 +270,7 @@
 @section('content')
 
     @if ($banners->count())
-        {{-- <section class="product-list-banner-wrap">
+        <section class="product-list-banner-wrap">
         <div id="productListBannerCarousel" class="carousel slide" data-bs-ride="carousel">
 
             <div class="carousel-inner">
@@ -288,7 +288,7 @@
             </div>
 
         </div>
-    </section> --}}
+    </section>
     @endif
     <section class="pl-category-section d-none d-lg-block">
         <div class="pl-category-inner">

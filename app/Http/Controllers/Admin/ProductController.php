@@ -9,6 +9,7 @@ use App\Models\Product;
 use App\Models\ProductImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
 
 
 class ProductController extends Controller
@@ -122,6 +123,7 @@ class ProductController extends Controller
                 ]);
             }
         }
+        Cache::forget('home_page_data');
 
         return redirect()
             ->route('admin.products.index')
@@ -248,6 +250,7 @@ class ProductController extends Controller
                 ]);
             }
         }
+        Cache::forget('home_page_data');
 
         return redirect()
             ->route('admin.products.index')
@@ -257,6 +260,8 @@ class ProductController extends Controller
     public function destroy(Product $product)
     {
         $product->delete();
+
+        Cache::forget('home_page_data');
 
         return redirect()
             ->route('admin.products.index')

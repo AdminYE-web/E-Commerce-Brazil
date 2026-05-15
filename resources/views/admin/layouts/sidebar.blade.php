@@ -18,6 +18,7 @@
 
         @php
             $productMenuActive = request()->routeIs(
+                'admin.product-list-banners.*',
                 'admin.categories.*',
                 'admin.materials.*',
                 'admin.products.*',
@@ -40,6 +41,12 @@
             </button>
 
             <ul class="sub-nav">
+                  <li>
+                    <a href="{{ route('admin.product-list-banners.index') }}"
+                        class="sub-nav-link {{ request()->routeIs('admin.product-list-banners.*') ? 'active' : '' }}">
+                        Product List Banners
+                    </a>
+                </li>
                 <li><a href="{{ route('admin.categories.index') }}"
                         class="sub-nav-link {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">Categories</a>
                 </li>
@@ -71,7 +78,6 @@
 
         @php
             $homepageMenuActive = request()->routeIs(
-                'admin.product-list-banners.*',
                 'admin.home-banners.*',
                 'admin.material-homes.*',
             );
@@ -85,13 +91,7 @@
             </button>
 
             <ul class="sub-nav">
-                <li>
-                    <a href="{{ route('admin.product-list-banners.index') }}"
-                        class="sub-nav-link {{ request()->routeIs('admin.product-list-banners.*') ? 'active' : '' }}">
-                        Product List Banners
-                    </a>
-                </li>
-
+              
                 <li>
                     <a href="{{ route('admin.home-banners.index') }}"
                         class="sub-nav-link {{ request()->routeIs('admin.home-banners.*') ? 'active' : '' }}">
@@ -105,12 +105,7 @@
                         Material Homes
                     </a>
                 </li>
-                <li>
-                    <a href="{{ route('admin.galleries.index') }}"
-                        class="sub-nav-link {{ request()->routeIs('admin.galleries.*') ? 'active' : '' }}">
-                        Galleries
-                    </a>
-                </li>
+               
             </ul>
         </li>
         @php
@@ -129,17 +124,18 @@
 
             <ul class="sub-nav">
                 <li>
-                    <a href="{{ route('admin.galleries.index') }}"
-                        class="sub-nav-link {{ request()->routeIs('admin.galleries.*') ? 'active' : '' }}">
-                        Galleries
-                    </a>
-                </li>
-                <li>
                     <a href="{{ route('admin.gallery-banners.index') }}"
                         class="sub-nav-link {{ request()->routeIs('admin.gallery-banners.*') ? 'active' : '' }}">
                         Gallery Banners
                     </a>
                 </li>
+                <li>
+                    <a href="{{ route('admin.galleries.index') }}"
+                        class="sub-nav-link {{ request()->routeIs('admin.galleries.*') ? 'active' : '' }}">
+                        Galleries
+                    </a>
+                </li>
+                
             </ul>
         </li>
         <li class="nav-item">
