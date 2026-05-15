@@ -17,6 +17,7 @@ class ProductOption extends Model
         'additional_price',
         'price_type',
         'is_active',
+        'language',
     ];
 
     public function group()

@@ -6,17 +6,27 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
 
 class CategoryController extends Controller
 {
-    public function index()
-    {
-        $categories = Category::orderBy('sort_order')
-    ->orderBy('category_id', 'desc')
-    ->paginate(10);
+    public function index(Request $request)
+{
+    $search = $request->input('search');
+    $language = session('admin_product_language', 'pt');
 
-        return view('admin.categories.index', compact('categories'));
-    }
+    $categories = Category::query()
+        ->where('language', $language)
+        ->when($search, function ($query) use ($search) {
+            $query->where('category_name', 'like', '%' . $search . '%');
+        })
+        ->orderBy('sort_order')
+        ->orderBy('category_id', 'desc')
+        ->paginate(15)
+        ->withQueryString();
+
+    return view('admin.categories.index', compact('categories', 'search', 'language'));
+}
 
     public function create()
     {
@@ -46,7 +56,13 @@ class CategoryController extends Controller
         'image_path' => $imagePath,
         'sort_order' => $request->sort_order ?? 0,
         'is_active' => $request->has('is_active') ? 1 : 0,
+        'language' => session('admin_product_language', 'pt'),
     ]);
+
+    Cache::forget('product_list_shared_components_pt');
+    Cache::forget('product_list_shared_components_ja');
+    Cache::forget('product_list_shared_components_en');
+    Cache::forget('product_list_shared_components');
 
     return redirect()
         ->route('admin.categories.index')
@@ -85,6 +101,11 @@ class CategoryController extends Controller
         'sort_order' => $request->sort_order ?? 0,
         'is_active' => $request->has('is_active') ? 1 : 0,
     ]);
+
+    Cache::forget('product_list_shared_components_pt');
+Cache::forget('product_list_shared_components_ja');
+Cache::forget('product_list_shared_components_en');
+Cache::forget('product_list_shared_components');
 
     return redirect()
         ->route('admin.categories.index')

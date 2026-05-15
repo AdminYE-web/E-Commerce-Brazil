@@ -11,50 +11,62 @@ use Illuminate\Support\Facades\Auth;
 class HomeController extends Controller
 {
     public function index()
-    {
-        // 1. แยกส่วน User ออกมา (ไม่ต้อง Cache เพราะเป็นข้อมูลเฉพาะบุคคล)
-        $user = Auth::user();
+{
+    // 1. User เฉพาะบุคคล ไม่ cache
+    $user = Auth::user();
 
-        // 2. ใช้ Cache หุ้มส่วนการดึงข้อมูลที่ใช้ร่วมกันทุกคน
-        // ตั้งชื่อ Key ว่า 'home_data' และเก็บไว้ 60 นาที (3600 วินาที)
-        $homeData = Cache::remember('home_page_data', 3600, function () {
-            return [
-                'recommendedProducts' => Product::with(['mainImage', 'category'])
-                    ->where('product_recomend', 1)
-                    ->where('is_active', 1)
-                    ->orderBy('updated_at', 'desc')
-                    ->take(12)
-                    ->get(),
+    // 2. ดึงภาษาปัจจุบัน เช่น pt, ja, en
+    $langKey = $this->getLangKey();
 
-                'recommendedType1Products' => Product::with(['mainImage'])
-                    ->where('product_recomend', 1)
-                    ->where('product_type', 1)
-                    ->where('is_active', 1)
-                    ->orderBy('updated_at', 'desc')
-                    ->take(12)
-                    ->get(),
+    // 3. ทำ cache key แยกตามภาษา
+    $cacheKey = 'home_page_data_' . $langKey;
 
-                'recommendedType2Products' => Product::with(['mainImage'])
-                    ->where('product_recomend', 1)
-                    ->where('product_type', 2)
-                    ->where('is_active', 1)
-                    ->orderBy('updated_at', 'desc')
-                    ->take(12)
-                    ->get(),
+    // 4. Cache ข้อมูลตามภาษา
+    $homeData = Cache::remember($cacheKey, 3600, function () use ($langKey) {
+        return [
+            'recommendedProducts' => Product::with(['mainImage', 'category'])
+                ->where('language', $langKey)
+                ->where('product_recomend', 1)
+                ->where('is_active', 1)
+                ->orderBy('updated_at', 'desc')
+                ->take(12)
+                ->get(),
 
-                'materialHomes' => MaterialHome::with('material')
-                    ->where('is_active', 1)
-                    ->orderBy('sort_order')
-                    ->get(),
+            'recommendedType1Products' => Product::with(['mainImage'])
+                ->where('language', $langKey)
+                ->where('product_recomend', 1)
+                ->where('product_type', 1)
+                ->where('is_active', 1)
+                ->orderBy('updated_at', 'desc')
+                ->take(12)
+                ->get(),
 
-                'homeBanners' => HomeBanner::where('is_active', 1)
-                    ->orderBy('sort_order')
-                    ->orderBy('home_banner_id', 'desc')
-                    ->get(),
-            ];
-        });
+            'recommendedType2Products' => Product::with(['mainImage'])
+                ->where('language', $langKey)
+                ->where('product_recomend', 1)
+                ->where('product_type', 2)
+                ->where('is_active', 1)
+                ->orderBy('updated_at', 'desc')
+                ->take(12)
+                ->get(),
 
-        // 3. ส่งข้อมูลออกไปที่ View
-        return view('home', array_merge(['user' => $user], $homeData));
-    }
+            'materialHomes' => MaterialHome::with(['material' => function ($query) use ($langKey) {
+                    $query->where('language', $langKey);
+                }])
+                ->where('is_active', 1)
+                ->orderBy('sort_order')
+                ->get(),
+
+            'homeBanners' => HomeBanner::where('is_active', 1)
+                ->orderBy('sort_order')
+                ->orderBy('home_banner_id', 'desc')
+                ->get(),
+        ];
+    });
+
+    return view('home', array_merge([
+        'user' => $user,
+        'langKey' => $langKey,
+    ], $homeData));
+}
 }

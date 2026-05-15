@@ -66,6 +66,7 @@
                                             $quantity = (int) ($item['quantity'] ?? 1);
                                             $unitPrice = (float) ($item['unit_price'] ?? ($item['base_price'] ?? 0));
                                             $itemTotal = (float) ($item['item_total'] ?? $unitPrice * $quantity);
+                                            $displayUnitPrice = $quantity > 0 ? $itemTotal / $quantity : 0;
                                             $options = $item['options'] ?? [];
                                             $customColors = $item['custom_colors'] ?? [];
                                         @endphp
@@ -133,7 +134,7 @@
                                                             <div class="cart-price-info text-end">
                                                                 <div class="small text-muted">Preço Unitário</div>
                                                                 <div class="cart-unit-price">¥
-                                                                    {{ number_format($unitPrice, 2) }} /un</div>
+                                                                    {{ number_format($displayUnitPrice, 2) }} /un</div>
 
                                                                 <div class="small text-muted mt-2">Total do Item</div>
                                                                 <div class="cart-item-total-text">¥

@@ -8,23 +8,22 @@ use Illuminate\Http\Request;
 
 class OptionGroupController extends Controller
 {
-  public function index(Request $request)
+ public function index(Request $request)
 {
     $search = $request->input('search');
+    $language = session('admin_product_language', 'pt');
 
-    $groups = OptionGroup::with('parent')
+    $groups = OptionGroup::query()
+        ->where('language', $language)
         ->when($search, function ($query) use ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('group_name', 'like', '%' . $search . '%')
-                  ->orWhere('group_code', 'like', '%' . $search . '%');
-            });
+            $query->where('group_name', 'like', '%' . $search . '%');
         })
         ->orderBy('sort_order')
         ->orderBy('option_group_id', 'desc')
         ->paginate(15)
         ->withQueryString();
 
-    return view('admin.option_groups.index', compact('groups', 'search'));
+    return view('admin.option_groups.index', compact('groups', 'search', 'language'));
 }
 
    public function create()
@@ -61,6 +60,7 @@ class OptionGroupController extends Controller
             'display_type' => $request->display_type,
             'sort_order' => $request->sort_order ?? 0,
             'option_group_main' => $request->has('option_group_main') ? 1 : 0,
+            'language' => session('admin_product_language', 'pt'),
         ]);
 
         return redirect()
@@ -76,8 +76,9 @@ class OptionGroupController extends Controller
         ->orderBy('sort_order')
         ->orderBy('group_name')
         ->get();
+        $language = $optionGroup->language ?? session('admin_product_language', 'pt');
 
-    return view('admin.option_groups.edit', compact('optionGroup', 'parentGroups'));
+    return view('admin.option_groups.edit', compact('optionGroup', 'parentGroups', 'language'));
 }
 
     public function update(Request $request, OptionGroup $optionGroup)

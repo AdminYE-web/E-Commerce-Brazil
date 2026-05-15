@@ -12,13 +12,14 @@ class ProductOptionAssignmentController extends Controller
     public function edit(Product $product)
     {
         $product->load('assignedOptions');
+        $language = $product->language ?? session('admin_product_language', 'pt');
 
-        $groups = OptionGroup::with([
-                'options' => function ($query) {
-                    $query->where('is_active', 1)
-                        ->orderBy('option_name');
-                }
-            ])
+       $groups = OptionGroup::with(['options' => function ($query) use ($language) {
+        $query->where('language', $language)
+            ->where('is_active', 1)
+            ->orderBy('option_name');
+    }])
+    ->where('language', $language)
             ->orderBy('group_name')
             ->get();
 
@@ -33,6 +34,7 @@ class ProductOptionAssignmentController extends Controller
         return view('admin.product_option_assignments.edit', compact(
             'product',
             'groups',
+            'language',
             'assignedOptionIds',
             'assignedPivot'
         ));

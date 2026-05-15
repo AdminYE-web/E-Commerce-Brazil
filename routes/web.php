@@ -247,6 +247,17 @@ Route::prefix('admin-panel')->name('admin.')->group(function () {
             ->name('orders.updateStatus');
             Route::resource('galleries', GalleryController::class);
             Route::resource('gallery-banners', GalleryBannerController::class);
+            Route::get('product-price-rules/product-options/{product}', [ProductPriceRuleController::class, 'getProductOptions'])
+    ->name('product-price-rules.product-options');
+    Route::get('/language/{language}', function ($language) {
+    if (! in_array($language, ['pt', 'ja', 'en'])) {
+        abort(404);
+    }
+
+    session(['admin_product_language' => $language]);
+
+    return back();
+})->name('product-language.switch');
     });
 });
 

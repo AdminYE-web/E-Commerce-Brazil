@@ -4,6 +4,16 @@ namespace App\Http\Controllers;
 
 abstract class Controller
 {
+
+public function getLangKey()
+    {
+        $lang_id = 'pt';
+        if (request()->session()->get('locale')) {
+            $lang_id = request()->session()->get('locale');
+        }
+ 
+        return $lang_id;
+    }
     public function AllProvince()
     {
         return [

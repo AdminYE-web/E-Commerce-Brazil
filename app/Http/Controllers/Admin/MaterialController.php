@@ -9,12 +9,22 @@ use Illuminate\Support\Facades\Cache;
 
 class MaterialController extends Controller
 {
-    public function index()
-    {
-        $materials = Material::orderBy('material_id', 'desc')->paginate(10);
+   public function index(Request $request)
+{
+    $search = $request->input('search');
+    $language = session('admin_product_language', 'pt');
 
-        return view('admin.materials.index', compact('materials'));
-    }
+    $materials = Material::query()
+    ->where('language', $language)
+    ->when($search, function ($query) use ($search) {
+        $query->where('material_name', 'like', '%' . $search . '%');
+    })
+    ->orderBy('material_id', 'desc')
+    ->paginate(15)
+    ->withQueryString();
+
+    return view('admin.materials.index', compact('materials', 'search', 'language'));
+}
 
     public function create()
     {
@@ -33,9 +43,14 @@ class MaterialController extends Controller
             'material_code' => $request->material_code,
             'material_name' => $request->material_name,
             'is_active' => $request->has('is_active') ? 1 : 0,
+            'language' => session('admin_product_language', 'pt'),
         ]);
 
         Cache::forget('home_page_data');
+        Cache::forget('product_list_shared_components_pt');
+Cache::forget('product_list_shared_components_ja');
+Cache::forget('product_list_shared_components_en');
+Cache::forget('product_list_shared_components');
 
         return redirect()
             ->route('admin.materials.index')
@@ -62,6 +77,10 @@ class MaterialController extends Controller
         ]);
 
         Cache::forget('home_page_data');
+        Cache::forget('product_list_shared_components_pt');
+Cache::forget('product_list_shared_components_ja');
+Cache::forget('product_list_shared_components_en');
+Cache::forget('product_list_shared_components');
 
         return redirect()
             ->route('admin.materials.index')
@@ -73,6 +92,10 @@ class MaterialController extends Controller
         $material->delete();
 
         Cache::forget('home_page_data');
+        Cache::forget('product_list_shared_components_pt');
+Cache::forget('product_list_shared_components_ja');
+Cache::forget('product_list_shared_components_en');
+Cache::forget('product_list_shared_components');
 
         return redirect()
             ->route('admin.materials.index')

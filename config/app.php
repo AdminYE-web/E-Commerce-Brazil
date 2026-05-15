@@ -80,15 +80,16 @@ return [
 
     'locale' => env('APP_LOCALE', 'pt'),
 
-    'supported_locales' => ['pt', 'ja', 'en'],
+    // 'supported_locales' => ['pt', 'ja', 'en'],
+    'supported_locales' => ['pt', 'ja'],
 
     'locale_flags' => [
         'pt' => 'br',
         'ja' => 'jp',
-        'en' => 'us',
+        // 'en' => 'us',
     ],
 
-    'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
+    // 'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
 
     'faker_locale' => env('APP_FAKER_LOCALE', 'en_US'),
 

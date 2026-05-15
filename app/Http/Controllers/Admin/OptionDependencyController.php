@@ -11,33 +11,45 @@ use Illuminate\Http\Request;
 class OptionDependencyController extends Controller
 {
     public function index()
-    {
-        $dependencies = OptionDependency::with([
-                'parentOption.group',
-                'targetGroup',
-                'targetOption.group',
-            ])
-            ->orderBy('dependency_id', 'desc')
-            ->paginate(20);
+{
+    $language = session('admin_product_language', 'pt');
 
-        return view('admin.option_dependencies.index', compact('dependencies'));
-    }
+    $dependencies = OptionDependency::with([
+            'parentOption.group',
+            'targetGroup',
+            'targetOption.group',
+        ])
+        ->whereHas('parentOption', function ($query) use ($language) {
+            $query->where('language', $language);
+        })
+        ->orderBy('dependency_id', 'desc')
+        ->paginate(20);
+
+    return view('admin.option_dependencies.index', compact('dependencies', 'language'));
+}
 
     public function create()
-    {
-        $options = ProductOption::with('group')
-            ->where('is_active', 1)
-            ->orderBy('option_group_id')
-            ->orderBy('option_name')
-            ->get();
+{
+    $language = session('admin_product_language', 'pt');
 
-        $groups = OptionGroup::where('is_active', 1)
-            ->orderBy('sort_order')
-            ->orderBy('group_name')
-            ->get();
+    $options = ProductOption::with('group')
+        ->where('language', $language)
+        ->where('is_active', 1)
+        ->whereHas('group', function ($query) use ($language) {
+            $query->where('language', $language);
+        })
+        ->orderBy('option_group_id')
+        ->orderBy('option_name')
+        ->get();
 
-        return view('admin.option_dependencies.create', compact('options', 'groups'));
-    }
+    $groups = OptionGroup::where('language', $language)
+        ->where('is_active', 1)
+        ->orderBy('sort_order')
+        ->orderBy('group_name')
+        ->get();
+
+    return view('admin.option_dependencies.create', compact('options', 'groups', 'language'));
+}
 
     public function store(Request $request)
     {
@@ -75,25 +87,40 @@ class OptionDependencyController extends Controller
             ->with('success', 'Option dependency created successfully.');
     }
 
-    public function edit(OptionDependency $optionDependency)
-    {
-        $options = ProductOption::with('group')
-            ->where('is_active', 1)
-            ->orderBy('option_group_id')
-            ->orderBy('option_name')
-            ->get();
+   public function edit(OptionDependency $optionDependency)
+{
+    $optionDependency->load([
+        'parentOption',
+        'targetOption',
+        'targetGroup',
+    ]);
 
-        $groups = OptionGroup::where('is_active', 1)
-            ->orderBy('sort_order')
-            ->orderBy('group_name')
-            ->get();
+    $language = $optionDependency->parentOption->language
+        ?? session('admin_product_language', 'pt');
 
-        return view('admin.option_dependencies.edit', [
-            'dependency' => $optionDependency,
-            'options' => $options,
-            'groups' => $groups,
-        ]);
-    }
+    $options = ProductOption::with('group')
+        ->where('language', $language)
+        ->where('is_active', 1)
+        ->whereHas('group', function ($query) use ($language) {
+            $query->where('language', $language);
+        })
+        ->orderBy('option_group_id')
+        ->orderBy('option_name')
+        ->get();
+
+    $groups = OptionGroup::where('language', $language)
+        ->where('is_active', 1)
+        ->orderBy('sort_order')
+        ->orderBy('group_name')
+        ->get();
+
+    return view('admin.option_dependencies.edit', [
+        'dependency' => $optionDependency,
+        'options' => $options,
+        'groups' => $groups,
+        'language' => $language,
+    ]);
+}
 
     public function update(Request $request, OptionDependency $optionDependency)
     {

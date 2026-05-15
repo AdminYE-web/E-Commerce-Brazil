@@ -231,6 +231,16 @@
                 <label>Product Code</label>
                 <input type="text" name="product_code" value="{{ old('product_code', $product->product_code) }}">
             </div>
+            <div class="form-group">
+    <label>Translation Key</label>
+    <input
+        type="text"
+        name="translation_key"
+        value="{{ old('translation_key', $product->translation_key) }}"
+        placeholder="เช่น polyester_lanyard_001"
+    >
+    <small>ใช้ key เดียวกันสำหรับสินค้าตัวเดียวกันในหลายภาษา</small>
+</div>
 
             <div class="form-group">
                 <label>Product Type</label>

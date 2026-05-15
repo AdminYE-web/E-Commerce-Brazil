@@ -18,6 +18,7 @@ class OptionGroup extends Model
      'option_group_main',
     'sort_order',
     'is_active',
+    'language',
 ];
 
   

@@ -32,4 +32,25 @@
             </button>
         </form>
     </div>
+    @php
+    $currentProductLanguage = session('admin_product_language', 'pt');
+
+    $languageLabels = [
+        'pt' => 'Portuguese',
+        'ja' => 'Japan',
+        'en' => 'English',
+    ];
+@endphp
+
+<div class="admin-language-dropdown">
+    <button type="button" class="admin-language-btn">
+        {{ $languageLabels[$currentProductLanguage] ?? 'Portuguese' }} ▾
+    </button>
+
+    <div class="admin-language-menu">
+        <a href="{{ route('admin.product-language.switch', 'pt') }}">Portuguese</a>
+        <a href="{{ route('admin.product-language.switch', 'ja') }}">Japan</a>
+        <a href="{{ route('admin.product-language.switch', 'en') }}">English</a>
+    </div>
+</div>
 </header>

@@ -118,6 +118,17 @@
     display: block;
 }
 
+.account-menu-arrow {
+    width: 10px;
+    /* height: 10px; */
+    object-fit: contain;
+    transition: transform 0.2s ease;
+}
+
+.account-menu-dropdown.is-open .account-menu-arrow {
+    transform: rotate(180deg);
+}
+
 .account-submenu li {
     margin-bottom: 14px;
 }
@@ -173,7 +184,7 @@
     <li class="account-menu-dropdown {{ $isAddressMenuOpen ? 'is-open' : '' }}">
         <button type="button" class="account-menu-toggle">
             <span>Addresses</span>
-            <span class="account-menu-arrow">{{ $isAddressMenuOpen ? '⌃' : '⌄' }}</span>
+            <img src="{{ asset('assets/images/icon/Vector (8).png') }}" alt="" class="account-menu-arrow">
         </button>
 
         <ul class="account-submenu">
@@ -217,13 +228,8 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.account-menu-toggle').forEach(function(button) {
         button.addEventListener('click', function() {
             const dropdown = this.closest('.account-menu-dropdown');
-            const arrow = this.querySelector('.account-menu-arrow');
 
             dropdown.classList.toggle('is-open');
-
-            if (arrow) {
-                arrow.textContent = dropdown.classList.contains('is-open') ? '⌃' : '⌄';
-            }
         });
     });
 });

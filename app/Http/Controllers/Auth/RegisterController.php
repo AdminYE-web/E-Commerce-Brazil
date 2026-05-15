@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
+use App\Models\UserContact;
 
 class RegisterController extends Controller
 {
@@ -75,6 +76,19 @@ class RegisterController extends Controller
             'receive_email' => $request->boolean('receive_email'),
             'email_verified_at' => null,
         ]);
+        UserContact::updateOrCreate(
+    [
+        'user_id' => $existingUser->user_id,
+        'is_main' => 1,
+    ],
+    [
+        'first_name' => $request->first_name,
+        'last_name' => $request->last_name,
+        'email' => $email,
+        'phone' => $request->phone,
+        'status' => 1,
+    ]
+);
 
         $verificationUrl = URL::temporarySignedRoute(
             'verification.verify',
@@ -121,6 +135,16 @@ class RegisterController extends Controller
         'receive_email' => $request->boolean('receive_email'),
         'email_verified_at' => null,
     ]);
+
+    UserContact::create([
+    'user_id' => $user->user_id,
+    'first_name' => $request->first_name,
+    'last_name' => $request->last_name,
+    'email' => $email,
+    'phone' => $request->phone,
+    'is_main' => 1,
+    'status' => 1,
+]);
 
     $verificationUrl = URL::temporarySignedRoute(
         'verification.verify',

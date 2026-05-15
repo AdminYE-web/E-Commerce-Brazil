@@ -14,11 +14,13 @@ class ProductOptionController extends Controller
     public function index(Request $request)
 {
     $search = $request->input('search');
+     $language = session('admin_product_language', 'pt');
 
     $options = ProductOption::with([
             'group',
             'mainImage',
         ])
+          ->where('language', $language)
         ->when($search, function ($query) use ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('option_name', 'like', '%' . $search . '%')
@@ -33,17 +35,20 @@ class ProductOptionController extends Controller
         ->paginate(15)
         ->withQueryString();
 
-    return view('admin.product_options.index', compact('options', 'search'));
+    return view('admin.product_options.index', compact('options', 'search', 'language'));
 }
 
-    public function create()
-    {
-        $groups = OptionGroup::where('is_active', 1)
-            ->orderBy('group_name')
-            ->get();
+   public function create()
+{
+    $language = session('admin_product_language', 'pt');
 
-        return view('admin.product_options.create', compact('groups'));
-    }
+    $groups = OptionGroup::where('is_active', 1)
+        ->where('language', $language)
+        ->orderBy('group_name')
+        ->get();
+
+    return view('admin.product_options.create', compact('groups', 'language'));
+}
 
     public function store(Request $request)
     {
@@ -67,6 +72,7 @@ class ProductOptionController extends Controller
     'price_type' => $request->price_type,
     'is_active' => $request->has('is_active') ? 1 : 0,
     'option_detail' => $request->option_detail,
+    'language' => session('admin_product_language', 'pt'),
     
 ]);
 if ($request->hasFile('images')) {
@@ -90,15 +96,19 @@ if ($request->hasFile('images')) {
 
    public function edit(ProductOption $productOption)
 {
+    $productOption->load('images');
+
+    $language = $productOption->language ?? session('admin_product_language', 'pt');
+
     $groups = OptionGroup::where('is_active', 1)
+        ->where('language', $language)
         ->orderBy('group_name')
         ->get();
-
-    $productOption->load('images');
 
     return view('admin.product_options.edit', [
         'option' => $productOption,
         'groups' => $groups,
+        'language' => $language,
     ]);
 }
 

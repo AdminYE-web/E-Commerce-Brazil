@@ -13,10 +13,12 @@ class Product extends Model
 
    protected $fillable = [
     'product_code',
+    'translation_key',
     'category_id',
     'material_id',
       'product_type',
     'product_name',
+     'language',
     'description',
     'is_antivirus_included',
     'is_active',
@@ -108,5 +110,22 @@ public function artworkTemplates()
         ->where('is_active', 1)
         ->orderBy('sort_order');
 }
-
+public function options()
+{
+    return $this->belongsToMany(
+        ProductOption::class,
+        'product_option_assignments',
+        'product_id',
+        'option_id',
+        'product_id',
+        'option_id'
+    )
+    ->withPivot([
+        'assignment_id',
+        'sort_order',
+        'is_default',
+        'is_active',
+    ])
+    ->withTimestamps();
+}
 }

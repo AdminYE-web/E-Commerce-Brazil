@@ -682,3 +682,46 @@
     background: #fff;
     color: var(--fg);
 }
+.admin-language-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.admin-language-btn {
+    border: 1px solid var(--border);
+    background: #fff;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.admin-language-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    min-width: 150px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: 0 10px 22px rgba(0,0,0,0.08);
+    z-index: 50;
+    overflow: hidden;
+}
+
+.admin-language-menu a {
+    display: block;
+    padding: 10px 12px;
+    color: var(--fg);
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.admin-language-menu a:hover {
+    background: var(--bg);
+}
+
+.admin-language-dropdown:hover .admin-language-menu {
+    display: block;
+}

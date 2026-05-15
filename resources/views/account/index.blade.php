@@ -24,7 +24,7 @@
             border-radius: 8px;
             padding: 36px 46px;
             min-height: 360px;
-            max-width: 780px;
+            /* max-width: 780px; */
         }
 
         .account-card h1 {

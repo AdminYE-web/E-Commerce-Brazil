@@ -204,10 +204,10 @@
         💡 Dica: Frete ¥800. Grátis em pedidos acima de ¥10,000 (valor bruto).
     </div>
 
-    <div class="coupon-row">
+    {{-- <div class="coupon-row">
         <input type="text" placeholder="Cartão Presente ou Cupom">
         <button type="button">›</button>
-    </div>
+    </div> --}}
 
     <div class="summary-divider summary-action-divider"></div>
 

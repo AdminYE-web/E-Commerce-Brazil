@@ -14,6 +14,7 @@ class Category extends Model
         'image_path',
         'sort_order',
         'is_active',
+         'language',
     ];
 
     public function products()
