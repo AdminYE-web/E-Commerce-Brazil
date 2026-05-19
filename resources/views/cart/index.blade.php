@@ -509,6 +509,7 @@
             border-radius: 999px;
             padding: 12px;
             font-weight: 700;
+            background-color: #0F65BE;
         }
 
         @media (max-width: 991.98px) {
@@ -761,6 +762,20 @@
             color: #fff;
         }
          @media (max-width: 768px) {
+             .cart-summary-title {
+            font-size: 16px;
+            
+        }
+        .summary-total {
+    font-size: 16px;
+}
+.cart-checkout-btn {
+    padding: 6px 12px;
+}
+.btn-outline-secondary {
+
+    border-radius: 50px;
+}
             .cart-product-name {
     font-size: 14px;
  

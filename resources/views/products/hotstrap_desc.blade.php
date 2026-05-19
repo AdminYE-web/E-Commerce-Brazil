@@ -34,7 +34,7 @@
 
         <div class="hotstrap-container">
 
-            <div class="hotstrap-breadcrumb">
+            <div class="hotstrap-breadcrumb d-none d-md-none d-lg-block">
                 <a href="{{ route('products.index') }}"><img src="{{ asset('assets/images/icon/home.png') }}"
                         alt="Home"></a>
                 <span>/</span>
@@ -94,9 +94,21 @@
             </div>
 
             @if (!empty($detailItems))
-                <div class="hotstrap-feature-grid">
+                <div class="hotstrap-feature-slider">
+                    <div class="hotstrap-feature-nav">
+                        <button type="button" class="hotstrap-feature-prev" aria-label="Previous feature">
+                            <i class="bi bi-chevron-left" aria-hidden="true"></i>
+                        </button>
+                        <button type="button" class="hotstrap-feature-next" aria-label="Next feature">
+                            <i class="bi bi-chevron-right" aria-hidden="true"></i>
+                        </button>
+                    </div>
+
+                    <div class="hotstrap-feature-grid hotstrap-feature-swiper swiper">
+                        <div class="hotstrap-feature-track swiper-wrapper">
                     @foreach ($detailItems as $item)
-                        <div class="hotstrap-feature-card">
+                        <div class="hotstrap-feature-slide swiper-slide">
+                            <div class="hotstrap-feature-card">
                             <div class="feature-icon">
                                 @if (!empty($item['icon_image']))
                                     <img src="{{ asset('storage/' . $item['icon_image']) }}"
@@ -113,8 +125,13 @@
                             <p>
                                 {{ $item['desc'] ?? '' }}
                             </p>
+                            </div>
                         </div>
                     @endforeach
+                        </div>
+
+                        <div class="hotstrap-feature-pagination"></div>
+                    </div>
                 </div>
             @endif
 
@@ -256,6 +273,46 @@
     @endif
     
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const featureSlider = document.querySelector('.hotstrap-feature-swiper');
+
+            if (!featureSlider || typeof Swiper === 'undefined') {
+                return;
+            }
+
+            let featureSwiper = null;
+            const mobileQuery = window.matchMedia('(max-width: 540px)');
+
+            function toggleFeatureSwiper() {
+                if (mobileQuery.matches && !featureSwiper) {
+                    featureSwiper = new Swiper(featureSlider, {
+                        slidesPerView: 1,
+                        spaceBetween: 16,
+                        speed: 450,
+                        navigation: {
+                            prevEl: '.hotstrap-feature-prev',
+                            nextEl: '.hotstrap-feature-next',
+                        },
+                        pagination: {
+                            el: '.hotstrap-feature-pagination',
+                            clickable: true,
+                        },
+                    });
+
+                    return;
+                }
+
+                if (!mobileQuery.matches && featureSwiper) {
+                    featureSwiper.destroy(true, true);
+                    featureSwiper = null;
+                }
+            }
+
+            toggleFeatureSwiper();
+            mobileQuery.addEventListener('change', toggleFeatureSwiper);
+        });
+    </script>
     <script>
         document.querySelectorAll('.hotstrap-thumb').forEach(function(button) {
             button.addEventListener('click', function() {

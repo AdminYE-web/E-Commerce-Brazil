@@ -161,9 +161,15 @@
             </div>
 
             <div class="form-group">
-                <label>Banner Image</label>
+                <label>Desktop Banner Image</label>
                 <input type="file" name="image_path" accept="image/*">
-                <small>แนะนำขนาดประมาณ 1440x360 หรือ 1920x480</small>
+                <small>Recommended desktop size: 1440x360 or 1920x480.</small>
+            </div>
+
+            <div class="form-group">
+                <label>Mobile Banner Image</label>
+                <input type="file" name="image_mobile" accept="image/*">
+                <small>Recommended for mobile screens. If empty, desktop image will be used.</small>
             </div>
         </div>
 

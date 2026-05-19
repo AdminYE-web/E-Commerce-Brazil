@@ -20,7 +20,7 @@
 
         <a href="{{ route('products.description', $product->product_code) }}" class="detail-btn">
             <span>Ver Detalhes</span>
-            <span>›</span>
+            <img src="{{ asset('assets/images/icon/Vector 7.png') }}" alt="" class="detail-btn-icon">
         </a>
     </div>
 @empty

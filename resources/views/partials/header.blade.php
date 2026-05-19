@@ -4,7 +4,12 @@
     $languageFlags = config('app.locale_flags', ['pt' => 'br', 'ja' => 'jp', 'en' => 'us']);
     $currentLanguage = in_array($currentLocale, $supportedLanguages, true) ? $currentLocale : config('app.locale', 'pt');
     $currentLanguageFlag = $languageFlags[$currentLanguage] ?? 'br';
+
+     $cart = session('cart', []);
+    $cartCount = count($cart);
 @endphp
+
+
 
 <header class="site-header">
     <div class="announcement-bar" id="announcementBar">
@@ -74,9 +79,15 @@
                         <i class="bi bi-envelope"></i>
                     </a>
 
-                    <a href="{{ route('cart.index') }}" class="icon-link">
-                        <i class="bi bi-cart"></i>
-                    </a>
+                    <a href="{{ route('cart.index') }}" class="icon-link cart-icon-link">
+    <i class="bi bi-cart"></i>
+
+    @if($cartCount > 0)
+        <span class="cart-count-badge">
+            {{ $cartCount > 99 ? '99+' : $cartCount }}
+        </span>
+    @endif
+</a>
 
                     <div class="language-dropdown">
                         <button type="button" class="language-toggle">
@@ -276,9 +287,15 @@
                 <a href="{{ route('contact') }}" class="icon-link">
                     <i class="bi bi-envelope"></i>
                 </a>
-                <a href="{{ route('cart.index') }}" class="icon-link">
-                    <i class="bi bi-cart"></i>
-                </a>
+                <a href="{{ route('cart.index') }}" class="icon-link cart-icon-link">
+    <i class="bi bi-cart"></i>
+
+    @if($cartCount > 0)
+        <span class="cart-count-badge">
+            {{ $cartCount > 99 ? '99+' : $cartCount }}
+        </span>
+    @endif
+</a>
                 <a href="{{ auth()->check() ? route('account.index') : route('login') }}" class="icon-link account-icon-link"
                         aria-label="{{ __('messages.footer.account') }}" title="{{ __('messages.footer.account') }}">
                         <img src="{{ asset('assets/images/icon/account-icon.png') }}" alt="">

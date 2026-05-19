@@ -235,11 +235,11 @@
             </div>
         </div>
 
-        <div class="section-title">Banner Image</div>
+        <div class="section-title">Banner Images</div>
 
         <div class="form-grid">
             <div class="form-group">
-                <label>Current Banner Image</label>
+                <label>Current Desktop Banner Image</label>
 
                 @if($banner->image_path)
                     <div class="current-banner-box">
@@ -251,8 +251,25 @@
             </div>
 
             <div class="form-group">
-                <label>Change Banner Image</label>
+                <label>Change Desktop Banner Image</label>
                 <input type="file" name="image_path" accept="image/*">
+            </div>
+
+            <div class="form-group">
+                <label>Current Mobile Banner Image</label>
+
+                @if($banner->image_mobile)
+                    <div class="current-banner-box">
+                        <img src="{{ asset('storage/' . $banner->image_mobile) }}" alt="{{ $banner->title }}">
+                    </div>
+                @else
+                    <p class="muted-text">No mobile image. Desktop image will be used on mobile.</p>
+                @endif
+            </div>
+
+            <div class="form-group">
+                <label>Change Mobile Banner Image</label>
+                <input type="file" name="image_mobile" accept="image/*">
             </div>
         </div>
 

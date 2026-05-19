@@ -51,7 +51,7 @@
                         <h4>{{ __('messages.footer.company_info') }}</h4>
                         <ul>
                             <li><a href="{{ route('about') }}">{{ __('messages.footer.about_us') }}</a></li>
-                            <li><a href="#">{{ __('messages.footer.blog') }}</a></li>
+                            <li><a href="{{ route('blog.index') }}">{{ __('messages.footer.blog') }}</a></li>
                             <li><a href="{{ route('privacy.policy') }}">{{ __('messages.footer.privacy_policy') }}</a></li>
                             <li><a href="{{ route('gallery.index') }}">{{ __('messages.footer.gallery') }}</a></li>
                         </ul>
@@ -113,7 +113,7 @@
                         <h4>{{ __('messages.footer.company_info') }}</h4>
                         <ul>
                             <li><a href="{{ route('about') }}">{{ __('messages.footer.about_us') }}</a></li>
-                            <li><a href="#">{{ __('messages.footer.blog') }}</a></li>
+                            <li><a href="{{ route('blog.index') }}">{{ __('messages.footer.blog') }}</a></li>
                             <li><a href="{{ route('privacy.policy') }}">{{ __('messages.footer.privacy_policy') }}</a></li>
                             <li><a href="{{ route('gallery.index') }}">{{ __('messages.footer.gallery') }}</a></li>
                         </ul>

@@ -12,6 +12,7 @@ class ProductListBanner extends Model
         'title',
         'subtitle',
         'image_path',
+        'image_mobile',
         'link_url',
         'button_text',
         'sort_order',

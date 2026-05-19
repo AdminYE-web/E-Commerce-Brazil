@@ -79,6 +79,11 @@
         }
 
         @media (max-width: 768px) {
+            .pl-category-img {
+                width: 77%;
+                height: 50%;
+            }
+
             .pl-category-section {
                 padding: 20px 0;
             }
@@ -106,31 +111,37 @@
         }
 
         @media (max-width: 768px) {
-            .mh-product{
-            min-height: 73px;
-        }
+            .mh-product {
+                min-height: 73px;
+            }
+
             .mobile-filter-bar {
                 display: flex;
                 align-items: center;
-                justify-content: space-between;
-                gap: 16px;
-                padding: 14px 18px;
+                justify-content: flex-start;
+                padding: 12px 0;
                 background: #fff;
             }
 
             .mobile-filter-open {
-                width: 150px;
-                height: 42px;
-                border: 1px solid #999;
-                border-radius: 999px;
+                width: auto;
+                min-height: 32px;
+                border: 0;
+                border-radius: 0;
                 background: #fff;
                 color: #111;
                 font-size: 14px;
                 font-weight: 700;
                 display: inline-flex;
                 align-items: center;
-                justify-content: center;
-                gap: 10px;
+                justify-content: flex-start;
+                gap: 8px;
+                padding: 0;
+            }
+
+            .mobile-filter-open i {
+                font-size: 18px;
+                line-height: 1;
             }
 
             .mobile-product-count {
@@ -264,33 +275,36 @@
                 overflow: hidden;
             }
         }
-        
     </style>
 @endsection
 @section('content')
 
     @if ($banners->count())
         <section class="product-list-banner-wrap">
-        <div id="productListBannerCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div id="productListBannerCarousel" class="carousel slide" data-bs-ride="carousel">
 
-            <div class="carousel-inner">
-                @foreach ($banners as $index => $banner)
-                    <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
-                        @if ($banner->image_path)
-                            <img 
-                                src="{{ asset('storage/' . $banner->image_path) }}" 
-                                class="d-block w-100 product-list-banner-img"
-                                alt="Product list banner {{ $index + 1 }}"
-                            >
-                        @endif
-                    </div>
-                @endforeach
+                <div class="carousel-inner">
+                    @foreach ($banners as $index => $banner)
+                        <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
+                            @if ($banner->image_path)
+                                <picture>
+                                    @if ($banner->image_mobile)
+                                        <source media="(max-width: 768px)"
+                                            srcset="{{ asset('storage/' . $banner->image_mobile) }}">
+                                    @endif
+                                    <img src="{{ asset('storage/' . $banner->image_path) }}"
+                                        class="d-block w-100 product-list-banner-img"
+                                        alt="Product list banner {{ $index + 1 }}">
+                                </picture>
+                            @endif
+                        </div>
+                    @endforeach
+                </div>
+
             </div>
-
-        </div>
-    </section>
+        </section>
     @endif
-    <section class="pl-category-section d-none d-lg-block">
+    <section class="pl-category-section ">
         <div class="pl-category-inner">
             <h2>Todos os produtos</h2>
 
@@ -335,16 +349,7 @@
             </div>
         </div>
     </section>
-    <div class="mobile-filter-bar">
-        <button type="button" class="mobile-filter-open" id="mobileFilterOpen">
-            <i class="bi bi-sliders"></i>
-            Filters
-        </button>
 
-        <span class="mobile-product-count">
-            Showing {{ $products->total() }} Products
-        </span>
-    </div>
     <div class="product-page" id="product-list-section">
 
         <div class="mobile-filter-overlay" id="mobileFilterOverlay"></div>
@@ -399,8 +404,8 @@
 
         <main>
             <div class="content-header">
-                <h1>Shop by Category/Persona</h1>
-                <p>Tap Switcher</p>
+                <h1 class="d-none d-lg-block">Shop by Category/Persona</h1>
+                <p class="d-none d-lg-block">Tap Switcher</p>
 
                 <div class="type-tabs">
                     <a href="{{ route('products.index', ['product_type' => 2]) }}" data-product-type="2"
@@ -415,6 +420,16 @@
                         <div class="label">Cordão<br>Personalizado</div>
                     </a>
                 </div>
+            </div>
+            <div class="mobile-filter-bar">
+                <button type="button" class="mobile-filter-open" id="mobileFilterOpen">
+                    <i class="bi bi-sliders"></i>
+                    Filtrar Por
+                </button>
+
+                {{-- <span class="mobile-product-count">
+            Showing {{ $products->total() }} Products
+        </span> --}}
             </div>
 
             <div class="products-grid" id="products-grid">
@@ -625,18 +640,18 @@
             mobileFilterOverlay.addEventListener('click', closeMobileFilter);
         }
 
-      if (mobileApplyFilter) {
-    mobileApplyFilter.addEventListener('click', function () {
-        closeMobileFilter();
+        if (mobileApplyFilter) {
+            mobileApplyFilter.addEventListener('click', function() {
+                closeMobileFilter();
 
-        setTimeout(function () {
-            document.getElementById('product-list-section')?.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
+                setTimeout(function() {
+                    document.getElementById('product-list-section')?.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }, 350);
             });
-        }, 350);
-    });
-}
+        }
 
         if (mobileFilterReset) {
             mobileFilterReset.addEventListener('click', function() {

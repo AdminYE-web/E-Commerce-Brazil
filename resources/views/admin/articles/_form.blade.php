@@ -5,6 +5,20 @@
             <input type="text" name="title" value="{{ old('title', $article->title ?? '') }}" required>
             @error('title') <div class="error-text">{{ $message }}</div> @enderror
         </div>
+        <div class="article-form-group">
+    <label>Translation Key</label>
+    <input
+        type="text"
+        name="translation_key"
+        value="{{ old('translation_key', $article->translation_key ?? '') }}"
+        placeholder="เช่น acrylic_cut_path_001"
+    >
+    <small>ใช้ key เดียวกันสำหรับบทความเดียวกันในหลายภาษา</small>
+
+    @error('translation_key')
+        <div class="error-text">{{ $message }}</div>
+    @enderror
+</div>
 
         <div class="article-form-group">
             <label>Category</label>
@@ -34,6 +48,18 @@
 
             @error('cover_image') <div class="error-text">{{ $message }}</div> @enderror
         </div>
+        <div class="article-form-group article-form-group-full">
+    <label>Description</label>
+    <textarea
+        name="description"
+        rows="4"
+        placeholder="Short description shown under cover image..."
+    >{{ old('description', $article->description ?? '') }}</textarea>
+
+    @error('description')
+        <div class="error-text">{{ $message }}</div>
+    @enderror
+</div>
     </div>
 
     <div class="article-form-group">

@@ -452,7 +452,7 @@
     position: sticky;
     top: 89px;
     z-index: 50;
-}
+} 
     </style>
 @endsection
 

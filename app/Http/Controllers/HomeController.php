@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Article;
 use App\Models\HomeBanner;
 use App\Models\MaterialHome;
 use App\Models\Product;
@@ -62,6 +63,13 @@ class HomeController extends Controller
             'homeBanners' => HomeBanner::where('is_active', 1)
                 ->orderBy('sort_order')
                 ->orderBy('home_banner_id', 'desc')
+                ->get(),
+
+            'homeArticles' => Article::where('language', $langKey)
+                ->where('is_active', 1)
+                ->orderBy('article_date', 'desc')
+                ->orderBy('article_id', 'desc')
+                ->take(4)
                 ->get(),
         ];
     });

@@ -167,11 +167,16 @@
                     <td>
                         <div class="product-cell">
                             @if($banner->image_path)
-                                <img
-                                    src="{{ asset('storage/' . $banner->image_path) }}"
-                                    class="banner-img"
-                                    alt="{{ $banner->title }}"
-                                >
+                                <div>
+                                    <img
+                                        src="{{ asset('storage/' . $banner->image_path) }}"
+                                        class="banner-img"
+                                        alt="{{ $banner->title }}"
+                                    >
+                                    @if($banner->image_mobile)
+                                        <span class="banner-sub">Mobile image uploaded</span>
+                                    @endif
+                                </div>
                             @else
                                 <div class="banner-img"></div>
                             @endif

@@ -311,6 +311,9 @@
             color: var(--accent);
             background: #f8fafc;
         }
+        .article-form-group-full {
+    grid-column: 1 / -1;
+}
     </style>
 @endsection
 @section('content')

@@ -690,93 +690,57 @@
                 <div class="swiper blog-swiper">
                     <div class="swiper-wrapper">
 
-                        <div class="swiper-slide">
-                            <article class="blog-card">
-                                <a href="#" class="blog-image">
-                                    <img src="{{ asset('assets/images/home/blog-1.png') }}" alt="Blog">
-                                </a>
+                        @forelse($homeArticles as $article)
+                            <div class="swiper-slide">
+                                <article class="blog-card">
+                                    <a href="{{ route('blog.show', $article->article_id) }}" class="blog-image">
+                                        @if ($article->cover_image)
+                                            <img src="{{ asset('storage/' . $article->cover_image) }}"
+                                                alt="{{ $article->title }}">
+                                        @else
+                                            <img src="{{ asset('assets/images/home/blog-1.png') }}" alt="{{ $article->title }}">
+                                        @endif
+                                    </a>
 
-                                <div class="blog-content">
-                                    <h3>Teste</h3>
-                                    <p>
-                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-                                        incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam
-                                    </p>
+                                    <div class="blog-content">
+                                        <h3>{{ $article->title }}</h3>
+                                        <p>
+                                            {{ \Illuminate\Support\Str::limit($article->description ?: strip_tags($article->detail ?? ''), 140) }}
+                                        </p>
 
-                                    <div class="blog-meta">
-                                        <span
-                                            class="blog-tag blog-tag-blue">{{ __('messages.home.blog_tag_brindes') }}</span>
-                                        <span class="blog-date">24/04/2026</span>
+                                        <div class="blog-meta">
+                                            <span class="blog-tag {{ $loop->even ? 'blog-tag-yellow' : 'blog-tag-blue' }}">
+                                                {{ $article->category ?? __('messages.home.blog_tag_brindes') }}
+                                            </span>
+                                            <span class="blog-date">
+                                                {{ $article->article_date ? \Carbon\Carbon::parse($article->article_date)->format('d/m/Y') : $article->created_at->format('d/m/Y') }}
+                                            </span>
+                                        </div>
                                     </div>
-                                </div>
-                            </article>
-                        </div>
+                                </article>
+                            </div>
+                        @empty
+                            <div class="swiper-slide">
+                                <article class="blog-card">
+                                    <a href="{{ route('blog.index') }}" class="blog-image">
+                                        <img src="{{ asset('assets/images/home/blog-1.png') }}" alt="Blog">
+                                    </a>
 
-                        <div class="swiper-slide">
-                            <article class="blog-card">
-                                <a href="#" class="blog-image">
-                                    <img src="{{ asset('assets/images/home/blog-2.png') }}" alt="Blog">
-                                </a>
+                                    <div class="blog-content">
+                                        <h3>Teste</h3>
+                                        <p>
+                                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+                                            incididunt ut labore et dolore magna aliqua.
+                                        </p>
 
-                                <div class="blog-content">
-                                    <h3>Teste</h3>
-                                    <p>
-                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-                                        incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam
-                                    </p>
-
-                                    <div class="blog-meta">
-                                        <span
-                                            class="blog-tag blog-tag-yellow">{{ __('messages.home.blog_tag_mercado') }}</span>
-                                        <span class="blog-date">24/04/2026</span>
+                                        <div class="blog-meta">
+                                            <span class="blog-tag blog-tag-blue">{{ __('messages.home.blog_tag_brindes') }}</span>
+                                            <span class="blog-date">24/04/2026</span>
+                                        </div>
                                     </div>
-                                </div>
-                            </article>
-                        </div>
-
-                        <div class="swiper-slide">
-                            <article class="blog-card">
-                                <a href="#" class="blog-image">
-                                    <img src="{{ asset('assets/images/home/blog-3.png') }}" alt="Blog">
-                                </a>
-
-                                <div class="blog-content">
-                                    <h3>Teste</h3>
-                                    <p>
-                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-                                        incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam
-                                    </p>
-
-                                    <div class="blog-meta">
-                                        <span
-                                            class="blog-tag blog-tag-blue">{{ __('messages.home.blog_tag_design') }}</span>
-                                        <span class="blog-date">24/04/2026</span>
-                                    </div>
-                                </div>
-                            </article>
-                        </div>
-
-                        <div class="swiper-slide">
-                            <article class="blog-card">
-                                <a href="#" class="blog-image">
-                                    <img src="{{ asset('assets/images/home/blog-4.png') }}" alt="Blog">
-                                </a>
-
-                                <div class="blog-content">
-                                    <h3>Teste</h3>
-                                    <p>
-                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-                                        incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam
-                                    </p>
-
-                                    <div class="blog-meta">
-                                        <span
-                                            class="blog-tag blog-tag-blue">{{ __('messages.home.blog_tag_design') }}</span>
-                                        <span class="blog-date">24/04/2026</span>
-                                    </div>
-                                </div>
-                            </article>
-                        </div>
+                                </article>
+                            </div>
+                        @endforelse
 
                     </div>
                 </div>
@@ -785,7 +749,7 @@
             </div>
 
             <div class="blog-button-wrap">
-                <a href="#" class="blog-more-btn">{{ __('messages.home.blog_explore_more') }}</a>
+                <a href="{{ route('blog.index') }}" class="blog-more-btn">{{ __('messages.home.blog_explore_more') }}</a>
             </div>
         </div>
     </section>

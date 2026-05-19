@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BlogController;
 use App\Http\Controllers\Admin\ArticleController;
 use App\Http\Controllers\OrderTrackingController;
 use App\Http\Controllers\AccountAddressController;
@@ -138,6 +139,11 @@ Route::post('/track-order', [OrderTrackingController::class, 'search'])
 
 Route::get('/track-order/result/{order}', [OrderTrackingController::class, 'result'])
     ->name('track-order.result');
+    Route::get('/blog', [BlogController::class, 'index'])
+    ->name('blog.index');
+
+Route::get('/blog/{article}', [BlogController::class, 'show'])
+    ->name('blog.show');
 
 
 

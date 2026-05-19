@@ -37,6 +37,7 @@ class DatabaseSeeder extends Seeder
             HomeBannersSeeder::class,
             MaterialHomesSeeder::class,
             ProductListBannersSeeder::class,
+            ArticlesSeeder::class,
             ContactSubmissionsSeeder::class,
             SocialAccountsSeeder::class,
 
