@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Order;
 use Illuminate\Http\Request;
 
@@ -66,4 +67,32 @@ class OrderTrackingController extends Controller
 
         return view('orders.track-result', compact('order'));
     }
+    public function downloadReceipt(Order $order)
+{
+    $trackingEmail = session('tracking_order_email_' . $order->order_id);
+
+    if (! $trackingEmail) {
+        return redirect()
+            ->route('track-order.index')
+            ->withErrors([
+                'order_no' => 'Please enter your order number and email first.',
+            ]);
+    }
+
+    $order->load([
+        'customer',
+        'items',
+        'payment',
+    ]);
+
+    if (strtolower($order->customer->personal_email ?? '') !== strtolower($trackingEmail)) {
+        abort(403);
+    }
+
+    $pdf = Pdf::loadView('orders.receipt-pdf', [
+        'order' => $order,
+    ])->setPaper('a4', 'portrait');
+
+    return $pdf->download('receipt-' . $order->order_no . '.pdf');
+}
 }

@@ -199,6 +199,7 @@ return [
         'description' => 'Receba um resumo regular das nossas últimas notícias e novidades.',
         'email_placeholder' => 'Digite seu e-mail',
         'subscribe' => 'Assinar',
+        'success' => 'Obrigado por assinar nossa newsletter.',
     ],
     'footer' => [
         'company_info' => 'Informações da empresa',

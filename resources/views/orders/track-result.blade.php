@@ -375,6 +375,32 @@
                 margin-top: 0;
             }
         }
+        .download-receipt-wrap {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 18px;
+}
+
+.download-receipt-btn {
+    min-width: 170px;
+    height: 34px;
+    border: 1px solid #2f6fc7;
+    border-radius: 6px;
+    background: #fff;
+    color: #2f6fc7;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 14px;
+}
+
+.download-receipt-btn:hover {
+    background: #2f6fc7;
+    color: #fff;
+}
     </style>
 @endsection
 
@@ -662,6 +688,11 @@
                     @endif
                 </div>
             @endforeach
+            <div class="download-receipt-wrap">
+    <a href="{{ route('track-order.receipt', $order->order_id) }}" class="download-receipt-btn">
+        ⭳ Download receipt
+    </a>
+</div>
         </div>
     </section>
 @endsection

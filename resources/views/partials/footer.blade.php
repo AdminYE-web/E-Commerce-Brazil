@@ -9,11 +9,29 @@
                     <p>{{ __('messages.newsletter.description') }}</p>
                 </div>
 
-                <form class="newsletter-form" action="#" method="POST">
+                <form class="newsletter-form" action="{{ route('newsletter.subscribe') }}" method="POST">
                     @csrf
-                    <input type="email" name="email" placeholder="{{ __('messages.newsletter.email_placeholder') }}">
+                    <input
+                        type="email"
+                        name="email"
+                        value="{{ old('email') }}"
+                        placeholder="{{ __('messages.newsletter.email_placeholder') }}"
+                        required
+                    >
                     <button type="submit">{{ __('messages.newsletter.subscribe') }}</button>
                 </form>
+
+                @if(session('newsletter_success'))
+                    <div class="newsletter-feedback newsletter-feedback-success">
+                        {{ session('newsletter_success') }}
+                    </div>
+                @endif
+
+                @error('email')
+                    <div class="newsletter-feedback newsletter-feedback-error">
+                        {{ $message }}
+                    </div>
+                @enderror
             </div>
         </div>
     </section>

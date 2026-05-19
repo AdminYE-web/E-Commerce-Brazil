@@ -270,6 +270,76 @@
     border-color: var(--accent);
     color: var(--accent);
 }
+
+.pagination-container {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+}
+
+.pagination-container nav > div:first-child {
+    display: none !important;
+}
+
+.pagination-container nav > div:last-child {
+    display: block !important;
+}
+
+.pagination-container nav > div:last-child > div:first-child {
+    margin-bottom: 10px;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.pagination-container .pagination {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.pagination-container .page-item {
+    list-style: none;
+}
+
+.pagination-container .page-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 34px;
+    height: 34px;
+    padding: 0 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--fg);
+    text-decoration: none;
+    font-size: 14px;
+    line-height: 1;
+}
+
+.pagination-container .page-link:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.pagination-container .page-item.active .page-link {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+}
+
+.pagination-container .page-item.disabled .page-link {
+    opacity: .45;
+    pointer-events: none;
+}
+
+.pagination-container svg {
+    width: 16px;
+    height: 16px;
+}
 </style>
 @endsection
 
@@ -393,8 +463,8 @@
         </table>
     </div>
 
-    <div style="margin-top: 18px;">
-        {{ $articles->links() }}
+    <div class="pagination-container">
+        {{ $articles->links('pagination::bootstrap-5') }}
     </div>
 
 </div>

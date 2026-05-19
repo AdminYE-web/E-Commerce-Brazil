@@ -110,10 +110,10 @@
             >
         </div>
 
-        <label class="remember-row">
+        {{-- <label class="remember-row">
             <input type="checkbox" name="remember" value="1">
             Remember me
-        </label>
+        </label> --}}
 
         <button type="submit" class="btn-login">
             Login

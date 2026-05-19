@@ -200,6 +200,7 @@ return [
         'description' => 'Receive a regular digest of our latest news and exciting updates.',
         'email_placeholder' => 'Enter your email',
         'subscribe' => 'Subscribe',
+        'success' => 'Thank you for subscribing.',
     ],
     'footer' => [
         'company_info' => 'Company Info',

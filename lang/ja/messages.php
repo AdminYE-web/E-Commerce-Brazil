@@ -200,6 +200,7 @@ return [
         'description' => '最新ニュースや更新情報を定期的にお届けします。',
         'email_placeholder' => 'メールアドレスを入力',
         'subscribe' => '購読',
+        'success' => 'ニュースレターの購読ありがとうございます。',
     ],
     'footer' => [
         'company_info' => '会社情報',

@@ -39,6 +39,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\GalleryPageController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LanguageController;
+use App\Http\Controllers\NewsletterSubscriptionController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductListController;
 use App\Models\User;
@@ -48,6 +49,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/language/{locale}', [LanguageController::class, 'switch'])
     ->name('language.switch');
+Route::post('/newsletter/subscribe', [NewsletterSubscriptionController::class, 'store'])
+    ->middleware('throttle:6,1')
+    ->name('newsletter.subscribe');
 Route::get('/contact', [ContactController::class, 'show'])->name('contact');
 Route::post('/contact', [ContactController::class, 'store'])
     ->middleware('throttle:6,1')
@@ -139,11 +143,14 @@ Route::post('/track-order', [OrderTrackingController::class, 'search'])
 
 Route::get('/track-order/result/{order}', [OrderTrackingController::class, 'result'])
     ->name('track-order.result');
+    Route::get('/track-order/result/{order}/receipt', [OrderTrackingController::class, 'downloadReceipt'])
+    ->name('track-order.receipt');
     Route::get('/blog', [BlogController::class, 'index'])
     ->name('blog.index');
 
 Route::get('/blog/{article}', [BlogController::class, 'show'])
     ->name('blog.show');
+    
 
 
 
