@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\SocialAccount;
 use App\Models\User;
+use GuzzleHttp\Client;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -27,7 +29,7 @@ class SocialAuthController extends Controller
     /**
      * Handle the callback from Google.
      */
-    public function handleGoogleCallback()
+    public function handleGoogleCallback(Request $request)
     {
         $this->configureSocialiteHttpClient();
 
@@ -110,7 +112,7 @@ class SocialAuthController extends Controller
         // Log the user in
         Auth::login($user, true);
 
-        $user->update(['last_login_at' => now()]);
+        $user->recordLogin($request, 'google');
 
         return redirect()->intended('/');
     }
@@ -123,7 +125,7 @@ class SocialAuthController extends Controller
     {
         if (app()->environment('local')) {
             Socialite::driver('google')->setHttpClient(
-                new \GuzzleHttp\Client(['verify' => false])
+                new Client(['verify' => false])
             );
         }
     }

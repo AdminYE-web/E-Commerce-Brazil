@@ -1,6 +1,6 @@
 <aside class="sidebar">
     <div class="sidebar-header">
-        <div class="brand-name">Indigo Admin</div>
+        <div class="brand-name">Admin</div>
         <div class="brand-subtitle">Product Management</div>
     </div>
 
@@ -137,6 +137,41 @@
                 </li>
                 
             </ul>
+        </li>
+        @php
+               $articleMenuActive = request()->routeIs(
+       
+                'admin.articles.*',
+                'admin.article-banners.*',
+            );
+        @endphp
+        <li class="nav-item has-dropdown {{ $articleMenuActive ? 'open' : '' }}">
+            <button type="button" class="nav-link dropdown-toggle {{ $articleMenuActive ? 'active' : '' }}"
+                onclick="this.closest('.has-dropdown').classList.toggle('open')">
+                <span>Articles</span>
+                <span class="dropdown-arrow">▾</span>
+            </button>
+
+            <ul class="sub-nav">
+                <li>
+                    <a href="{{ route('admin.articles.index') }}"
+                        class="sub-nav-link {{ request()->routeIs('admin.articles.*') ? 'active' : '' }}">
+                        Articles
+                    </a>
+                </li>
+                {{-- <li>
+                    <a href="{{ route('admin.article-banners.index') }}"
+                        class="sub-nav-link {{ request()->routeIs('admin.article-banners.*') ? 'active' : '' }}">
+                        Article Banners
+                    </a>
+                </li> --}}
+            </ul>
+        </li>
+        <li class="nav-item">
+            <a href="{{ route('admin.users.index') }}"
+                class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
+                Users
+            </a>
         </li>
         <li class="nav-item">
             <a href="{{ route('admin.orders.index') }}"

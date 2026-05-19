@@ -18,6 +18,8 @@ class HomeController extends Controller
     // 2. ดึงภาษาปัจจุบัน เช่น pt, ja, en
     $langKey = $this->getLangKey();
 
+  
+
     // 3. ทำ cache key แยกตามภาษา
     $cacheKey = 'home_page_data_' . $langKey;
 

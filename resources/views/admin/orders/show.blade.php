@@ -256,26 +256,26 @@
             <div class="form-group">
                 <label>Order Status</label>
 
-                <select name="status">
-                    @foreach(['pending','confirmed','paid','processing','completed','cancelled'] as $status)
-                        <option value="{{ $status }}" {{ $order->status == $status ? 'selected' : '' }}>
-                            {{ ucfirst($status) }}
-                        </option>
-                    @endforeach
-                </select>
+               <select name="status">
+    @foreach(['order_pending','design_in_progress','production','delivery','delivered','completed','cancelled'] as $status)
+        <option value="{{ $status }}" {{ $order->order_status == $status ? 'selected' : '' }}>
+            {{ ucwords(str_replace('_', ' ', $status)) }}
+        </option>
+    @endforeach
+</select>
             </div>
 
             <div class="form-group">
                 <label>Payment Status</label>
 
-                <select name="payment_status">
-                    @foreach(['pending','paid','failed','cancelled','refunded'] as $paymentStatus)
-                        <option value="{{ $paymentStatus }}"
-                            {{ optional($order->payment)->payment_status == $paymentStatus ? 'selected' : '' }}>
-                            {{ ucfirst($paymentStatus) }}
-                        </option>
-                    @endforeach
-                </select>
+               <select name="payment_status">
+    @foreach(['pending','paid','failed','cancelled','refunded'] as $paymentStatus)
+        <option value="{{ $paymentStatus }}"
+            {{ $order->payment_status == $paymentStatus ? 'selected' : '' }}>
+            {{ ucfirst($paymentStatus) }}
+        </option>
+    @endforeach
+</select>
             </div>
         </div>
 
@@ -467,7 +467,7 @@
             <th>Status</th>
             <td>
                 <span class="status-pill">
-                    {{ $order->payment->payment_status ?? '-' }}
+                    {{ $order->payment_status ?? '-' }}
                 </span>
             </td>
         </tr>

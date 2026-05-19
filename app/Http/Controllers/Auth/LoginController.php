@@ -11,45 +11,43 @@ use Illuminate\Support\Facades\Hash;
 class LoginController extends Controller
 {
     public function showLogin(Request $request)
-{
-    if ($request->filled('redirect')) {
-        session()->put('url.intended', $request->redirect);
+    {
+        if ($request->filled('redirect')) {
+            session()->put('url.intended', $request->redirect);
+        }
+
+        return view('auth.login');
     }
 
-    return view('auth.login');
-}
+    public function login(Request $request)
+    {
+        $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required'],
+        ]);
 
-   public function login(Request $request)
-{
-    $request->validate([
-        'email' => ['required', 'email'],
-        'password' => ['required'],
-    ]);
+        $user = User::where('email', strtolower($request->email))->first();
 
-    $user = User::where('email', strtolower($request->email))->first();
+        if (! $user || ! Hash::check($request->password, $user->password)) {
+            return back()
+                ->withErrors(['email' => 'Email or password is incorrect.'])
+                ->withInput();
+        }
 
-    if (!$user || !Hash::check($request->password, $user->password)) {
-        return back()
-            ->withErrors(['email' => 'Email or password is incorrect.'])
-            ->withInput();
+        if ((int) $user->status !== 1) {
+            return back()
+                ->withErrors(['email' => 'Please verify your email before logging in.'])
+                ->withInput();
+        }
+
+        Auth::login($user, $request->boolean('remember'));
+
+        $request->session()->regenerate();
+
+        $user->recordLogin($request, 'email');
+
+        return redirect()->intended(route('checkout.index'));
     }
-
-    if ((int) $user->status !== 1) {
-        return back()
-            ->withErrors(['email' => 'Please verify your email before logging in.'])
-            ->withInput();
-    }
-
-    Auth::login($user, $request->boolean('remember'));
-
-    $request->session()->regenerate();
-
-    $user->update([
-        'last_login_at' => now(),
-    ]);
-
-    return redirect()->intended(route('checkout.index'));
-}
 
     public function logout(Request $request)
     {

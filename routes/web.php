@@ -1,25 +1,23 @@
 <?php
 
-
-use App\Http\Controllers\Admin\GalleryBannerController;
-use App\Http\Controllers\GalleryPageController;
-use App\Http\Controllers\Admin\GalleryController;
-use App\Http\Controllers\AccountOrderController;
+use App\Http\Controllers\Admin\ArticleController;
+use App\Http\Controllers\OrderTrackingController;
 use App\Http\Controllers\AccountAddressController;
 use App\Http\Controllers\AccountContactController;
 use App\Http\Controllers\AccountController;
-use App\Http\Controllers\CheckoutController;
-use App\Http\Controllers\Admin\OrderAdminController;
+use App\Http\Controllers\AccountOrderController;
 use App\Http\Controllers\Admin\AdminAuthController;
-use App\Http\Controllers\Admin\HomeBannerController;
-use App\Http\Controllers\Admin\MaterialHomeController;
-use App\Http\Controllers\Admin\ProductArtworkTemplateController;
-use App\Http\Controllers\OrderController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\GalleryBannerController;
+use App\Http\Controllers\Admin\GalleryController;
+use App\Http\Controllers\Admin\HomeBannerController;
 use App\Http\Controllers\Admin\MaterialController;
+use App\Http\Controllers\Admin\MaterialHomeController;
 use App\Http\Controllers\Admin\OptionDependencyController;
 use App\Http\Controllers\Admin\OptionGroupController;
+use App\Http\Controllers\Admin\OrderAdminController;
+use App\Http\Controllers\Admin\ProductArtworkTemplateController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductDetailController;
 use App\Http\Controllers\Admin\ProductListBannerController;
@@ -28,15 +26,19 @@ use App\Http\Controllers\Admin\ProductOptionController;
 use App\Http\Controllers\Admin\ProductOptionVariantController;
 use App\Http\Controllers\Admin\ProductPriceRuleController;
 use App\Http\Controllers\Admin\ProductPriceTierController;
+use App\Http\Controllers\Admin\UserAdminController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\GalleryPageController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LanguageController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductListController;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -91,7 +93,6 @@ Route::post('/cart/remove', [CartController::class, 'remove'])
 Route::get('/checkout', [OrderController::class, 'checkout'])
     ->name('checkout.index');
 
-
 Route::post('/checkout/upload-artwork', [OrderController::class, 'storeArtworkStep'])
     ->name('checkout.storeArtworkStep');
 
@@ -125,6 +126,21 @@ Route::get('/checkout/continue-guest', [CheckoutController::class, 'continueGues
 Route::get('/gallery', [GalleryPageController::class, 'index'])
     ->name('gallery.index');
 
+    Route::get('/privacy-policy', function () {
+    return view('privacy-policy');
+})->name('privacy.policy');
+
+Route::get('/track-order', [OrderTrackingController::class, 'index'])
+    ->name('track-order.index');
+
+Route::post('/track-order', [OrderTrackingController::class, 'search'])
+    ->name('track-order.search');
+
+Route::get('/track-order/result/{order}', [OrderTrackingController::class, 'result'])
+    ->name('track-order.result');
+
+
+
 Route::middleware('auth')->group(function () {
     Route::get('/account', [AccountController::class, 'index'])
         ->name('account.index');
@@ -133,9 +149,9 @@ Route::middleware('auth')->group(function () {
         ->name('account.avatar.update');
     Route::put('/account/name', [AccountController::class, 'updateName'])
         ->name('account.name.update');
-        Route::put('/account/password', [AccountController::class, 'updatePassword'])
+    Route::put('/account/password', [AccountController::class, 'updatePassword'])
         ->name('account.password.update');
-           Route::get('/account/contacts', [AccountContactController::class, 'index'])
+    Route::get('/account/contacts', [AccountContactController::class, 'index'])
         ->name('account.contacts.index');
 
     Route::get('/account/contacts/create', [AccountContactController::class, 'create'])
@@ -146,15 +162,15 @@ Route::middleware('auth')->group(function () {
 
     Route::put('/account/contacts/{contact}/main', [AccountContactController::class, 'setMain'])
         ->name('account.contacts.setMain');
-        Route::get('/account/contacts/{contact}/edit', [AccountContactController::class, 'edit'])
-    ->name('account.contacts.edit');
+    Route::get('/account/contacts/{contact}/edit', [AccountContactController::class, 'edit'])
+        ->name('account.contacts.edit');
 
-Route::put('/account/contacts/{contact}', [AccountContactController::class, 'update'])
-    ->name('account.contacts.update');
+    Route::put('/account/contacts/{contact}', [AccountContactController::class, 'update'])
+        ->name('account.contacts.update');
 
     Route::delete('/account/contacts/{contact}', [AccountContactController::class, 'destroy'])
         ->name('account.contacts.destroy');
-         Route::get('/account/addresses/{type?}', [AccountAddressController::class, 'index'])
+    Route::get('/account/addresses/{type?}', [AccountAddressController::class, 'index'])
         ->name('account.addresses.index');
 
     Route::get('/account/addresses/{type}/create', [AccountAddressController::class, 'create'])
@@ -165,19 +181,17 @@ Route::put('/account/contacts/{contact}', [AccountContactController::class, 'upd
 
     Route::put('/account/addresses/{address}/main', [AccountAddressController::class, 'setMain'])
         ->name('account.addresses.setMain');
-        Route::get('/account/addresses/{address}/edit', [AccountAddressController::class, 'edit'])
-    ->name('account.addresses.edit');
+    Route::get('/account/addresses/{address}/edit', [AccountAddressController::class, 'edit'])
+        ->name('account.addresses.edit');
 
-Route::put('/account/addresses/{address}', [AccountAddressController::class, 'update'])
-    ->name('account.addresses.update');
+    Route::put('/account/addresses/{address}', [AccountAddressController::class, 'update'])
+        ->name('account.addresses.update');
 
     Route::delete('/account/addresses/{address}', [AccountAddressController::class, 'destroy'])
         ->name('account.addresses.destroy');
-        Route::get('/account/orders', [AccountOrderController::class, 'index'])
+    Route::get('/account/orders', [AccountOrderController::class, 'index'])
         ->name('account.orders.index');
 });
-
-
 
 Route::prefix('admin-panel')->name('admin.')->group(function () {
     Route::get('/login', [AdminAuthController::class, 'showLoginForm'])
@@ -188,7 +202,6 @@ Route::prefix('admin-panel')->name('admin.')->group(function () {
 
     Route::post('/logout', [AdminAuthController::class, 'logout'])
         ->name('logout');
-
 
     Route::middleware('admin.auth')->group(function () {
         Route::get('/', [AdminDashboardController::class, 'index'])
@@ -237,6 +250,7 @@ Route::prefix('admin-panel')->name('admin.')->group(function () {
         Route::resource('product-artwork-templates', ProductArtworkTemplateController::class);
         Route::resource('material-homes', MaterialHomeController::class);
         Route::resource('home-banners', HomeBannerController::class);
+        Route::resource('users', UserAdminController::class)->only(['index', 'show']);
         Route::get('orders', [OrderAdminController::class, 'index'])
             ->name('orders.index');
 
@@ -245,19 +259,23 @@ Route::prefix('admin-panel')->name('admin.')->group(function () {
 
         Route::put('orders/{order}/status', [OrderAdminController::class, 'updateStatus'])
             ->name('orders.updateStatus');
-            Route::resource('galleries', GalleryController::class);
-            Route::resource('gallery-banners', GalleryBannerController::class);
-            Route::get('product-price-rules/product-options/{product}', [ProductPriceRuleController::class, 'getProductOptions'])
-    ->name('product-price-rules.product-options');
-    Route::get('/language/{language}', function ($language) {
-    if (! in_array($language, ['pt', 'ja', 'en'])) {
-        abort(404);
-    }
+        Route::resource('galleries', GalleryController::class);
+        Route::resource('gallery-banners', GalleryBannerController::class);
+        Route::get('product-price-rules/product-options/{product}', [ProductPriceRuleController::class, 'getProductOptions'])
+            ->name('product-price-rules.product-options');
+        Route::get('/language/{language}', function ($language) {
+            if (! in_array($language, ['pt', 'ja', 'en'])) {
+                abort(404);
+            }
 
-    session(['admin_product_language' => $language]);
+            session(['admin_product_language' => $language]);
 
-    return back();
-})->name('product-language.switch');
+            return back();
+        })->name('product-language.switch');
+           Route::resource('articles', ArticleController::class);
+
+    Route::post('articles/upload-editor-image', [ArticleController::class, 'uploadEditorImage'])
+        ->name('articles.uploadEditorImage');
     });
 });
 

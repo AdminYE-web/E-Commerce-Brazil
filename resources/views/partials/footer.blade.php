@@ -52,8 +52,8 @@
                         <ul>
                             <li><a href="{{ route('about') }}">{{ __('messages.footer.about_us') }}</a></li>
                             <li><a href="#">{{ __('messages.footer.blog') }}</a></li>
-                            <li><a href="#">{{ __('messages.footer.privacy_policy') }}</a></li>
-                            <li><a href="#">{{ __('messages.footer.gallery') }}</a></li>
+                            <li><a href="{{ route('privacy.policy') }}">{{ __('messages.footer.privacy_policy') }}</a></li>
+                            <li><a href="{{ route('gallery.index') }}">{{ __('messages.footer.gallery') }}</a></li>
                         </ul>
                     </div>
 
@@ -63,7 +63,7 @@
                         <ul>
                             <li><a href="#">{{ __('messages.footer.faq') }}</a></li>
                             <li><a href="{{ route('contact') }}">{{ __('messages.footer.contact') }}</a></li>
-                            <li><a href="#">{{ __('messages.footer.track_order') }}</a></li>
+                            <li><a href="{{ route('track-order.index') }}">{{ __('messages.footer.track_order') }}</a></li>
                             <li><a href="#">{{ __('messages.footer.how_to_order') }}</a></li>
                             <li><a href="#">{{ __('messages.footer.how_to_design') }}</a></li>
                             <li><a href="#">{{ __('messages.footer.payment_guide') }}</a></li>
@@ -114,8 +114,8 @@
                         <ul>
                             <li><a href="{{ route('about') }}">{{ __('messages.footer.about_us') }}</a></li>
                             <li><a href="#">{{ __('messages.footer.blog') }}</a></li>
-                            <li><a href="#">{{ __('messages.footer.privacy_policy') }}</a></li>
-                            <li><a href="#">{{ __('messages.footer.gallery') }}</a></li>
+                            <li><a href="{{ route('privacy.policy') }}">{{ __('messages.footer.privacy_policy') }}</a></li>
+                            <li><a href="{{ route('gallery.index') }}">{{ __('messages.footer.gallery') }}</a></li>
                         </ul>
                         <br>
                         <br>
@@ -133,7 +133,7 @@
                         <ul>
                             <li><a href="#">{{ __('messages.footer.faq') }}</a></li>
                             <li><a href="{{ route('contact') }}">{{ __('messages.footer.contact') }}</a></li>
-                            <li><a href="#">{{ __('messages.footer.track_order') }}</a></li>
+                            <li><a href="{{ route('track-order.index') }}">{{ __('messages.footer.track_order') }}</a></li>
                             <li><a href="#">{{ __('messages.footer.how_to_order') }}</a></li>
                             <li><a href="#">{{ __('messages.footer.how_to_design') }}</a></li>
                             <li><a href="#">{{ __('messages.footer.payment_guide') }}</a></li>
@@ -156,5 +156,112 @@
     <a href="https://wa.me/819012344567" class="whatsapp-float" target="_blank" rel="noopener">
         <i class="bi bi-whatsapp"></i>
     </a>
+
+    <div class="cookie-policy-popup" id="cookiePolicyPopup">
+    <div class="cookie-policy-inner">
+        <div class="cookie-policy-icon">
+                      <img src="{{ asset('assets/images/icon/image-Photoroom (73) 1.png') }}" alt="" class="img-fluid">
+
+            <span class="cookie-check">✓</span>
+        </div>
+
+        <div class="cookie-policy-content">
+            <h3>Nós valorizamos sua privacidade.</h3>
+            <p>
+                Utilizamos cookies para garantir a melhor experiência em nosso site,
+                <a href="{{ route('privacy.policy') }}" target="_blank">
+                    de acordo com nossa Política de Privacidade.
+                </a>
+            </p>
+        </div>
+
+        <div class="cookie-policy-actions">
+            <button type="button" class="cookie-accept-btn" id="acceptCookiesBtn">
+                Aceitar Todos
+            </button>
+
+            <button type="button" class="cookie-reject-btn" id="rejectCookiesBtn">
+                Recusar não essenciais
+            </button>
+        </div>
+    </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const popup = document.getElementById('cookiePolicyPopup');
+    const acceptBtn = document.getElementById('acceptCookiesBtn');
+    const rejectBtn = document.getElementById('rejectCookiesBtn');
+
+    const storageKey = 'cookie_policy_consent';
+    const sevenDays = 7 * 24 * 60 * 60 * 1000;
+
+    function getCookieConsent() {
+        const saved = localStorage.getItem(storageKey);
+
+        if (!saved) {
+            return null;
+        }
+
+        try {
+            const data = JSON.parse(saved);
+            const now = new Date().getTime();
+
+            if (!data.expires_at || now > data.expires_at) {
+                localStorage.removeItem(storageKey);
+                return null;
+            }
+
+            return data;
+        } catch (error) {
+            localStorage.removeItem(storageKey);
+            return null;
+        }
+    }
+
+    function saveCookieConsent(status) {
+        const now = new Date().getTime();
+
+        const data = {
+            status: status,
+            accepted_at: now,
+            expires_at: now + sevenDays
+        };
+
+        localStorage.setItem(storageKey, JSON.stringify(data));
+    }
+
+    function showPopup() {
+        if (popup) {
+            popup.classList.add('is-show');
+        }
+    }
+
+    function hidePopup() {
+        if (popup) {
+            popup.classList.remove('is-show');
+        }
+    }
+
+    const consent = getCookieConsent();
+
+    if (!consent) {
+        showPopup();
+    }
+
+    if (acceptBtn) {
+        acceptBtn.addEventListener('click', function () {
+            saveCookieConsent('accepted');
+            hidePopup();
+        });
+    }
+
+    if (rejectBtn) {
+        rejectBtn.addEventListener('click', function () {
+            saveCookieConsent('rejected_non_essential');
+            hidePopup();
+        });
+    }
+});
+</script>
 
 </footer>

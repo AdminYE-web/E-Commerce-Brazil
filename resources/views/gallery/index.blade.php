@@ -448,6 +448,11 @@
             height: auto;
             display: block;
         }
+        .gallery-filter-wrap {
+    position: sticky;
+    top: 89px;
+    z-index: 50;
+}
     </style>
 @endsection
 
@@ -826,57 +831,40 @@ if (productLinkBtn) {
         });
     </script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const filterWrap = document.querySelector('.gallery-filter-wrap');
+document.addEventListener('DOMContentLoaded', function () {
+    const filterWrap = document.querySelector('.gallery-filter-wrap');
 
-            if (!filterWrap) {
-                return;
-            }
+    if (!filterWrap) return;
 
-            let stickyPoint = 0;
+    function isMobile() {
+        return window.innerWidth <= 768;
+    }
 
-            function isMobile() {
-                return window.innerWidth <= 768;
-            }
+    function getHeaderHeight() {
+        const header = document.querySelector('header');
+        return header ? header.offsetHeight : 89;
+    }
 
-            function getTopOffset() {
-                return 89;
-            }
+    function toggleStickyFull() {
+        if (isMobile()) {
+            filterWrap.classList.remove('is-sticky-full');
+            return;
+        }
 
-            function updateStickyPoint() {
-                if (isMobile()) {
-                    filterWrap.classList.remove('is-sticky-full');
-                    return;
-                }
+        const headerHeight = getHeaderHeight();
+        const rect = filterWrap.getBoundingClientRect();
 
-                filterWrap.classList.remove('is-sticky-full');
+        if (rect.top <= headerHeight + 1) {
+            filterWrap.classList.add('is-sticky-full');
+        } else {
+            filterWrap.classList.remove('is-sticky-full');
+        }
+    }
 
-                const rect = filterWrap.getBoundingClientRect();
-                stickyPoint = window.scrollY + rect.top - getTopOffset();
-            }
+    toggleStickyFull();
 
-            function toggleStickyFull() {
-                if (isMobile()) {
-                    filterWrap.classList.remove('is-sticky-full');
-                    return;
-                }
-
-                if (window.scrollY >= stickyPoint) {
-                    filterWrap.classList.add('is-sticky-full');
-                } else {
-                    filterWrap.classList.remove('is-sticky-full');
-                }
-            }
-
-            updateStickyPoint();
-            toggleStickyFull();
-
-            window.addEventListener('scroll', toggleStickyFull);
-
-            window.addEventListener('resize', function() {
-                updateStickyPoint();
-                toggleStickyFull();
-            });
-        });
-    </script>
+    window.addEventListener('scroll', toggleStickyFull, { passive: true });
+    window.addEventListener('resize', toggleStickyFull);
+});
+</script>
 @endsection

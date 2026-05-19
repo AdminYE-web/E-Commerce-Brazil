@@ -6,15 +6,66 @@
 @section('css')
 <style>
 
-
+.container-banner{
+    width: 90%;
+    margin: 0 auto;
+}
 .home-banner-section .carousel-item img {
 
     object-fit: cover;
 }
 
+.home-banner-section .carousel-control-prev,
+.home-banner-section .carousel-control-next {
+    width: 44px;
+    height: 44px;
+    top: 50%;
+    bottom: auto;
+    transform: translateY(-50%);
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.38);
+    opacity: 1;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.home-banner-section .carousel-control-prev {
+    left: 18px;
+}
+
+.home-banner-section .carousel-control-next {
+    right: 18px;
+}
+
+.home-banner-section .carousel-control-prev:hover,
+.home-banner-section .carousel-control-next:hover {
+    background: rgba(0, 0, 0, 0.56);
+    transform: translateY(-50%) scale(1.04);
+}
+
+.home-banner-section .carousel-control-prev-icon,
+.home-banner-section .carousel-control-next-icon {
+    width: 18px;
+    height: 18px;
+    filter: brightness(0) invert(1);
+}
+
 @media (max-width: 768px) {
     .home-banner-section .carousel-item img {
      
+    }
+
+    .home-banner-section .carousel-control-prev,
+    .home-banner-section .carousel-control-next {
+        width: 38px;
+        height: 38px;
+    }
+
+    .home-banner-section .carousel-control-prev {
+        left: 10px;
+    }
+
+    .home-banner-section .carousel-control-next {
+        right: 10px;
     }
 }
 </style>
@@ -120,7 +171,7 @@
     </section> --}}
    @if($homeBanners->count())
 <section class="home-banner-section">
-    <div class="container-fluid">
+    <div class="container-fluid p-0 ">
 
         <div id="homeBannerCarousel" class="carousel slide" data-bs-ride="carousel">
 

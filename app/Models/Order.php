@@ -19,11 +19,19 @@ class Order extends Model
         'shipping_fee',
         'grand_total',
         'status',
+            'order_status',
+    'payment_status',
+
     ];
 
     public function items()
     {
         return $this->hasMany(OrderItem::class, 'order_id', 'order_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'user_id');
     }
 
     public function customer()
@@ -40,5 +48,4 @@ class Order extends Model
     {
         return $this->hasMany(OrderArtwork::class, 'order_id', 'order_id');
     }
-    
 }
