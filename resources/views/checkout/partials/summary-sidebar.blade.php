@@ -158,50 +158,50 @@
 
 </style>
 <aside class="checkout-summary">
-    <h3>Finalizar Compra</h3>
+    <h3>{{ __('checkout.side_bar.finalize') }}</h3>
 
     <div class="summary-title">
-        Order Summary
+        {{ __('checkout.side_bar.order_summary') }}
     </div>
 
     <div class="summary-divider"></div>
 
     <div class="summary-line">
-        <span>Items :</span>
-        <strong>{{ $totalItems }} products</strong>
+        <span>{{ __('checkout.side_bar.items') }} :</span>
+        <strong>{{ $totalItems }} {{ __('checkout.side_bar.products') }}</strong>
     </div>
 
     <div class="summary-line">
-        <span>Quantidade Total :</span>
-        <strong>{{ $totalQty }} pcs</strong>
+        <span>{{ __('checkout.side_bar.quantity') }} :</span>
+        <strong>{{ $totalQty }} {{ __('checkout.side_bar.pcs') }}</strong>
     </div>
 
     <div class="summary-divider"></div>
 
     <div class="summary-line">
-        <span>Subtotal :</span>
+        <span>{{ __('checkout.side_bar.subtotal') }} :</span>
         <strong>¥ {{ number_format($subtotal, 2) }}</strong>
     </div>
 
     <div class="summary-line">
-        <span>Frete :</span>
+        <span>{{ __('checkout.side_bar.shipping') }} :</span>
         <strong>¥ {{ number_format($shipping, 2) }}</strong>
     </div>
 
     <div class="summary-line">
-        <span>Imposto Estimado :</span>
+        <span>{{ __('checkout.side_bar.tax') }} :</span>
         <strong>¥ {{ number_format($tax, 2) }}</strong>
     </div>
 
     <div class="summary-divider"></div>
 
     <div class="summary-total">
-        <span>Total</span>
+        <span>{{ __('checkout.side_bar.total') }}</span>
         <strong>¥ {{ number_format($grandTotal, 2) }}</strong>
     </div>
 
     <div class="checkout-tip">
-        💡 Dica: Frete ¥800. Grátis em pedidos acima de ¥10,000 (valor bruto).
+        💡 {{ __('checkout.side_bar.tip') }}
     </div>
 
     {{-- <div class="coupon-row">

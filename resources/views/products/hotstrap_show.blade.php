@@ -1681,10 +1681,10 @@ body.step-focus-open .step-focus-overlay {
                         @endforelse
                         <div class="quantity-add-cart-section">
                             <div class="quantity-label-row">
-                                <label for="quantity">Quantity</label>
+                                <label for="quantity">{{ __('product.product_detail.Quantity') }}</label>
 
                                 <span class="minimum-note">
-                                    ** Pedido mínimo 20 unidades **
+                                    ** {{ __('product.product_detail.minimum_order') }} **
                                 </span>
                             </div>
 
@@ -1692,7 +1692,7 @@ body.step-focus-open .step-focus-overlay {
                                 <input type="number" name="quantity" id="quantity" value="{{ $defaultQuantity }}"
                                     min="20" step="1" required>
 
-                                <span>Unidades</span>
+                                <span>{{ __('product.product_detail.unit') }}</span>
                             </div>
 
                             @error('quantity')
@@ -1702,14 +1702,14 @@ body.step-focus-open .step-focus-overlay {
                             @enderror
 
                             <button type="submit" class="add-to-cart-btn">
-                                {{ $editingCartItemId ? 'UPDATE CART' : 'ADD TO CART' }}
+                                {{ $editingCartItemId ? __('product.product_detail.update_cart') : __('product.product_detail.add_to_cart') }}
                             </button>
                         </div>
                     </form>
                 </div>
 
                 <aside class="product-summary-box">
-                    <h3>Resumo do produto</h3>
+                    <h3>{{ __('product.product_detail.summary_product') }}</h3>
 
                     {{-- <div class="summary-item">
                         <span>Unit Price</span>
@@ -1728,7 +1728,7 @@ body.step-focus-open .step-focus-overlay {
                     <div class="summary-divider"></div>
 
                     <div class="summary-total">
-                        <span>Total:</span>
+                        <span>{{ __('product.product_detail.Total') }}:</span>
                         <strong>¥ <span id="total-price">{{ number_format($basePrice, 2) }}</span></strong>
                     </div>
                 </aside>
@@ -1746,7 +1746,7 @@ body.step-focus-open .step-focus-overlay {
 <div class="step-bottom-bar" id="stepBottomBar">
     <div class="step-bottom-bar-left">
         <button type="button" class="step-bar-btn step-bar-btn-prev" id="stepPrevBtn">
-            ← VOLTAR
+            {{ __('product.product_detail.prev_step') }}
         </button>
     </div>
 
@@ -1755,13 +1755,13 @@ body.step-focus-open .step-focus-overlay {
             <span id="stepBarTotalPrice">0.00</span> ¥ (Total)
         </div>
         <div class="step-total-sub">
-            <span id="stepBarPerPrice">0.00</span> ¥ per price
+            <span id="stepBarPerPrice">0.00</span> ¥ {{ __('product.product_detail.per_price') }}
         </div>
     </div>
 
     <div class="step-bottom-bar-right">
         <button type="button" class="step-bar-btn step-bar-btn-next" id="stepNextBtn">
-            PRÓXIMO PASSO →
+            {{ __('product.product_detail.next_step') }}
         </button>
     </div>
 </div>

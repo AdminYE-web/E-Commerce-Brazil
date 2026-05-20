@@ -1504,7 +1504,7 @@
                             @enderror
 
                             <button type="submit" class="add-to-cart-btn">
-                                {{ $editingCartItemId ? 'UPDATE CART' : 'ADD TO CART' }}
+                                {{ $editingCartItemId ? __('product.product_detail.update_cart') : __('product.product_detail.add_to_cart') }}
                             </button>
                         </div>
                     </form>

@@ -128,4 +128,8 @@ public function options()
     ])
     ->withTimestamps();
 }
+public function templates()
+{
+    return $this->hasMany(ProductTemplate::class, 'product_id', 'product_id');
+}
 }

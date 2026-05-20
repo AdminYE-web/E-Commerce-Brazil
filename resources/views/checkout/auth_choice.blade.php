@@ -84,24 +84,24 @@
 @section('content')
 <div class="checkout-auth-page">
     <div class="checkout-auth-card">
-        <h1>Como deseja continuar?</h1>
+        <h1>{!! __('checkout.auth.continue_as_guest') !!}</h1>
 
         <p>
-            Faça login para usar suas informações salvas ou continue como convidado para finalizar sua compra.
+            {!! __('checkout.auth.login_prompt') !!}
         </p>
 
         <div class="checkout-auth-actions">
            <a href="{{ route('login', ['redirect' => route('checkout.index')]) }}" class="checkout-auth-btn primary">
-    Fazer Login
+    {!! __('checkout.auth.login') !!}
 </a>
 
             <a href="{{ route('checkout.continueGuest') }}" class="checkout-auth-btn outline">
-                Continue as Guest
+                {!! __('checkout.auth.continue_as_guest') !!}
             </a>
         </div>
 
         <div class="checkout-auth-note">
-            Você ainda poderá preencher seus dados de entrega no próximo passo.
+            {!! __('checkout.auth.note') !!}
         </div>
     </div>
 </div>

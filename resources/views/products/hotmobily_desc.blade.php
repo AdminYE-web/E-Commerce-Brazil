@@ -90,7 +90,7 @@
                     </div>
 
                     <a href="{{ $customizeRoute }}" class="hotstrap-customize-btn">
-                        <span>Personalizar agora</span>
+                        <span>{{ __('product.product_description.go_order') }}</span>
                         <img src="{{ asset('assets/images/icon/Vector (5).png') }}" alt="">
                     </a>
                 </div>

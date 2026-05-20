@@ -373,7 +373,7 @@
                 <input type="hidden" name="product_type" value="{{ $productType }}" id="product-type-input">
 
                 <div class="filter-group">
-                    <div class="filter-group-title">LANYARD</div>
+                    <div class="filter-group-title">{{ __('product.product_list.categories') }}</div>
 
                     @foreach ($categories as $category)
                         <label class="filter-option">
@@ -385,7 +385,7 @@
                 </div>
 
                 <div class="filter-group">
-                    <div class="filter-group-title">ACCESSORIES & OTHER</div>
+                    <div class="filter-group-title">{{ __('product.product_list.accessories') }}</div>
 
                     @foreach ($materials as $material)
                         <label class="filter-option">
@@ -404,20 +404,20 @@
 
         <main>
             <div class="content-header">
-                <h1 class="d-none d-lg-block">Shop by Category/Persona</h1>
-                <p class="d-none d-lg-block">Tap Switcher</p>
+                <h1 class="d-none d-lg-block">{{ __('product.product_list.category_persona') }}</h1>
+                <p class="d-none d-lg-block">{{ __('product.product_list.switcher') }}</p>
 
                 <div class="type-tabs">
                     <a href="{{ route('products.index', ['product_type' => 2]) }}" data-product-type="2"
                         class="type-card product-type-link {{ (int) $productType === 2 ? 'active' : '' }}">
                         <img src="{{ asset('assets/images/icon/image-Photoroom (55) 1.png') }}" alt="">
-                        <div class="label">Brindes<br>Personalizados</div>
+                        <div class="label">{{ __('product.product_list.brindes') }}<br>{{ __('product.product_list.personalizados') }}</div>
                     </a>
 
                     <a href="{{ route('products.index', ['product_type' => 1]) }}" data-product-type="1"
                         class="type-card product-type-link {{ (int) $productType === 1 ? 'active' : '' }}">
                         <img src="{{ asset('assets/images/icon/image-Photoroom (55) 2.png') }}" alt="">
-                        <div class="label">Cordão<br>Personalizado</div>
+                        <div class="label">{{ __('product.product_list.cordao') }}<br>{{ __('product.product_list.personalizados') }}</div>
                     </a>
                 </div>
             </div>

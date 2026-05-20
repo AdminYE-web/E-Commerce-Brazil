@@ -890,7 +890,7 @@
                                         <div class="artwork-collapse-box">
                                             <button type="button" class="artwork-collapse-toggle is-open"
                                                 data-target-id="artwork-customize-{{ $cartItemId }}">
-                                                <span>Personalizar Texto e Modelo</span>
+                                                <span>{{ __('checkout.step_2.adjust_template') }}</span>
                                                 <img class="artwork-collapse-arrow"
                                                     src="{{ asset('assets/images/icon/arrow-icon.png') }}" alt="">
                                             </button>
@@ -899,15 +899,15 @@
                                                 id="artwork-customize-{{ $cartItemId }}">
                                                 @if ($product->allow_text_print)
                                                     <div class="artwork-field">
-                                                        <label>Texto a imprimir</label>
+                                                        <label>{{ __('checkout.step_2.text') }}</label>
                                                         <input type="text" name="print_text[{{ $cartItemId }}]"
-                                                            placeholder="Insira o texto aqui">
+                                                            placeholder="{{ __('checkout.step_2.text_place') }}">
                                                     </div>
                                                 @endif
 
                                                 @if ($product->allow_font_select)
                                                     <div class="artwork-field">
-                                                        <label>Fonte</label>
+                                                        <label>{{ __('checkout.step_2.font') }}</label>
 
                                                         <div class="artwork-field-row">
                                                             <select name="font_option[{{ $cartItemId }}]">
@@ -918,14 +918,14 @@
                                                             </select>
 
                                                             <input type="text" name="font_other[{{ $cartItemId }}]"
-                                                                placeholder="Digite o nome da fonte desejada">
+                                                                placeholder="{{ __('checkout.step_2.font_place') }}">
                                                         </div>
                                                     </div>
                                                 @endif
 
                                                 @if ($product->allow_template_select && $product->artworkTemplates->count())
                                                     <div class="template-section">
-                                                        <div class="template-title">Modelos de Template ⓘ</div>
+                                                        <div class="template-title">{{ __('checkout.step_2.template') }} ⓘ</div>
 
                                                         @php
                                                             $selectedTemplateId = session(
@@ -976,8 +976,8 @@
 
                      @include('checkout.partials.summary-sidebar', [
                     'backRoute' => route('cart.index'),
-                    'backText' => 'Voltar ao Carrinho',
-                    'nextText' => 'Próximo Passo: Endereço →',
+                    'backText' => __('checkout.step_2.goback_cart'),
+                    'nextText' => __('checkout.step_2.gonext_step'),
                 ])
 
                 </div>

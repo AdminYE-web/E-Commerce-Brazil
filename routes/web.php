@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\DesignTemplateController;
+use App\Http\Controllers\Admin\ProductTemplateController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\Admin\ArticleController;
 use App\Http\Controllers\OrderTrackingController;
@@ -151,6 +153,8 @@ Route::get('/track-order/result/{order}', [OrderTrackingController::class, 'resu
 Route::get('/blog/{article}', [BlogController::class, 'show'])
     ->name('blog.show');
     
+    Route::get('/design-template', [DesignTemplateController::class, 'index'])
+    ->name('design-template.index');
 
 
 
@@ -289,6 +293,7 @@ Route::prefix('admin-panel')->name('admin.')->group(function () {
 
     Route::post('articles/upload-editor-image', [ArticleController::class, 'uploadEditorImage'])
         ->name('articles.uploadEditorImage');
+        Route::resource('product-templates', ProductTemplateController::class);
     });
 });
 

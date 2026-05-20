@@ -1,7 +1,32 @@
 @extends('layouts.app')
 
 @section('title', $product->product_name)
+@section('css')
+    <style>
+        .hotstrap-template-btn {
+            margin-top: 12px;
+            width: 100%;
+            min-height: 48px;
+            border: 1px solid #1d4ed8;
+            border-radius: 8px;
+            background: #fff;
+            color: #1d4ed8;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: .2s ease;
+        }
 
+        .hotstrap-template-btn:hover {
+            background: #1d4ed8;
+            color: #fff;
+        }
+    </style>
+@endsection
 @section('content')
 
     @php
@@ -16,6 +41,11 @@
         }
 
         $customizeRoute = route('products.order', $product->product_code);
+
+        $templateRoute = route('design-template.index', [
+            'type' => $product->product_type,
+            'product_id' => $product->product_id,
+        ]);
 
         $specItems = [];
 
@@ -86,8 +116,12 @@
                     </div>
 
                     <a href="{{ $customizeRoute }}" class="hotstrap-customize-btn">
-                        <span>Personalizar agora</span>
+                        <span>{{ __('product.product_description.go_order') }}</span>
                         <img src="{{ asset('assets/images/icon/Vector (5).png') }}" alt="">
+                    </a>
+                    <a href="{{ $templateRoute }}" class="hotstrap-customize-btn mt-4">
+                        <span>Download Design Template</span>
+                        <i class="bi bi-download"></i>
                     </a>
                 </div>
 
@@ -106,28 +140,28 @@
 
                     <div class="hotstrap-feature-grid hotstrap-feature-swiper swiper">
                         <div class="hotstrap-feature-track swiper-wrapper">
-                    @foreach ($detailItems as $item)
-                        <div class="hotstrap-feature-slide swiper-slide">
-                            <div class="hotstrap-feature-card">
-                            <div class="feature-icon">
-                                @if (!empty($item['icon_image']))
-                                    <img src="{{ asset('storage/' . $item['icon_image']) }}"
-                                        alt="{{ $item['headline'] ?? '' }}">
-                                @else
-                                    ✦
-                                @endif
-                            </div>
+                            @foreach ($detailItems as $item)
+                                <div class="hotstrap-feature-slide swiper-slide">
+                                    <div class="hotstrap-feature-card">
+                                        <div class="feature-icon">
+                                            @if (!empty($item['icon_image']))
+                                                <img src="{{ asset('storage/' . $item['icon_image']) }}"
+                                                    alt="{{ $item['headline'] ?? '' }}">
+                                            @else
+                                                ✦
+                                            @endif
+                                        </div>
 
-                            <h3>
-                                {{ $item['headline'] ?? '' }}
-                            </h3>
+                                        <h3>
+                                            {{ $item['headline'] ?? '' }}
+                                        </h3>
 
-                            <p>
-                                {{ $item['desc'] ?? '' }}
-                            </p>
-                            </div>
-                        </div>
-                    @endforeach
+                                        <p>
+                                            {{ $item['desc'] ?? '' }}
+                                        </p>
+                                    </div>
+                                </div>
+                            @endforeach
                         </div>
 
                         <div class="hotstrap-feature-pagination"></div>
@@ -217,61 +251,56 @@
         <section class="recommended-section" style="background: #F8F9FB;">
 
 
-        <div class="container recommended-container">
-            <div class="recommended-title">
-                <h2>
-                    Você também pode gostar
-                    
-                </h2>
-            </div>
+            <div class="container recommended-container">
+                <div class="recommended-title">
+                    <h2>
+                        Você também pode gostar
 
-            <div class="recommended-slider-wrap">
-                <div class="swiper recommended-swiper">
-                    <div class="swiper-wrapper">
-                        @foreach ($relatedProducts as $relatedProduct)
-                            <div class="swiper-slide">
-
-                                <div class="recommended-card">
-                                    <a href="{{ route('products.description', $relatedProduct->product_id) }}"
-                                        class="no-underline">
-                                        <h3>{{ $relatedProduct->product_name }}</h3>
-
-                                        <div class="stars">
-                                            <i class="bi bi-star-fill"></i>
-                                            <i class="bi bi-star-fill"></i>
-                                            <i class="bi bi-star-fill"></i>
-                                            <i class="bi bi-star-fill"></i>
-                                            <i class="bi bi-star-fill"></i>
-                                        </div>
-
-                                        <div class="product-img-wrap">
-    @if($relatedProduct->mainImage)
-        <img 
-            src="{{ asset('storage/' . $relatedProduct->mainImage->image_path) }}"
-            alt="{{ $relatedProduct->product_name }}"
-        >
-    @else
-        <img 
-            src="{{ asset('images/no-image.png') }}"
-            alt="No image"
-        >
-    @endif
-</div>
-                                    </a>
-                                </div>
-                            </div>
-                        @endforeach
-
-
-                    </div>
+                    </h2>
                 </div>
 
-                {{-- <div class="recommended-swiper-pagination"></div> --}}
+                <div class="recommended-slider-wrap">
+                    <div class="swiper recommended-swiper">
+                        <div class="swiper-wrapper">
+                            @foreach ($relatedProducts as $relatedProduct)
+                                <div class="swiper-slide">
+
+                                    <div class="recommended-card">
+                                        <a href="{{ route('products.description', $relatedProduct->product_id) }}"
+                                            class="no-underline">
+                                            <h3>{{ $relatedProduct->product_name }}</h3>
+
+                                            <div class="stars">
+                                                <i class="bi bi-star-fill"></i>
+                                                <i class="bi bi-star-fill"></i>
+                                                <i class="bi bi-star-fill"></i>
+                                                <i class="bi bi-star-fill"></i>
+                                                <i class="bi bi-star-fill"></i>
+                                            </div>
+
+                                            <div class="product-img-wrap">
+                                                @if ($relatedProduct->mainImage)
+                                                    <img src="{{ asset('storage/' . $relatedProduct->mainImage->image_path) }}"
+                                                        alt="{{ $relatedProduct->product_name }}">
+                                                @else
+                                                    <img src="{{ asset('images/no-image.png') }}" alt="No image">
+                                                @endif
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                            @endforeach
+
+
+                        </div>
+                    </div>
+
+                    {{-- <div class="recommended-swiper-pagination"></div> --}}
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
     @endif
-    
+
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {

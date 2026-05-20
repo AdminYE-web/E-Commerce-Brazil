@@ -30,6 +30,7 @@
                 'admin.option-dependencies.*',
                 'admin.product-price-rules.*',
                 'admin.product-artwork-templates.*',
+                'admin.product-templates.*',
             );
         @endphp
 
@@ -71,6 +72,12 @@
                 <li><a href="{{ route('admin.product-artwork-templates.index') }}"
                         class="sub-nav-link {{ request()->routeIs('admin.product-artwork-templates.*') ? 'active' : '' }}">Product
                         Artwork Templates</a></li>
+                         <li>
+                    <a href="{{ route('admin.product-templates.index') }}"
+                        class="sub-nav-link {{ request()->routeIs('admin.product-templates.*') ? 'active' : '' }}">
+                        Product Templates
+                    </a>
+                </li>
 
             </ul>
         </li>
@@ -167,6 +174,7 @@
                 </li> --}}
             </ul>
         </li>
+       
         <li class="nav-item">
             <a href="{{ route('admin.users.index') }}"
                 class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
