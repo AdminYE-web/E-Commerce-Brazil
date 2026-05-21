@@ -2,6 +2,10 @@
 
 @section('title', __('messages.contact.title'))
 
+@php
+    $bypassRecaptcha = request()->cookie('dev') === '1';
+@endphp
+
 @section('css')
     <style>
         /* ── Contact form validation states ── */

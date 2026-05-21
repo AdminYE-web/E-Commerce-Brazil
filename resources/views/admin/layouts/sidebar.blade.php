@@ -42,7 +42,7 @@
             </button>
 
             <ul class="sub-nav">
-                  <li>
+                <li>
                     <a href="{{ route('admin.product-list-banners.index') }}"
                         class="sub-nav-link {{ request()->routeIs('admin.product-list-banners.*') ? 'active' : '' }}">
                         Product List Banners
@@ -72,7 +72,7 @@
                 <li><a href="{{ route('admin.product-artwork-templates.index') }}"
                         class="sub-nav-link {{ request()->routeIs('admin.product-artwork-templates.*') ? 'active' : '' }}">Product
                         Artwork Templates</a></li>
-                         <li>
+                <li>
                     <a href="{{ route('admin.product-templates.index') }}"
                         class="sub-nav-link {{ request()->routeIs('admin.product-templates.*') ? 'active' : '' }}">
                         Product Templates
@@ -84,10 +84,7 @@
 
 
         @php
-            $homepageMenuActive = request()->routeIs(
-                'admin.home-banners.*',
-                'admin.material-homes.*',
-            );
+            $homepageMenuActive = request()->routeIs('admin.home-banners.*', 'admin.material-homes.*');
         @endphp
 
         <li class="nav-item has-dropdown {{ $homepageMenuActive ? 'open' : '' }}">
@@ -98,7 +95,7 @@
             </button>
 
             <ul class="sub-nav">
-              
+
                 <li>
                     <a href="{{ route('admin.home-banners.index') }}"
                         class="sub-nav-link {{ request()->routeIs('admin.home-banners.*') ? 'active' : '' }}">
@@ -112,15 +109,11 @@
                         Material Homes
                     </a>
                 </li>
-               
+
             </ul>
         </li>
         @php
-               $galleryMenuActive = request()->routeIs(
-       
-                'admin.galleries.*',
-                'admin.gallery-banners.*',
-            );
+            $galleryMenuActive = request()->routeIs('admin.galleries.*', 'admin.gallery-banners.*');
         @endphp
         <li class="nav-item has-dropdown {{ $galleryMenuActive ? 'open' : '' }}">
             <button type="button" class="nav-link dropdown-toggle {{ $galleryMenuActive ? 'active' : '' }}"
@@ -142,15 +135,11 @@
                         Galleries
                     </a>
                 </li>
-                
+
             </ul>
         </li>
         @php
-               $articleMenuActive = request()->routeIs(
-       
-                'admin.articles.*',
-                'admin.article-banners.*',
-            );
+            $articleMenuActive = request()->routeIs('admin.articles.*', 'admin.article-banners.*');
         @endphp
         <li class="nav-item has-dropdown {{ $articleMenuActive ? 'open' : '' }}">
             <button type="button" class="nav-link dropdown-toggle {{ $articleMenuActive ? 'active' : '' }}"
@@ -174,11 +163,17 @@
                 </li> --}}
             </ul>
         </li>
-       
+
         <li class="nav-item">
             <a href="{{ route('admin.users.index') }}"
                 class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
                 Users
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ route('admin.contact-submissions.index') }}"
+                class="nav-link {{ request()->routeIs('admin.contact-submissions.*') ? 'active' : '' }}">
+                Contact List
             </a>
         </li>
         <li class="nav-item">
@@ -187,6 +182,18 @@
                 Orders
             </a>
         </li>
+        <li>
+            <a href="{{ route('admin.faqs.index') }}"
+                class="nav-link {{ request()->routeIs('admin.faqs.*') ? 'active' : '' }}">
+                FAQs
+            </a>
+        </li>
+        <li>
+    <a href="{{ route('admin.quotations.index') }}"
+       class="nav-link {{ request()->routeIs('admin.quotations.*') ? 'active' : '' }}">
+        Quotations
+    </a>
+</li>
     </ul>
 
     <div class="sidebar-footer">

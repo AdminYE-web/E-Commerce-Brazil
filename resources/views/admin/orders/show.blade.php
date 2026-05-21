@@ -198,6 +198,13 @@
         text-decoration: underline;
     }
 
+    .document-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+
     @media (max-width: 900px) {
         .order-detail-card {
             padding: 18px;
@@ -218,6 +225,11 @@
         .info-table {
             min-width: 0;
         }
+
+        .document-actions {
+            justify-content: flex-start;
+            width: 100%;
+        }
     }
 </style>
 @endsection
@@ -235,9 +247,19 @@
             </div>
         </div>
 
-        <a href="{{ route('admin.orders.index') }}" class="btn-outline">
-            Back
-        </a>
+        <div class="document-actions">
+            <a href="{{ route('admin.orders.quotation', $order->order_id) }}" class="btn-outline">
+                Download Quotation
+            </a>
+
+            <a href="{{ route('admin.orders.invoice', $order->order_id) }}" class="btn-outline">
+                Download Invoice
+            </a>
+
+            <a href="{{ route('admin.orders.index') }}" class="btn-outline">
+                Back
+            </a>
+        </div>
     </div>
 
     @if(session('success'))

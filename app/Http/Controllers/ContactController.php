@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ContactFormSubmitted;
 use App\Models\ContactSubmission;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -12,7 +13,6 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use App\Mail\ContactFormSubmitted;
 use Illuminate\View\View;
 
 class ContactController extends Controller
@@ -104,7 +104,6 @@ class ContactController extends Controller
             ]);
         }
 
-        
         if ($request->expectsJson()) {
             return response()->json([
                 'message' => 'Sua solicitação de contato foi enviada com sucesso.',

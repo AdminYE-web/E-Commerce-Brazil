@@ -1,17 +1,16 @@
 <?php
 
-use App\Http\Controllers\DesignTemplateController;
-use App\Http\Controllers\Admin\ProductTemplateController;
-use App\Http\Controllers\BlogController;
-use App\Http\Controllers\Admin\ArticleController;
-use App\Http\Controllers\OrderTrackingController;
+use App\Http\Controllers\Admin\QuotationController;
+use App\Http\Controllers\Admin\FaqController;
 use App\Http\Controllers\AccountAddressController;
 use App\Http\Controllers\AccountContactController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AccountOrderController;
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\ArticleController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\ContactSubmissionController;
 use App\Http\Controllers\Admin\GalleryBannerController;
 use App\Http\Controllers\Admin\GalleryController;
 use App\Http\Controllers\Admin\HomeBannerController;
@@ -29,21 +28,26 @@ use App\Http\Controllers\Admin\ProductOptionController;
 use App\Http\Controllers\Admin\ProductOptionVariantController;
 use App\Http\Controllers\Admin\ProductPriceRuleController;
 use App\Http\Controllers\Admin\ProductPriceTierController;
+use App\Http\Controllers\Admin\ProductTemplateController;
 use App\Http\Controllers\Admin\UserAdminController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\SocialAuthController;
+use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\DesignTemplateController;
 use App\Http\Controllers\GalleryPageController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\NewsletterSubscriptionController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\OrderTrackingController;
 use App\Http\Controllers\ProductListController;
+use App\Http\Controllers\SearchController;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -133,7 +137,7 @@ Route::get('/checkout/continue-guest', [CheckoutController::class, 'continueGues
 Route::get('/gallery', [GalleryPageController::class, 'index'])
     ->name('gallery.index');
 
-    Route::get('/privacy-policy', function () {
+Route::get('/privacy-policy', function () {
     return view('privacy-policy');
 })->name('privacy.policy');
 
@@ -145,18 +149,19 @@ Route::post('/track-order', [OrderTrackingController::class, 'search'])
 
 Route::get('/track-order/result/{order}', [OrderTrackingController::class, 'result'])
     ->name('track-order.result');
-    Route::get('/track-order/result/{order}/receipt', [OrderTrackingController::class, 'downloadReceipt'])
+Route::get('/track-order/result/{order}/receipt', [OrderTrackingController::class, 'downloadReceipt'])
     ->name('track-order.receipt');
-    Route::get('/blog', [BlogController::class, 'index'])
+Route::get('/blog', [BlogController::class, 'index'])
     ->name('blog.index');
 
 Route::get('/blog/{article}', [BlogController::class, 'show'])
     ->name('blog.show');
-    
-    Route::get('/design-template', [DesignTemplateController::class, 'index'])
+
+Route::get('/design-template', [DesignTemplateController::class, 'index'])
     ->name('design-template.index');
 
-
+Route::get('/search', [SearchController::class, 'index'])
+    ->name('search.index');
 
 Route::middleware('auth')->group(function () {
     Route::get('/account', [AccountController::class, 'index'])
@@ -268,8 +273,15 @@ Route::prefix('admin-panel')->name('admin.')->group(function () {
         Route::resource('material-homes', MaterialHomeController::class);
         Route::resource('home-banners', HomeBannerController::class);
         Route::resource('users', UserAdminController::class)->only(['index', 'show']);
+        Route::resource('contact-submissions', ContactSubmissionController::class)->only(['index', 'show']);
         Route::get('orders', [OrderAdminController::class, 'index'])
             ->name('orders.index');
+
+        Route::get('orders/{order}/quotation', [OrderAdminController::class, 'downloadQuotation'])
+            ->name('orders.quotation');
+
+        Route::get('orders/{order}/invoice', [OrderAdminController::class, 'downloadInvoice'])
+            ->name('orders.invoice');
 
         Route::get('orders/{order}', [OrderAdminController::class, 'show'])
             ->name('orders.show');
@@ -289,11 +301,23 @@ Route::prefix('admin-panel')->name('admin.')->group(function () {
 
             return back();
         })->name('product-language.switch');
-           Route::resource('articles', ArticleController::class);
+        Route::resource('articles', ArticleController::class);
 
-    Route::post('articles/upload-editor-image', [ArticleController::class, 'uploadEditorImage'])
-        ->name('articles.uploadEditorImage');
+        Route::post('articles/upload-editor-image', [ArticleController::class, 'uploadEditorImage'])
+            ->name('articles.uploadEditorImage');
         Route::resource('product-templates', ProductTemplateController::class);
+        Route::post('faqs/update-sort', [FaqController::class, 'updateSort'])
+    ->name('faqs.updateSort');
+        Route::resource('faqs', FaqController::class);
+Route::patch('quotations/{quotation}/status', [QuotationController::class, 'updateStatus'])
+    ->name('quotations.updateStatus');
+        Route::resource('quotations', QuotationController::class);
+
+Route::get('quotations/product-options/{product}', [QuotationController::class, 'productOptions'])
+    ->name('quotations.productOptions');
+
+Route::get('quotations/{quotation}/pdf', [QuotationController::class, 'downloadPdf'])
+    ->name('quotations.pdf');
     });
 });
 

@@ -68,10 +68,15 @@
                 </ul>
 
                 <!-- Search -->
-                <form class="search-box" action="#" method="GET">
-                    <i class="bi bi-search search-icon"></i>
-                    <input type="text" name="keyword" placeholder="{{ __('messages.header.search') }}">
-                </form>
+               <form class="search-box" action="{{ route('search.index') }}" method="GET">
+    <i class="bi bi-search search-icon"></i>
+    <input 
+        type="text" 
+        name="keyword" 
+        value="{{ request('keyword') }}"
+        placeholder="{{ __('messages.header.search') }}"
+    >
+</form>
 
                 <!-- Icons -->
                 <div class="header-icons">
@@ -304,12 +309,15 @@
         </div>
 
         <!-- Search -->
-        <div class="mobile-search-wrap">
-            <form class="search-box mobile-search-box d-flex" action="#" method="GET">
-                <i class="bi bi-search search-icon"></i>
-                <input type="text" name="keyword" placeholder="{{ __('messages.header.search') }}">
-            </form>
-        </div>
+       <form class="search-box mobile-search-box d-flex" action="{{ route('search.index') }}" method="GET">
+    <i class="bi bi-search search-icon"></i>
+    <input 
+        type="text" 
+        name="keyword" 
+        value="{{ request('keyword') }}"
+        placeholder="{{ __('messages.header.search') }}"
+    >
+</form>
     </div>
 
 </header>

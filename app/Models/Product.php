@@ -132,4 +132,8 @@ public function templates()
 {
     return $this->hasMany(ProductTemplate::class, 'product_id', 'product_id');
 }
+public function faqs()
+{
+    return $this->hasMany(Faq::class, 'product_id', 'product_id');
+}
 }
