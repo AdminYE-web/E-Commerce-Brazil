@@ -24,11 +24,11 @@ class DesignTemplateController extends Controller
         $productTypes = [
             1 => [
                 'label' => 'Brindes Personalizados',
-                'icon' => asset('assets/images/icon/gift.png'),
+                'icon' => asset('assets/images/icon/type1.png'),
             ],
             2 => [
                 'label' => 'Cordão Personalizado',
-                'icon' => asset('assets/images/icon/lanyard.png'),
+                'icon' => asset('assets/images/icon/type2.png'),
             ],
         ];
 
