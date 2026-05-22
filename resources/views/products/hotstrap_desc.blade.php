@@ -25,6 +25,96 @@
             background: #1d4ed8;
             color: #fff;
         }
+
+        .product-faq-section {
+            background: #f5f7fb;
+            padding: 44px 16px 56px;
+        }
+
+        .product-faq-wrap {
+            max-width: 1180px;
+            margin: 0 auto;
+        }
+
+        .product-faq-title {
+            margin: 0 0 18px;
+            color: #111;
+            font-size: 24px;
+            font-weight: 900;
+        }
+
+        .product-faq-box {
+            background: #fff;
+            border: 1px solid #cfd4dc;
+            border-radius: 8px;
+            padding: 18px 22px;
+        }
+
+        .product-faq-item {
+            border-bottom: 1px solid #edf0f4;
+            padding: 12px 0;
+        }
+
+        .product-faq-item:last-child {
+            border-bottom: 0;
+        }
+
+        .product-faq-question {
+            width: 100%;
+            border: 0;
+            background: transparent;
+            padding: 0;
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            text-align: left;
+            cursor: pointer;
+            color: #111;
+        }
+
+        .product-faq-question-text {
+            font-size: 15px;
+            font-weight: 900;
+            line-height: 1.45;
+        }
+
+        .product-faq-icon {
+            font-size: 18px;
+            line-height: 1;
+            transition: transform .25s ease;
+        }
+
+        .product-faq-item.is-open .product-faq-icon {
+            transform: rotate(180deg);
+        }
+
+        .product-faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height .28s ease;
+        }
+
+        .product-faq-answer-inner {
+            padding: 10px 32px 0 14px;
+            color: #111;
+            font-size: 13px;
+            line-height: 1.55;
+            white-space: pre-line;
+        }
+
+        @media (max-width: 768px) {
+            .product-faq-section {
+                padding: 34px 16px 44px;
+            }
+
+            .product-faq-title {
+                font-size: 22px;
+            }
+
+            .product-faq-box {
+                padding: 14px 16px;
+            }
+        }
     </style>
 @endsection
 @section('content')
@@ -185,7 +275,7 @@
                 </div>
 
                 <div class="hotstrap-spec-content">
-                    <h2>Product Details</h2>
+                    <h2>{{ __('product_desc.product_desc.product_details') }}</h2>
 
                     <div class="hotstrap-spec-card">
                         @foreach ($specItems as $item)
@@ -247,16 +337,42 @@
             </div>
         </section>
     @endif
+    @if (isset($productFaqs) && $productFaqs->count())
+        <section class="product-faq-section">
+            <div class="product-faq-wrap">
+                <h2 class="product-faq-title">FAQ</h2>
+
+                <div class="product-faq-box">
+                    @foreach ($productFaqs as $faq)
+                        <div class="product-faq-item {{ $loop->first ? 'is-open' : '' }}">
+                            <button type="button" class="product-faq-question">
+                                <span class="product-faq-question-text">
+                                    Q{{ $loop->iteration }} : {{ $faq->question }}
+                                </span>
+
+                                <span class="product-faq-icon">
+                                    <i class="bi bi-chevron-down"></i>
+                                </span>
+                            </button>
+
+                            <div class="product-faq-answer" style="{{ $loop->first ? 'max-height: 500px;' : '' }}">
+                                <div class="product-faq-answer-inner">
+                                    {!! nl2br(e($faq->answer)) !!}
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </section>
+    @endif
     @if (isset($relatedProducts) && $relatedProducts->count())
         <section class="recommended-section" style="background: #F8F9FB;">
 
 
             <div class="container recommended-container">
                 <div class="recommended-title">
-                    <h2>
-                        Você também pode gostar
-
-                    </h2>
+                    <h2>{{ __('product_desc.product_desc.you_may_also_like') }}</h2>
                 </div>
 
                 <div class="recommended-slider-wrap">
@@ -461,6 +577,30 @@
                         slidesPerView: 4,
                         spaceBetween: 30,
                     }
+                }
+            });
+        });
+    </script>
+    <script>
+        document.querySelectorAll('.product-faq-question').forEach(function(button) {
+            button.addEventListener('click', function() {
+                const item = this.closest('.product-faq-item');
+                const answer = item.querySelector('.product-faq-answer');
+                const isOpen = item.classList.contains('is-open');
+
+                document.querySelectorAll('.product-faq-item').forEach(function(otherItem) {
+                    otherItem.classList.remove('is-open');
+
+                    const otherAnswer = otherItem.querySelector('.product-faq-answer');
+
+                    if (otherAnswer) {
+                        otherAnswer.style.maxHeight = null;
+                    }
+                });
+
+                if (!isOpen) {
+                    item.classList.add('is-open');
+                    answer.style.maxHeight = answer.scrollHeight + 'px';
                 }
             });
         });

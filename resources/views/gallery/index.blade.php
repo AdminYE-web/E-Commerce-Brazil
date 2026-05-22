@@ -448,11 +448,12 @@
             height: auto;
             display: block;
         }
+
         .gallery-filter-wrap {
-    position: sticky;
-    top: 89px;
-    z-index: 50;
-} 
+            position: sticky;
+            top: 89px;
+            z-index: 50;
+        }
     </style>
 @endsection
 
@@ -508,7 +509,7 @@
                     id="galleryFilterForm">
 
                     <select name="category_id" class="gallery-filter-select js-auto-submit">
-                        <option value="">All Creations</option>
+                        <option value="">{{ __('gallery.gallery.all_creations') }}</option>
 
                         @foreach ($categories as $category)
                             <option value="{{ $category->category_id }}"
@@ -519,7 +520,7 @@
                     </select>
 
                     <select name="material_id" class="gallery-filter-select js-auto-submit">
-                        <option value="">Materiais</option>
+                        <option value="">{{ __('gallery.gallery.material') }}</option>
 
                         @foreach ($materials as $material)
                             <option value="{{ $material->material_id }}"
@@ -530,7 +531,7 @@
                     </select>
 
                     <select name="purpose" class="gallery-filter-select js-auto-submit">
-                        <option value="">Finalidade</option>
+                        <option value="">{{ __('gallery.gallery.purpose') }}</option>
 
                         @foreach ($purposes as $purposeItem)
                             <option value="{{ $purposeItem }}" {{ $purpose === $purposeItem ? 'selected' : '' }}>
@@ -541,15 +542,15 @@
 
                     <select name="sort" class="gallery-filter-select js-auto-submit">
                         <option value="newest" {{ $sort === 'newest' ? 'selected' : '' }}>
-                            Mais recentes
+                            {{ __('gallery.gallery.latest') }}
                         </option>
                         <option value="oldest" {{ $sort === 'oldest' ? 'selected' : '' }}>
-                            Mais antigos
+                            {{ __('gallery.gallery.oldest') }}
                         </option>
                     </select>
 
                     <a href="{{ route('gallery.index') }}" class="clear-filter-link">
-                        ↻ Limpar Filtros
+                        {{ __('gallery.gallery.clear_filter') }}
                     </a>
                 </form>
             </div>
@@ -574,7 +575,7 @@
                             <div class="gallery-hover-overlay">
                                 <div class="gallery-hover-content">
                                     <i class="bi bi-search"></i>
-                                    <span>View detail</span>
+                                    <span>{{ __('gallery.gallery.view_details') }}</span>
                                 </div>
                             </div>
                         </div>
@@ -582,7 +583,8 @@
                         <div class="gallery-info">
                             <div class="gallery-title">{{ $gallery->title }}</div>
                             <div class="gallery-date">
-                                Data: {{ $gallery->gallery_date ? $gallery->gallery_date->format('d/m/Y') : '-' }}
+                                {{ __('gallery.gallery.created') }}
+                                {{ $gallery->gallery_date ? $gallery->gallery_date->format('d/m/Y') : '-' }}
                             </div>
                         </div>
                     </div>
@@ -629,33 +631,32 @@
 
                     <div class="gallery-detail-table">
                         <div class="gallery-detail-row">
-                            <div>Category</div>
+                            <div>{{ __('gallery.gallery.category') }}</div>
                             <div id="galleryModalCategory"></div>
                         </div>
 
                         <div class="gallery-detail-row">
-                            <div>Material</div>
+                            <div>{{ __('gallery.gallery.materials') }}</div>
                             <div id="galleryModalMaterial"></div>
                         </div>
 
                         <div class="gallery-detail-row">
-                            <div>Purpose</div>
+                            <div>{{ __('gallery.gallery.purpose') }}</div>
                             <div id="galleryModalPurpose"></div>
                         </div>
 
                         <div class="gallery-detail-row">
-                            <div>Date</div>
+                            <div>{{ __('gallery.gallery.created') }}</div>
                             <div id="galleryModalDate"></div>
                         </div>
                     </div>
 
                     <a href="#" class="gallery-modal-primary-btn" id="galleryModalProductLink">
-    Ver Detalhes
-</a>
+                        {{ __('gallery.gallery.view_details') }}
+                    </a>
 
-                    <a href="{{ route('contact') }}" target="_blank" rel="noopener"
-                        class="gallery-modal-outline-btn">
-                        Fale conosco
+                    <a href="{{ route('contact') }}" target="_blank" rel="noopener" class="gallery-modal-outline-btn">
+                        {{ __('gallery.gallery.contact_us') }}
                     </a>
                 </div>
             </div>
@@ -739,21 +740,21 @@
             }
 
             function openModal(card) {
-                
+
                 titleEl.textContent = card.dataset.title || '';
                 categoryEl.textContent = card.dataset.category || '-';
                 materialEl.textContent = card.dataset.material || '-';
                 purposeEl.textContent = card.dataset.purpose || '-';
                 dateEl.textContent = card.dataset.date || '-';
-if (productLinkBtn) {
-    productLinkBtn.href = card.dataset.productLink || '#';
+                if (productLinkBtn) {
+                    productLinkBtn.href = card.dataset.productLink || '#';
 
-    if (!card.dataset.productLink || card.dataset.productLink === '#') {
-        productLinkBtn.style.display = 'none';
-    } else {
-        productLinkBtn.style.display = 'flex';
-    }
-}
+                    if (!card.dataset.productLink || card.dataset.productLink === '#') {
+                        productLinkBtn.style.display = 'none';
+                    } else {
+                        productLinkBtn.style.display = 'flex';
+                    }
+                }
                 try {
                     currentImages = JSON.parse(card.dataset.images || '[]');
                 } catch (e) {
@@ -831,40 +832,42 @@ if (productLinkBtn) {
         });
     </script>
     <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const filterWrap = document.querySelector('.gallery-filter-wrap');
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterWrap = document.querySelector('.gallery-filter-wrap');
 
-    if (!filterWrap) return;
+            if (!filterWrap) return;
 
-    function isMobile() {
-        return window.innerWidth <= 768;
-    }
+            function isMobile() {
+                return window.innerWidth <= 768;
+            }
 
-    function getHeaderHeight() {
-        const header = document.querySelector('header');
-        return header ? header.offsetHeight : 89;
-    }
+            function getHeaderHeight() {
+                const header = document.querySelector('header');
+                return header ? header.offsetHeight : 89;
+            }
 
-    function toggleStickyFull() {
-        if (isMobile()) {
-            filterWrap.classList.remove('is-sticky-full');
-            return;
-        }
+            function toggleStickyFull() {
+                if (isMobile()) {
+                    filterWrap.classList.remove('is-sticky-full');
+                    return;
+                }
 
-        const headerHeight = getHeaderHeight();
-        const rect = filterWrap.getBoundingClientRect();
+                const headerHeight = getHeaderHeight();
+                const rect = filterWrap.getBoundingClientRect();
 
-        if (rect.top <= headerHeight + 1) {
-            filterWrap.classList.add('is-sticky-full');
-        } else {
-            filterWrap.classList.remove('is-sticky-full');
-        }
-    }
+                if (rect.top <= headerHeight + 1) {
+                    filterWrap.classList.add('is-sticky-full');
+                } else {
+                    filterWrap.classList.remove('is-sticky-full');
+                }
+            }
 
-    toggleStickyFull();
+            toggleStickyFull();
 
-    window.addEventListener('scroll', toggleStickyFull, { passive: true });
-    window.addEventListener('resize', toggleStickyFull);
-});
-</script>
+            window.addEventListener('scroll', toggleStickyFull, {
+                passive: true
+            });
+            window.addEventListener('resize', toggleStickyFull);
+        });
+    </script>
 @endsection

@@ -252,11 +252,11 @@
         <div class="template-download-container">
 
             <div class="template-breadcrumb">
-                ⌂ / Design Template
+                ⌂ / {{ __('product.design_template.title') }}
             </div>
 
             <h1 class="template-page-title">
-                Baixar Modelos de Design
+                {{ __('product.design_template.download_template') }}
             </h1>
 
             <div class="template-type-tabs">
@@ -273,9 +273,9 @@
                 <input type="hidden" name="type" value="{{ $selectedType }}">
 
                 <div class="template-form-group">
-                    <label>Selecione o Produto</label>
+                    <label>{{ __('product.design_template.select_product') }}</label>
                     <select name="product_id" class="template-select" onchange="this.form.submit()">
-                        <option value="">Escolha uma opção...</option>
+                        <option value="">{{ __('product.design_template.select_product_option') }}</option>
 
                         @foreach ($products as $product)
                             <option value="{{ $product->product_id }}"
@@ -288,10 +288,10 @@
 
                 @if ($sizes->count() > 0)
                     <div class="template-form-group">
-                        <label>Largura</label>
+                        <label>{{ __('product.design_template.width') }}</label>
 
                         <select name="size" class="template-select" onchange="this.form.submit()">
-                            <option value="">Escolha uma opção...</option>
+                            <option value="">{{ __('product.design_template.select_product_option') }}</option>
 
                             @foreach ($sizes as $size)
                                 <option value="{{ $size }}" {{ $selectedSize === $size ? 'selected' : '' }}>
@@ -311,7 +311,7 @@
 
                 <div class="template-result">
                     <h2 class="template-result-title">
-                        {{ $selectedProduct->product_name ?? 'Template' }}
+                        {{ $selectedProduct->product_name ?? __('product.design_template.template') }}
                         @if ($sizes->count() > 0 && $selectedSize)
                             - {{ $selectedSize }}
                         @endif
@@ -361,7 +361,8 @@
                                 <ul class="template-file-list">
                                     @foreach ($pdfFiles as $template)
                                         <li class="template-file-item">
-                                            <img src="{{ asset('assets/images/icon/image-Photoroom (11) 2.png') }}" alt="">
+                                            <img src="{{ asset('assets/images/icon/image-Photoroom (11) 2.png') }}"
+                                                alt="">
 
                                             <a href="{{ asset('storage/' . $template->file_path) }}" download>
                                                 {{ $template->original_name ?? basename($template->file_path) }}
@@ -377,13 +378,13 @@
                         </div>
                     @else
                         <div class="template-empty">
-                            No template files found for this selection.
+                            {{ __('product.design_template.no_template_found') }}
                         </div>
                     @endif
                 </div>
             @else
                 <div class="template-empty">
-                    Please select product and size to download template files.
+                    {{ __('product.design_template.select_product_and_size_to_download_template_files') }}
                 </div>
             @endif
 
@@ -413,7 +414,7 @@
                     this.classList.add('is-active');
 
                     const targetPanel = document.querySelector('[data-file-panel="' + target +
-                    '"]');
+                        '"]');
 
                     if (targetPanel) {
                         targetPanel.classList.add('is-active');

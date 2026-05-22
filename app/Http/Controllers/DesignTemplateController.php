@@ -23,11 +23,11 @@ class DesignTemplateController extends Controller
         */
         $productTypes = [
             1 => [
-                'label' => 'Brindes Personalizados',
+                'label' => __('product.design_template.product_type_1'),
                 'icon' => asset('assets/images/icon/type1.png'),
             ],
             2 => [
-                'label' => 'Cordão Personalizado',
+                'label' => __('product.design_template.product_type_2'),
                 'icon' => asset('assets/images/icon/type2.png'),
             ],
         ];
@@ -62,24 +62,24 @@ class DesignTemplateController extends Controller
         | Sizes ของ product ที่เลือก
         |--------------------------------------------------------------------------
         */
-       $sizes = collect();
+        $sizes = collect();
 
-if ($selectedProductId) {
-    $sizes = ProductTemplate::query()
-        ->where('language', $langKey)
-        ->where('is_active', 1)
-        ->where('product_id', $selectedProductId)
-        ->whereNotNull('template_size')
-        ->where('template_size', '!=', '')
-        ->select('template_size')
-        ->distinct()
-        ->orderBy('template_size')
-        ->pluck('template_size');
-}
+        if ($selectedProductId) {
+            $sizes = ProductTemplate::query()
+                ->where('language', $langKey)
+                ->where('is_active', 1)
+                ->where('product_id', $selectedProductId)
+                ->whereNotNull('template_size')
+                ->where('template_size', '!=', '')
+                ->select('template_size')
+                ->distinct()
+                ->orderBy('template_size')
+                ->pluck('template_size');
+        }
 
-if (!$selectedSize && $sizes->count() > 0) {
-    $selectedSize = $sizes->first();
-}
+        if (!$selectedSize && $sizes->count() > 0) {
+            $selectedSize = $sizes->first();
+        }
 
         /*
         |--------------------------------------------------------------------------
@@ -95,24 +95,24 @@ if (!$selectedSize && $sizes->count() > 0) {
         | Templates result
         |--------------------------------------------------------------------------
         */
-      $templates = ProductTemplate::with('product')
-    ->where('language', $langKey)
-    ->where('is_active', 1)
-    ->when($selectedProductId, function ($query) use ($selectedProductId) {
-        $query->where('product_id', $selectedProductId);
-    })
-    ->when($sizes->count() > 0 && $selectedSize, function ($query) use ($selectedSize) {
-        $query->where('template_size', $selectedSize);
-    })
-    ->when($sizes->count() === 0, function ($query) {
-        $query->where(function ($q) {
-            $q->whereNull('template_size')
-              ->orWhere('template_size', '');
-        });
-    })
-    ->orderBy('file_type')
-    ->orderBy('original_name')
-    ->get();
+        $templates = ProductTemplate::with('product')
+            ->where('language', $langKey)
+            ->where('is_active', 1)
+            ->when($selectedProductId, function ($query) use ($selectedProductId) {
+                $query->where('product_id', $selectedProductId);
+            })
+            ->when($sizes->count() > 0 && $selectedSize, function ($query) use ($selectedSize) {
+                $query->where('template_size', $selectedSize);
+            })
+            ->when($sizes->count() === 0, function ($query) {
+                $query->where(function ($q) {
+                    $q->whereNull('template_size')
+                        ->orWhere('template_size', '');
+                });
+            })
+            ->orderBy('file_type')
+            ->orderBy('original_name')
+            ->get();
 
         return view('design-template.index', compact(
             'productTypes',

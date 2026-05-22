@@ -368,8 +368,9 @@
                         {{-- RESUMO DE ITENS --}}
                         <div class="review-card">
                             <div class="review-card-header">
-                                <div class="review-card-title">Resumo de Itens</div>
-                                <a href="{{ route('cart.index') }}" class="review-edit-link">Editar</a>
+                                <div class="review-card-title">{{ __('checkout.step_5.title_items') }}</div>
+                                <a href="{{ route('cart.index') }}"
+                                    class="review-edit-link">{{ __('checkout.step_5.edit') }}</a>
                             </div>
 
                             <div class="review-body">
@@ -392,16 +393,16 @@
                                         </div>
 
                                         <div>
-                                            <div class="review-product-category">Cordão</div>
+                                            <div class="review-product-category">{{ __('checkout.step_5.cordao') }}</div>
                                             <div class="review-product-name">{{ $item['product_name'] ?? '-' }}</div>
                                             <div class="review-product-qty">Qtd : {{ $quantity }}</div>
                                         </div>
 
                                         <div class="review-price-box">
-                                            <div>Preço Unitário</div>
+                                            <div>{{ __('checkout.step_5.unit_price') }}</div>
                                             <strong>¥ {{ number_format($unitPrice, 2) }} /un</strong>
 
-                                            <div>Total do Item</div>
+                                            <div>{{ __('checkout.step_5.item_total') }}</div>
                                             <strong>¥ {{ number_format($itemTotal, 2) }}</strong>
 
                                             <button type="button" class="review-detail-link js-review-detail-toggle"
@@ -409,7 +410,7 @@
                                                 <img class="review-detail-arrow"
                                                     src="{{ asset('assets/images/icon/weui_arrow-filled.png') }}"
                                                     alt="">
-                                                <span class="review-detail-text">Detalhes</span>
+                                                <span class="review-detail-text">{{ __('checkout.step_5.details') }}</span>
                                             </button>
                                         </div>
                                     </div>
@@ -488,20 +489,20 @@
                         {{-- DETALHES DE ENVIO --}}
                         <div class="review-card">
                             <div class="review-card-header">
-                                <div class="review-card-title">Detalhes de Envio</div>
+                                <div class="review-card-title">{{ __('checkout.step_5.shipping_details') }}</div>
                                 <a href="{{ route('checkout.address') }}" class="review-edit-link">Editar</a>
                             </div>
 
                             <div class="review-body">
                                 <div class="info-grid">
-                                    <div class="info-label">Entregar para</div>
+                                    <div class="info-label">{{ __('checkout.step_5.deliver_to') }}</div>
                                     <div class="info-value">
                                         {{ $personal['first_name'] ?? '' }} {{ $personal['last_name'] ?? '' }}<br>
                                         {{ $shippingAddress['city'] ?? '' }} {{ $shippingAddress['area'] ?? '' }}<br>
                                         {{ $shippingAddress['province'] ?? '' }}, {{ $shippingAddress['postcode'] ?? '' }}
                                     </div>
 
-                                    <div class="info-label">Informações de Contato</div>
+                                    <div class="info-label">{{ __('checkout.step_5.contact_info') }}</div>
                                     <div class="info-value">
                                         {{ $personal['email'] ?? '-' }}<br>
                                         {{ $personal['phone'] ?? '-' }}
@@ -513,37 +514,33 @@
                         {{-- DETALHES DE PAGAMENTO --}}
                         <div class="review-card">
                             <div class="review-card-header">
-                                <div class="review-card-title">Detalhes de Pagamento</div>
-                                <a href="{{ route('checkout.payment') }}" class="review-edit-link">Editar</a>
+                                <div class="review-card-title">{{ __('checkout.step_5.payment_details') }}</div>
+                                <a href="{{ route('checkout.payment') }}"
+                                    class="review-edit-link">{{ __('checkout.step_5.edit') }}</a>
                             </div>
 
                             <div class="review-body">
                                 <div class="info-grid">
-                                    <div class="info-label">Pago com</div>
+                                    <div class="info-label">{{ __('checkout.step_5.pay_with') }}</div>
                                     <div class="info-value">
                                         @if ($paymentMethod === 'bank_transfer')
                                             <div class="payment-method-title">
                                                 <span>🏦</span>
-                                                <span>Transferência Bancária (JP banks).</span>
+                                                <span>{{ __('checkout.step_4.bank_transfer') }}</span>
                                             </div>
 
                                             <div class="payment-bank-detail">
                                                 <p>
-                                                    Aceitamos pagamentos via transferência para o BANCO YUZU (ゆうず銀行):
-                                                    Agência 001, Conta Poupança (普通), Titular XXXX TOYS LTD.
+                                                    {{ __('checkout.step_4.bank_transfer_body') }}
                                                 </p>
 
                                                 <p>
-                                                    Após concluir, envie o comprovante para xxxxx@geektoys.jp ou pelo
-                                                    WhatsApp:
-                                                    +81 XX XXXX-XXXX.
+                                                    {{ __('checkout.step_4.bank_transfer_notice') }}
                                                 </p>
 
                                                 <p class="payment-warning">
-                                                    ⚠️ <strong>Atenção:</strong> O pagamento deve ser realizado em até 1
-                                                    hora após a confirmação do pedido.
-                                                    Caso contrário, o pedido será cancelado automaticamente e você receberá
-                                                    uma notificação por e-mail.
+                                                    ⚠️ <strong>{{ __('checkout.step_4.bank_transfer_warning') }}</strong>
+                                                    {{ __('checkout.step_4.bank_transfer_warning_body') }}
                                                 </p>
                                             </div>
                                         @elseif($paymentMethod === 'paypal')
@@ -552,21 +549,21 @@
                                             </div>
 
                                             <div class="payment-bank-detail">
-                                                Rápido e Seguro. Pague com sua conta PayPal.
+                                                {{ __('checkout.step_5.paypal') }}
                                             </div>
                                         @else
                                             -
                                         @endif
                                     </div>
 
-                                    <div class="info-label">Endereço de Faturamento</div>
+                                    <div class="info-label">{{ __('checkout.step_5.billing_address') }}</div>
                                     <div class="info-value">
                                         {{ $billing['first_name'] ?? '' }} {{ $billing['last_name'] ?? '' }}<br>
                                         {{ $billing['city'] ?? '' }} {{ $billing['area'] ?? '' }}<br>
                                         {{ $billing['province'] ?? '' }}, {{ $billing['postcode'] ?? '' }}
                                     </div>
 
-                                    <div class="info-label">Informações de Contato</div>
+                                    <div class="info-label">{{ __('checkout.step_5.contact_info') }}</div>
                                     <div class="info-value">
                                         {{ $billing['email'] ?? '-' }}<br>
                                         {{ $billing['phone'] ?? '-' }}

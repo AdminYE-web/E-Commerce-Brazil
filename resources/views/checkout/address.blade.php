@@ -315,17 +315,17 @@
                         @if ($errors->any())
                             <div class="checkout-form-card">
                                 <div style="color:#ef4444;">
-                                    Please check the required fields.
+                                    {{ __('checkout.step_3.address_error') }}
                                 </div>
                             </div>
                         @endif
 
                         <div class="checkout-form-card">
-                            <h3>1. Informações Pessoais</h3>
+                            <h3>1. {{ __('checkout.step_3.address_title') }}</h3>
 
                             <div class="form-grid">
                                 <div class="form-group">
-                                    <label>Nome (First Name)<span class="required">*</span></label>
+                                    <label>{{ __('checkout.step_3.first_name') }}<span class="required">*</span></label>
                                     <input type="text" name="personal_first_name"
                                         value="{{ old('personal_first_name', $personal['first_name'] ?? '') }}"
                                         placeholder="Ex: Mario">
@@ -335,7 +335,7 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label>Sobrenome (Last Name)<span class="required">*</span></label>
+                                    <label>{{ __('checkout.step_3.last_name') }}<span class="required">*</span></label>
                                     <input type="text" name="personal_last_name"
                                         value="{{ old('personal_last_name', $personal['last_name'] ?? '') }}"
                                         placeholder="Ex: Silva Junior">
@@ -345,7 +345,7 @@
                                 </div>
 
                                 <div class="form-group full">
-                                    <label>Phone<span class="required">*</span></label>
+                                    <label>{{ __('checkout.step_3.phone') }}<span class="required">*</span></label>
                                     <input type="text" name="personal_phone"
                                         value="{{ old('personal_phone', $personal['phone'] ?? '') }}"
                                         placeholder="Ex: 090-XXXX-XXXX">
@@ -355,7 +355,7 @@
                                 </div>
 
                                 <div class="form-group full">
-                                    <label>Email<span class="required">*</span></label>
+                                    <label>{{ __('checkout.step_3.email') }}<span class="required">*</span></label>
                                     <input type="email" name="personal_email"
                                         value="{{ old('personal_email', $personal['email'] ?? '') }}"
                                         placeholder="Ex: exemplo@email.com">
@@ -367,11 +367,11 @@
                         </div>
 
                         <div class="checkout-form-card">
-                            <h3>2. Endereço de Entrega (Japão)</h3>
+                            <h3>2. {{ __('checkout.step_3.address') }}</h3>
 
                             <div class="form-grid">
                                 <div class="form-group full">
-                                    <label>Código Postal (CEP)</label>
+                                    <label>{{ __('checkout.step_3.zip_code') }}</label>
                                     <div class="postcode-row">
                                         <input type="text" name="shipping_postcode" class="postcode-input"
                                             data-address-type="shipping"
@@ -380,7 +380,7 @@
 
                                         <button type="button" class="search-address-btn js-search-address"
                                             data-address-type="shipping">
-                                            Buscar Endereço
+                                            {{ __('checkout.step_3.search_address') }}
                                         </button>
                                     </div>
                                     @error('shipping_postcode')
@@ -389,9 +389,9 @@
                                 </div>
 
                                 <div class="form-group full">
-                                    <label>Província (Estado/Ken)<span class="required">*</span></label>
+                                    <label>{{ __('checkout.step_3.province') }}<span class="required">*</span></label>
                                     <select name="shipping_province" id="shipping_province">
-                                        <option value="">Selecione uma província...</option>
+                                        <option value="">{{ __('checkout.step_3.select_province') }}</option>
                                         @foreach (['Tokyo', 'Osaka', 'Kyoto', 'Hokkaido', 'Fukuoka', 'Aichi', 'Kanagawa', 'Saitama', 'Chiba'] as $province)
                                             <option value="{{ $province }}"
                                                 {{ old('shipping_province', $shippingAddress['province'] ?? '') == $province ? 'selected' : '' }}>
@@ -405,7 +405,7 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label>Cidade / Distrito (Shi/Ku/Machi)<span class="required">*</span></label>
+                                    <label>{{ __('checkout.step_3.city') }}<span class="required">*</span></label>
                                     <input type="text" name="shipping_city" id="shipping_city"
                                         value="{{ old('shipping_city', $shippingAddress['city'] ?? '') }}"
                                         placeholder="Ex: Shinjuku-ku">
@@ -415,7 +415,7 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label>Bairro / Área (Chome/Ban/Go)<span class="required">*</span></label>
+                                    <label>{{ __('checkout.step_3.neighborhood') }}<span class="required">*</span></label>
                                     <input type="text" name="shipping_area"
                                         value="{{ old('shipping_area', $shippingAddress['area'] ?? '') }}"
                                         placeholder="Ex: Nishishinjuku 2-8-1">
@@ -425,11 +425,11 @@
                                 </div>
 
                                 <div class="form-group full">
-                                    <label>Nome do Prédio / Apartamento e Número do Quarto<span
+                                    <label>{{ __('checkout.step_3.address_number') }}<span
                                             class="required">*</span></label>
                                     <input type="text" name="shipping_building_room"
                                         value="{{ old('shipping_building_room', $shippingAddress['building_room'] ?? '') }}"
-                                        placeholder="Ex: Edifício ABC, Apto 101">
+                                        placeholder="{{ __('checkout.step_3.address_number_place') }}">
                                     @error('shipping_building_room')
                                         <div class="error-text">{{ $message }}</div>
                                     @enderror
@@ -441,43 +441,43 @@
                             <input type="checkbox" name="billing_same_as_shipping" value="1"
                                 id="billing_same_as_shipping"
                                 {{ old('billing_same_as_shipping', $billingSame) ? 'checked' : '' }}>
-                            Endereço de faturamento é o mesmo que o de entrega.
+                            {{ __('checkout.step_3.billing_address_same') }}
                         </label>
 
                         <div class="checkout-form-card billing-section" id="billing-section">
-                            <h3>3. Endereço de Faturamento</h3>
+                            <h3>{{ __('checkout.step_3.billing_address_title') }}</h3>
 
                             <div class="form-grid">
                                 <div class="form-group">
-                                    <label>Nome (First Name)</label>
+                                    <label>{{ __('checkout.step_3.first_name') }}</label>
                                     <input type="text" name="billing_first_name"
                                         value="{{ old('billing_first_name', $billing['first_name'] ?? '') }}"
                                         placeholder="Ex: Mario">
                                 </div>
 
                                 <div class="form-group">
-                                    <label>Sobrenome (Last Name)</label>
+                                    <label>{{ __('checkout.step_3.last_name') }}</label>
                                     <input type="text" name="billing_last_name"
                                         value="{{ old('billing_last_name', $billing['last_name'] ?? '') }}"
                                         placeholder="Ex: Silva Junior">
                                 </div>
 
                                 <div class="form-group full">
-                                    <label>Phone</label>
+                                    <label>{{ __('checkout.step_3.phone') }}</label>
                                     <input type="text" name="billing_phone"
                                         value="{{ old('billing_phone', $billing['phone'] ?? '') }}"
                                         placeholder="Ex: 090-XXXX-XXXX">
                                 </div>
 
                                 <div class="form-group full">
-                                    <label>Email</label>
+                                    <label>{{ __('checkout.step_3.email') }}</label>
                                     <input type="email" name="billing_email"
                                         value="{{ old('billing_email', $billing['email'] ?? '') }}"
                                         placeholder="Ex: exemplo@email.com">
                                 </div>
 
                                 <div class="form-group full">
-                                    <label>Código Postal (CEP)</label>
+                                    <label>{{ __('checkout.step_3.zip_code') }}</label>
 
                                     <div class="postcode-row">
                                         <input type="text" name="billing_postcode" class="postcode-input"
@@ -487,15 +487,15 @@
 
                                         <button type="button" class="search-address-btn js-search-address"
                                             data-address-type="billing">
-                                            Buscar Endereço
+                                            {{ __('checkout.step_3.search_address') }}
                                         </button>
                                     </div>
                                 </div>
 
                                 <div class="form-group full">
-                                    <label>Província</label>
+                                    <label>{{ __('checkout.step_3.province') }}</label>
                                     <select name="billing_province" id="billing_province">
-                                        <option value="">Selecione uma província...</option>
+                                        <option value="">{{ __('checkout.step_3.select_province') }}</option>
                                         @foreach (['Tokyo', 'Osaka', 'Kyoto', 'Hokkaido', 'Fukuoka', 'Aichi', 'Kanagawa', 'Saitama', 'Chiba'] as $province)
                                             <option value="{{ $province }}"
                                                 {{ old('billing_province', $billing['province'] ?? '') == $province ? 'selected' : '' }}>
@@ -506,19 +506,19 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label>Cidade / Distrito</label>
+                                    <label>{{ __('checkout.step_3.city') }}</label>
                                     <input type="text" name="billing_city" id="billing_city"
                                         value="{{ old('billing_city', $billing['city'] ?? '') }}">
                                 </div>
 
                                 <div class="form-group">
-                                    <label>Bairro / Área</label>
+                                    <label>{{ __('checkout.step_3.neighborhood') }}</label>
                                     <input type="text" name="billing_area"
                                         value="{{ old('billing_area', $billing['area'] ?? '') }}">
                                 </div>
 
                                 <div class="form-group full">
-                                    <label>Nome do Prédio / Apartamento e Número do Quarto</label>
+                                    <label>{{ __('checkout.step_3.address_number') }}</label>
                                     <input type="text" name="billing_building_room"
                                         value="{{ old('billing_building_room', $billing['building_room'] ?? '') }}">
                                 </div>
@@ -529,8 +529,8 @@
 
                     @include('checkout.partials.summary-sidebar', [
                         'backRoute' => route('checkout.index'),
-                        'backText' => 'Voltar ao Upload de Arte',
-                        'nextText' => 'Próximo Passo: Pagamento →',
+                        'backText' => __('checkout.step_3.goback_art_upload'),
+                        'nextText' => __('checkout.step_3.next_payment'),
                     ])
 
                 </div>

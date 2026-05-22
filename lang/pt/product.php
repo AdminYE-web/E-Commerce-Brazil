@@ -10,9 +10,11 @@ return [
         'personalizados' => 'Personalizados',
         'cordao' => 'Cordão',
         'detail' => 'Ver Detalhes',
-    ], 'product_description' => [
+    ],
+    'product_description' => [
         'go_order' => 'Personalizar agora',
-    ], 'product_detail' => [
+    ],
+    'product_detail' => [
         'summary_product' => 'Resumo do produto',
         'Total' => 'Total',
         'Quantity' => 'Quantidade',
@@ -23,7 +25,8 @@ return [
         'prev_step' => '  ← VOLTAR ',
         'update_cart' => 'ATUALIZAR CARRINHO',
         'add_to_cart' => 'ADICIONAR AO CARRINHO',
-    ],'cart' => [
+    ],
+    'cart' => [
         'select_all' => 'Selecionar tudo',
         'unit_price' => 'Preço Unitário',
         'total_item' => 'Total do Item',
@@ -41,7 +44,18 @@ return [
         'tip' => 'Dica: Frete ¥800. Grátis em pedidos acima de ¥10,000 (valor bruto).',
         'coupon' => 'Cartão Presente ou Cupom',
         'continue_shopping' => 'Continuar Comprando',
-
     ],
+    'design_template' => [
+        'title' => 'Modelo de design',
+        'download_template' => 'Baixar Modelos de Design',
+        'product_type_1' => 'Brindes Personalizados',
+        'product_type_2' => 'Cordão Personalizado',
+        'select_product' => 'Selecione o Produto',
+        'select_product_option' => 'Escolha uma opção...',
+        'width' => 'Largura',
+        'template' => 'Modelo',
+        'no_template_found' => 'Nenhum arquivo de modelo foi encontrado para esta seleção.',
+        'select_product_and_size_to_download_template_files' => 'Selecione o produto e o tamanho para baixar os arquivos de modelo.',
+    ]
 
 ];

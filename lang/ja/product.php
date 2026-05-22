@@ -10,10 +10,12 @@ return [
         'personalizados' => 'カスタマイズされた',
         'cordao' => 'コード',
         'detail' => '詳細を見る',
-    ], 'product_description' => [
+    ],
+    'product_description' => [
         'go_order' => '今すぐカスタマイズ',
 
-    ], 'product_detail' => [
+    ],
+    'product_detail' => [
         'summary_product' => '製品概要',
         'Total' => '合計',
         'Quantity' => '数量',
@@ -46,5 +48,18 @@ return [
         'continue_shopping' => '買い物を続ける',
 
     ],
+    'design_template' => [
+        'title' => 'デザインテンプレート',
+        'download_template' => 'デザインテンプレートをダウンロード',
+        'product_type_1' => 'プレゼント企画',
+        'product_type_2' => 'コード',
+        'select_product' => '商品を選択',
+        'select_product_option' => 'オプションを選択...',
+        'width' => '幅',
+        'template' => 'テンプレート',
+        'no_template_found' => '選択された商品のテンプレートファイルは見つかりませんでした。',
+        'select_product_and_size_to_download_template_files' => 'テンプレートファイルをダウンロードするには、製品とサイズを選択してください。',
+
+    ]
 
 ];

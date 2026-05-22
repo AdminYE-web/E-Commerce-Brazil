@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\FaqPageController;
 use App\Http\Controllers\Admin\QuotationController;
 use App\Http\Controllers\Admin\FaqController;
 use App\Http\Controllers\AccountAddressController;
@@ -163,6 +164,9 @@ Route::get('/design-template', [DesignTemplateController::class, 'index'])
 Route::get('/search', [SearchController::class, 'index'])
     ->name('search.index');
 
+Route::get('/faqs', [FaqPageController::class, 'index'])
+    ->name('faqs.index');
+
 Route::middleware('auth')->group(function () {
     Route::get('/account', [AccountController::class, 'index'])
         ->name('account.index');
@@ -307,17 +311,17 @@ Route::prefix('admin-panel')->name('admin.')->group(function () {
             ->name('articles.uploadEditorImage');
         Route::resource('product-templates', ProductTemplateController::class);
         Route::post('faqs/update-sort', [FaqController::class, 'updateSort'])
-    ->name('faqs.updateSort');
+            ->name('faqs.updateSort');
         Route::resource('faqs', FaqController::class);
-Route::patch('quotations/{quotation}/status', [QuotationController::class, 'updateStatus'])
-    ->name('quotations.updateStatus');
+        Route::patch('quotations/{quotation}/status', [QuotationController::class, 'updateStatus'])
+            ->name('quotations.updateStatus');
         Route::resource('quotations', QuotationController::class);
 
-Route::get('quotations/product-options/{product}', [QuotationController::class, 'productOptions'])
-    ->name('quotations.productOptions');
+        Route::get('quotations/product-options/{product}', [QuotationController::class, 'productOptions'])
+            ->name('quotations.productOptions');
 
-Route::get('quotations/{quotation}/pdf', [QuotationController::class, 'downloadPdf'])
-    ->name('quotations.pdf');
+        Route::get('quotations/{quotation}/pdf', [QuotationController::class, 'downloadPdf'])
+            ->name('quotations.pdf');
     });
 });
 
@@ -408,7 +412,6 @@ Route::get('/email/verify/{id}/{hash}', function (Request $request, $id, $hash) 
     ])->save();
 
     return redirect()->route('verification.success');
-
 })->middleware('signed')->name('verification.verify');
 
 Route::post('/email/verification-notification', function (Request $request) {

@@ -333,7 +333,7 @@
 
         .item-detail-toggle-icon {
             /* width: 12px;
-                    height: 12px; */
+                                            height: 12px; */
             object-fit: contain;
             transition: transform .2s ease;
         }
@@ -375,32 +375,33 @@
                 margin-top: 0;
             }
         }
+
         .download-receipt-wrap {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 18px;
-}
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 18px;
+        }
 
-.download-receipt-btn {
-    min-width: 170px;
-    height: 34px;
-    border: 1px solid #2f6fc7;
-    border-radius: 6px;
-    background: #fff;
-    color: #2f6fc7;
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 700;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 14px;
-}
+        .download-receipt-btn {
+            min-width: 170px;
+            height: 34px;
+            border: 1px solid #2f6fc7;
+            border-radius: 6px;
+            background: #fff;
+            color: #2f6fc7;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 14px;
+        }
 
-.download-receipt-btn:hover {
-    background: #2f6fc7;
-    color: #fff;
-}
+        .download-receipt-btn:hover {
+            background: #2f6fc7;
+            color: #fff;
+        }
     </style>
 @endsection
 
@@ -411,30 +412,30 @@
 
         $steps = [
             'order_pending' => [
-                'label' => 'Order',
+                'label' => __('track_order.track_detail.order'),
                 'icon' =>
                     '<img src="' .
                     asset('assets/images/icon/solar_box-bold-duotone.png') .
                     '" alt="" class="img-fluid">',
             ],
             'design_in_progress' => [
-                'label' => 'Design Approve',
+                'label' => __('track_order.track_detail.design_approve'),
                 'icon' =>
                     '<img src="' . asset('assets/images/icon/clarity_design-solid.png') . '" alt="" class="img-fluid">',
             ],
             'production' => [
-                'label' => 'Production',
+                'label' => __('track_order.track_detail.production'),
                 'icon' =>
                     '<img src="' .
                     asset('assets/images/icon/flat-color-icons_factory.png') .
                     '" alt="" class="img-fluid">',
             ],
             'delivery' => [
-                'label' => 'Delivery',
+                'label' => __('track_order.track_detail.delivery'),
                 'icon' => '<img src="' . asset('assets/images/icon/delivery.png') . '" alt="" class="img-fluid">',
             ],
             'delivered' => [
-                'label' => 'Shipped',
+                'label' => __('track_order.track_detail.shipped'),
                 'icon' =>
                     '<img src="' .
                     asset('assets/images/icon/solar_box-bold-duotone.png') .
@@ -458,36 +459,37 @@
 
     <section class="tracking-page">
         <div class="tracking-back-wrap">
-            <a href="{{ route('track-order.index') }}" class="tracking-back"><img src="{{ asset('assets/images/icon/Vector (9).png') }}" alt=""> Track Order</a>
+            <a href="{{ route('track-order.index') }}" class="tracking-back"><img
+                    src="{{ asset('assets/images/icon/Vector (9).png') }}" alt=""> Track Order</a>
 
         </div>
 
         <div class="tracking-container">
             <div class="tracking-top-grid">
                 <div>
-                    <div class="tracking-label">Order Number</div>
+                    <div class="tracking-label">{{ __('track_order.track_detail.order_number') }}</div>
                     <div class="tracking-value">{{ $order->order_no }}</div>
                 </div>
 
                 <div>
-                    <div class="tracking-label">Date</div>
+                    <div class="tracking-label">{{ __('track_order.track_detail.data') }}</div>
                     <div class="tracking-value">{{ $order->created_at?->format('d-m-Y') }}</div>
                 </div>
 
                 <div>
-                    <div class="tracking-label">No of items</div>
+                    <div class="tracking-label">{{ __('track_order.track_detail.number_of_items') }}</div>
                     <div class="tracking-value">{{ $order->items->count() }} Items</div>
                 </div>
 
                 <div>
-                    <div class="tracking-label">Status</div>
+                    <div class="tracking-label">{{ __('track_order.track_detail.status') }}</div>
                     <div class="tracking-status-badge">
                         {{ ucwords(str_replace('_', ' ', $status)) }}
                     </div>
                 </div>
             </div>
 
-            <div class="tracking-section-title">Order Tracking</div>
+            <div class="tracking-section-title">{{ __('track_order.track_detail.order_track_result') }}</div>
 
             <div class="progress-track" style="--progress-width: {{ $progressWidth }}%;">
                 <div class="progress-line">
@@ -517,10 +519,10 @@
 
             <div class="tracking-info-grid">
                 <div class="tracking-info">
-                    <h3>Customer Information</h3>
+                    <h3>{{ __('track_order.track_detail.customer_information') }}</h3>
 
                     <div class="tracking-info-block">
-                        <strong>Contact</strong>
+                        <strong>{{ __('track_order.track_detail.contact') }}</strong>
                         {{ $order->customer->personal_first_name ?? '-' }}
                         {{ $order->customer->personal_last_name ?? '' }}<br>
                         {{ $order->customer->personal_email ?? '-' }}<br>
@@ -528,7 +530,7 @@
                     </div>
 
                     <div class="tracking-info-block">
-                        <strong>Shipping Address</strong>
+                        <strong>{{ __('track_order.track_detail.shipping_address') }}</strong>
                         {{ $order->customer->shipping_first_name ?? '' }}
                         {{ $order->customer->shipping_last_name ?? '' }}<br>
                         {{ $order->customer->shipping_postcode ?? '' }}<br>
@@ -538,7 +540,7 @@
                     </div>
 
                     <div class="tracking-info-block">
-                        <strong>Billing Address</strong>
+                        <strong>{{ __('track_order.track_detail.billing_address') }}</strong>
                         {{ $order->customer->billing_first_name ?? '' }}
                         {{ $order->customer->billing_last_name ?? '' }}<br>
                         {{ $order->customer->billing_postcode ?? '' }}<br>
@@ -549,30 +551,30 @@
                 </div>
 
                 <div class="tracking-info">
-                    <h3>Order Summary</h3>
+                    <h3>{{ __('track_order.track_detail.order_summary') }}</h3>
 
                     <div class="summary-row">
-                        <span>Order Subtotal</span>
+                        <span>{{ __('track_order.track_detail.order_subtotal') }}</span>
                         <strong>Â¥{{ number_format($order->subtotal ?? 0, 0) }}</strong>
                     </div>
 
                     <div class="summary-row">
-                        <span>Discount</span>
+                        <span>{{ __('track_order.track_detail.discount') }}</span>
                         <strong>-Â¥{{ number_format($order->discount_amount ?? 0, 0) }}</strong>
                     </div>
 
                     <div class="summary-row">
-                        <span>Shipping</span>
+                        <span>{{ __('track_order.track_detail.shipping') }}</span>
                         <strong>Â¥{{ number_format($order->shipping_fee ?? 0, 0) }}</strong>
                     </div>
 
                     <div class="summary-row">
-                        <span>Order Total</span>
+                        <span>{{ __('track_order.track_detail.total_order') }}</span>
                         <strong>Â¥{{ number_format($order->grand_total ?? 0, 0) }}</strong>
                     </div>
 
                     <div class="summary-row">
-                        <span>Name</span>
+                        <span>{{ __('track_order.track_detail.name') }}</span>
                         <strong>
                             {{ $order->customer->personal_first_name ?? '-' }}
                             {{ $order->customer->personal_last_name ?? '' }}
@@ -580,28 +582,28 @@
                     </div>
 
                     <div class="summary-row">
-                        <span>Payment Method</span>
+                        <span>{{ __('track_order.track_detail.payment_method') }}</span>
                         <strong>{{ $order->payment->payment_method ?? '-' }}</strong>
                     </div>
 
                     <div class="summary-row">
-                        <span>Payment Status</span>
+                        <span>{{ __('track_order.track_detail.payment_status') }}</span>
                         <strong>{{ ucfirst($order->payment_status ?? 'pending') }}</strong>
                     </div>
 
                     <div class="summary-row">
-                        <span>Order Status</span>
+                        <span>{{ __('track_order.track_detail.order_status') }}</span>
                         <strong>{{ ucwords(str_replace('_', ' ', $order->order_status ?? 'order_pending')) }}</strong>
                     </div>
                 </div>
             </div>
 
-            <div class="items-title">Items from the order</div>
+            <div class="items-title">{{ __('track_order.track_detail.items') }}</div>
 
             <div class="order-items-table">
-                <div>Product</div>
-                <div>Quantity</div>
-                <div>Total price</div>
+                <div>{{ __('track_order.track_detail.product') }}</div>
+                <div>{{ __('track_order.track_detail.quantity') }}</div>
+                <div>{{ __('track_order.track_detail.total_price') }}</div>
                 <div></div>
             </div>
 
@@ -654,7 +656,7 @@
                     <div>
                         @if (!empty($item->product_id))
                             <a href="#" class="buy-again-btn">
-                                Buy Again
+                                {{ __('track_order.track_detail.buy_again') }}
                             </a>
                         @endif
 
@@ -662,7 +664,7 @@
                             <button type="button" class="item-detail-toggle">
                                 <img src="{{ asset('assets/images/icon/weui_arrow-filled.png') }}" alt=""
                                     class="item-detail-toggle-icon">
-                                <span class="item-detail-toggle-text">Details</span>
+                                <span class="item-detail-toggle-text">{{ __('track_order.track_detail.details') }}</span>
                             </button>
                         @endif
                     </div>
@@ -689,10 +691,10 @@
                 </div>
             @endforeach
             <div class="download-receipt-wrap">
-    <a href="{{ route('track-order.receipt', $order->order_id) }}" class="download-receipt-btn">
-        ⭳ Download receipt
-    </a>
-</div>
+                <a href="{{ route('track-order.receipt', $order->order_id) }}" class="download-receipt-btn">
+                    ⭳ {{ __('track_order.track_detail.download_receipt') }}
+                </a>
+            </div>
         </div>
     </section>
 @endsection
