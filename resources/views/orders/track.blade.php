@@ -70,6 +70,16 @@
         font-size: 14px;
         font-weight: 700;
         cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .track-btn img {
+        width: 16px;
+        height: 16px;
+        object-fit: contain;
     }
 
     .track-error {
@@ -126,7 +136,8 @@
             </div>
 
             <button type="submit" class="track-btn">
-                ⌕ Track Order
+                <img src="{{ asset('assets/images/icon/Vector (10).png') }}" alt="">
+                Track Order
             </button>
         </form>
     </div>
