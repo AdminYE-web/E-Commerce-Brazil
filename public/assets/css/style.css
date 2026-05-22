@@ -4868,6 +4868,12 @@ body {
     gap: 16px;
 }
 
+@media (min-width: 541px) {
+    .hotstrap-feature-track.swiper-wrapper {
+        display: grid !important;
+    }
+}
+
 .hotstrap-feature-slide {
     width: 100%;
     height: auto;
