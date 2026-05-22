@@ -183,17 +183,18 @@
             </a>
         </li>
         <li>
+            <a href="{{ route('admin.quotations.index') }}"
+                class="nav-link {{ request()->routeIs('admin.quotations.*') ? 'active' : '' }}">
+                Quotations
+            </a>
+        </li>
+        <li>
             <a href="{{ route('admin.faqs.index') }}"
                 class="nav-link {{ request()->routeIs('admin.faqs.*') ? 'active' : '' }}">
                 FAQs
             </a>
         </li>
-        <li>
-    <a href="{{ route('admin.quotations.index') }}"
-       class="nav-link {{ request()->routeIs('admin.quotations.*') ? 'active' : '' }}">
-        Quotations
-    </a>
-</li>
+
     </ul>
 
     <div class="sidebar-footer">
