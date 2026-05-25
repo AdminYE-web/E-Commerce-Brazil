@@ -56,6 +56,24 @@ class ProductOptionAssignmentController extends Controller
         $assignedPivot = $product->assignedOptions
             ->keyBy('option_id');
 
+        $groups = $groups->map(function ($group) use ($assignedPivot) {
+            $group->setRelation(
+                'options',
+                $group->options
+                    ->sortBy(function ($option) use ($assignedPivot) {
+                        $pivot = $assignedPivot[$option->option_id]->pivot ?? null;
+
+                        return [
+                            $pivot->sort_order ?? 999,
+                            $option->option_name,
+                        ];
+                    })
+                    ->values()
+            );
+
+            return $group;
+        });
+
         return view('admin.product_option_assignments.edit', compact(
             'product',
             'groups',
