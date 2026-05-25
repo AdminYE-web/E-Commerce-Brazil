@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\OrderStepController;
 use App\Http\Controllers\FaqPageController;
 use App\Http\Controllers\Admin\QuotationController;
 use App\Http\Controllers\Admin\FaqController;
@@ -166,6 +167,7 @@ Route::get('/search', [SearchController::class, 'index'])
 
 Route::get('/faqs', [FaqPageController::class, 'index'])
     ->name('faqs.index');
+Route::get('/how-to-order', [OrderStepController::class, 'index'])->name('how-to-order');
 
 Route::middleware('auth')->group(function () {
     Route::get('/account', [AccountController::class, 'index'])

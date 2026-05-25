@@ -36,9 +36,9 @@
         .faq-hero-title {
             margin: 0;
             color: #000;
-            font-size: 52px;
+            font-size: 55px;
             line-height: 1.12;
-            font-weight: 900;
+            font-weight: 600;
             letter-spacing: -1px;
         }
 
@@ -304,7 +304,8 @@
         <div class="faq-hero-inner">
             <div>
                 <div class="faq-breadcrumb">
-                    <a href="{{ route('home') }}">⌂</a>
+                    <a href="{{ route('home') }}"> <img src="{{ asset('assets/images/icon/ci_house-01.png') }}"
+                            alt="FAQs"></a>
                     <span>/ FAQS</span>
                 </div>
 
@@ -314,7 +315,7 @@
             </div>
 
             <div class="faq-hero-img">
-                <img src="{{ asset('assets/images/faq/faq-hero.png') }}" alt="FAQs">
+                <img src="{{ asset('assets/images/icon/image-Photoroom (14) 1.png') }}" alt="FAQs">
             </div>
         </div>
     </section>
