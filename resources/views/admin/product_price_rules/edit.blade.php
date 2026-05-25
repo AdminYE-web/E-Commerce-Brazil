@@ -626,7 +626,7 @@
                         min="1"
                     >
 
-                    <span class="tier-suffix">以上</span>
+                    <span class="tier-suffix"></span>
 
                     <input
                         type="hidden"
@@ -672,10 +672,10 @@
             }
         });
         /*
-    |--------------------------------------------------------------------------
-    | Load Required Options by selected product
-    |--------------------------------------------------------------------------
-    */
+        |--------------------------------------------------------------------------
+        | Load Required Options by selected product
+        |--------------------------------------------------------------------------
+        */
 
         const productSelect = document.getElementById('product_id');
         const requiredOptionsBox = document.getElementById('required-options-box');

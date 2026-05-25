@@ -91,6 +91,10 @@ class ProductOptionAssignmentController extends Controller
             'options.*.sort_order' => 'nullable|integer|min:0',
             'options.*.is_default' => 'nullable|boolean',
             'options.*.is_active' => 'nullable|boolean',
+            'options.*.qty_rule_type' => 'nullable|in:min,max,exact,range',
+            'options.*.min_qty' => 'nullable|integer|min:1',
+            'options.*.max_qty' => 'nullable|integer|min:1',
+            'options.*.exact_qty' => 'nullable|integer|min:1',
         ]);
 
         $syncData = [];
@@ -98,10 +102,38 @@ class ProductOptionAssignmentController extends Controller
         foreach ($request->input('options', []) as $item) {
             $optionId = (int) $item['option_id'];
 
+            $qtyRuleType = $item['qty_rule_type'] ?? null;
+
+            $minQty = null;
+            $maxQty = null;
+            $exactQty = null;
+
+            if ($qtyRuleType === 'min') {
+                $minQty = !empty($item['min_qty']) ? (int) $item['min_qty'] : null;
+            }
+
+            if ($qtyRuleType === 'max') {
+                $maxQty = !empty($item['max_qty']) ? (int) $item['max_qty'] : null;
+            }
+
+            if ($qtyRuleType === 'exact') {
+                $exactQty = !empty($item['exact_qty']) ? (int) $item['exact_qty'] : null;
+            }
+
+            if ($qtyRuleType === 'range') {
+                $minQty = !empty($item['min_qty']) ? (int) $item['min_qty'] : null;
+                $maxQty = !empty($item['max_qty']) ? (int) $item['max_qty'] : null;
+            }
+
             $syncData[$optionId] = [
                 'sort_order' => $item['sort_order'] ?? 0,
                 'is_default' => !empty($item['is_default']) ? 1 : 0,
                 'is_active' => !empty($item['is_active']) ? 1 : 0,
+
+                'qty_rule_type' => $qtyRuleType,
+                'min_qty' => $minQty,
+                'max_qty' => $maxQty,
+                'exact_qty' => $exactQty,
             ];
         }
 

@@ -235,6 +235,32 @@
         .option-setting-grid {
             grid-template-columns: 120px 120px;
         }
+
+        .option-setting-grid-qty {
+            grid-template-columns: 120px 120px 180px 120px 120px 120px;
+        }
+
+        .option-setting-grid select {
+            width: 100%;
+            margin-top: 6px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 10px;
+            font-size: 14px;
+            background: #fff;
+        }
+
+        @media (max-width: 900px) {
+            .option-setting-grid-qty {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .option-setting-grid-qty {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 @endsection
 
@@ -307,7 +333,7 @@
                                             </span>
                                         </label>
 
-                                        </label>
+
                                     </div>
 
                                     <div class="option-setting option-setting-{{ $option->option_id }}"
@@ -315,7 +341,7 @@
                                         <input type="hidden" name="options[{{ $option->option_id }}][option_id]"
                                             value="{{ $option->option_id }}" {{ $isChecked ? '' : 'disabled' }}>
 
-                                        <div class="option-setting-grid">
+                                        <div class="option-setting-grid option-setting-grid-qty">
                                             <input type="hidden" class="option-sort-input"
                                                 name="options[{{ $option->option_id }}][sort_order]"
                                                 value="{{ $pivot->sort_order ?? $loop->iteration }}"
@@ -333,6 +359,54 @@
                                                     value="1" {{ !$pivot || $pivot->is_active ? 'checked' : '' }}
                                                     {{ $isChecked ? '' : 'disabled' }}>
                                                 Active
+                                            </label>
+
+                                            <label>
+                                                Quantity Rule
+                                                <select name="options[{{ $option->option_id }}][qty_rule_type]"
+                                                    class="qty-rule-select" {{ $isChecked ? '' : 'disabled' }}>
+                                                    <option value=""
+                                                        {{ empty($pivot?->qty_rule_type) ? 'selected' : '' }}>
+                                                        No limit
+                                                    </option>
+                                                    <option value="min"
+                                                        {{ ($pivot?->qty_rule_type ?? '') === 'min' ? 'selected' : '' }}>
+                                                        Minimum only
+                                                    </option>
+                                                    <option value="max"
+                                                        {{ ($pivot?->qty_rule_type ?? '') === 'max' ? 'selected' : '' }}>
+                                                        Maximum only
+                                                    </option>
+                                                    <option value="exact"
+                                                        {{ ($pivot?->qty_rule_type ?? '') === 'exact' ? 'selected' : '' }}>
+                                                        Exact quantity only
+                                                    </option>
+                                                    <option value="range"
+                                                        {{ ($pivot?->qty_rule_type ?? '') === 'range' ? 'selected' : '' }}>
+                                                        Min - Max range
+                                                    </option>
+                                                </select>
+                                            </label>
+
+                                            <label>
+                                                Min Qty
+                                                <input type="number" name="options[{{ $option->option_id }}][min_qty]"
+                                                    value="{{ $pivot->min_qty ?? '' }}" min="1"
+                                                    {{ $isChecked ? '' : 'disabled' }}>
+                                            </label>
+
+                                            <label>
+                                                Max Qty
+                                                <input type="number" name="options[{{ $option->option_id }}][max_qty]"
+                                                    value="{{ $pivot->max_qty ?? '' }}" min="1"
+                                                    {{ $isChecked ? '' : 'disabled' }}>
+                                            </label>
+
+                                            <label>
+                                                Exact Qty
+                                                <input type="number" name="options[{{ $option->option_id }}][exact_qty]"
+                                                    value="{{ $pivot->exact_qty ?? '' }}" min="1"
+                                                    {{ $isChecked ? '' : 'disabled' }}>
                                             </label>
                                         </div>
                                     </div>
@@ -365,7 +439,7 @@
 
                 if (!setting) return;
 
-                const inputs = setting.querySelectorAll('input');
+                const inputs = setting.querySelectorAll('input, select, textarea');
 
                 if (this.checked) {
                     setting.style.display = 'block';

@@ -953,16 +953,16 @@
         }
 
         /* .customize-option-group.has-error h2 {
-                                                        color: #dc2626;
-                                                    } */
+                                                                            color: #dc2626;
+                                                                        } */
 
         /* .customize-option-group.has-error .option-button-item,
-                                                    .customize-option-group.has-error .option-image-card,
-                                                    .customize-option-group.has-error .option-variant-card,
-                                                    .customize-option-group.has-error .option-compact-card,
-                                                    .customize-option-group.has-error .option-select-detail {
-                                                        border-color: #dc2626;
-                                                    } */
+                                                                        .customize-option-group.has-error .option-image-card,
+                                                                        .customize-option-group.has-error .option-variant-card,
+                                                                        .customize-option-group.has-error .option-compact-card,
+                                                                        .customize-option-group.has-error .option-select-detail {
+                                                                            border-color: #dc2626;
+                                                                        } */
         .previous-order-box {
             max-width: 620px;
         }
@@ -1021,8 +1021,8 @@
         }
 
         /* =========================
-                               STEP FOCUS / OVERLAY MODE
-                            ========================= */
+                                                   STEP FOCUS / OVERLAY MODE
+                                                ========================= */
 
         .customize-option-group {
             position: relative;
@@ -1215,6 +1215,19 @@
         .is-hidden-compact-option {
             display: none;
         }
+
+        #quantity.is-locked-by-option {
+            background: #f3f4f6;
+            color: #6b7280;
+            cursor: not-allowed;
+        }
+
+        .quantity-rule-message {
+            margin-top: 8px;
+            color: #dc2626;
+            font-size: 14px;
+            font-weight: 500;
+        }
     </style>
 @endsection
 
@@ -1328,6 +1341,10 @@
                                                     data-price="{{ $option->additional_price ?? 0 }}"
                                                     data-price-type="{{ $option->price_type }}"
                                                     data-option-id="{{ $option->option_id }}"
+                                                    data-qty-rule-type="{{ $option->pivot->qty_rule_type }}"
+                                                    data-min-qty="{{ $option->pivot->min_qty }}"
+                                                    data-max-qty="{{ $option->pivot->max_qty }}"
+                                                    data-exact-qty="{{ $option->pivot->exact_qty }}"
                                                     {{ old("options.{$option->option_group_id}", $editingOptions[$option->option_group_id] ?? null) == $option->option_id || (!$editingCartItem && $option->pivot->is_default) ? 'checked' : '' }}>
 
                                                 <div class="option-image-box">
@@ -1366,6 +1383,10 @@
                                                     data-price="{{ $option->additional_price ?? 0 }}"
                                                     data-price-type="{{ $option->price_type }}"
                                                     data-option-id="{{ $option->option_id }}"
+                                                    data-qty-rule-type="{{ $option->pivot->qty_rule_type }}"
+                                                    data-min-qty="{{ $option->pivot->min_qty }}"
+                                                    data-max-qty="{{ $option->pivot->max_qty }}"
+                                                    data-exact-qty="{{ $option->pivot->exact_qty }}"
                                                     {{ old("options.{$option->option_group_id}", $editingOptions[$option->option_group_id] ?? null) == $option->option_id || (!$editingCartItem && $option->pivot->is_default) ? 'checked' : '' }}>
 
                                                 <span class="variant-title">
@@ -1422,6 +1443,10 @@
                                                     data-price="{{ $option->additional_price ?? 0 }}"
                                                     data-price-type="{{ $option->price_type }}"
                                                     data-option-id="{{ $option->option_id }}"
+                                                    data-qty-rule-type="{{ $option->pivot->qty_rule_type }}"
+                                                    data-min-qty="{{ $option->pivot->min_qty }}"
+                                                    data-max-qty="{{ $option->pivot->max_qty }}"
+                                                    data-exact-qty="{{ $option->pivot->exact_qty }}"
                                                     {{ old("options.{$option->option_group_id}", $editingOptions[$option->option_group_id] ?? null) == $option->option_id || (!$editingCartItem && $option->pivot->is_default) ? 'checked' : '' }}>
 
                                                 <div class="option-compact-image">
@@ -1468,6 +1493,10 @@
                                                     data-price="{{ $option->additional_price ?? 0 }}"
                                                     data-price-type="{{ $option->price_type }}"
                                                     data-option-id="{{ $option->option_id }}"
+                                                    data-qty-rule-type="{{ $option->pivot->qty_rule_type }}"
+                                                    data-min-qty="{{ $option->pivot->min_qty }}"
+                                                    data-max-qty="{{ $option->pivot->max_qty }}"
+                                                    data-exact-qty="{{ $option->pivot->exact_qty }}"
                                                     {{ old("options.{$option->option_group_id}", $editingOptions[$option->option_group_id] ?? null) == $option->option_id || (!$editingCartItem && $option->pivot->is_default) ? 'checked' : '' }}>
 
                                                 <span class="color-circle"
@@ -1538,6 +1567,10 @@
                                                     data-price-type="{{ $option->price_type }}"
                                                     data-image="{{ $imagePath }}"
                                                     data-detail="{{ e($option->option_detail ?? '') }}"
+                                                    data-qty-rule-type="{{ $option->pivot->qty_rule_type }}"
+                                                    data-min-qty="{{ $option->pivot->min_qty }}"
+                                                    data-max-qty="{{ $option->pivot->max_qty }}"
+                                                    data-exact-qty="{{ $option->pivot->exact_qty }}"
                                                     {{ old("options.{$option->option_group_id}", $editingOptions[$option->option_group_id] ?? null) == $option->option_id || (!$editingCartItem && $option->pivot->is_default) ? 'selected' : '' }}>
                                                     {{ $option->option_name }}
                                                 </option>
@@ -1598,6 +1631,10 @@
                                                                 data-price="{{ $option->additional_price ?? 0 }}"
                                                                 data-price-type="{{ $option->price_type }}"
                                                                 data-option-id="{{ $option->option_id }}"
+                                                                data-qty-rule-type="{{ $option->pivot->qty_rule_type }}"
+                                                                data-min-qty="{{ $option->pivot->min_qty }}"
+                                                                data-max-qty="{{ $option->pivot->max_qty }}"
+                                                                data-exact-qty="{{ $option->pivot->exact_qty }}"
                                                                 {{ old("options.{$option->option_group_id}", $editingOptions[$option->option_group_id] ?? null) == $option->option_id || (!$editingCartItem && $option->pivot->is_default) ? 'checked' : '' }}>
 
                                                             <span>{{ $option->option_name }}</span>
@@ -1640,6 +1677,10 @@
                                                         data-price="{{ $option->additional_price ?? 0 }}"
                                                         data-price-type="{{ $option->price_type }}"
                                                         data-option-id="{{ $option->option_id }}"
+                                                        data-qty-rule-type="{{ $option->pivot->qty_rule_type }}"
+                                                        data-min-qty="{{ $option->pivot->min_qty }}"
+                                                        data-max-qty="{{ $option->pivot->max_qty }}"
+                                                        data-exact-qty="{{ $option->pivot->exact_qty }}"
                                                         data-is-yes="{{ in_array(strtolower(trim($option->option_name)), ['yes', 'sim']) ? 1 : 0 }}"
                                                         {{ (int) $selectedOptionId === (int) $option->option_id ? 'checked' : '' }}>
 
@@ -1674,6 +1715,10 @@
                                                     data-price="{{ $option->additional_price ?? 0 }}"
                                                     data-price-type="{{ $option->price_type }}"
                                                     data-option-id="{{ $option->option_id }}"
+                                                    data-qty-rule-type="{{ $option->pivot->qty_rule_type }}"
+                                                    data-min-qty="{{ $option->pivot->min_qty }}"
+                                                    data-max-qty="{{ $option->pivot->max_qty }}"
+                                                    data-exact-qty="{{ $option->pivot->exact_qty }}"
                                                     {{ old("options.{$option->option_group_id}", $editingOptions[$option->option_group_id] ?? null) == $option->option_id || (!$editingCartItem && $option->pivot->is_default) ? 'checked' : '' }}>
 
                                                 <span>{{ $option->option_name }}</span>
@@ -1691,7 +1736,8 @@
                             <div class="quantity-label-row">
                                 <label for="quantity">{{ __('product.product_detail.Quantity') }}</label>
 
-                                <span class="minimum-note">
+                                <span class="minimum-note" id="quantity-rule-message"
+                                    data-default-text="** {{ __('product.product_detail.minimum_order') }} **">
                                     ** {{ __('product.product_detail.minimum_order') }} **
                                 </span>
                             </div>
@@ -1702,6 +1748,8 @@
 
                                 <span>{{ __('product.product_detail.unit') }}</span>
                             </div>
+
+                            <div id="quantity-rule-message" class="quantity-rule-message" style="display:none;"></div>
 
                             @error('quantity')
                                 <div style="color:red; margin-top:8px;">
@@ -1815,6 +1863,139 @@
             });
 
             return selected;
+        }
+
+        function getSelectedQuantityRuleItems() {
+            const selectedItems = [];
+
+            document.querySelectorAll('#customize-form input[type="radio"]:checked').forEach(function(input) {
+                const groupEl = input.closest('.customize-option-group, .grouped-button-set');
+
+                if (groupEl && groupEl.style.display === 'none') {
+                    return;
+                }
+
+                selectedItems.push({
+                    optionName: input.dataset.optionName || 'Selected option',
+                    ruleType: input.dataset.qtyRuleType || '',
+                    minQty: parseInt(input.dataset.minQty || 0),
+                    maxQty: parseInt(input.dataset.maxQty || 0),
+                    exactQty: parseInt(input.dataset.exactQty || 0),
+                });
+            });
+
+            document.querySelectorAll('#customize-form select.option-select-detail').forEach(function(select) {
+                const groupEl = select.closest('.customize-option-group');
+
+                if (groupEl && groupEl.style.display === 'none') {
+                    return;
+                }
+
+                const selected = select.options[select.selectedIndex];
+
+                if (!selected || !selected.value) {
+                    return;
+                }
+
+                selectedItems.push({
+                    optionName: selected.dataset.optionName || selected.textContent || 'Selected option',
+                    ruleType: selected.dataset.qtyRuleType || '',
+                    minQty: parseInt(selected.dataset.minQty || 0),
+                    maxQty: parseInt(selected.dataset.maxQty || 0),
+                    exactQty: parseInt(selected.dataset.exactQty || 0),
+                });
+            });
+
+            return selectedItems;
+        }
+
+        function applyQuantityRuleLock() {
+            const quantityInput = document.getElementById('quantity');
+            const messageBox = document.getElementById('quantity-rule-message');
+
+            if (!quantityInput) {
+                return;
+            }
+
+            const rules = getSelectedQuantityRuleItems();
+
+            const exactRule = rules.find(function(rule) {
+                return rule.ruleType === 'exact' && rule.exactQty > 0;
+            });
+
+            if (exactRule) {
+                quantityInput.value = exactRule.exactQty;
+                quantityInput.min = exactRule.exactQty;
+                quantityInput.max = exactRule.exactQty;
+                quantityInput.readOnly = true;
+                quantityInput.classList.add('is-locked-by-option');
+
+                if (messageBox) {
+                    messageBox.style.display = '';
+                    messageBox.textContent = exactRule.optionName + ': quantity is fixed at ' + exactRule.exactQty +
+                        ' pcs.';
+                }
+
+                updateSummary();
+                return;
+            }
+
+            quantityInput.readOnly = false;
+            quantityInput.classList.remove('is-locked-by-option');
+
+            quantityInput.min = 20;
+            quantityInput.removeAttribute('max');
+
+            if (messageBox) {
+                messageBox.style.display = 'none';
+                messageBox.textContent = '';
+            }
+
+            updateSummary();
+        }
+
+        function validateOptionQuantityRules() {
+            const quantityInput = document.getElementById('quantity');
+            const quantity = parseInt(quantityInput?.value || 0);
+            const rules = getSelectedQuantityRuleItems();
+
+            for (const rule of rules) {
+                if (rule.ruleType === 'min' && rule.minQty && quantity < rule.minQty) {
+                    alert(rule.optionName + ': minimum order is ' + rule.minQty + ' pcs.');
+                    quantityInput.focus();
+                    return false;
+                }
+
+                if (rule.ruleType === 'max' && rule.maxQty && quantity > rule.maxQty) {
+                    alert(rule.optionName + ': maximum order is ' + rule.maxQty + ' pcs.');
+                    quantityInput.focus();
+                    return false;
+                }
+
+                if (rule.ruleType === 'exact' && rule.exactQty && quantity !== rule.exactQty) {
+                    alert(rule.optionName + ': order quantity must be exactly ' + rule.exactQty + ' pcs.');
+                    quantityInput.value = rule.exactQty;
+                    quantityInput.focus();
+                    updateSummary();
+                    return false;
+                }
+
+                if (rule.ruleType === 'range') {
+                    if (rule.minQty && quantity < rule.minQty) {
+                        alert(rule.optionName + ': minimum order is ' + rule.minQty + ' pcs.');
+                        quantityInput.focus();
+                        return false;
+                    }
+
+                    if (rule.maxQty && quantity > rule.maxQty) {
+                        alert(rule.optionName + ': maximum order is ' + rule.maxQty + ' pcs.');
+                        quantityInput.focus();
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
 
         function findMatchedPriceRule(selectedOptionIds) {
@@ -2356,7 +2537,7 @@
 
             isUpdatingDependencies = false;
 
-            updateSummary();
+            applyQuantityRuleLock();
 
             if (typeof refreshStepModeAfterDependencyChange === 'function') {
                 refreshStepModeAfterDependencyChange();
@@ -2549,6 +2730,20 @@
                     updateSummary();
                 });
             });
+            document.querySelectorAll('#customize-form input[type="radio"].js-option-input').forEach(function(
+                input) {
+                input.addEventListener('change', function() {
+                    applyQuantityRuleLock();
+                });
+            });
+
+            document.querySelectorAll('#customize-form select.option-select-detail').forEach(function(select) {
+                select.addEventListener('change', function() {
+                    applyQuantityRuleLock();
+                });
+            });
+
+            applyQuantityRuleLock();
 
             if (quantityInput) {
                 quantityInput.addEventListener('input', updateSummary);
@@ -2836,6 +3031,14 @@
                     e.preventDefault();
                     e.stopPropagation();
                     alert('Please select all required options.');
+                    return false;
+                }
+
+                const isQuantityValid = validateOptionQuantityRules();
+
+                if (!isQuantityValid) {
+                    e.preventDefault();
+                    e.stopPropagation();
                     return false;
                 }
             });
@@ -3159,5 +3362,154 @@
                 });
             });
         });
+    </script>
+    <script>
+        function getSelectedQuantityRules() {
+            const rules = [];
+
+            document.querySelectorAll('#customize-form input[type="radio"]:checked').forEach(function(input) {
+                const groupEl = input.closest('.customize-option-group, .grouped-button-set');
+
+                if (groupEl && groupEl.style.display === 'none') {
+                    return;
+                }
+
+                const ruleType = input.dataset.qtyRuleType || '';
+
+                if (!ruleType) {
+                    return;
+                }
+
+                rules.push({
+                    optionName: input.dataset.optionName || 'Selected option',
+                    ruleType: ruleType,
+                    minQty: parseInt(input.dataset.minQty || 0),
+                    maxQty: parseInt(input.dataset.maxQty || 0),
+                    exactQty: parseInt(input.dataset.exactQty || 0),
+                });
+            });
+
+            document.querySelectorAll('#customize-form select.option-select-detail').forEach(function(select) {
+                const groupEl = select.closest('.customize-option-group');
+
+                if (groupEl && groupEl.style.display === 'none') {
+                    return;
+                }
+
+                const selected = select.options[select.selectedIndex];
+
+                if (!selected) {
+                    return;
+                }
+
+                const ruleType = selected.dataset.qtyRuleType || '';
+
+                if (!ruleType) {
+                    return;
+                }
+
+                rules.push({
+                    optionName: selected.dataset.optionName || selected.textContent || 'Selected option',
+                    ruleType: ruleType,
+                    minQty: parseInt(selected.dataset.minQty || 0),
+                    maxQty: parseInt(selected.dataset.maxQty || 0),
+                    exactQty: parseInt(selected.dataset.exactQty || 0),
+                });
+            });
+
+            return rules;
+        }
+    </script>
+    <script>
+        function getSelectedQuantityRuleInputs() {
+            const selectedItems = [];
+
+            document.querySelectorAll('#customize-form input[type="radio"]:checked').forEach(function(input) {
+                const groupEl = input.closest('.customize-option-group, .grouped-button-set');
+
+                if (groupEl && groupEl.style.display === 'none') {
+                    return;
+                }
+
+                selectedItems.push({
+                    element: input,
+                    optionName: input.dataset.optionName || 'Selected option',
+                    ruleType: input.dataset.qtyRuleType || '',
+                    minQty: parseInt(input.dataset.minQty || 0),
+                    maxQty: parseInt(input.dataset.maxQty || 0),
+                    exactQty: parseInt(input.dataset.exactQty || 0),
+                });
+            });
+
+            document.querySelectorAll('#customize-form select.option-select-detail').forEach(function(select) {
+                const groupEl = select.closest('.customize-option-group');
+
+                if (groupEl && groupEl.style.display === 'none') {
+                    return;
+                }
+
+                const selected = select.options[select.selectedIndex];
+
+                if (!selected || !selected.value) {
+                    return;
+                }
+
+                selectedItems.push({
+                    element: selected,
+                    optionName: selected.dataset.optionName || selected.textContent || 'Selected option',
+                    ruleType: selected.dataset.qtyRuleType || '',
+                    minQty: parseInt(selected.dataset.minQty || 0),
+                    maxQty: parseInt(selected.dataset.maxQty || 0),
+                    exactQty: parseInt(selected.dataset.exactQty || 0),
+                });
+            });
+
+            return selectedItems;
+        }
+
+        function applyQuantityRuleLock() {
+            const quantityInput = document.getElementById('quantity');
+            const messageBox = document.getElementById('quantity-rule-message');
+
+            if (!quantityInput) {
+                return;
+            }
+
+            const selectedRules = getSelectedQuantityRuleInputs();
+
+            const exactRule = selectedRules.find(function(rule) {
+                return rule.ruleType === 'exact' && rule.exactQty > 0;
+            });
+
+            if (exactRule) {
+                quantityInput.value = exactRule.exactQty;
+                quantityInput.min = exactRule.exactQty;
+                quantityInput.max = exactRule.exactQty;
+                quantityInput.readOnly = true;
+                quantityInput.classList.add('is-locked-by-option');
+
+                if (messageBox) {
+                    messageBox.style.display = '';
+                    messageBox.textContent = exactRule.optionName + ': quantity is fixed at ' + exactRule.exactQty +
+                        ' pcs.';
+                }
+
+                updateSummary();
+                return;
+            }
+
+            quantityInput.readOnly = false;
+            quantityInput.classList.remove('is-locked-by-option');
+
+            quantityInput.min = 20;
+            quantityInput.removeAttribute('max');
+
+            if (messageBox) {
+                messageBox.style.display = 'none';
+                messageBox.textContent = '';
+            }
+
+            updateSummary();
+        }
     </script>
 @endsection

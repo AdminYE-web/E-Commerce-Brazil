@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Faq;
 use App\Models\Category;
+use App\Models\Faq;
 use App\Models\Material;
 use App\Models\OptionDependency;
 use App\Models\Product;
@@ -11,7 +11,6 @@ use App\Models\ProductListBanner;
 use App\Models\ProductOptionGroupOrder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-
 
 class ProductListController extends Controller
 {
@@ -23,7 +22,7 @@ class ProductListController extends Controller
 
         $langKey = $this->getLangKey();
 
-        $sharedData = Cache::remember('product_list_shared_components_' . $langKey, 86400, function () use ($langKey) {
+        $sharedData = Cache::remember('product_list_shared_components_'.$langKey, 86400, function () use ($langKey) {
             return [
                 'banners' => ProductListBanner::where('is_active', 1)
                     ->orderBy('sort_order')
@@ -67,8 +66,6 @@ class ProductListController extends Controller
             ]);
         }
 
-
-
         return view('products.index', compact(
             'products',
             'categories',
@@ -97,7 +94,7 @@ class ProductListController extends Controller
     | Redirect to translated product if current product language is different
     |--------------------------------------------------------------------------
     */
-        if ($product->language !== $langKey && !empty($product->translation_key)) {
+        if ($product->language !== $langKey && ! empty($product->translation_key)) {
             $translatedProduct = Product::where('translation_key', $product->translation_key)
                 ->where('language', $langKey)
                 ->where('is_active', 1)
@@ -190,7 +187,7 @@ class ProductListController extends Controller
                             return $option->language === $langKey;
                         })
                         ->pluck('option_id')
-                        ->map(fn($id) => (int) $id)
+                        ->map(fn ($id) => (int) $id)
                         ->values(),
                     'tiers' => $rule->tiers
                         ->map(function ($tier) {
@@ -222,7 +219,7 @@ class ProductListController extends Controller
     | Redirect to translated product if current product language is different
     |--------------------------------------------------------------------------
     */
-        if ($product->language !== $langKey && !empty($product->translation_key)) {
+        if ($product->language !== $langKey && ! empty($product->translation_key)) {
             $translatedProduct = Product::where('translation_key', $product->translation_key)
                 ->where('language', $langKey)
                 ->where('is_active', 1)
@@ -234,7 +231,7 @@ class ProductListController extends Controller
             }
         }
 
-        if ((int) $product->product_type !== 1) {
+        if ((int) $product->product_type !== 2) {
             abort(404);
         }
 
@@ -315,7 +312,7 @@ class ProductListController extends Controller
                             return $option->language === $langKey;
                         })
                         ->pluck('option_id')
-                        ->map(fn($id) => (int) $id)
+                        ->map(fn ($id) => (int) $id)
                         ->values(),
                     'tiers' => $rule->tiers
                         ->map(function ($tier) {
@@ -411,6 +408,7 @@ class ProductListController extends Controller
 
         return view($views, compact('product', 'relatedProducts', 'productFaqs'));
     }
+
     public function order($code)
     {
         $langKey = $this->getLangKey();
@@ -518,7 +516,7 @@ class ProductListController extends Controller
                             return $option->language === $langKey;
                         })
                         ->pluck('option_id')
-                        ->map(fn($id) => (int) $id)
+                        ->map(fn ($id) => (int) $id)
                         ->values(),
                     'tiers' => $rule->tiers
                         ->map(function ($tier) {
