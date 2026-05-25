@@ -351,6 +351,14 @@
                     handle: '.group-drag-handle',
                     ghostClass: 'sortable-ghost',
                     chosenClass: 'sortable-chosen',
+
+                    // ทำให้ลากใกล้ขอบจอแล้ว scroll ตาม
+                    scroll: true,
+                    forceAutoScrollFallback: true,
+                    scrollSensitivity: 80,
+                    scrollSpeed: 12,
+                    bubbleScroll: true,
+
                     onEnd: function() {
                         updateProductGroupSortOrder();
                     }
