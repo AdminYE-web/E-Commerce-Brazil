@@ -355,8 +355,8 @@
                     // ทำให้ลากใกล้ขอบจอแล้ว scroll ตาม
                     scroll: true,
                     forceAutoScrollFallback: true,
-                    scrollSensitivity: 80,
-                    scrollSpeed: 12,
+                    scrollSensitivity: 120,
+                    scrollSpeed: 18,
                     bubbleScroll: true,
 
                     onEnd: function() {
