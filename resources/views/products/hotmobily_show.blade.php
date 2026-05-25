@@ -953,16 +953,16 @@
         }
 
         /* .customize-option-group.has-error h2 {
-                                color: #dc2626;
-                            } */
+                                            color: #dc2626;
+                                        } */
 
         /* .customize-option-group.has-error .option-button-item,
-                            .customize-option-group.has-error .option-image-card,
-                            .customize-option-group.has-error .option-variant-card,
-                            .customize-option-group.has-error .option-compact-card,
-                            .customize-option-group.has-error .option-select-detail {
-                                border-color: #dc2626;
-                            } */
+                                        .customize-option-group.has-error .option-image-card,
+                                        .customize-option-group.has-error .option-variant-card,
+                                        .customize-option-group.has-error .option-compact-card,
+                                        .customize-option-group.has-error .option-select-detail {
+                                            border-color: #dc2626;
+                                        } */
         .previous-order-box {
             max-width: 620px;
         }
@@ -1021,8 +1021,8 @@
         }
 
         /* =========================
-       STEP FOCUS / OVERLAY MODE
-    ========================= */
+                   STEP FOCUS / OVERLAY MODE
+                ========================= */
 
         .customize-option-group {
             position: relative;
@@ -1210,6 +1210,10 @@
                 right: 12px;
                 top: 12px;
             }
+        }
+
+        .is-hidden-compact-option {
+            display: none;
         }
     </style>
 @endsection
@@ -1409,7 +1413,8 @@
                                 @elseif($displayType === 'image_grid_compact')
                                     <div class="option-compact-grid">
                                         @foreach ($options as $option)
-                                            <label class="option-compact-card">
+                                            <label
+                                                class="option-compact-card {{ $loop->index >= 8 ? 'is-hidden-compact-option' : '' }}">
                                                 <input type="radio" name="options[{{ $option->option_group_id }}]"
                                                     value="{{ $option->option_id }}" data-group-name="{{ $groupName }}"
                                                     class="js-option-input" data-option-name="{{ $option->option_name }}"
@@ -3111,6 +3116,27 @@
 
             // เปิดให้ function อื่นเรียกได้
             window.refreshStepModeAfterDependencyChange = refreshStepModeAfterDependencyChange;
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.option-view-more-btn').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    const group = this.closest('.customize-option-group');
+
+                    if (!group) {
+                        return;
+                    }
+
+                    const hiddenItems = group.querySelectorAll('.is-hidden-compact-option');
+
+                    hiddenItems.forEach(function(item) {
+                        item.classList.remove('is-hidden-compact-option');
+                    });
+
+                    this.closest('.option-view-more-wrap').style.display = 'none';
+                });
+            });
         });
     </script>
 @endsection
