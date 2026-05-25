@@ -11,45 +11,45 @@ use Illuminate\Http\Request;
 class OptionDependencyController extends Controller
 {
     public function index()
-{
-    $language = session('admin_product_language', 'pt');
+    {
+        $language = session('admin_product_language', 'pt');
 
-    $dependencies = OptionDependency::with([
+        $dependencies = OptionDependency::with([
             'parentOption.group',
             'targetGroup',
             'targetOption.group',
         ])
-        ->whereHas('parentOption', function ($query) use ($language) {
-            $query->where('language', $language);
-        })
-        ->orderBy('dependency_id', 'desc')
-        ->paginate(20);
+            ->whereHas('parentOption', function ($query) use ($language) {
+                $query->where('language', $language);
+            })
+            ->orderBy('dependency_id', 'desc')
+            ->paginate(20);
 
-    return view('admin.option_dependencies.index', compact('dependencies', 'language'));
-}
+        return view('admin.option_dependencies.index', compact('dependencies', 'language'));
+    }
 
     public function create()
-{
-    $language = session('admin_product_language', 'pt');
+    {
+        $language = session('admin_product_language', 'pt');
 
-    $options = ProductOption::with('group')
-        ->where('language', $language)
-        ->where('is_active', 1)
-        ->whereHas('group', function ($query) use ($language) {
-            $query->where('language', $language);
-        })
-        ->orderBy('option_group_id')
-        ->orderBy('option_name')
-        ->get();
+        $options = ProductOption::with('group')
+            ->where('language', $language)
+            ->where('is_active', 1)
+            ->whereHas('group', function ($query) use ($language) {
+                $query->where('language', $language);
+            })
+            ->orderBy('option_group_id')
+            ->orderBy('option_name')
+            ->get();
 
-    $groups = OptionGroup::where('language', $language)
-        ->where('is_active', 1)
-        ->orderBy('sort_order')
-        ->orderBy('group_name')
-        ->get();
+        $groups = OptionGroup::where('language', $language)
+            ->where('is_active', 1)
+            ->orderBy('sort_order')
+            ->orderBy('group_name')
+            ->get();
 
-    return view('admin.option_dependencies.create', compact('options', 'groups', 'language'));
-}
+        return view('admin.option_dependencies.create', compact('options', 'groups', 'language'));
+    }
 
     public function store(Request $request)
     {
@@ -60,6 +60,7 @@ class OptionDependencyController extends Controller
             'target_option_id' => 'nullable|required_if:target_type,option|exists:product_options,option_id',
             'is_active' => 'nullable|boolean',
             'sort_order' => 'nullable|integer|min:0',
+            'action_type' => 'required|in:show,hide,disable',
         ]);
 
         OptionDependency::create([
@@ -80,6 +81,7 @@ class OptionDependencyController extends Controller
 
             'is_active' => $request->has('is_active') ? 1 : 0,
             'sort_order' => $request->sort_order ?? 0,
+            'action_type' => $request->action_type,
         ]);
 
         return redirect()
@@ -87,40 +89,40 @@ class OptionDependencyController extends Controller
             ->with('success', 'Option dependency created successfully.');
     }
 
-   public function edit(OptionDependency $optionDependency)
-{
-    $optionDependency->load([
-        'parentOption',
-        'targetOption',
-        'targetGroup',
-    ]);
+    public function edit(OptionDependency $optionDependency)
+    {
+        $optionDependency->load([
+            'parentOption',
+            'targetOption',
+            'targetGroup',
+        ]);
 
-    $language = $optionDependency->parentOption->language
-        ?? session('admin_product_language', 'pt');
+        $language = $optionDependency->parentOption->language
+            ?? session('admin_product_language', 'pt');
 
-    $options = ProductOption::with('group')
-        ->where('language', $language)
-        ->where('is_active', 1)
-        ->whereHas('group', function ($query) use ($language) {
-            $query->where('language', $language);
-        })
-        ->orderBy('option_group_id')
-        ->orderBy('option_name')
-        ->get();
+        $options = ProductOption::with('group')
+            ->where('language', $language)
+            ->where('is_active', 1)
+            ->whereHas('group', function ($query) use ($language) {
+                $query->where('language', $language);
+            })
+            ->orderBy('option_group_id')
+            ->orderBy('option_name')
+            ->get();
 
-    $groups = OptionGroup::where('language', $language)
-        ->where('is_active', 1)
-        ->orderBy('sort_order')
-        ->orderBy('group_name')
-        ->get();
+        $groups = OptionGroup::where('language', $language)
+            ->where('is_active', 1)
+            ->orderBy('sort_order')
+            ->orderBy('group_name')
+            ->get();
 
-    return view('admin.option_dependencies.edit', [
-        'dependency' => $optionDependency,
-        'options' => $options,
-        'groups' => $groups,
-        'language' => $language,
-    ]);
-}
+        return view('admin.option_dependencies.edit', [
+            'dependency' => $optionDependency,
+            'options' => $options,
+            'groups' => $groups,
+            'language' => $language,
+        ]);
+    }
 
     public function update(Request $request, OptionDependency $optionDependency)
     {
@@ -131,6 +133,7 @@ class OptionDependencyController extends Controller
             'target_option_id' => 'nullable|required_if:target_type,option|exists:product_options,option_id',
             'is_active' => 'nullable|boolean',
             'sort_order' => 'nullable|integer|min:0',
+            'action_type' => 'required|in:show,hide,disable',
         ]);
 
         $optionDependency->update([
@@ -150,6 +153,7 @@ class OptionDependencyController extends Controller
 
             'is_active' => $request->has('is_active') ? 1 : 0,
             'sort_order' => $request->sort_order ?? 0,
+            'action_type' => $request->action_type,
         ]);
 
         return redirect()

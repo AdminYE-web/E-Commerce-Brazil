@@ -292,154 +292,157 @@
             accent-color: #2563eb;
             flex-shrink: 0;
         }
+
         .required-option-group {
-    margin-bottom: 18px;
-}
+            margin-bottom: 18px;
+        }
 
-.required-option-group:last-child {
-    margin-bottom: 0;
-}
+        .required-option-group:last-child {
+            margin-bottom: 0;
+        }
 
-.required-option-group-title {
-    margin: 12px 0 8px;
-    padding-bottom: 7px;
-    border-bottom: 1px solid #d1d5db;
-    color: #111827;
-    font-size: 14px;
-    font-weight: 700;
-}
+        .required-option-group-title {
+            margin: 12px 0 8px;
+            padding-bottom: 7px;
+            border-bottom: 1px solid #d1d5db;
+            color: #111827;
+            font-size: 14px;
+            font-weight: 700;
+        }
 
-.required-option-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: #1f3b66;
-    font-size: 14px;
-    line-height: 1.35;
-    cursor: pointer;
-    margin-bottom: 8px;
-}
+        .required-option-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #1f3b66;
+            font-size: 14px;
+            line-height: 1.35;
+            cursor: pointer;
+            margin-bottom: 8px;
+        }
 
-.required-option-item input[type="checkbox"] {
-    width: 16px;
-    height: 16px;
-    accent-color: #2563eb;
-    flex-shrink: 0;
-}
-.price-tier-card {
-    border: 1px solid #d9e0ea;
-    border-radius: 8px;
-    overflow: hidden;
-    background: #fff;
-    max-width: 680px;
-}
+        .required-option-item input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #2563eb;
+            flex-shrink: 0;
+        }
 
-.price-tier-header {
-    display: grid;
-    grid-template-columns: 1fr 1fr 70px;
-    background: #f8fafc;
-    border-bottom: 1px solid #d9e0ea;
-}
+        .price-tier-card {
+            border: 1px solid #d9e0ea;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #fff;
+            max-width: 680px;
+        }
 
-.price-tier-title {
-    padding: 14px 16px;
-    font-size: 15px;
-    font-weight: 700;
-    color: #23324a;
-}
+        .price-tier-header {
+            display: grid;
+            grid-template-columns: 1fr 1fr 70px;
+            background: #f8fafc;
+            border-bottom: 1px solid #d9e0ea;
+        }
 
-.price-tier-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr 70px;
-    gap: 16px;
-    padding: 14px 16px;
-    border-bottom: 1px solid #eef2f7;
-    align-items: center;
-}
+        .price-tier-title {
+            padding: 14px 16px;
+            font-size: 15px;
+            font-weight: 700;
+            color: #23324a;
+        }
 
-.price-tier-row:last-child {
-    border-bottom: 0;
-}
+        .price-tier-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 70px;
+            gap: 16px;
+            padding: 14px 16px;
+            border-bottom: 1px solid #eef2f7;
+            align-items: center;
+        }
 
-.tier-input-group {
-    display: flex;
-    align-items: stretch;
-    width: 100%;
-}
+        .price-tier-row:last-child {
+            border-bottom: 0;
+        }
 
-.tier-input {
-    flex: 1;
-    height: 38px;
-    border: 1px solid #cfd7e3;
-    padding: 0 14px;
-    font-size: 15px;
-    color: #22314a;
-    outline: none;
-    background: #fff;
-}
+        .tier-input-group {
+            display: flex;
+            align-items: stretch;
+            width: 100%;
+        }
 
-.tier-input:first-child {
-    border-radius: 6px 0 0 6px;
-}
+        .tier-input {
+            flex: 1;
+            height: 38px;
+            border: 1px solid #cfd7e3;
+            padding: 0 14px;
+            font-size: 15px;
+            color: #22314a;
+            outline: none;
+            background: #fff;
+        }
 
-.tier-input:last-child {
-    border-radius: 0 6px 6px 0;
-}
+        .tier-input:first-child {
+            border-radius: 6px 0 0 6px;
+        }
 
-.tier-prefix,
-.tier-suffix {
-    min-width: 58px;
-    height: 38px;
-    padding: 0 12px;
-    border: 1px solid #cfd7e3;
-    background: #f8fafc;
-    color: #23324a;
-    font-size: 15px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-}
+        .tier-input:last-child {
+            border-radius: 0 6px 6px 0;
+        }
 
-.tier-prefix {
-    border-right: 0;
-    border-radius: 6px 0 0 6px;
-}
+        .tier-prefix,
+        .tier-suffix {
+            min-width: 58px;
+            height: 38px;
+            padding: 0 12px;
+            border: 1px solid #cfd7e3;
+            background: #f8fafc;
+            color: #23324a;
+            font-size: 15px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-.tier-suffix {
-    border-left: 0;
-    border-radius: 0 6px 6px 0;
-}
+        .tier-prefix {
+            border-right: 0;
+            border-radius: 6px 0 0 6px;
+        }
 
-.tier-action {
-    display: flex;
-    justify-content: center;
-}
+        .tier-suffix {
+            border-left: 0;
+            border-radius: 0 6px 6px 0;
+        }
 
-.remove-tier {
-    border: 1px solid #fecaca;
-    background: #fef2f2;
-    color: #b91c1c;
-    border-radius: 6px;
-    padding: 7px 10px;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-}
+        .tier-action {
+            display: flex;
+            justify-content: center;
+        }
 
-@media (max-width: 700px) {
-    .price-tier-header,
-    .price-tier-row {
-        grid-template-columns: 1fr;
-    }
+        .remove-tier {
+            border: 1px solid #fecaca;
+            background: #fef2f2;
+            color: #b91c1c;
+            border-radius: 6px;
+            padding: 7px 10px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
 
-    .price-tier-header .price-tier-title:last-child {
-        display: none;
-    }
+        @media (max-width: 700px) {
 
-    .tier-action {
-        justify-content: flex-start;
-    }
-}
+            .price-tier-header,
+            .price-tier-row {
+                grid-template-columns: 1fr;
+            }
+
+            .price-tier-header .price-tier-title:last-child {
+                display: none;
+            }
+
+            .tier-action {
+                justify-content: flex-start;
+            }
+        }
     </style>
 @endsection
 
@@ -506,79 +509,65 @@
             </p>
 
             <div class="required-option-simple-box" id="required-options-box">
-    <p class="muted-text">
-        Please select a product first.
-    </p>
-</div>
+                <p class="muted-text">
+                    Please select a product first.
+                </p>
+            </div>
 
-           <div class="section-title">Price Tiers</div>
+            <div class="section-title">Price Tiers</div>
 
-<div class="price-tier-card">
-    <div class="price-tier-header">
-        <div class="price-tier-title">Quantity</div>
-        <div class="price-tier-title">Unit Price </div>
-        <div class="price-tier-title"></div>
-    </div>
-
-    <div id="tier-wrapper">
-        @php
-            $oldTiers = old('tiers', [
-                [
-                    'min_qty' => '',
-                    'max_qty' => '',
-                    'unit_price' => '',
-                ],
-            ]);
-        @endphp
-
-        @foreach ($oldTiers as $index => $tier)
-            <div class="price-tier-row">
-                <div class="tier-input-group">
-                    <input
-                        type="number"
-                        name="tiers[{{ $index }}][min_qty]"
-                        value="{{ $tier['min_qty'] ?? '' }}"
-                        class="tier-input"
-                        min="1"
-                    >
-                    <span class="tier-suffix"></span>
-
-                    <input
-                        type="hidden"
-                        name="tiers[{{ $index }}][max_qty]"
-                        value="{{ $tier['max_qty'] ?? '' }}"
-                    >
+            <div class="price-tier-card">
+                <div class="price-tier-header">
+                    <div class="price-tier-title">Quantity</div>
+                    <div class="price-tier-title">Unit Price </div>
+                    <div class="price-tier-title"></div>
                 </div>
 
-                <div class="tier-input-group">
-                    <span class="tier-prefix">¥</span>
-                    <input
-                        type="number"
-                        step="0.01"
-                        name="tiers[{{ $index }}][unit_price]"
-                        value="{{ $tier['unit_price'] ?? '' }}"
-                        class="tier-input"
-                        min="0"
-                    >
-                </div>
+                <div id="tier-wrapper">
+                    @php
+                        $oldTiers = old('tiers', [
+                            [
+                                'min_qty' => '',
+                                'max_qty' => '',
+                                'unit_price' => '',
+                            ],
+                        ]);
+                    @endphp
 
-                <div class="tier-action">
-                    <button type="button" class="remove-tier">
-                        Remove
-                    </button>
+                    @foreach ($oldTiers as $index => $tier)
+                        <div class="price-tier-row">
+                            <div class="tier-input-group">
+                                <input type="number" name="tiers[{{ $index }}][min_qty]"
+                                    value="{{ $tier['min_qty'] ?? '' }}" class="tier-input" min="1">
+                                <span class="tier-suffix"></span>
+
+                                <input type="hidden" name="tiers[{{ $index }}][max_qty]"
+                                    value="{{ $tier['max_qty'] ?? '' }}">
+                            </div>
+
+                            <div class="tier-input-group">
+                                <span class="tier-prefix">¥</span>
+                                <input type="number" step="0.01" name="tiers[{{ $index }}][unit_price]"
+                                    value="{{ $tier['unit_price'] ?? '' }}" class="tier-input" min="0">
+                            </div>
+
+                            <div class="tier-action">
+                                <button type="button" class="remove-tier">
+                                    Remove
+                                </button>
+                            </div>
+                        </div>
+                    @endforeach
                 </div>
             </div>
-        @endforeach
-    </div>
-</div>
 
-<br>
+            <br>
 
-<button type="button" id="add-tier" class="btn-outline">
-    + Add Tier
-</button>
+            <button type="button" id="add-tier" class="btn-outline">
+                + Add Tier
+            </button>
 
-          
+
 
             <div class="section-title">Status</div>
 
@@ -607,10 +596,10 @@
     <script>
         let tierIndex = document.querySelectorAll('.price-tier-row').length;
 
-        document.getElementById('add-tier').addEventListener('click', function () {
-    const wrapper = document.getElementById('tier-wrapper');
+        document.getElementById('add-tier').addEventListener('click', function() {
+            const wrapper = document.getElementById('tier-wrapper');
 
-    const html = `
+            const html = `
         <div class="price-tier-row">
             <div class="tier-input-group">
                 <input
@@ -619,7 +608,7 @@
                     class="tier-input"
                     min="1"
                 >
-                <span class="tier-suffix">以上</span>
+                <span class="tier-suffix"></span>
 
                 <input
                     type="hidden"
@@ -647,22 +636,22 @@
         </div>
     `;
 
-    wrapper.insertAdjacentHTML('beforeend', html);
-    tierIndex++;
-});
+            wrapper.insertAdjacentHTML('beforeend', html);
+            tierIndex++;
+        });
 
-       document.addEventListener('click', function (e) {
-    if (e.target.classList.contains('remove-tier')) {
-        const items = document.querySelectorAll('.price-tier-row');
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('remove-tier')) {
+                const items = document.querySelectorAll('.price-tier-row');
 
-        if (items.length <= 1) {
-            alert('ต้องมีอย่างน้อย 1 tier');
-            return;
-        }
+                if (items.length <= 1) {
+                    alert('ต้องมีอย่างน้อย 1 tier');
+                    return;
+                }
 
-        e.target.closest('.price-tier-row').remove();
-    }
-});
+                e.target.closest('.price-tier-row').remove();
+            }
+        });
 
         function updateTierNumbers() {
             document.querySelectorAll('.tier-item').forEach(function(item, index) {
@@ -677,37 +666,38 @@
         */
 
         const productSelect = document.getElementById('product_id');
-const requiredOptionsBox = document.getElementById('required-options-box');
-const oldOptionIds = @json(old('option_ids', []));
+        const requiredOptionsBox = document.getElementById('required-options-box');
+        const oldOptionIds = @json(old('option_ids', []));
 
-function renderRequiredOptions(groups) {
-    if (!groups || groups.length === 0) {
-        requiredOptionsBox.innerHTML = `
+        function renderRequiredOptions(groups) {
+            if (!groups || groups.length === 0) {
+                requiredOptionsBox.innerHTML = `
             <p class="muted-text">
                 No options assigned to this product.
             </p>
         `;
-        return;
-    }
+                return;
+            }
 
-    let html = `
+            let html = `
         
 
         <div class="required-option-list">
     `;
 
-    groups.forEach(function (group) {
-        html += `
+            groups.forEach(function(group) {
+                html += `
             <div class="required-option-group">
                 <div class="required-option-group-title">
                     ${group.group_name || '-'}
                 </div>
         `;
 
-        group.options.forEach(function (option) {
-            const checked = oldOptionIds.map(String).includes(String(option.option_id)) ? 'checked' : '';
+                group.options.forEach(function(option) {
+                    const checked = oldOptionIds.map(String).includes(String(option.option_id)) ?
+                        'checked' : '';
 
-            html += `
+                    html += `
                 <label class="required-option-item">
                     <input
                         type="checkbox"
@@ -718,71 +708,71 @@ function renderRequiredOptions(groups) {
                     <span>${option.option_name}</span>
                 </label>
             `;
-        });
+                });
 
-        html += `
+                html += `
             </div>
         `;
-    });
+            });
 
-    html += `</div>`;
+            html += `</div>`;
 
-    requiredOptionsBox.innerHTML = html;
-}
+            requiredOptionsBox.innerHTML = html;
+        }
 
-function loadProductOptions(productId) {
-    if (!productId) {
-        requiredOptionsBox.innerHTML = `
+        function loadProductOptions(productId) {
+            if (!productId) {
+                requiredOptionsBox.innerHTML = `
             <p class="muted-text">
                 Please select a product first.
             </p>
         `;
-        return;
-    }
+                return;
+            }
 
-    requiredOptionsBox.innerHTML = `
+            requiredOptionsBox.innerHTML = `
         <p class="muted-text">
             Loading options...
         </p>
     `;
 
-    const url = `{{ url('admin-panel/product-price-rules/product-options') }}/${productId}`;
+            const url = `{{ url('admin-panel/product-price-rules/product-options') }}/${productId}`;
 
-    fetch(url, {
-        headers: {
-            'Accept': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest'
-        }
-    })
-    .then(function (response) {
-        if (!response.ok) {
-            throw new Error('HTTP ' + response.status);
-        }
+            fetch(url, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(function(response) {
+                    if (!response.ok) {
+                        throw new Error('HTTP ' + response.status);
+                    }
 
-        return response.json();
-    })
-    .then(function (data) {
-        renderRequiredOptions(data.groups);
-    })
-    .catch(function (error) {
-        console.error(error);
+                    return response.json();
+                })
+                .then(function(data) {
+                    renderRequiredOptions(data.groups);
+                })
+                .catch(function(error) {
+                    console.error(error);
 
-        requiredOptionsBox.innerHTML = `
+                    requiredOptionsBox.innerHTML = `
             <p class="muted-text" style="color:#b91c1c;">
                 Cannot load product options.
             </p>
         `;
-    });
-}
+                });
+        }
 
-if (productSelect) {
-    productSelect.addEventListener('change', function () {
-        loadProductOptions(this.value);
-    });
+        if (productSelect) {
+            productSelect.addEventListener('change', function() {
+                loadProductOptions(this.value);
+            });
 
-    if (productSelect.value) {
-        loadProductOptions(productSelect.value);
-    }
-}
+            if (productSelect.value) {
+                loadProductOptions(productSelect.value);
+            }
+        }
     </script>
 @endsection

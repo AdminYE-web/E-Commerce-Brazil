@@ -12,6 +12,7 @@ class OptionDependency extends Model
         'parent_option_id',
         'child_option_id',
         'target_type',
+        'action_type',
         'target_group_id',
         'target_option_id',
         'is_active',
