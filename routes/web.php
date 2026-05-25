@@ -324,6 +324,8 @@ Route::prefix('admin-panel')->name('admin.')->group(function () {
 
         Route::get('quotations/{quotation}/pdf', [QuotationController::class, 'downloadPdf'])
             ->name('quotations.pdf');
+        Route::post('products/{product}/option-groups/update-sort', [ProductOptionAssignmentController::class, 'updateGroupSort'])
+            ->name('products.option-groups.updateSort');
     });
 });
 

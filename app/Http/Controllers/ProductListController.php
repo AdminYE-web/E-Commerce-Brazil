@@ -8,8 +8,10 @@ use App\Models\Material;
 use App\Models\OptionDependency;
 use App\Models\Product;
 use App\Models\ProductListBanner;
+use App\Models\ProductOptionGroupOrder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+
 
 class ProductListController extends Controller
 {
@@ -131,6 +133,9 @@ class ProductListController extends Controller
             'assignedOptions.variants',
         ]);
 
+        $groupOrders = ProductOptionGroupOrder::where('product_id', $product->product_id)
+            ->pluck('sort_order', 'option_group_id');
+
         $optionGroups = $product->assignedOptions
             ->where('pivot.is_active', 1)
             ->filter(function ($option) use ($langKey) {
@@ -138,11 +143,15 @@ class ProductListController extends Controller
                     && $option->group
                     && $option->group->language === $langKey;
             })
-            ->sortBy(function ($option) {
+            ->sortBy(function ($option) use ($groupOrders) {
                 $group = $option->group;
                 $parent = $group?->parent;
 
+                $displayGroup = $parent ?: $group;
+                $displayGroupId = $displayGroup?->option_group_id;
+
                 return [
+                    $groupOrders[$displayGroupId] ?? 999,
                     $parent->sort_order ?? $group->sort_order ?? 999,
                     $group->sort_order ?? 999,
                     $option->pivot->sort_order ?? 0,
@@ -206,7 +215,30 @@ class ProductListController extends Controller
 
     public function showHotmobily(Product $product)
     {
-        if ((int) $product->product_type !== 2) {
+        $langKey = $this->getLangKey();
+
+        /*
+    |--------------------------------------------------------------------------
+    | Redirect to translated product if current product language is different
+    |--------------------------------------------------------------------------
+    */
+        if ($product->language !== $langKey && !empty($product->translation_key)) {
+            $translatedProduct = Product::where('translation_key', $product->translation_key)
+                ->where('language', $langKey)
+                ->where('is_active', 1)
+                ->where('product_type', 2)
+                ->first();
+
+            if ($translatedProduct) {
+                return redirect()->route('products.hotmobily.show', $translatedProduct->product_id);
+            }
+        }
+
+        if ((int) $product->product_type !== 1) {
+            abort(404);
+        }
+
+        if ($product->language !== $langKey) {
             abort(404);
         }
 
@@ -217,18 +249,93 @@ class ProductListController extends Controller
             'detail',
             'category',
             'material',
-            'assignedOptions.group',
+
+            'priceRules.options',
+            'priceRules.tiers',
+
+            'assignedOptions.group.parent',
             'assignedOptions.mainImage',
+            'assignedOptions.variants',
         ]);
+
+        $groupOrders = ProductOptionGroupOrder::where('product_id', $product->product_id)
+            ->pluck('sort_order', 'option_group_id');
 
         $optionGroups = $product->assignedOptions
             ->where('pivot.is_active', 1)
-            ->sortBy('pivot.sort_order')
+            ->filter(function ($option) use ($langKey) {
+                return $option->language === $langKey
+                    && $option->group
+                    && $option->group->language === $langKey;
+            })
+            ->sortBy(function ($option) use ($groupOrders) {
+                $group = $option->group;
+                $parent = $group?->parent;
+
+                $displayGroup = $parent ?: $group;
+                $displayGroupId = $displayGroup?->option_group_id;
+
+                return [
+                    $groupOrders[$displayGroupId] ?? 999,
+                    $parent->sort_order ?? $group->sort_order ?? 999,
+                    $group->sort_order ?? 999,
+                    $option->pivot->sort_order ?? 0,
+                ];
+            })
             ->groupBy(function ($option) {
-                return $option->group->group_name ?? 'Other';
+                $group = $option->group;
+                $displayGroup = $group?->parent ?: $group;
+
+                return $displayGroup?->option_group_id ?? 0;
             });
 
-        return view('products.hotmobily_show', compact('product', 'optionGroups'));
+        $dependencies = OptionDependency::where('is_active', 1)
+            ->whereHas('parentOption', function ($query) use ($langKey) {
+                $query->where('language', $langKey);
+            })
+            ->orderBy('sort_order')
+            ->get()
+            ->map(function ($dependency) {
+                return [
+                    'parent_option_id' => (int) $dependency->parent_option_id,
+                    'target_type' => $dependency->target_type,
+                    'target_group_id' => $dependency->target_group_id ? (int) $dependency->target_group_id : null,
+                    'target_option_id' => $dependency->target_option_id ? (int) $dependency->target_option_id : null,
+                ];
+            })
+            ->values();
+
+        $priceRules = $product->priceRules
+            ->map(function ($rule) use ($langKey) {
+                return [
+                    'rule_id' => (int) $rule->rule_id,
+                    'rule_name' => $rule->rule_name,
+                    'option_ids' => $rule->options
+                        ->filter(function ($option) use ($langKey) {
+                            return $option->language === $langKey;
+                        })
+                        ->pluck('option_id')
+                        ->map(fn($id) => (int) $id)
+                        ->values(),
+                    'tiers' => $rule->tiers
+                        ->map(function ($tier) {
+                            return [
+                                'min_qty' => (int) $tier->min_qty,
+                                'max_qty' => $tier->max_qty ? (int) $tier->max_qty : null,
+                                'unit_price' => (float) $tier->unit_price,
+                            ];
+                        })
+                        ->values(),
+                ];
+            })
+            ->values();
+
+        return view('products.hotmobily_show', compact(
+            'product',
+            'optionGroups',
+            'dependencies',
+            'priceRules'
+        ));
     }
 
     public function description($code)
@@ -354,6 +461,9 @@ class ProductListController extends Controller
             abort(404);
         }
 
+        $groupOrders = ProductOptionGroupOrder::where('product_id', $product->product_id)
+            ->pluck('sort_order', 'option_group_id');
+
         $optionGroups = $product->assignedOptions
             ->where('pivot.is_active', 1)
             ->filter(function ($option) use ($langKey) {
@@ -361,11 +471,15 @@ class ProductListController extends Controller
                     && $option->group
                     && $option->group->language === $langKey;
             })
-            ->sortBy(function ($option) {
+            ->sortBy(function ($option) use ($groupOrders) {
                 $group = $option->group;
                 $parent = $group?->parent;
 
+                $displayGroup = $parent ?: $group;
+                $displayGroupId = $displayGroup?->option_group_id;
+
                 return [
+                    $groupOrders[$displayGroupId] ?? 999,
                     $parent->sort_order ?? $group->sort_order ?? 999,
                     $group->sort_order ?? 999,
                     $option->pivot->sort_order ?? 0,
