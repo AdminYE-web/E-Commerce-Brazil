@@ -22,7 +22,7 @@ class ProductListController extends Controller
 
         $langKey = $this->getLangKey();
 
-        $sharedData = Cache::remember('product_list_shared_components_'.$langKey, 86400, function () use ($langKey) {
+        $sharedData = Cache::remember('product_list_shared_components_' . $langKey, 86400, function () use ($langKey) {
             return [
                 'banners' => ProductListBanner::where('is_active', 1)
                     ->orderBy('sort_order')
@@ -171,6 +171,7 @@ class ProductListController extends Controller
                 return [
                     'parent_option_id' => (int) $dependency->parent_option_id,
                     'target_type' => $dependency->target_type,
+                    'action_type' => $dependency->action_type ?? 'show',
                     'target_group_id' => $dependency->target_group_id ? (int) $dependency->target_group_id : null,
                     'target_option_id' => $dependency->target_option_id ? (int) $dependency->target_option_id : null,
                 ];
@@ -187,7 +188,7 @@ class ProductListController extends Controller
                             return $option->language === $langKey;
                         })
                         ->pluck('option_id')
-                        ->map(fn ($id) => (int) $id)
+                        ->map(fn($id) => (int) $id)
                         ->values(),
                     'tiers' => $rule->tiers
                         ->map(function ($tier) {
@@ -296,6 +297,7 @@ class ProductListController extends Controller
                 return [
                     'parent_option_id' => (int) $dependency->parent_option_id,
                     'target_type' => $dependency->target_type,
+                    'action_type' => $dependency->action_type ?? 'show',
                     'target_group_id' => $dependency->target_group_id ? (int) $dependency->target_group_id : null,
                     'target_option_id' => $dependency->target_option_id ? (int) $dependency->target_option_id : null,
                 ];
@@ -312,7 +314,7 @@ class ProductListController extends Controller
                             return $option->language === $langKey;
                         })
                         ->pluck('option_id')
-                        ->map(fn ($id) => (int) $id)
+                        ->map(fn($id) => (int) $id)
                         ->values(),
                     'tiers' => $rule->tiers
                         ->map(function ($tier) {
@@ -500,6 +502,7 @@ class ProductListController extends Controller
                 return [
                     'parent_option_id' => (int) $dependency->parent_option_id,
                     'target_type' => $dependency->target_type,
+                    'action_type' => $dependency->action_type ?? 'show',
                     'target_group_id' => $dependency->target_group_id ? (int) $dependency->target_group_id : null,
                     'target_option_id' => $dependency->target_option_id ? (int) $dependency->target_option_id : null,
                 ];
@@ -516,7 +519,7 @@ class ProductListController extends Controller
                             return $option->language === $langKey;
                         })
                         ->pluck('option_id')
-                        ->map(fn ($id) => (int) $id)
+                        ->map(fn($id) => (int) $id)
                         ->values(),
                     'tiers' => $rule->tiers
                         ->map(function ($tier) {
