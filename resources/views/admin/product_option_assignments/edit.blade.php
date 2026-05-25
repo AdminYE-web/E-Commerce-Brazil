@@ -196,6 +196,45 @@
             opacity: .65;
             pointer-events: none;
         }
+
+        .option-row-top {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .option-drag-handle {
+            width: 28px;
+            height: 28px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: #fff;
+            color: #64748b;
+            font-size: 16px;
+            cursor: grab;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+            flex-shrink: 0;
+        }
+
+        .option-drag-handle:active {
+            cursor: grabbing;
+        }
+
+        .option-row.sortable-ghost {
+            opacity: .55;
+            background: #eef4ff;
+        }
+
+        .option-row.sortable-chosen {
+            background: #f8fafc;
+        }
+
+        .option-setting-grid {
+            grid-template-columns: 120px 120px;
+        }
     </style>
 @endsection
 
@@ -241,28 +280,35 @@
                             </div>
                         </div>
 
-                        <div class="option-list">
+                        <div class="option-list option-sortable-list">
                             @forelse ($group->options as $option)
                                 @php
                                     $isChecked = in_array((int) $option->option_id, $assignedOptionIds);
                                     $pivot = $assignedPivot[$option->option_id]->pivot ?? null;
                                 @endphp
 
-                                <div class="option-row">
-                                    <label class="option-main-check">
-                                        <input type="checkbox" class="option-checkbox"
-                                            data-option-id="{{ $option->option_id }}" {{ $isChecked ? 'checked' : '' }}>
+                                <div class="option-row" data-option-id="{{ $option->option_id }}">
+                                    <div class="option-row-top">
+                                        <span class="option-drag-handle" title="Drag option">☰</span>
 
-                                        <span>
-                                            {{ $option->option_name }}
+                                        <label class="option-main-check">
 
-                                            @if ($option->additional_price > 0)
-                                                <small>
-                                                    +{{ number_format($option->additional_price, 2) }}
-                                                </small>
-                                            @endif
-                                        </span>
-                                    </label>
+                                            <input type="checkbox" class="option-checkbox"
+                                                data-option-id="{{ $option->option_id }}" {{ $isChecked ? 'checked' : '' }}>
+
+                                            <span>
+                                                {{ $option->option_name }}
+
+                                                @if ($option->additional_price > 0)
+                                                    <small>
+                                                        +{{ number_format($option->additional_price, 2) }}
+                                                    </small>
+                                                @endif
+                                            </span>
+                                        </label>
+
+                                        </label>
+                                    </div>
 
                                     <div class="option-setting option-setting-{{ $option->option_id }}"
                                         style="{{ $isChecked ? '' : 'display:none;' }}">
@@ -270,12 +316,10 @@
                                             value="{{ $option->option_id }}" {{ $isChecked ? '' : 'disabled' }}>
 
                                         <div class="option-setting-grid">
-                                            <label>
-                                                Sort Order
-                                                <input type="number" name="options[{{ $option->option_id }}][sort_order]"
-                                                    value="{{ $pivot->sort_order ?? 0 }}" min="0"
-                                                    {{ $isChecked ? '' : 'disabled' }}>
-                                            </label>
+                                            <input type="hidden" class="option-sort-input"
+                                                name="options[{{ $option->option_id }}][sort_order]"
+                                                value="{{ $pivot->sort_order ?? $loop->iteration }}"
+                                                {{ $isChecked ? '' : 'disabled' }}>
 
                                             <label class="mini-check">
                                                 <input type="checkbox" name="options[{{ $option->option_id }}][is_default]"
@@ -404,6 +448,36 @@
                     });
             }
         });
+        document.querySelectorAll('.option-sortable-list').forEach(function(optionList) {
+            new Sortable(optionList, {
+                animation: 160,
+                handle: '.option-drag-handle',
+                ghostClass: 'sortable-ghost',
+                chosenClass: 'sortable-chosen',
+
+                scroll: true,
+                forceAutoScrollFallback: true,
+                scrollSensitivity: 100,
+                scrollSpeed: 16,
+                bubbleScroll: true,
+
+                onEnd: function() {
+                    refreshOptionSortInputs(optionList);
+                }
+            });
+        });
+
+        function refreshOptionSortInputs(optionList) {
+            const rows = optionList.querySelectorAll('.option-row[data-option-id]');
+
+            rows.forEach(function(row, index) {
+                const sortInput = row.querySelector('.option-sort-input');
+
+                if (sortInput) {
+                    sortInput.value = index + 1;
+                }
+            });
+        }
     </script>
 
 @endsection
