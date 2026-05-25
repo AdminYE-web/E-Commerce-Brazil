@@ -383,63 +383,64 @@
                 justify-content: flex-start;
             }
         }
+
         .required-option-simple-box {
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    background: #fff;
-    padding: 14px 18px;
-    max-height: 420px;
-    overflow-y: auto;
-}
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: #fff;
+            padding: 14px 18px;
+            max-height: 420px;
+            overflow-y: auto;
+        }
 
-.required-option-category-link {
-    display: inline-block;
-    margin-bottom: 8px;
-    color: #1d4ed8;
-    font-size: 14px;
-    text-decoration: underline;
-    font-weight: 500;
-}
+        .required-option-category-link {
+            display: inline-block;
+            margin-bottom: 8px;
+            color: #1d4ed8;
+            font-size: 14px;
+            text-decoration: underline;
+            font-weight: 500;
+        }
 
-.required-option-list {
-    display: flex;
-    flex-direction: column;
-}
+        .required-option-list {
+            display: flex;
+            flex-direction: column;
+        }
 
-.required-option-group {
-    margin-bottom: 18px;
-}
+        .required-option-group {
+            margin-bottom: 18px;
+        }
 
-.required-option-group:last-child {
-    margin-bottom: 0;
-}
+        .required-option-group:last-child {
+            margin-bottom: 0;
+        }
 
-.required-option-group-title {
-    margin: 12px 0 8px;
-    padding-bottom: 7px;
-    border-bottom: 1px solid #d1d5db;
-    color: #111827;
-    font-size: 14px;
-    font-weight: 700;
-}
+        .required-option-group-title {
+            margin: 12px 0 8px;
+            padding-bottom: 7px;
+            border-bottom: 1px solid #d1d5db;
+            color: #111827;
+            font-size: 14px;
+            font-weight: 700;
+        }
 
-.required-option-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: #1f3b66;
-    font-size: 14px;
-    line-height: 1.35;
-    cursor: pointer;
-    margin-bottom: 8px;
-}
+        .required-option-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #1f3b66;
+            font-size: 14px;
+            line-height: 1.35;
+            cursor: pointer;
+            margin-bottom: 8px;
+        }
 
-.required-option-item input[type="checkbox"] {
-    width: 16px;
-    height: 16px;
-    accent-color: #2563eb;
-    flex-shrink: 0;
-}
+        .required-option-item input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #2563eb;
+            flex-shrink: 0;
+        }
     </style>
 @endsection
 
@@ -474,23 +475,15 @@
             <div class="section-title">Rule Information</div>
 
             <div class="form-grid">
-             <div class="form-group">
-    <label>Product</label>
+                <div class="form-group">
+                    <label>Product</label>
 
-    <input
-        type="text"
-        value="{{ $rule->product->product_name ?? '-' }}"
-        readonly
-        style="background:#f3f4f6; cursor:not-allowed;"
-    >
+                    <input type="text" value="{{ $rule->product->product_name ?? '-' }}" readonly
+                        style="background:#f3f4f6; cursor:not-allowed;">
 
-    <input
-        type="hidden"
-        name="product_id"
-        id="product_id"
-        value="{{ old('product_id', $rule->product_id) }}"
-    >
-</div>
+                    <input type="hidden" name="product_id" id="product_id"
+                        value="{{ old('product_id', $rule->product_id) }}">
+                </div>
 
                 <div class="form-group">
                     <label>Rule Name</label>
@@ -514,93 +507,79 @@
                 เลือก option ที่ลูกค้าต้องเลือกให้ครบ ถึงจะใช้เรทราคานี้
             </p>
 
-           <div class="required-option-simple-box" id="required-options-box">
-    <p class="muted-text">
-        Loading options...
-    </p>
-</div>
+            <div class="required-option-simple-box" id="required-options-box">
+                <p class="muted-text">
+                    Loading options...
+                </p>
+            </div>
 
-          <div class="section-title">Price Tiers</div>
+            <div class="section-title">Price Tiers</div>
 
-@php
-    $oldTiers = old(
-        'tiers',
-        $rule->tiers->map(function ($tier) {
-            return [
-                'min_qty' => $tier->min_qty,
-                'max_qty' => $tier->max_qty,
-                'unit_price' => $tier->unit_price,
-            ];
-        })->toArray()
-    );
+            @php
+                $oldTiers = old(
+                    'tiers',
+                    $rule->tiers
+                        ->map(function ($tier) {
+                            return [
+                                'min_qty' => $tier->min_qty,
+                                'max_qty' => $tier->max_qty,
+                                'unit_price' => $tier->unit_price,
+                            ];
+                        })
+                        ->toArray(),
+                );
 
-    if (empty($oldTiers)) {
-        $oldTiers = [
-            [
-                'min_qty' => '',
-                'max_qty' => '',
-                'unit_price' => '',
-            ],
-        ];
-    }
-@endphp
+                if (empty($oldTiers)) {
+                    $oldTiers = [
+                        [
+                            'min_qty' => '',
+                            'max_qty' => '',
+                            'unit_price' => '',
+                        ],
+                    ];
+                }
+            @endphp
 
-<div class="price-tier-card">
-    <div class="price-tier-header">
-        <div class="price-tier-title">Quantity</div>
-        <div class="price-tier-title">Unit Price </div>
-        <div class="price-tier-title"></div>
-    </div>
-
-    <div id="tier-wrapper">
-        @foreach ($oldTiers as $index => $tier)
-            <div class="price-tier-row">
-                <div class="tier-input-group">
-                    <input
-                        type="number"
-                        name="tiers[{{ $index }}][min_qty]"
-                        value="{{ $tier['min_qty'] ?? '' }}"
-                        class="tier-input"
-                        min="1"
-                    >
-
-                    <span class="tier-suffix"></span>
-
-                    <input
-                        type="hidden"
-                        name="tiers[{{ $index }}][max_qty]"
-                        value="{{ $tier['max_qty'] ?? '' }}"
-                    >
+            <div class="price-tier-card">
+                <div class="price-tier-header">
+                    <div class="price-tier-title">Quantity</div>
+                    <div class="price-tier-title">Unit Price </div>
+                    <div class="price-tier-title"></div>
                 </div>
 
-                <div class="tier-input-group">
-                    <span class="tier-prefix">¥</span>
+                <div id="tier-wrapper">
+                    @foreach ($oldTiers as $index => $tier)
+                        <div class="price-tier-row">
+                            <div class="tier-input-group">
+                                <input type="number" name="tiers[{{ $index }}][min_qty]"
+                                    value="{{ $tier['min_qty'] ?? '' }}" class="tier-input" min="1">
 
-                    <input
-                        type="number"
-                        step="0.01"
-                        name="tiers[{{ $index }}][unit_price]"
-                        value="{{ $tier['unit_price'] ?? '' }}"
-                        class="tier-input"
-                        min="0"
-                    >
-                </div>
+                                <span class="tier-suffix"></span>
 
-                <div class="tier-action">
-                    <button type="button" class="remove-tier">
-                        Remove
-                    </button>
+                                <input type="hidden" name="tiers[{{ $index }}][max_qty]"
+                                    value="{{ $tier['max_qty'] ?? '' }}">
+                            </div>
+
+                            <div class="tier-input-group">
+                                <span class="tier-prefix">¥</span>
+
+                                <input type="number" step="0.01" name="tiers[{{ $index }}][unit_price]"
+                                    value="{{ $tier['unit_price'] ?? '' }}" class="tier-input" min="0">
+                            </div>
+
+                            <div class="tier-action">
+                                <button type="button" class="remove-tier">
+                                    Remove
+                                </button>
+                            </div>
+                        </div>
+                    @endforeach
                 </div>
             </div>
-        @endforeach
-    </div>
-</div>
 
-<br>
+            <br>
 
-<button type="button" id="add-tier" class="btn-outline">
-    + Add Tier
-</button>
+
 
             <button type="button" id="add-tier" class="btn-outline">
                 + Add Tier
@@ -631,13 +610,13 @@
 @endsection
 
 @section('js')
-<script>
-    let tierIndex = document.querySelectorAll('.price-tier-row').length;
+    <script>
+        let tierIndex = document.querySelectorAll('.price-tier-row').length;
 
-    document.getElementById('add-tier').addEventListener('click', function () {
-        const wrapper = document.getElementById('tier-wrapper');
+        document.getElementById('add-tier').addEventListener('click', function() {
+            const wrapper = document.getElementById('tier-wrapper');
 
-        const html = `
+            const html = `
             <div class="price-tier-row">
                 <div class="tier-input-group">
                     <input
@@ -676,61 +655,61 @@
             </div>
         `;
 
-        wrapper.insertAdjacentHTML('beforeend', html);
-        tierIndex++;
-    });
+            wrapper.insertAdjacentHTML('beforeend', html);
+            tierIndex++;
+        });
 
-    document.addEventListener('click', function (e) {
-        if (e.target.classList.contains('remove-tier')) {
-            const items = document.querySelectorAll('.price-tier-row');
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('remove-tier')) {
+                const items = document.querySelectorAll('.price-tier-row');
 
-            if (items.length <= 1) {
-                alert('ต้องมีอย่างน้อย 1 tier');
-                return;
+                if (items.length <= 1) {
+                    alert('ต้องมีอย่างน้อย 1 tier');
+                    return;
+                }
+
+                e.target.closest('.price-tier-row').remove();
             }
+        });
+        /*
+    |--------------------------------------------------------------------------
+    | Load Required Options by selected product
+    |--------------------------------------------------------------------------
+    */
 
-            e.target.closest('.price-tier-row').remove();
-        }
-    });
-    /*
-|--------------------------------------------------------------------------
-| Load Required Options by selected product
-|--------------------------------------------------------------------------
-*/
+        const productSelect = document.getElementById('product_id');
+        const requiredOptionsBox = document.getElementById('required-options-box');
 
-const productSelect = document.getElementById('product_id');
-const requiredOptionsBox = document.getElementById('required-options-box');
+        const selectedOptionIds = @json(array_map('strval', $selectedOptionIds));
 
-const selectedOptionIds = @json(array_map('strval', $selectedOptionIds));
-
-function renderRequiredOptions(groups) {
-    if (!groups || groups.length === 0) {
-        requiredOptionsBox.innerHTML = `
+        function renderRequiredOptions(groups) {
+            if (!groups || groups.length === 0) {
+                requiredOptionsBox.innerHTML = `
             <p class="muted-text">
                 No options assigned to this product.
             </p>
         `;
-        return;
-    }
+                return;
+            }
 
-    let html = `
+            let html = `
         
 
         <div class="required-option-list">
     `;
 
-    groups.forEach(function (group) {
-        html += `
+            groups.forEach(function(group) {
+                html += `
             <div class="required-option-group">
                 <div class="required-option-group-title">
                     ${group.group_name || '-'}
                 </div>
         `;
 
-        group.options.forEach(function (option) {
-            const checked = selectedOptionIds.includes(String(option.option_id)) ? 'checked' : '';
+                group.options.forEach(function(option) {
+                    const checked = selectedOptionIds.includes(String(option.option_id)) ? 'checked' : '';
 
-            html += `
+                    html += `
                 <label class="required-option-item">
                     <input
                         type="checkbox"
@@ -741,97 +720,97 @@ function renderRequiredOptions(groups) {
                     <span>${option.option_name}</span>
                 </label>
             `;
-        });
+                });
 
-        html += `
+                html += `
             </div>
         `;
-    });
+            });
 
-    html += `</div>`;
+            html += `</div>`;
 
-    requiredOptionsBox.innerHTML = html;
-}
+            requiredOptionsBox.innerHTML = html;
+        }
 
-function loadProductOptions(productId) {
-    if (!productId) {
-        requiredOptionsBox.innerHTML = `
+        function loadProductOptions(productId) {
+            if (!productId) {
+                requiredOptionsBox.innerHTML = `
             <p class="muted-text">
                 Please select a product first.
             </p>
         `;
-        return;
-    }
+                return;
+            }
 
-    requiredOptionsBox.innerHTML = `
+            requiredOptionsBox.innerHTML = `
         <p class="muted-text">
             Loading options...
         </p>
     `;
 
-    const url = `{{ url('admin-panel/product-price-rules/product-options') }}/${productId}`;
+            const url = `{{ url('admin-panel/product-price-rules/product-options') }}/${productId}`;
 
-    fetch(url, {
-        headers: {
-            'Accept': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest'
-        }
-    })
-    .then(function (response) {
-        if (!response.ok) {
-            throw new Error('HTTP ' + response.status);
-        }
+            fetch(url, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(function(response) {
+                    if (!response.ok) {
+                        throw new Error('HTTP ' + response.status);
+                    }
 
-        return response.json();
-    })
-    .then(function (data) {
-        renderRequiredOptions(data.groups);
-    })
-    .catch(function (error) {
-        console.error(error);
+                    return response.json();
+                })
+                .then(function(data) {
+                    renderRequiredOptions(data.groups);
+                })
+                .catch(function(error) {
+                    console.error(error);
 
-        requiredOptionsBox.innerHTML = `
+                    requiredOptionsBox.innerHTML = `
             <p class="muted-text" style="color:#b91c1c;">
                 Cannot load product options.
             </p>
         `;
-    });
-}
+                });
+        }
 
-if (productSelect) {
-    productSelect.addEventListener('change', function () {
-        loadProductOptions(this.value);
-    });
+        if (productSelect) {
+            productSelect.addEventListener('change', function() {
+                loadProductOptions(this.value);
+            });
 
-    if (productSelect.value) {
-        loadProductOptions(productSelect.value);
-    }
-}
+            if (productSelect.value) {
+                loadProductOptions(productSelect.value);
+            }
+        }
 
-/*
-|--------------------------------------------------------------------------
-| Select all / unselect all
-|--------------------------------------------------------------------------
-*/
+        /*
+        |--------------------------------------------------------------------------
+        | Select all / unselect all
+        |--------------------------------------------------------------------------
+        */
 
-document.addEventListener('click', function (e) {
-    const selectAllLink = e.target.closest('.required-option-category-link');
+        document.addEventListener('click', function(e) {
+            const selectAllLink = e.target.closest('.required-option-category-link');
 
-    if (!selectAllLink) {
-        return;
-    }
+            if (!selectAllLink) {
+                return;
+            }
 
-    e.preventDefault();
+            e.preventDefault();
 
-    const checkboxes = requiredOptionsBox.querySelectorAll('input[name="option_ids[]"]');
+            const checkboxes = requiredOptionsBox.querySelectorAll('input[name="option_ids[]"]');
 
-    const hasUnchecked = Array.from(checkboxes).some(function (checkbox) {
-        return !checkbox.checked;
-    });
+            const hasUnchecked = Array.from(checkboxes).some(function(checkbox) {
+                return !checkbox.checked;
+            });
 
-    checkboxes.forEach(function (checkbox) {
-        checkbox.checked = hasUnchecked;
-    });
-});
-</script>
+            checkboxes.forEach(function(checkbox) {
+                checkbox.checked = hasUnchecked;
+            });
+        });
+    </script>
 @endsection
