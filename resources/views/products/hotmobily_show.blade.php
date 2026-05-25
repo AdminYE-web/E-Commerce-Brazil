@@ -923,6 +923,15 @@
         }
 
         @media (max-width: 768px) {
+            .customize-option-group h2 {
+                font-size: 14px;
+
+            }
+
+            .option-button-item span {
+                font-size: 13px;
+            }
+
             .quantity-label-row {
                 flex-direction: column;
                 align-items: flex-start;
@@ -932,7 +941,7 @@
             .add-to-cart-btn {
                 margin-top: 40px;
                 height: 56px;
-                font-size: 20px;
+                font-size: 16px;
             }
         }
 
@@ -944,16 +953,16 @@
         }
 
         /* .customize-option-group.has-error h2 {
-                            color: #dc2626;
-                        } */
+                                color: #dc2626;
+                            } */
 
         /* .customize-option-group.has-error .option-button-item,
-                        .customize-option-group.has-error .option-image-card,
-                        .customize-option-group.has-error .option-variant-card,
-                        .customize-option-group.has-error .option-compact-card,
-                        .customize-option-group.has-error .option-select-detail {
-                            border-color: #dc2626;
-                        } */
+                            .customize-option-group.has-error .option-image-card,
+                            .customize-option-group.has-error .option-variant-card,
+                            .customize-option-group.has-error .option-compact-card,
+                            .customize-option-group.has-error .option-select-detail {
+                                border-color: #dc2626;
+                            } */
         .previous-order-box {
             max-width: 620px;
         }
@@ -1009,6 +1018,198 @@
             border-radius: 8px;
             padding: 0 14px;
             font-size: 14px;
+        }
+
+        /* =========================
+       STEP FOCUS / OVERLAY MODE
+    ========================= */
+
+        .customize-option-group {
+            position: relative;
+            transition: all 0.25s ease;
+        }
+
+        .step-focus-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(17, 24, 39, 0.42);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.25s ease;
+            z-index: 1000;
+        }
+
+        body.step-focus-open .step-focus-overlay {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .customize-option-group.is-step-active {
+            background: #fff;
+            border-radius: 16px;
+            padding: 26px 26px 30px;
+            box-shadow: 0 18px 48px rgba(15, 23, 42, 0.18);
+            z-index: 1002;
+        }
+
+        .customize-option-group.is-step-active h2 {
+            margin-top: 0;
+        }
+
+        .step-bottom-bar {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #ffffff;
+            border-top: 1px solid #e5e7eb;
+            box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.08);
+            padding: 14px 24px;
+            z-index: 1004;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(100%);
+            transition: all 0.25s ease;
+        }
+
+        .step-bottom-bar.is-open {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .step-bottom-bar-left,
+        .step-bottom-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .step-bottom-bar-center {
+            text-align: end;
+            flex: 1;
+            padding-right: 24px;
+        }
+
+        .step-total-main {
+            font-size: 24px;
+            font-weight: 800;
+            color: #1d3970;
+            line-height: 1.1;
+        }
+
+        .step-total-sub {
+            font-size: 14px;
+            color: #374151;
+            margin-top: 2px;
+        }
+
+        .step-bar-btn {
+            height: 41px;
+            width: 244px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            padding: 0 22px;
+        }
+
+        .step-bar-btn-prev {
+            background: #fff;
+            border: 1px solid #cfd4dc;
+            color: #6b7280;
+        }
+
+        .step-bar-btn-prev:hover {
+            border-color: #9ca3af;
+            color: #111827;
+        }
+
+        .step-bar-btn-next {
+            background: #082369;
+            border: 1px solid #1d4ed8;
+            color: #fff;
+        }
+
+        .step-bar-btn-next:hover {
+            background: #1e40af;
+            border-color: #1e40af;
+        }
+
+        .step-bar-btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        .step-focus-close {
+            position: absolute;
+            right: 16px;
+            top: 16px;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: 0;
+            background: #fff;
+            box-shadow: 0 4px 14px rgba(15, 23, 42, 0.14);
+            font-size: 22px;
+            line-height: 1;
+            color: #9ca3af;
+            z-index: 2;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .customize-option-group.is-step-active .step-focus-close {
+            display: inline-flex;
+        }
+
+        @media (max-width: 768px) {
+            .customize-option-group.is-step-active {
+                padding: 18px;
+                border-radius: 12px;
+            }
+
+            .step-bottom-bar {
+                padding: 12px 14px;
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+
+            .step-bottom-bar-left,
+            .step-bottom-bar-right {
+                width: 100%;
+            }
+
+            .step-bottom-bar-left,
+            .step-bottom-bar-right,
+            .step-bottom-bar-center {
+                justify-content: center;
+                text-align: center;
+            }
+
+            .step-bar-btn {
+                min-width: 140px;
+                height: 48px;
+                font-size: 14px;
+            }
+
+            .step-total-main {
+                font-size: 20px;
+            }
+
+            .step-focus-close {
+                right: 12px;
+                top: 12px;
+            }
         }
     </style>
 @endsection
@@ -1141,7 +1342,6 @@
                                 @elseif($displayType === 'image_card_variant')
                                     <div class="option-variant-grid">
                                         @foreach ($options as $option)
-                                    
                                             @php
                                                 $defaultVariant =
                                                     $option->variants->firstWhere('is_default', 1) ??
@@ -1483,10 +1683,10 @@
                         @endforelse
                         <div class="quantity-add-cart-section">
                             <div class="quantity-label-row">
-                                <label for="quantity">Quantity</label>
+                                <label for="quantity">{{ __('product.product_detail.Quantity') }}</label>
 
                                 <span class="minimum-note">
-                                    ** Pedido mínimo 20 unidades **
+                                    ** {{ __('product.product_detail.minimum_order') }} **
                                 </span>
                             </div>
 
@@ -1494,7 +1694,7 @@
                                 <input type="number" name="quantity" id="quantity" value="{{ $defaultQuantity }}"
                                     min="20" step="1" required>
 
-                                <span>Unidades</span>
+                                <span>{{ __('product.product_detail.unit') }}</span>
                             </div>
 
                             @error('quantity')
@@ -1511,7 +1711,7 @@
                 </div>
 
                 <aside class="product-summary-box">
-                    <h3>Resumo do produto</h3>
+                    <h3>{{ __('product.product_detail.summary_product') }}</h3>
 
                     {{-- <div class="summary-item">
                         <span>Unit Price</span>
@@ -1530,7 +1730,7 @@
                     <div class="summary-divider"></div>
 
                     <div class="summary-total">
-                        <span>Total:</span>
+                        <span>{{ __('product.product_detail.Total') }}:</span>
                         <strong>¥ <span id="total-price">{{ number_format($basePrice, 2) }}</span></strong>
                     </div>
                 </aside>
@@ -1538,6 +1738,34 @@
             </div>
 
 
+        </div>
+        <div class="step-focus-overlay" id="stepFocusOverlay"></div>
+
+        <button type="button" class="step-focus-close" id="stepFocusClose">
+            ×
+        </button>
+
+        <div class="step-bottom-bar" id="stepBottomBar">
+            <div class="step-bottom-bar-left">
+                <button type="button" class="step-bar-btn step-bar-btn-prev" id="stepPrevBtn">
+                    {{ __('product.product_detail.prev_step') }}
+                </button>
+            </div>
+
+            <div class="step-bottom-bar-center">
+                <div class="step-total-main">
+                    <span id="stepBarTotalPrice">0.00</span> ¥ (Total)
+                </div>
+                <div class="step-total-sub">
+                    <span id="stepBarPerPrice">0.00</span> ¥ {{ __('product.product_detail.per_price') }}
+                </div>
+            </div>
+
+            <div class="step-bottom-bar-right">
+                <button type="button" class="step-bar-btn step-bar-btn-next" id="stepNextBtn">
+                    {{ __('product.product_detail.next_step') }}
+                </button>
+            </div>
         </div>
     </section>
 
@@ -1865,6 +2093,13 @@
             if (document.getElementById('total-price')) {
                 document.getElementById('total-price').innerText = formatPrice(total);
             }
+            if (document.getElementById('stepBarTotalPrice')) {
+                document.getElementById('stepBarTotalPrice').innerText = formatPrice(total);
+            }
+
+            if (document.getElementById('stepBarPerPrice')) {
+                document.getElementById('stepBarPerPrice').innerText = formatPrice(unitPrice);
+            }
         }
 
         function getSelectedOptionIds() {
@@ -2116,6 +2351,10 @@
             isUpdatingDependencies = false;
 
             updateSummary();
+
+            if (typeof refreshStepModeAfterDependencyChange === 'function') {
+                refreshStepModeAfterDependencyChange();
+            }
         }
 
         function updateVisibleGroupNumbers() {
@@ -2675,6 +2914,203 @@
                     radio.dispatchEvent(new Event('change'));
                 }
             });
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const overlay = document.getElementById('stepFocusOverlay');
+            const closeBtn = document.getElementById('stepFocusClose');
+            const bottomBar = document.getElementById('stepBottomBar');
+            const prevBtn = document.getElementById('stepPrevBtn');
+            const nextBtn = document.getElementById('stepNextBtn');
+
+            let activeGroupId = null;
+
+            function getVisibleGroups() {
+                return Array.from(document.querySelectorAll('.customize-option-group'))
+                    .filter(group => group.style.display !== 'none');
+            }
+
+            function getActiveGroup() {
+                if (!activeGroupId) return null;
+                return document.querySelector('.customize-option-group[data-group-id="' + activeGroupId + '"]');
+            }
+
+            function openStepMode() {
+                document.body.classList.add('step-focus-open');
+                bottomBar.classList.add('is-open');
+            }
+
+            function closeStepMode() {
+                activeGroupId = null;
+
+                document.querySelectorAll('.customize-option-group.is-step-active').forEach(function(el) {
+                    el.classList.remove('is-step-active');
+                });
+
+                document.body.appendChild(closeBtn);
+
+                document.body.classList.remove('step-focus-open');
+                bottomBar.classList.remove('is-open');
+            }
+
+            function updateStepButtons() {
+                const groups = getVisibleGroups();
+                const activeGroup = getActiveGroup();
+
+                if (!activeGroup) {
+                    prevBtn.disabled = true;
+                    nextBtn.disabled = true;
+                    return;
+                }
+
+                const currentIndex = groups.findIndex(group => group === activeGroup);
+
+                prevBtn.disabled = currentIndex <= 0;
+
+                if (currentIndex === groups.length - 1) {
+                    nextBtn.innerHTML = 'IR PARA QUANTIDADE →';
+                } else {
+                    nextBtn.innerHTML = 'PRÓXIMO PASSO →';
+                }
+
+                nextBtn.disabled = false;
+            }
+
+            function setActiveGroup(groupEl, shouldScroll = true) {
+                if (!groupEl) return;
+
+                document.querySelectorAll('.customize-option-group.is-step-active').forEach(function(el) {
+                    el.classList.remove('is-step-active');
+                });
+
+                groupEl.classList.add('is-step-active');
+                groupEl.appendChild(closeBtn);
+                activeGroupId = groupEl.dataset.groupId;
+
+                openStepMode();
+                updateStepButtons();
+
+                if (shouldScroll) {
+                    groupEl.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+                }
+            }
+
+            function goToNextGroup() {
+                const groups = getVisibleGroups();
+                const activeGroup = getActiveGroup();
+
+                if (!activeGroup) {
+                    if (groups.length) {
+                        setActiveGroup(groups[0]);
+                    }
+                    return;
+                }
+
+                const currentIndex = groups.findIndex(group => group === activeGroup);
+                const nextGroup = groups[currentIndex + 1];
+
+                if (nextGroup) {
+                    setActiveGroup(nextGroup);
+                    return;
+                }
+
+                const quantitySection = document.querySelector('.quantity-add-cart-section');
+
+                if (quantitySection) {
+                    closeStepMode();
+                    quantitySection.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+                }
+            }
+
+            function goToPrevGroup() {
+                const groups = getVisibleGroups();
+                const activeGroup = getActiveGroup();
+
+                if (!activeGroup) return;
+
+                const currentIndex = groups.findIndex(group => group === activeGroup);
+                const prevGroup = groups[currentIndex - 1];
+
+                if (prevGroup) {
+                    setActiveGroup(prevGroup);
+                }
+            }
+
+            function refreshStepModeAfterDependencyChange() {
+                const activeGroup = getActiveGroup();
+
+                if (!activeGroup) return;
+
+                if (activeGroup.style.display === 'none') {
+                    const visibleGroups = getVisibleGroups();
+
+                    if (visibleGroups.length) {
+                        setActiveGroup(visibleGroups[0], false);
+                    } else {
+                        closeStepMode();
+                    }
+                } else {
+                    updateStepButtons();
+                }
+            }
+
+            // คลิกที่ group ไหน ให้ group นั้นเด้งเป็น focus
+            document.querySelectorAll('.customize-option-group').forEach(function(groupEl) {
+                groupEl.addEventListener('click', function(e) {
+                    if (e.target.closest('.info-popover-btn, .step-focus-close')) {
+                        return;
+                    }
+
+                    setActiveGroup(groupEl, false);
+                });
+            });
+
+            // ถ้ามีการเลือก option / focus input ให้ถือว่า group นั้น active
+            document.querySelectorAll(
+                '#customize-form .js-option-input, .custom-color-input, .previous-order-input').forEach(
+                function(input) {
+                    input.addEventListener('change', function() {
+                        const groupEl = this.closest('.customize-option-group');
+                        if (groupEl) {
+                            setActiveGroup(groupEl, false);
+                        }
+                    });
+
+                    input.addEventListener('focus', function() {
+                        const groupEl = this.closest('.customize-option-group');
+                        if (groupEl) {
+                            setActiveGroup(groupEl, false);
+                        }
+                    });
+                });
+
+            prevBtn.addEventListener('click', function() {
+                goToPrevGroup();
+            });
+
+            nextBtn.addEventListener('click', function() {
+                goToNextGroup();
+            });
+
+            overlay.addEventListener('click', function() {
+                closeStepMode();
+            });
+
+            closeBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                closeStepMode();
+            });
+
+            // เปิดให้ function อื่นเรียกได้
+            window.refreshStepModeAfterDependencyChange = refreshStepModeAfterDependencyChange;
         });
     </script>
 @endsection
