@@ -953,16 +953,16 @@
         }
 
         /* .customize-option-group.has-error h2 {
-                                                color: #dc2626;
-                                            } */
+                                                                                    color: #dc2626;
+                                                                                } */
 
         /* .customize-option-group.has-error .option-button-item,
-                                            .customize-option-group.has-error .option-image-card,
-                                            .customize-option-group.has-error .option-variant-card,
-                                            .customize-option-group.has-error .option-compact-card,
-                                            .customize-option-group.has-error .option-select-detail {
-                                                border-color: #dc2626;
-                                            } */
+                                                                                .customize-option-group.has-error .option-image-card,
+                                                                                .customize-option-group.has-error .option-variant-card,
+                                                                                .customize-option-group.has-error .option-compact-card,
+                                                                                .customize-option-group.has-error .option-select-detail {
+                                                                                    border-color: #dc2626;
+                                                                                } */
         .previous-order-box {
             max-width: 620px;
         }
@@ -1021,8 +1021,8 @@
         }
 
         /* =========================
-                       STEP FOCUS / OVERLAY MODE
-                    ========================= */
+                                                           STEP FOCUS / OVERLAY MODE
+                                                        ========================= */
 
         .customize-option-group {
             position: relative;
@@ -1215,6 +1215,29 @@
         .is-hidden-compact-option {
             display: none;
         }
+
+        #quantity.is-locked-by-option {
+            background: #f3f4f6;
+            color: #6b7280;
+            cursor: not-allowed;
+        }
+
+        .quantity-rule-message {
+            margin-top: 8px;
+            color: #dc2626;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .is-option-disabled-by-dependency {
+            opacity: 0.45;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .is-option-disabled-by-dependency * {
+            cursor: not-allowed;
+        }
     </style>
 @endsection
 
@@ -1328,6 +1351,10 @@
                                                     data-price="{{ $option->additional_price ?? 0 }}"
                                                     data-price-type="{{ $option->price_type }}"
                                                     data-option-id="{{ $option->option_id }}"
+                                                    data-qty-rule-type="{{ $option->pivot->qty_rule_type }}"
+                                                    data-min-qty="{{ $option->pivot->min_qty }}"
+                                                    data-max-qty="{{ $option->pivot->max_qty }}"
+                                                    data-exact-qty="{{ $option->pivot->exact_qty }}"
                                                     {{ old("options.{$option->option_group_id}", $editingOptions[$option->option_group_id] ?? null) == $option->option_id || (!$editingCartItem && $option->pivot->is_default) ? 'checked' : '' }}>
 
                                                 <div class="option-image-box">
@@ -1366,6 +1393,10 @@
                                                     data-price="{{ $option->additional_price ?? 0 }}"
                                                     data-price-type="{{ $option->price_type }}"
                                                     data-option-id="{{ $option->option_id }}"
+                                                    data-qty-rule-type="{{ $option->pivot->qty_rule_type }}"
+                                                    data-min-qty="{{ $option->pivot->min_qty }}"
+                                                    data-max-qty="{{ $option->pivot->max_qty }}"
+                                                    data-exact-qty="{{ $option->pivot->exact_qty }}"
                                                     {{ old("options.{$option->option_group_id}", $editingOptions[$option->option_group_id] ?? null) == $option->option_id || (!$editingCartItem && $option->pivot->is_default) ? 'checked' : '' }}>
 
                                                 <span class="variant-title">
@@ -1411,16 +1442,21 @@
                                         @endforeach
                                     </div>
                                 @elseif($displayType === 'image_grid_compact')
-                                    <div class="option-compact-grid">
+                                    <div class="option-compact-grid" data-page-size="8">
                                         @foreach ($options as $option)
                                             <label
-                                                class="option-compact-card {{ $loop->index >= 8 ? 'is-hidden-compact-option' : '' }}">
+                                                class="option-compact-card {{ $loop->index >= 8 ? 'is-hidden-compact-option' : '' }}"
+                                                data-compact-index="{{ $loop->index }}">
                                                 <input type="radio" name="options[{{ $option->option_group_id }}]"
                                                     value="{{ $option->option_id }}" data-group-name="{{ $groupName }}"
                                                     class="js-option-input" data-option-name="{{ $option->option_name }}"
                                                     data-price="{{ $option->additional_price ?? 0 }}"
                                                     data-price-type="{{ $option->price_type }}"
                                                     data-option-id="{{ $option->option_id }}"
+                                                    data-qty-rule-type="{{ $option->pivot->qty_rule_type }}"
+                                                    data-min-qty="{{ $option->pivot->min_qty }}"
+                                                    data-max-qty="{{ $option->pivot->max_qty }}"
+                                                    data-exact-qty="{{ $option->pivot->exact_qty }}"
                                                     {{ old("options.{$option->option_group_id}", $editingOptions[$option->option_group_id] ?? null) == $option->option_id || (!$editingCartItem && $option->pivot->is_default) ? 'checked' : '' }}>
 
                                                 <div class="option-compact-image">
@@ -1467,6 +1503,10 @@
                                                     data-price="{{ $option->additional_price ?? 0 }}"
                                                     data-price-type="{{ $option->price_type }}"
                                                     data-option-id="{{ $option->option_id }}"
+                                                    data-qty-rule-type="{{ $option->pivot->qty_rule_type }}"
+                                                    data-min-qty="{{ $option->pivot->min_qty }}"
+                                                    data-max-qty="{{ $option->pivot->max_qty }}"
+                                                    data-exact-qty="{{ $option->pivot->exact_qty }}"
                                                     {{ old("options.{$option->option_group_id}", $editingOptions[$option->option_group_id] ?? null) == $option->option_id || (!$editingCartItem && $option->pivot->is_default) ? 'checked' : '' }}>
 
                                                 <span class="color-circle"
@@ -1537,6 +1577,10 @@
                                                     data-price-type="{{ $option->price_type }}"
                                                     data-image="{{ $imagePath }}"
                                                     data-detail="{{ e($option->option_detail ?? '') }}"
+                                                    data-qty-rule-type="{{ $option->pivot->qty_rule_type }}"
+                                                    data-min-qty="{{ $option->pivot->min_qty }}"
+                                                    data-max-qty="{{ $option->pivot->max_qty }}"
+                                                    data-exact-qty="{{ $option->pivot->exact_qty }}"
                                                     {{ old("options.{$option->option_group_id}", $editingOptions[$option->option_group_id] ?? null) == $option->option_id || (!$editingCartItem && $option->pivot->is_default) ? 'selected' : '' }}>
                                                     {{ $option->option_name }}
                                                 </option>
@@ -1597,6 +1641,10 @@
                                                                 data-price="{{ $option->additional_price ?? 0 }}"
                                                                 data-price-type="{{ $option->price_type }}"
                                                                 data-option-id="{{ $option->option_id }}"
+                                                                data-qty-rule-type="{{ $option->pivot->qty_rule_type }}"
+                                                                data-min-qty="{{ $option->pivot->min_qty }}"
+                                                                data-max-qty="{{ $option->pivot->max_qty }}"
+                                                                data-exact-qty="{{ $option->pivot->exact_qty }}"
                                                                 {{ old("options.{$option->option_group_id}", $editingOptions[$option->option_group_id] ?? null) == $option->option_id || (!$editingCartItem && $option->pivot->is_default) ? 'checked' : '' }}>
 
                                                             <span>{{ $option->option_name }}</span>
@@ -1639,6 +1687,10 @@
                                                         data-price="{{ $option->additional_price ?? 0 }}"
                                                         data-price-type="{{ $option->price_type }}"
                                                         data-option-id="{{ $option->option_id }}"
+                                                        data-qty-rule-type="{{ $option->pivot->qty_rule_type }}"
+                                                        data-min-qty="{{ $option->pivot->min_qty }}"
+                                                        data-max-qty="{{ $option->pivot->max_qty }}"
+                                                        data-exact-qty="{{ $option->pivot->exact_qty }}"
                                                         data-is-yes="{{ in_array(strtolower(trim($option->option_name)), ['yes', 'sim']) ? 1 : 0 }}"
                                                         {{ (int) $selectedOptionId === (int) $option->option_id ? 'checked' : '' }}>
 
@@ -1673,6 +1725,10 @@
                                                     data-price="{{ $option->additional_price ?? 0 }}"
                                                     data-price-type="{{ $option->price_type }}"
                                                     data-option-id="{{ $option->option_id }}"
+                                                    data-qty-rule-type="{{ $option->pivot->qty_rule_type }}"
+                                                    data-min-qty="{{ $option->pivot->min_qty }}"
+                                                    data-max-qty="{{ $option->pivot->max_qty }}"
+                                                    data-exact-qty="{{ $option->pivot->exact_qty }}"
                                                     {{ old("options.{$option->option_group_id}", $editingOptions[$option->option_group_id] ?? null) == $option->option_id || (!$editingCartItem && $option->pivot->is_default) ? 'checked' : '' }}>
 
                                                 <span>{{ $option->option_name }}</span>
@@ -1690,7 +1746,8 @@
                             <div class="quantity-label-row">
                                 <label for="quantity">{{ __('product.product_detail.Quantity') }}</label>
 
-                                <span class="minimum-note">
+                                <span class="minimum-note" id="quantity-rule-message"
+                                    data-default-text="** {{ __('product.product_detail.minimum_order') }} **">
                                     ** {{ __('product.product_detail.minimum_order') }} **
                                 </span>
                             </div>
@@ -1701,6 +1758,8 @@
 
                                 <span>{{ __('product.product_detail.unit') }}</span>
                             </div>
+
+                            <div id="quantity-rule-message" class="quantity-rule-message" style="display:none;"></div>
 
                             @error('quantity')
                                 <div style="color:red; margin-top:8px;">
@@ -1814,6 +1873,139 @@
             });
 
             return selected;
+        }
+
+        function getSelectedQuantityRuleItems() {
+            const selectedItems = [];
+
+            document.querySelectorAll('#customize-form input[type="radio"]:checked').forEach(function(input) {
+                const groupEl = input.closest('.customize-option-group, .grouped-button-set');
+
+                if (groupEl && groupEl.style.display === 'none') {
+                    return;
+                }
+
+                selectedItems.push({
+                    optionName: input.dataset.optionName || 'Selected option',
+                    ruleType: input.dataset.qtyRuleType || '',
+                    minQty: parseInt(input.dataset.minQty || 0),
+                    maxQty: parseInt(input.dataset.maxQty || 0),
+                    exactQty: parseInt(input.dataset.exactQty || 0),
+                });
+            });
+
+            document.querySelectorAll('#customize-form select.option-select-detail').forEach(function(select) {
+                const groupEl = select.closest('.customize-option-group');
+
+                if (groupEl && groupEl.style.display === 'none') {
+                    return;
+                }
+
+                const selected = select.options[select.selectedIndex];
+
+                if (!selected || !selected.value) {
+                    return;
+                }
+
+                selectedItems.push({
+                    optionName: selected.dataset.optionName || selected.textContent || 'Selected option',
+                    ruleType: selected.dataset.qtyRuleType || '',
+                    minQty: parseInt(selected.dataset.minQty || 0),
+                    maxQty: parseInt(selected.dataset.maxQty || 0),
+                    exactQty: parseInt(selected.dataset.exactQty || 0),
+                });
+            });
+
+            return selectedItems;
+        }
+
+        function applyQuantityRuleLock() {
+            const quantityInput = document.getElementById('quantity');
+            const messageBox = document.getElementById('quantity-rule-message');
+
+            if (!quantityInput) {
+                return;
+            }
+
+            const rules = getSelectedQuantityRuleItems();
+
+            const exactRule = rules.find(function(rule) {
+                return rule.ruleType === 'exact' && rule.exactQty > 0;
+            });
+
+            if (exactRule) {
+                quantityInput.value = exactRule.exactQty;
+                quantityInput.min = exactRule.exactQty;
+                quantityInput.max = exactRule.exactQty;
+                quantityInput.readOnly = true;
+                quantityInput.classList.add('is-locked-by-option');
+
+                if (messageBox) {
+                    messageBox.style.display = '';
+                    messageBox.textContent = exactRule.optionName + ': quantity is fixed at ' + exactRule.exactQty +
+                        ' pcs.';
+                }
+
+                updateSummary();
+                return;
+            }
+
+            quantityInput.readOnly = false;
+            quantityInput.classList.remove('is-locked-by-option');
+
+            quantityInput.min = 20;
+            quantityInput.removeAttribute('max');
+
+            if (messageBox) {
+                messageBox.style.display = 'none';
+                messageBox.textContent = '';
+            }
+
+            updateSummary();
+        }
+
+        function validateOptionQuantityRules() {
+            const quantityInput = document.getElementById('quantity');
+            const quantity = parseInt(quantityInput?.value || 0);
+            const rules = getSelectedQuantityRuleItems();
+
+            for (const rule of rules) {
+                if (rule.ruleType === 'min' && rule.minQty && quantity < rule.minQty) {
+                    alert(rule.optionName + ': minimum order is ' + rule.minQty + ' pcs.');
+                    quantityInput.focus();
+                    return false;
+                }
+
+                if (rule.ruleType === 'max' && rule.maxQty && quantity > rule.maxQty) {
+                    alert(rule.optionName + ': maximum order is ' + rule.maxQty + ' pcs.');
+                    quantityInput.focus();
+                    return false;
+                }
+
+                if (rule.ruleType === 'exact' && rule.exactQty && quantity !== rule.exactQty) {
+                    alert(rule.optionName + ': order quantity must be exactly ' + rule.exactQty + ' pcs.');
+                    quantityInput.value = rule.exactQty;
+                    quantityInput.focus();
+                    updateSummary();
+                    return false;
+                }
+
+                if (rule.ruleType === 'range') {
+                    if (rule.minQty && quantity < rule.minQty) {
+                        alert(rule.optionName + ': minimum order is ' + rule.minQty + ' pcs.');
+                        quantityInput.focus();
+                        return false;
+                    }
+
+                    if (rule.maxQty && quantity > rule.maxQty) {
+                        alert(rule.optionName + ': maximum order is ' + rule.maxQty + ' pcs.');
+                        quantityInput.focus();
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
 
         function findMatchedPriceRule(selectedOptionIds) {
@@ -2197,79 +2389,15 @@
             });
         }
 
-        function hideDependentOptions() {
-            const targetOptionIds = [
-                ...new Set(
-                    optionDependencies
-                    .filter(function(dep) {
-                        return dep.target_type === 'option' && dep.target_option_id;
-                    })
-                    .map(function(dep) {
-                        return parseInt(dep.target_option_id);
-                    })
-                )
-            ];
-
-            targetOptionIds.forEach(function(optionId) {
-                const radioInputs = document.querySelectorAll(
-                    '#customize-form input[type="radio"][data-option-id="' + optionId + '"]'
-                );
-
-                radioInputs.forEach(function(input) {
-                    const optionBox = input.closest('label');
-
-                    if (optionBox) {
-                        optionBox.style.display = 'none';
-                    }
-
-                    input.checked = false;
-                });
-
-                const selectOptions = document.querySelectorAll(
-                    '#customize-form select.option-select-detail option[data-option-id="' + optionId + '"]'
-                );
-
-                selectOptions.forEach(function(option) {
-                    option.hidden = true;
-                    option.disabled = true;
-
-                    const select = option.closest('select');
-
-                    if (select && select.value == option.value) {
-                        const firstVisibleOption = Array.from(select.options).find(function(item) {
-                            return item.value && !item.disabled && !item.hidden;
-                        });
-
-                        if (firstVisibleOption) {
-                            select.value = firstVisibleOption.value;
-                        } else {
-                            select.value = '';
-                        }
-
-                        updateSingleSelectDetailPreview(select);
-                    }
-                });
-            });
-        }
-
-        function showMatchedDependencies() {
-            const selectedOptionIds = getSelectedOptionIds();
-
+        function resetDependencyTargets() {
             optionDependencies.forEach(function(dep) {
-                const triggerOptionId = parseInt(dep.parent_option_id);
+                const actionType = dep.action_type || 'show';
 
-                if (!selectedOptionIds.includes(triggerOptionId)) {
-                    return;
-                }
-
-                if (dep.target_type === 'group' && dep.target_group_id) {
-                    const groupEls = document.querySelectorAll('[data-group-id="' + dep.target_group_id + '"]');
-
-                    groupEls.forEach(function(groupEl) {
-                        groupEl.style.display = '';
-                    });
-                }
-
+                /*
+                |--------------------------------------------------------------------------
+                | Reset target option
+                |--------------------------------------------------------------------------
+                */
                 if (dep.target_type === 'option' && dep.target_option_id) {
                     const optionId = parseInt(dep.target_option_id);
 
@@ -2280,8 +2408,11 @@
                     radioInputs.forEach(function(input) {
                         const optionBox = input.closest('label');
 
+                        input.disabled = false;
+
                         if (optionBox) {
                             optionBox.style.display = '';
+                            optionBox.classList.remove('is-option-disabled-by-dependency');
                         }
                     });
 
@@ -2292,6 +2423,147 @@
                     selectOptions.forEach(function(option) {
                         option.hidden = false;
                         option.disabled = false;
+                    });
+                }
+
+                /*
+                |--------------------------------------------------------------------------
+                | Reset target group เฉพาะ action show เท่านั้น
+                |--------------------------------------------------------------------------
+                | เพราะ show dependency เดิมคือ default ซ่อน group ก่อน แล้วเลือก trigger ค่อยแสดง
+                */
+                if (actionType === 'show' && dep.target_type === 'group' && dep.target_group_id) {
+                    const groupEls = document.querySelectorAll('[data-group-id="' + dep.target_group_id + '"]');
+
+                    groupEls.forEach(function(groupEl) {
+                        groupEl.style.display = 'none';
+                        clearInputsInside(groupEl);
+                    });
+                }
+            });
+        }
+
+        function applyDependencyActions() {
+            const selectedOptionIds = getSelectedOptionIds();
+
+            optionDependencies.forEach(function(dep) {
+                const triggerOptionId = parseInt(dep.parent_option_id);
+
+                if (!selectedOptionIds.includes(triggerOptionId)) {
+                    return;
+                }
+
+                const actionType = dep.action_type || 'show';
+
+                /*
+                |--------------------------------------------------------------------------
+                | Target Group
+                |--------------------------------------------------------------------------
+                */
+                if (dep.target_type === 'group' && dep.target_group_id) {
+                    const groupEls = document.querySelectorAll('[data-group-id="' + dep.target_group_id + '"]');
+
+                    groupEls.forEach(function(groupEl) {
+                        if (actionType === 'show') {
+                            groupEl.style.display = '';
+                        }
+
+                        if (actionType === 'hide') {
+                            groupEl.style.display = 'none';
+                            clearInputsInside(groupEl);
+                        }
+
+                        if (actionType === 'disable') {
+                            groupEl.classList.add('is-option-disabled-by-dependency');
+
+                            groupEl.querySelectorAll('input, select, textarea').forEach(function(input) {
+                                input.disabled = true;
+                            });
+                        }
+                    });
+                }
+
+                /*
+                |--------------------------------------------------------------------------
+                | Target Option
+                |--------------------------------------------------------------------------
+                */
+                if (dep.target_type === 'option' && dep.target_option_id) {
+                    const optionId = parseInt(dep.target_option_id);
+
+                    const radioInputs = document.querySelectorAll(
+                        '#customize-form input[type="radio"][data-option-id="' + optionId + '"]'
+                    );
+
+                    radioInputs.forEach(function(input) {
+                        const optionBox = input.closest('label');
+
+                        if (actionType === 'show') {
+                            input.disabled = false;
+
+                            if (optionBox) {
+                                optionBox.style.display = '';
+                                optionBox.classList.remove('is-option-disabled-by-dependency');
+                            }
+                        }
+
+                        if (actionType === 'hide') {
+                            input.checked = false;
+                            input.disabled = false;
+
+                            if (optionBox) {
+                                optionBox.style.display = 'none';
+                                optionBox.classList.remove('is-option-disabled-by-dependency');
+                            }
+                        }
+
+                        if (actionType === 'disable') {
+                            input.checked = false;
+                            input.disabled = true;
+
+                            if (optionBox) {
+                                optionBox.style.display = '';
+                                optionBox.classList.add('is-option-disabled-by-dependency');
+                            }
+                        }
+                    });
+
+                    const selectOptions = document.querySelectorAll(
+                        '#customize-form select.option-select-detail option[data-option-id="' + optionId + '"]'
+                    );
+
+                    selectOptions.forEach(function(option) {
+                        const select = option.closest('select');
+
+                        if (actionType === 'show') {
+                            option.hidden = false;
+                            option.disabled = false;
+                        }
+
+                        if (actionType === 'hide') {
+                            option.hidden = true;
+                            option.disabled = true;
+                        }
+
+                        if (actionType === 'disable') {
+                            option.hidden = false;
+                            option.disabled = true;
+                        }
+
+                        if (select && select.value == option.value && (actionType === 'hide' ||
+                                actionType === 'disable')) {
+                            const firstVisibleOption = Array.from(select.options).find(function(item) {
+                                return item.value && !item.disabled && !item.hidden;
+                            });
+
+                            if (firstVisibleOption) {
+                                select.value = firstVisibleOption.value;
+                            } else {
+                                select.value = '';
+                            }
+
+                            updateSingleSelectDetailPreview(select);
+                        }
                     });
                 }
             });
@@ -2345,9 +2617,8 @@
 
             isUpdatingDependencies = true;
 
-            hideDependentGroups();
-            hideDependentOptions();
-            showMatchedDependencies();
+            resetDependencyTargets();
+            applyDependencyActions();
             fixSelectDetailAfterDependency();
 
             applyRequiredRules();
@@ -2355,7 +2626,7 @@
 
             isUpdatingDependencies = false;
 
-            updateSummary();
+            applyQuantityRuleLock();
 
             if (typeof refreshStepModeAfterDependencyChange === 'function') {
                 refreshStepModeAfterDependencyChange();
@@ -2548,6 +2819,20 @@
                     updateSummary();
                 });
             });
+            document.querySelectorAll('#customize-form input[type="radio"].js-option-input').forEach(function(
+                input) {
+                input.addEventListener('change', function() {
+                    applyQuantityRuleLock();
+                });
+            });
+
+            document.querySelectorAll('#customize-form select.option-select-detail').forEach(function(select) {
+                select.addEventListener('change', function() {
+                    applyQuantityRuleLock();
+                });
+            });
+
+            applyQuantityRuleLock();
 
             if (quantityInput) {
                 quantityInput.addEventListener('input', updateSummary);
@@ -2837,6 +3122,14 @@
                     alert('Please select all required options.');
                     return false;
                 }
+
+                const isQuantityValid = validateOptionQuantityRules();
+
+                if (!isQuantityValid) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
             });
         });
     </script>
@@ -3118,6 +3411,7 @@
             window.refreshStepModeAfterDependencyChange = refreshStepModeAfterDependencyChange;
         });
     </script>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('.option-view-more-btn').forEach(function(button) {
@@ -3128,15 +3422,183 @@
                         return;
                     }
 
-                    const hiddenItems = group.querySelectorAll('.is-hidden-compact-option');
+                    const grid = group.querySelector('.option-compact-grid');
 
-                    hiddenItems.forEach(function(item) {
+                    if (!grid) {
+                        return;
+                    }
+
+                    const pageSize = parseInt(grid.dataset.pageSize || 8);
+
+                    const hiddenItems = Array.from(
+                        grid.querySelectorAll('.option-compact-card.is-hidden-compact-option')
+                    );
+
+                    hiddenItems.slice(0, pageSize).forEach(function(item) {
                         item.classList.remove('is-hidden-compact-option');
                     });
 
-                    this.closest('.option-view-more-wrap').style.display = 'none';
+                    const remainingHiddenItems = grid.querySelectorAll(
+                        '.option-compact-card.is-hidden-compact-option');
+
+                    if (remainingHiddenItems.length === 0) {
+                        const wrap = button.closest('.option-view-more-wrap');
+
+                        if (wrap) {
+                            wrap.style.display = 'none';
+                        }
+                    }
                 });
             });
         });
+    </script>
+    <script>
+        function getSelectedQuantityRules() {
+            const rules = [];
+
+            document.querySelectorAll('#customize-form input[type="radio"]:checked').forEach(function(input) {
+                const groupEl = input.closest('.customize-option-group, .grouped-button-set');
+
+                if (groupEl && groupEl.style.display === 'none') {
+                    return;
+                }
+
+                const ruleType = input.dataset.qtyRuleType || '';
+
+                if (!ruleType) {
+                    return;
+                }
+
+                rules.push({
+                    optionName: input.dataset.optionName || 'Selected option',
+                    ruleType: ruleType,
+                    minQty: parseInt(input.dataset.minQty || 0),
+                    maxQty: parseInt(input.dataset.maxQty || 0),
+                    exactQty: parseInt(input.dataset.exactQty || 0),
+                });
+            });
+
+            document.querySelectorAll('#customize-form select.option-select-detail').forEach(function(select) {
+                const groupEl = select.closest('.customize-option-group');
+
+                if (groupEl && groupEl.style.display === 'none') {
+                    return;
+                }
+
+                const selected = select.options[select.selectedIndex];
+
+                if (!selected) {
+                    return;
+                }
+
+                const ruleType = selected.dataset.qtyRuleType || '';
+
+                if (!ruleType) {
+                    return;
+                }
+
+                rules.push({
+                    optionName: selected.dataset.optionName || selected.textContent || 'Selected option',
+                    ruleType: ruleType,
+                    minQty: parseInt(selected.dataset.minQty || 0),
+                    maxQty: parseInt(selected.dataset.maxQty || 0),
+                    exactQty: parseInt(selected.dataset.exactQty || 0),
+                });
+            });
+
+            return rules;
+        }
+    </script>
+    <script>
+        function getSelectedQuantityRuleInputs() {
+            const selectedItems = [];
+
+            document.querySelectorAll('#customize-form input[type="radio"]:checked').forEach(function(input) {
+                const groupEl = input.closest('.customize-option-group, .grouped-button-set');
+
+                if (groupEl && groupEl.style.display === 'none') {
+                    return;
+                }
+
+                selectedItems.push({
+                    element: input,
+                    optionName: input.dataset.optionName || 'Selected option',
+                    ruleType: input.dataset.qtyRuleType || '',
+                    minQty: parseInt(input.dataset.minQty || 0),
+                    maxQty: parseInt(input.dataset.maxQty || 0),
+                    exactQty: parseInt(input.dataset.exactQty || 0),
+                });
+            });
+
+            document.querySelectorAll('#customize-form select.option-select-detail').forEach(function(select) {
+                const groupEl = select.closest('.customize-option-group');
+
+                if (groupEl && groupEl.style.display === 'none') {
+                    return;
+                }
+
+                const selected = select.options[select.selectedIndex];
+
+                if (!selected || !selected.value) {
+                    return;
+                }
+
+                selectedItems.push({
+                    element: selected,
+                    optionName: selected.dataset.optionName || selected.textContent || 'Selected option',
+                    ruleType: selected.dataset.qtyRuleType || '',
+                    minQty: parseInt(selected.dataset.minQty || 0),
+                    maxQty: parseInt(selected.dataset.maxQty || 0),
+                    exactQty: parseInt(selected.dataset.exactQty || 0),
+                });
+            });
+
+            return selectedItems;
+        }
+
+        function applyQuantityRuleLock() {
+            const quantityInput = document.getElementById('quantity');
+            const messageBox = document.getElementById('quantity-rule-message');
+
+            if (!quantityInput) {
+                return;
+            }
+
+            const selectedRules = getSelectedQuantityRuleInputs();
+
+            const exactRule = selectedRules.find(function(rule) {
+                return rule.ruleType === 'exact' && rule.exactQty > 0;
+            });
+
+            if (exactRule) {
+                quantityInput.value = exactRule.exactQty;
+                quantityInput.min = exactRule.exactQty;
+                quantityInput.max = exactRule.exactQty;
+                quantityInput.readOnly = true;
+                quantityInput.classList.add('is-locked-by-option');
+
+                if (messageBox) {
+                    messageBox.style.display = '';
+                    messageBox.textContent = exactRule.optionName + ': quantity is fixed at ' + exactRule.exactQty +
+                        ' pcs.';
+                }
+
+                updateSummary();
+                return;
+            }
+
+            quantityInput.readOnly = false;
+            quantityInput.classList.remove('is-locked-by-option');
+
+            quantityInput.min = 20;
+            quantityInput.removeAttribute('max');
+
+            if (messageBox) {
+                messageBox.style.display = 'none';
+                messageBox.textContent = '';
+            }
+
+            updateSummary();
+        }
     </script>
 @endsection
