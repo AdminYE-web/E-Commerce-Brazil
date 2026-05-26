@@ -293,7 +293,7 @@
 
         .option-button-item {
             min-width: 84px;
-            height: 42px;
+            height: 53px;
             border: 1px solid #d9dde7;
             border-radius: 6px;
             background: #fff;
@@ -953,16 +953,16 @@
         }
 
         /* .customize-option-group.has-error h2 {
-                                                                                                                        color: #dc2626;
-                                                                                                                    } */
+                                                                                                                                color: #dc2626;
+                                                                                                                            } */
 
         /* .customize-option-group.has-error .option-button-item,
-                                                                                                                    .customize-option-group.has-error .option-image-card,
-                                                                                                                    .customize-option-group.has-error .option-variant-card,
-                                                                                                                    .customize-option-group.has-error .option-compact-card,
-                                                                                                                    .customize-option-group.has-error .option-select-detail {
-                                                                                                                        border-color: #dc2626;
-                                                                                                                    } */
+                                                                                                                            .customize-option-group.has-error .option-image-card,
+                                                                                                                            .customize-option-group.has-error .option-variant-card,
+                                                                                                                            .customize-option-group.has-error .option-compact-card,
+                                                                                                                            .customize-option-group.has-error .option-select-detail {
+                                                                                                                                border-color: #dc2626;
+                                                                                                                            } */
         .previous-order-box {
             max-width: 620px;
         }
@@ -1021,8 +1021,8 @@
         }
 
         /* =========================
-                                                                                               STEP FOCUS / OVERLAY MODE
-                                                                                            ========================= */
+                                                                                                       STEP FOCUS / OVERLAY MODE
+                                                                                                    ========================= */
 
         .customize-option-group {
             position: relative;
@@ -1632,15 +1632,25 @@
                                     </div>
                                 @elseif($displayType === 'select_detail')
                                     @php
+                                        /*
+    |--------------------------------------------------------------------------
+    | Selected option logic
+    |--------------------------------------------------------------------------
+    | 1. ถ้าเป็น edit cart ให้ใช้ option ที่เคยเลือกไว้
+    | 2. ถ้ามี default จากหลังบ้าน ให้ใช้ default
+    | 3. ถ้าไม่มี default ให้ยังไม่เลือกอะไร และแสดง Select your option
+    |--------------------------------------------------------------------------
+    */
+
                                         $selectedOption = $options->first(function ($option) use ($editingOptions) {
                                             return isset($editingOptions[$option->option_group_id]) &&
                                                 (int) $editingOptions[$option->option_group_id] ===
                                                     (int) $option->option_id;
                                         });
 
-                                        $selectedOption =
-                                            $selectedOption ??
-                                            ($options->firstWhere('pivot.is_default', 1) ?? $options->first());
+                                        $defaultOption = $options->firstWhere('pivot.is_default', 1);
+
+                                        $selectedOption = $selectedOption ?? $defaultOption;
 
                                         $selectedOptionId = $selectedOption?->option_id;
 
@@ -1656,23 +1666,24 @@
                                     @endphp
 
                                     <div class="option-select-detail-wrap">
-                                        <input type="hidden" name="options[{{ $selectedOption->option_group_id }}]"
+                                        <input type="hidden" name="options[{{ $firstOption->option_group_id }}]"
                                             class="js-option-input option-select-detail-hidden"
-                                            value="{{ $selectedOptionId }}" data-group-name="{{ $groupName }}"
-                                            data-option-id="{{ $selectedOption?->option_id }}"
-                                            data-option-name="{{ $selectedOption?->option_name }}"
+                                            value="{{ $selectedOptionId ?? '' }}" data-group-name="{{ $groupName }}"
+                                            data-option-id="{{ $selectedOption?->option_id ?? '' }}"
+                                            data-option-name="{{ $selectedOption?->option_name ?? '' }}"
                                             data-price="{{ $selectedOption?->additional_price ?? 0 }}"
-                                            data-price-type="{{ $selectedOption?->price_type }}"
-                                            data-qty-rule-type="{{ $selectedOption?->pivot->qty_rule_type }}"
-                                            data-min-qty="{{ $selectedOption?->pivot->min_qty }}"
-                                            data-max-qty="{{ $selectedOption?->pivot->max_qty }}"
-                                            data-exact-qty="{{ $selectedOption?->pivot->exact_qty }}">
+                                            data-price-type="{{ $selectedOption?->price_type ?? 'per_order' }}"
+                                            data-free-from-qty="{{ $selectedOption?->free_from_qty ?? 0 }}"
+                                            data-qty-rule-type="{{ $selectedOption?->pivot->qty_rule_type ?? '' }}"
+                                            data-min-qty="{{ $selectedOption?->pivot->min_qty ?? 0 }}"
+                                            data-max-qty="{{ $selectedOption?->pivot->max_qty ?? 0 }}"
+                                            data-exact-qty="{{ $selectedOption?->pivot->exact_qty ?? 0 }}">
 
                                         <div class="dropdown option-bs-dropdown">
                                             <button class="btn dropdown-toggle option-bs-dropdown-btn" type="button"
                                                 data-bs-toggle="dropdown" aria-expanded="false">
                                                 <span class="option-bs-dropdown-label">
-                                                    {{ $selectedOption?->option_name ?? '-- Select --' }}
+                                                    {{ $selectedOption?->option_name ?? 'Select your option' }}
                                                 </span>
                                             </button>
 
@@ -1686,17 +1697,18 @@
 
                                                     <li>
                                                         <button type="button"
-                                                            class="dropdown-item option-bs-dropdown-item {{ (int) $selectedOptionId === (int) $option->option_id ? 'active' : '' }}"
+                                                            class="dropdown-item option-bs-dropdown-item {{ $selectedOptionId && (int) $selectedOptionId === (int) $option->option_id ? 'active' : '' }}"
                                                             data-option-id="{{ $option->option_id }}"
                                                             data-option-name="{{ $option->option_name }}"
                                                             data-price="{{ $option->additional_price ?? 0 }}"
                                                             data-price-type="{{ $option->price_type }}"
+                                                            data-free-from-qty="{{ $option->free_from_qty ?? 0 }}"
                                                             data-image="{{ $imagePath }}"
                                                             data-detail="{{ e($option->option_detail ?? '') }}"
-                                                            data-qty-rule-type="{{ $option->pivot->qty_rule_type }}"
-                                                            data-min-qty="{{ $option->pivot->min_qty }}"
-                                                            data-max-qty="{{ $option->pivot->max_qty }}"
-                                                            data-exact-qty="{{ $option->pivot->exact_qty }}">
+                                                            data-qty-rule-type="{{ $option->pivot->qty_rule_type ?? '' }}"
+                                                            data-min-qty="{{ $option->pivot->min_qty ?? 0 }}"
+                                                            data-max-qty="{{ $option->pivot->max_qty ?? 0 }}"
+                                                            data-exact-qty="{{ $option->pivot->exact_qty ?? 0 }}">
                                                             {{ $option->option_name }}
                                                         </button>
                                                     </li>
@@ -1709,7 +1721,7 @@
                                             <div class="select-detail-image-box"
                                                 style="{{ !$hasDefaultImage ? 'display:none;' : '' }}">
                                                 <img class="select-detail-image" src="{{ $defaultImage }}"
-                                                    alt="{{ $selectedOption->option_name ?? '' }}">
+                                                    alt="{{ $selectedOption?->option_name ?? '' }}">
                                             </div>
 
                                             <div class="select-detail-text-box"
