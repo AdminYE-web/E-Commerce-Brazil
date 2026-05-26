@@ -953,16 +953,16 @@
         }
 
         /* .customize-option-group.has-error h2 {
-                                                                                    color: #dc2626;
-                                                                                } */
+                                                                                            color: #dc2626;
+                                                                                        } */
 
         /* .customize-option-group.has-error .option-button-item,
-                                                                                .customize-option-group.has-error .option-image-card,
-                                                                                .customize-option-group.has-error .option-variant-card,
-                                                                                .customize-option-group.has-error .option-compact-card,
-                                                                                .customize-option-group.has-error .option-select-detail {
-                                                                                    border-color: #dc2626;
-                                                                                } */
+                                                                                        .customize-option-group.has-error .option-image-card,
+                                                                                        .customize-option-group.has-error .option-variant-card,
+                                                                                        .customize-option-group.has-error .option-compact-card,
+                                                                                        .customize-option-group.has-error .option-select-detail {
+                                                                                            border-color: #dc2626;
+                                                                                        } */
         .previous-order-box {
             max-width: 620px;
         }
@@ -1021,8 +1021,8 @@
         }
 
         /* =========================
-                                                           STEP FOCUS / OVERLAY MODE
-                                                        ========================= */
+                                                                   STEP FOCUS / OVERLAY MODE
+                                                                ========================= */
 
         .customize-option-group {
             position: relative;
@@ -1257,6 +1257,63 @@
         .option-select-detail:focus {
             border-color: #3166f6;
             box-shadow: 0 0 0 3px rgba(49, 102, 246, 0.15);
+        }
+
+        .option-bs-dropdown {
+            width: 100%;
+            max-width: 620px;
+            margin-bottom: 12px;
+        }
+
+        .option-bs-dropdown-btn {
+            width: 100%;
+            min-height: 48px;
+            border: 1px solid #d9dde7;
+            border-radius: 12px;
+            background: #fff;
+            color: #111827;
+            font-size: 15px;
+            font-weight: 500;
+            text-align: left;
+            padding: 10px 44px 10px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+        }
+
+        .option-bs-dropdown-btn:hover,
+        .option-bs-dropdown-btn:focus {
+            border-color: #3166f6;
+            box-shadow: 0 0 0 3px rgba(49, 102, 246, 0.12);
+        }
+
+        .option-bs-dropdown-menu {
+            width: 100%;
+            max-height: 260px;
+            overflow-y: auto;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 8px;
+            box-shadow: 0 12px 32px rgba(15, 23, 42, 0.14);
+        }
+
+        .option-bs-dropdown-item {
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: 14px;
+            line-height: 1.4;
+            white-space: normal;
+        }
+
+        .option-bs-dropdown-item:hover {
+            background: #eef4ff;
+            color: #0f3f86;
+        }
+
+        .option-bs-dropdown-item.active {
+            background: #3166f6;
+            color: #fff;
         }
     </style>
 @endsection
@@ -1565,54 +1622,84 @@
                                     </div>
                                 @elseif($displayType === 'select_detail')
                                     @php
-                                        $defaultOption =
-                                            $options->firstWhere('pivot.is_default', 1) ?? $options->first();
+                                        $selectedOption = $options->first(function ($option) use ($editingOptions) {
+                                            return isset($editingOptions[$option->option_group_id]) &&
+                                                (int) $editingOptions[$option->option_group_id] ===
+                                                    (int) $option->option_id;
+                                        });
+
+                                        $selectedOption =
+                                            $selectedOption ??
+                                            ($options->firstWhere('pivot.is_default', 1) ?? $options->first());
+
+                                        $selectedOptionId = $selectedOption?->option_id;
 
                                         $defaultImage =
-                                            $defaultOption && $defaultOption->mainImage
-                                                ? asset('storage/' . $defaultOption->mainImage->image_path)
+                                            $selectedOption && $selectedOption->mainImage
+                                                ? asset('storage/' . $selectedOption->mainImage->image_path)
                                                 : '';
 
-                                        $defaultDetail = $defaultOption->option_detail ?? '';
+                                        $defaultDetail = $selectedOption->option_detail ?? '';
 
                                         $hasDefaultImage = !empty($defaultImage);
                                         $hasDefaultDetail = !empty(trim(strip_tags($defaultDetail)));
                                     @endphp
 
                                     <div class="option-select-detail-wrap">
-                                        <select name="options[{{ $defaultOption->option_group_id }}]"
-                                            class="form-select option-select-detail js-option-input"
-                                            data-group-name="{{ $groupName }}">
-                                            @foreach ($options as $option)
-                                                @php
-                                                    $imagePath = $option->mainImage
-                                                        ? asset('storage/' . $option->mainImage->image_path)
-                                                        : '';
-                                                @endphp
+                                        <input type="hidden" name="options[{{ $selectedOption->option_group_id }}]"
+                                            class="js-option-input option-select-detail-hidden"
+                                            value="{{ $selectedOptionId }}" data-group-name="{{ $groupName }}"
+                                            data-option-id="{{ $selectedOption?->option_id }}"
+                                            data-option-name="{{ $selectedOption?->option_name }}"
+                                            data-price="{{ $selectedOption?->additional_price ?? 0 }}"
+                                            data-price-type="{{ $selectedOption?->price_type }}"
+                                            data-qty-rule-type="{{ $selectedOption?->pivot->qty_rule_type }}"
+                                            data-min-qty="{{ $selectedOption?->pivot->min_qty }}"
+                                            data-max-qty="{{ $selectedOption?->pivot->max_qty }}"
+                                            data-exact-qty="{{ $selectedOption?->pivot->exact_qty }}">
 
-                                                <option value="{{ $option->option_id }}"
-                                                    data-option-id="{{ $option->option_id }}"
-                                                    data-option-name="{{ $option->option_name }}"
-                                                    data-price="{{ $option->additional_price ?? 0 }}"
-                                                    data-price-type="{{ $option->price_type }}"
-                                                    data-image="{{ $imagePath }}"
-                                                    data-detail="{{ e($option->option_detail ?? '') }}"
-                                                    data-qty-rule-type="{{ $option->pivot->qty_rule_type }}"
-                                                    data-min-qty="{{ $option->pivot->min_qty }}"
-                                                    data-max-qty="{{ $option->pivot->max_qty }}"
-                                                    data-exact-qty="{{ $option->pivot->exact_qty }}"
-                                                    {{ old("options.{$option->option_group_id}", $editingOptions[$option->option_group_id] ?? null) == $option->option_id || (!$editingCartItem && $option->pivot->is_default) ? 'selected' : '' }}>
-                                                    {{ $option->option_name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
+                                        <div class="dropdown option-bs-dropdown">
+                                            <button class="btn dropdown-toggle option-bs-dropdown-btn" type="button"
+                                                data-bs-toggle="dropdown" aria-expanded="false">
+                                                <span class="option-bs-dropdown-label">
+                                                    {{ $selectedOption?->option_name ?? '-- Select --' }}
+                                                </span>
+                                            </button>
+
+                                            <ul class="dropdown-menu option-bs-dropdown-menu">
+                                                @foreach ($options as $option)
+                                                    @php
+                                                        $imagePath = $option->mainImage
+                                                            ? asset('storage/' . $option->mainImage->image_path)
+                                                            : '';
+                                                    @endphp
+
+                                                    <li>
+                                                        <button type="button"
+                                                            class="dropdown-item option-bs-dropdown-item {{ (int) $selectedOptionId === (int) $option->option_id ? 'active' : '' }}"
+                                                            data-option-id="{{ $option->option_id }}"
+                                                            data-option-name="{{ $option->option_name }}"
+                                                            data-price="{{ $option->additional_price ?? 0 }}"
+                                                            data-price-type="{{ $option->price_type }}"
+                                                            data-image="{{ $imagePath }}"
+                                                            data-detail="{{ e($option->option_detail ?? '') }}"
+                                                            data-qty-rule-type="{{ $option->pivot->qty_rule_type }}"
+                                                            data-min-qty="{{ $option->pivot->min_qty }}"
+                                                            data-max-qty="{{ $option->pivot->max_qty }}"
+                                                            data-exact-qty="{{ $option->pivot->exact_qty }}">
+                                                            {{ $option->option_name }}
+                                                        </button>
+                                                    </li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
 
                                         <div class="select-detail-preview"
                                             style="{{ !$hasDefaultImage && !$hasDefaultDetail ? 'display:none;' : '' }}">
                                             <div class="select-detail-image-box"
                                                 style="{{ !$hasDefaultImage ? 'display:none;' : '' }}">
                                                 <img class="select-detail-image" src="{{ $defaultImage }}"
-                                                    alt="{{ $defaultOption->option_name ?? '' }}">
+                                                    alt="{{ $selectedOption->option_name ?? '' }}">
                                             </div>
 
                                             <div class="select-detail-text-box"
@@ -1859,18 +1946,31 @@
         const priceRules = @json($priceRules ?? []);
         const optionDependencies = @json($dependencies ?? []);
 
-        console.log('priceRules:', priceRules);
-
         let isUpdatingDependencies = false;
 
         function formatPrice(price) {
             return Number(price || 0).toFixed(2);
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | Selected Options
+        |--------------------------------------------------------------------------
+        */
         function getSelectedOptionIdsForPrice() {
             const selected = [];
 
             document.querySelectorAll('#customize-form input[type="radio"]:checked').forEach(function(input) {
+                if (input.disabled) {
+                    return;
+                }
+
+                const groupEl = input.closest('.customize-option-group, .grouped-button-set');
+
+                if (groupEl && groupEl.style.display === 'none') {
+                    return;
+                }
+
                 const optionId = parseInt(input.value);
 
                 if (optionId) {
@@ -1879,11 +1979,37 @@
             });
 
             document.querySelectorAll('#customize-form select.option-select-detail').forEach(function(select) {
-                if (select.closest('.customize-option-group')?.style.display === 'none') {
+                const groupEl = select.closest('.customize-option-group');
+
+                if (groupEl && groupEl.style.display === 'none') {
                     return;
                 }
 
-                const optionId = parseInt(select.value);
+                const selectedOption = select.options[select.selectedIndex];
+
+                if (!selectedOption || selectedOption.disabled || selectedOption.hidden || !selectedOption.value) {
+                    return;
+                }
+
+                const optionId = parseInt(selectedOption.value);
+
+                if (optionId) {
+                    selected.push(optionId);
+                }
+            });
+
+            document.querySelectorAll('#customize-form .option-select-detail-hidden').forEach(function(input) {
+                const groupEl = input.closest('.customize-option-group');
+
+                if (groupEl && groupEl.style.display === 'none') {
+                    return;
+                }
+
+                if (input.disabled || !input.value) {
+                    return;
+                }
+
+                const optionId = parseInt(input.value);
 
                 if (optionId) {
                     selected.push(optionId);
@@ -1893,10 +2019,23 @@
             return selected;
         }
 
+        function getSelectedOptionIds() {
+            return getSelectedOptionIdsForPrice();
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Quantity Rule
+        |--------------------------------------------------------------------------
+        */
         function getSelectedQuantityRuleItems() {
             const selectedItems = [];
 
             document.querySelectorAll('#customize-form input[type="radio"]:checked').forEach(function(input) {
+                if (input.disabled) {
+                    return;
+                }
+
                 const groupEl = input.closest('.customize-option-group, .grouped-button-set');
 
                 if (groupEl && groupEl.style.display === 'none') {
@@ -1921,7 +2060,7 @@
 
                 const selected = select.options[select.selectedIndex];
 
-                if (!selected || !selected.value) {
+                if (!selected || selected.disabled || selected.hidden || !selected.value) {
                     return;
                 }
 
@@ -1934,12 +2073,56 @@
                 });
             });
 
+            document.querySelectorAll('#customize-form .option-select-detail-hidden').forEach(function(input) {
+                const groupEl = input.closest('.customize-option-group');
+
+                if (groupEl && groupEl.style.display === 'none') {
+                    return;
+                }
+
+                if (input.disabled || !input.value) {
+                    return;
+                }
+
+                selectedItems.push({
+                    optionName: input.dataset.optionName || 'Selected option',
+                    ruleType: input.dataset.qtyRuleType || '',
+                    minQty: parseInt(input.dataset.minQty || 0),
+                    maxQty: parseInt(input.dataset.maxQty || 0),
+                    exactQty: parseInt(input.dataset.exactQty || 0),
+                });
+            });
+
             return selectedItems;
+        }
+
+        function showQuantityRuleMessage(message) {
+            const messageBox = document.getElementById('quantity-rule-message');
+
+            if (!messageBox) {
+                return;
+            }
+
+            messageBox.style.display = '';
+            messageBox.textContent = '** ' + message + ' **';
+            messageBox.classList.add('is-rule-active');
+        }
+
+        function resetQuantityRuleMessage() {
+            const messageBox = document.getElementById('quantity-rule-message');
+
+            if (!messageBox) {
+                return;
+            }
+
+            const defaultText = messageBox.dataset.defaultText || '';
+
+            messageBox.textContent = defaultText;
+            messageBox.classList.remove('is-rule-active');
         }
 
         function applyQuantityRuleLock() {
             const quantityInput = document.getElementById('quantity');
-            const messageBox = document.getElementById('quantity-rule-message');
 
             if (!quantityInput) {
                 return;
@@ -1951,6 +2134,23 @@
                 return rule.ruleType === 'exact' && rule.exactQty > 0;
             });
 
+            const rangeRule = rules.find(function(rule) {
+                return rule.ruleType === 'range' && (rule.minQty > 0 || rule.maxQty > 0);
+            });
+
+            const minRule = rules.find(function(rule) {
+                return rule.ruleType === 'min' && rule.minQty > 0;
+            });
+
+            const maxRule = rules.find(function(rule) {
+                return rule.ruleType === 'max' && rule.maxQty > 0;
+            });
+
+            quantityInput.readOnly = false;
+            quantityInput.classList.remove('is-locked-by-option');
+            quantityInput.min = 20;
+            quantityInput.removeAttribute('max');
+
             if (exactRule) {
                 quantityInput.value = exactRule.exactQty;
                 quantityInput.min = exactRule.exactQty;
@@ -1958,27 +2158,55 @@
                 quantityInput.readOnly = true;
                 quantityInput.classList.add('is-locked-by-option');
 
-                if (messageBox) {
-                    messageBox.style.display = '';
-                    messageBox.textContent = exactRule.optionName + ': quantity is fixed at ' + exactRule.exactQty +
-                        ' pcs.';
-                }
+                showQuantityRuleMessage(
+                    exactRule.optionName + ': quantity is fixed at ' + exactRule.exactQty + ' pcs.'
+                );
 
                 updateSummary();
                 return;
             }
 
-            quantityInput.readOnly = false;
-            quantityInput.classList.remove('is-locked-by-option');
+            if (rangeRule) {
+                if (rangeRule.minQty > 0) {
+                    quantityInput.min = rangeRule.minQty;
+                }
 
-            quantityInput.min = 20;
-            quantityInput.removeAttribute('max');
+                if (rangeRule.maxQty > 0) {
+                    quantityInput.max = rangeRule.maxQty;
+                }
 
-            if (messageBox) {
-                messageBox.style.display = 'none';
-                messageBox.textContent = '';
+                showQuantityRuleMessage(
+                    rangeRule.optionName + ': quantity must be between ' + rangeRule.minQty + ' - ' + rangeRule.maxQty +
+                    ' pcs.'
+                );
+
+                updateSummary();
+                return;
             }
 
+            if (minRule) {
+                quantityInput.min = minRule.minQty;
+
+                showQuantityRuleMessage(
+                    minRule.optionName + ': minimum order is ' + minRule.minQty + ' pcs.'
+                );
+
+                updateSummary();
+                return;
+            }
+
+            if (maxRule) {
+                quantityInput.max = maxRule.maxQty;
+
+                showQuantityRuleMessage(
+                    maxRule.optionName + ': maximum order is ' + maxRule.maxQty + ' pcs.'
+                );
+
+                updateSummary();
+                return;
+            }
+
+            resetQuantityRuleMessage();
             updateSummary();
         }
 
@@ -1989,20 +2217,21 @@
 
             for (const rule of rules) {
                 if (rule.ruleType === 'min' && rule.minQty && quantity < rule.minQty) {
-                    alert(rule.optionName + ': minimum order is ' + rule.minQty + ' pcs.');
+                    showQuantityRuleMessage(rule.optionName + ': minimum order is ' + rule.minQty + ' pcs.');
                     quantityInput.focus();
                     return false;
                 }
 
                 if (rule.ruleType === 'max' && rule.maxQty && quantity > rule.maxQty) {
-                    alert(rule.optionName + ': maximum order is ' + rule.maxQty + ' pcs.');
+                    showQuantityRuleMessage(rule.optionName + ': maximum order is ' + rule.maxQty + ' pcs.');
                     quantityInput.focus();
                     return false;
                 }
 
                 if (rule.ruleType === 'exact' && rule.exactQty && quantity !== rule.exactQty) {
-                    alert(rule.optionName + ': order quantity must be exactly ' + rule.exactQty + ' pcs.');
                     quantityInput.value = rule.exactQty;
+                    showQuantityRuleMessage(rule.optionName + ': order quantity must be exactly ' + rule.exactQty +
+                    ' pcs.');
                     quantityInput.focus();
                     updateSummary();
                     return false;
@@ -2010,13 +2239,13 @@
 
                 if (rule.ruleType === 'range') {
                     if (rule.minQty && quantity < rule.minQty) {
-                        alert(rule.optionName + ': minimum order is ' + rule.minQty + ' pcs.');
+                        showQuantityRuleMessage(rule.optionName + ': minimum order is ' + rule.minQty + ' pcs.');
                         quantityInput.focus();
                         return false;
                     }
 
                     if (rule.maxQty && quantity > rule.maxQty) {
-                        alert(rule.optionName + ': maximum order is ' + rule.maxQty + ' pcs.');
+                        showQuantityRuleMessage(rule.optionName + ': maximum order is ' + rule.maxQty + ' pcs.');
                         quantityInput.focus();
                         return false;
                     }
@@ -2026,6 +2255,11 @@
             return true;
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | Price Rule
+        |--------------------------------------------------------------------------
+        */
         function findMatchedPriceRule(selectedOptionIds) {
             const matchedRules = priceRules.filter(function(rule) {
                 const ruleOptionIds = rule.option_ids || [];
@@ -2095,6 +2329,11 @@
                 .includes(parseInt(optionId));
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | Select Detail Preview
+        |--------------------------------------------------------------------------
+        */
         function updateSingleSelectDetailPreview(select) {
             const selected = select.options[select.selectedIndex];
             const wrap = select.closest('.option-select-detail-wrap');
@@ -2115,8 +2354,33 @@
             const imageUrl = selected.dataset.image || '';
             const detailText = selected.dataset.detail || '';
 
-            const hasImage = imageUrl.trim() !== '';
-            const hasDetail = detailText.trim() !== '';
+            applySelectDetailPreview(wrap, imageUrl, detailText, selected.dataset.optionName || '');
+        }
+
+        function updateBootstrapSelectDetailPreview(wrap, selected) {
+            if (!wrap || !selected) {
+                return;
+            }
+
+            const imageUrl = selected.dataset.image || '';
+            const detailText = selected.dataset.detail || '';
+            const optionName = selected.dataset.optionName || '';
+
+            applySelectDetailPreview(wrap, imageUrl, detailText, optionName);
+        }
+
+        function applySelectDetailPreview(wrap, imageUrl, detailText, optionName) {
+            const preview = wrap.querySelector('.select-detail-preview');
+            const imageBox = wrap.querySelector('.select-detail-image-box');
+            const textBox = wrap.querySelector('.select-detail-text-box');
+            const image = wrap.querySelector('.select-detail-image');
+
+            if (!preview) {
+                return;
+            }
+
+            const hasImage = (imageUrl || '').trim() !== '';
+            const hasDetail = (detailText || '').trim() !== '';
 
             if (!hasImage && !hasDetail) {
                 preview.style.display = 'none';
@@ -2140,7 +2404,7 @@
 
             if (image) {
                 image.src = hasImage ? imageUrl : '';
-                image.alt = selected.dataset.optionName || '';
+                image.alt = optionName || '';
             }
 
             if (textBox) {
@@ -2149,13 +2413,114 @@
             }
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | Bootstrap Dropdown Select Helpers
+        |--------------------------------------------------------------------------
+        */
+        function clearBootstrapDropdown(wrap) {
+            if (!wrap) {
+                return;
+            }
+
+            const hiddenInput = wrap.querySelector('.option-select-detail-hidden');
+            const label = wrap.querySelector('.option-bs-dropdown-label');
+            const preview = wrap.querySelector('.select-detail-preview');
+
+            if (hiddenInput) {
+                hiddenInput.value = '';
+                hiddenInput.dataset.optionId = '';
+                hiddenInput.dataset.optionName = '';
+                hiddenInput.dataset.price = 0;
+                hiddenInput.dataset.priceType = 'per_order';
+                hiddenInput.dataset.qtyRuleType = '';
+                hiddenInput.dataset.minQty = 0;
+                hiddenInput.dataset.maxQty = 0;
+                hiddenInput.dataset.exactQty = 0;
+            }
+
+            if (label) {
+                label.textContent = '-- Select --';
+            }
+
+            wrap.querySelectorAll('.option-bs-dropdown-item').forEach(function(item) {
+                item.classList.remove('active');
+            });
+
+            if (preview) {
+                preview.style.display = 'none';
+            }
+        }
+
+        function selectBootstrapDropdownItem(item, shouldTriggerUpdate = true) {
+            const wrap = item.closest('.option-select-detail-wrap');
+
+            if (!wrap || item.disabled || item.hidden || item.classList.contains('disabled')) {
+                return;
+            }
+
+            const hiddenInput = wrap.querySelector('.option-select-detail-hidden');
+            const label = wrap.querySelector('.option-bs-dropdown-label');
+
+            if (!hiddenInput) {
+                return;
+            }
+
+            hiddenInput.value = item.dataset.optionId || '';
+            hiddenInput.dataset.optionId = item.dataset.optionId || '';
+            hiddenInput.dataset.optionName = item.dataset.optionName || '';
+            hiddenInput.dataset.price = item.dataset.price || 0;
+            hiddenInput.dataset.priceType = item.dataset.priceType || 'per_order';
+            hiddenInput.dataset.qtyRuleType = item.dataset.qtyRuleType || '';
+            hiddenInput.dataset.minQty = item.dataset.minQty || 0;
+            hiddenInput.dataset.maxQty = item.dataset.maxQty || 0;
+            hiddenInput.dataset.exactQty = item.dataset.exactQty || 0;
+
+            if (label) {
+                label.textContent = item.dataset.optionName || item.textContent.trim();
+            }
+
+            wrap.querySelectorAll('.option-bs-dropdown-item').forEach(function(dropdownItem) {
+                dropdownItem.classList.remove('active');
+            });
+
+            item.classList.add('active');
+
+            updateBootstrapSelectDetailPreview(wrap, item);
+
+            if (shouldTriggerUpdate) {
+                updateOptionDependencies();
+                applyQuantityRuleLock();
+                updateSummary();
+            }
+        }
+
+        function selectFirstAvailableBootstrapItem(wrap) {
+            if (!wrap) {
+                return;
+            }
+
+            const firstAvailable = Array.from(wrap.querySelectorAll('.option-bs-dropdown-item')).find(function(item) {
+                return !item.hidden && !item.disabled && !item.classList.contains('disabled');
+            });
+
+            if (firstAvailable) {
+                selectBootstrapDropdownItem(firstAvailable, false);
+            } else {
+                clearBootstrapDropdown(wrap);
+            }
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Summary
+        |--------------------------------------------------------------------------
+        */
         function updateSummary() {
             const quantityInput = document.getElementById('quantity');
             const quantity = parseInt(quantityInput?.value || 0);
 
             const selectedOptionIds = getSelectedOptionIdsForPrice();
-            console.log('selectedOptionIds:', selectedOptionIds);
-
             const matchedRule = findMatchedPriceRule(selectedOptionIds);
             const unitPrice = getUnitPriceFromRule(matchedRule, quantity);
             const productTotal = unitPrice * quantity;
@@ -2165,26 +2530,16 @@
 
             const summaryOptions = document.getElementById('summary-options');
             const checkedOptions = document.querySelectorAll('#customize-form input[type="radio"]:checked');
-            const selectedOptions = document.querySelectorAll('#customize-form .option-select-detail');
+            const selectedOptions = document.querySelectorAll(
+                '#customize-form select.option-select-detail, #customize-form .option-select-detail-hidden'
+            );
             const customColorInputs = document.querySelectorAll('.custom-color-input');
 
-            // if (matchedRule) {
-            //     html += `
-        //         <div class="summary-item">
-        //             <span>Price Rule</span>
-        //             <strong>${matchedRule.rule_name || 'Matched Rule'}</strong>
-        //         </div>
-        //     `;
-            // } else {
-            //     html += `
-        //         <div class="summary-item">
-        //             <span>Price Rule</span>
-        //             <strong style="color:#dc2626;">No matched price rule</strong>
-        //         </div>
-        //     `;
-            // }
-
             checkedOptions.forEach(function(input) {
+                if (input.disabled) {
+                    return;
+                }
+
                 const groupEl = input.closest('.customize-option-group, .grouped-button-set');
 
                 if (groupEl && groupEl.style.display === 'none') {
@@ -2210,9 +2565,7 @@
                     }
                 }
 
-                const displayName = variantName ?
-                    `${optionName} - ${variantName}` :
-                    optionName;
+                const displayName = variantName ? `${optionName} - ${variantName}` : optionName;
 
                 let extraText = '';
 
@@ -2229,32 +2582,53 @@
                 }
 
                 html += `
-    <div class="summary-item">
-        <span>${groupName}</span>
-        <strong>${displayName}${extraText}</strong>
-    </div>
-`;
+                <div class="summary-item">
+                    <span>${groupName}</span>
+                    <strong>${displayName}${extraText}</strong>
+                </div>
+            `;
             });
 
             selectedOptions.forEach(function(select) {
+                if (select.disabled) {
+                    return;
+                }
+
                 const groupEl = select.closest('.customize-option-group, .grouped-button-set');
 
                 if (groupEl && groupEl.style.display === 'none') {
                     return;
                 }
 
-                const selected = select.options[select.selectedIndex];
+                let optionId = null;
+                let groupName = '';
+                let optionName = '';
+                let price = 0;
+                let priceType = 'per_order';
 
-                if (!selected || selected.disabled || selected.hidden || !selected.value) {
-                    return;
+                if (select.classList.contains('option-select-detail-hidden')) {
+                    if (!select.value) {
+                        return;
+                    }
+
+                    optionId = parseInt(select.value);
+                    groupName = select.dataset.groupName || '';
+                    optionName = select.dataset.optionName || '';
+                    price = parseFloat(select.dataset.price || 0);
+                    priceType = select.dataset.priceType || 'per_order';
+                } else {
+                    const selected = select.options[select.selectedIndex];
+
+                    if (!selected || selected.disabled || selected.hidden || !selected.value) {
+                        return;
+                    }
+
+                    optionId = parseInt(selected.value);
+                    groupName = select.dataset.groupName || '';
+                    optionName = selected.dataset.optionName || selected.textContent || '';
+                    price = parseFloat(selected.dataset.price || 0);
+                    priceType = selected.dataset.priceType || 'per_order';
                 }
-
-                const optionId = parseInt(selected.value);
-
-                const groupName = select.dataset.groupName || '';
-                const optionName = selected.dataset.optionName || selected.textContent || '';
-                const price = parseFloat(selected.dataset.price || 0);
-                const priceType = selected.dataset.priceType || 'per_order';
 
                 const isRuleOption = isOptionInMatchedRule(optionId, matchedRule);
 
@@ -2275,6 +2649,12 @@
             });
 
             customColorInputs.forEach(function(input) {
+                const groupEl = input.closest('.customize-option-group');
+
+                if (groupEl && groupEl.style.display === 'none') {
+                    return;
+                }
+
                 const value = input.value.trim();
 
                 if (!value) {
@@ -2293,14 +2673,6 @@
 
             const total = productTotal + optionTotal;
 
-            // if (document.getElementById('summary-unit-price')) {
-            //     document.getElementById('summary-unit-price').innerText = formatPrice(unitPrice);
-            // }
-
-            // if (document.getElementById('summary-quantity')) {
-            //     document.getElementById('summary-quantity').innerText = quantity;
-            // }
-
             if (summaryOptions) {
                 summaryOptions.innerHTML = html;
             }
@@ -2308,6 +2680,7 @@
             if (document.getElementById('total-price')) {
                 document.getElementById('total-price').innerText = formatPrice(total);
             }
+
             if (document.getElementById('stepBarTotalPrice')) {
                 document.getElementById('stepBarTotalPrice').innerText = formatPrice(total);
             }
@@ -2317,28 +2690,11 @@
             }
         }
 
-        function getSelectedOptionIds() {
-            const selected = [];
-
-            document.querySelectorAll('#customize-form input[type="radio"]:checked').forEach(function(input) {
-                const optionId = parseInt(input.value);
-
-                if (optionId) {
-                    selected.push(optionId);
-                }
-            });
-
-            document.querySelectorAll('#customize-form select.option-select-detail').forEach(function(select) {
-                const optionId = parseInt(select.value);
-
-                if (optionId) {
-                    selected.push(optionId);
-                }
-            });
-
-            return selected;
-        }
-
+        /*
+        |--------------------------------------------------------------------------
+        | Dependency
+        |--------------------------------------------------------------------------
+        */
         function clearInputsInside(element) {
             if (!element) {
                 return;
@@ -2356,54 +2712,9 @@
                 select.selectedIndex = 0;
                 updateSingleSelectDetailPreview(select);
             });
-        }
 
-        function getActiveDependencyTargetGroupIds() {
-            const selectedOptionIds = getSelectedOptionIds();
-            const activeGroupIds = [];
-
-            optionDependencies.forEach(function(dep) {
-                const triggerOptionId = parseInt(dep.parent_option_id);
-
-                if (!selectedOptionIds.includes(triggerOptionId)) {
-                    return;
-                }
-
-                if (dep.target_type === 'group' && dep.target_group_id) {
-                    activeGroupIds.push(parseInt(dep.target_group_id));
-                }
-            });
-
-            return activeGroupIds;
-        }
-
-        function hideDependentGroups() {
-            const activeGroupIds = getActiveDependencyTargetGroupIds();
-
-            const targetGroupIds = [
-                ...new Set(
-                    optionDependencies
-                    .filter(function(dep) {
-                        return dep.target_type === 'group' && dep.target_group_id;
-                    })
-                    .map(function(dep) {
-                        return parseInt(dep.target_group_id);
-                    })
-                )
-            ];
-
-            targetGroupIds.forEach(function(groupId) {
-                const groupEls = document.querySelectorAll('[data-group-id="' + groupId + '"]');
-
-                groupEls.forEach(function(groupEl) {
-                    if (activeGroupIds.includes(parseInt(groupId))) {
-                        groupEl.style.display = '';
-                        return;
-                    }
-
-                    groupEl.style.display = 'none';
-                    clearInputsInside(groupEl);
-                });
+            element.querySelectorAll('.option-select-detail-wrap').forEach(function(wrap) {
+                clearBootstrapDropdown(wrap);
             });
         }
 
@@ -2411,11 +2722,6 @@
             optionDependencies.forEach(function(dep) {
                 const actionType = dep.action_type || 'show';
 
-                /*
-                |--------------------------------------------------------------------------
-                | Reset target option
-                |--------------------------------------------------------------------------
-                */
                 if (dep.target_type === 'option' && dep.target_option_id) {
                     const optionId = parseInt(dep.target_option_id);
 
@@ -2432,6 +2738,14 @@
                             optionBox.style.display = '';
                             optionBox.classList.remove('is-option-disabled-by-dependency');
                         }
+
+                        if (actionType === 'show') {
+                            input.checked = false;
+
+                            if (optionBox) {
+                                optionBox.style.display = 'none';
+                            }
+                        }
                     });
 
                     const selectOptions = document.querySelectorAll(
@@ -2441,21 +2755,54 @@
                     selectOptions.forEach(function(option) {
                         option.hidden = false;
                         option.disabled = false;
+
+                        if (actionType === 'show') {
+                            option.hidden = true;
+                            option.disabled = true;
+                        }
+                    });
+
+                    const dropdownItems = document.querySelectorAll(
+                        '#customize-form .option-bs-dropdown-item[data-option-id="' + optionId + '"]'
+                    );
+
+                    dropdownItems.forEach(function(item) {
+                        item.hidden = false;
+                        item.disabled = false;
+                        item.classList.remove('disabled');
+
+                        if (actionType === 'show') {
+                            item.hidden = true;
+                            item.disabled = true;
+                            item.classList.remove('active');
+
+                            const wrap = item.closest('.option-select-detail-wrap');
+                            const hiddenInput = wrap ? wrap.querySelector('.option-select-detail-hidden') :
+                                null;
+
+                            if (hiddenInput && hiddenInput.value == item.dataset.optionId) {
+                                clearBootstrapDropdown(wrap);
+                            }
+                        }
                     });
                 }
 
-                /*
-                |--------------------------------------------------------------------------
-                | Reset target group เฉพาะ action show เท่านั้น
-                |--------------------------------------------------------------------------
-                | เพราะ show dependency เดิมคือ default ซ่อน group ก่อน แล้วเลือก trigger ค่อยแสดง
-                */
-                if (actionType === 'show' && dep.target_type === 'group' && dep.target_group_id) {
+                if (dep.target_type === 'group' && dep.target_group_id) {
                     const groupEls = document.querySelectorAll('[data-group-id="' + dep.target_group_id + '"]');
 
                     groupEls.forEach(function(groupEl) {
-                        groupEl.style.display = 'none';
-                        clearInputsInside(groupEl);
+                        groupEl.classList.remove('is-option-disabled-by-dependency');
+
+                        groupEl.querySelectorAll('input, select, textarea').forEach(function(input) {
+                            input.disabled = false;
+                        });
+
+                        if (actionType === 'show') {
+                            groupEl.style.display = 'none';
+                            clearInputsInside(groupEl);
+                        } else {
+                            groupEl.style.display = '';
+                        }
                     });
                 }
             });
@@ -2473,11 +2820,6 @@
 
                 const actionType = dep.action_type || 'show';
 
-                /*
-                |--------------------------------------------------------------------------
-                | Target Group
-                |--------------------------------------------------------------------------
-                */
                 if (dep.target_type === 'group' && dep.target_group_id) {
                     const groupEls = document.querySelectorAll('[data-group-id="' + dep.target_group_id + '"]');
 
@@ -2492,6 +2834,7 @@
                         }
 
                         if (actionType === 'disable') {
+                            groupEl.style.display = '';
                             groupEl.classList.add('is-option-disabled-by-dependency');
 
                             groupEl.querySelectorAll('input, select, textarea').forEach(function(input) {
@@ -2501,11 +2844,6 @@
                     });
                 }
 
-                /*
-                |--------------------------------------------------------------------------
-                | Target Option
-                |--------------------------------------------------------------------------
-                */
                 if (dep.target_type === 'option' && dep.target_option_id) {
                     const optionId = parseInt(dep.target_option_id);
 
@@ -2583,6 +2921,43 @@
                             updateSingleSelectDetailPreview(select);
                         }
                     });
+
+                    const dropdownItems = document.querySelectorAll(
+                        '#customize-form .option-bs-dropdown-item[data-option-id="' + optionId + '"]'
+                    );
+
+                    dropdownItems.forEach(function(item) {
+                        const wrap = item.closest('.option-select-detail-wrap');
+                        const hiddenInput = wrap ? wrap.querySelector('.option-select-detail-hidden') :
+                        null;
+
+                        if (actionType === 'show') {
+                            item.hidden = false;
+                            item.disabled = false;
+                            item.classList.remove('disabled');
+                        }
+
+                        if (actionType === 'hide') {
+                            item.hidden = true;
+                            item.disabled = true;
+                            item.classList.remove('active');
+
+                            if (hiddenInput && hiddenInput.value == item.dataset.optionId) {
+                                selectFirstAvailableBootstrapItem(wrap);
+                            }
+                        }
+
+                        if (actionType === 'disable') {
+                            item.hidden = false;
+                            item.disabled = true;
+                            item.classList.add('disabled');
+                            item.classList.remove('active');
+
+                            if (hiddenInput && hiddenInput.value == item.dataset.optionId) {
+                                selectFirstAvailableBootstrapItem(wrap);
+                            }
+                        }
+                    });
                 }
             });
         }
@@ -2626,6 +3001,34 @@
 
                 updateSingleSelectDetailPreview(select);
             });
+
+            document.querySelectorAll('#customize-form .option-select-detail-hidden').forEach(function(input) {
+                const groupEl = input.closest('.customize-option-group');
+
+                if (groupEl && groupEl.style.display === 'none') {
+                    return;
+                }
+
+                const wrap = input.closest('.option-select-detail-wrap');
+
+                if (!wrap) {
+                    return;
+                }
+
+                const selectedItem = wrap.querySelector(
+                    '.option-bs-dropdown-item[data-option-id="' + input.value + '"]'
+                );
+
+                const selectedIsInvalid = !input.value ||
+                    !selectedItem ||
+                    selectedItem.hidden ||
+                    selectedItem.disabled ||
+                    selectedItem.classList.contains('disabled');
+
+                if (selectedIsInvalid) {
+                    selectFirstAvailableBootstrapItem(wrap);
+                }
+            });
         }
 
         function updateOptionDependencies() {
@@ -2651,29 +3054,16 @@
             }
         }
 
-        function updateVisibleGroupNumbers() {
-            let number = 1;
-
-            document.querySelectorAll('.customize-option-group').forEach(function(groupEl) {
-                const isVisible = groupEl.style.display !== 'none';
-
-                const numberEl = groupEl.querySelector('.visible-group-number');
-
-                if (!numberEl) {
-                    return;
-                }
-
-                if (isVisible) {
-                    numberEl.innerText = number;
-                    number++;
-                }
-            });
-        }
-
+        /*
+        |--------------------------------------------------------------------------
+        | Required
+        |--------------------------------------------------------------------------
+        */
         function applyRequiredRules() {
             document.querySelectorAll('.customize-option-group').forEach(function(groupEl) {
                 const radios = groupEl.querySelectorAll('input[type="radio"].js-option-input');
                 const selects = groupEl.querySelectorAll('select.js-option-input');
+                const hiddenSelects = groupEl.querySelectorAll('.option-select-detail-hidden');
                 const customInputs = groupEl.querySelectorAll('.js-custom-color-input');
 
                 radios.forEach(function(radio) {
@@ -2682,6 +3072,10 @@
 
                 selects.forEach(function(select) {
                     select.required = false;
+                });
+
+                hiddenSelects.forEach(function(input) {
+                    input.required = false;
                 });
 
                 customInputs.forEach(function(input) {
@@ -2732,17 +3126,28 @@
                     continue;
                 }
 
+                if (groupEl.classList.contains('is-option-disabled-by-dependency')) {
+                    continue;
+                }
+
                 const visibleRadios = Array.from(
                     groupEl.querySelectorAll('input[type="radio"].js-option-input')
                 ).filter(function(radio) {
                     const label = radio.closest('label');
-                    return !label || label.style.display !== 'none';
+
+                    return !radio.disabled && (!label || label.style.display !== 'none');
                 });
 
                 const visibleSelects = Array.from(
                     groupEl.querySelectorAll('select.js-option-input')
                 ).filter(function(select) {
-                    return select.offsetParent !== null;
+                    return !select.disabled && select.offsetParent !== null;
+                });
+
+                const visibleHiddenSelects = Array.from(
+                    groupEl.querySelectorAll('.option-select-detail-hidden')
+                ).filter(function(input) {
+                    return !input.disabled && input.closest('.option-select-detail-wrap')?.offsetParent !== null;
                 });
 
                 const customColorInput = groupEl.querySelector('.js-custom-color-input');
@@ -2778,6 +3183,13 @@
                     }
                 }
 
+                for (const input of visibleHiddenSelects) {
+                    if (!input.value) {
+                        isValid = false;
+                        break;
+                    }
+                }
+
                 if (!isValid) {
                     showRequiredError(groupEl, 'Please select this required option.');
 
@@ -2789,6 +3201,7 @@
                     return false;
                 }
             }
+
             const previousOrderBoxes = document.querySelectorAll('.previous-order-input-box.is-open');
 
             for (const box of previousOrderBoxes) {
@@ -2810,6 +3223,29 @@
             return true;
         }
 
+        function updateVisibleGroupNumbers() {
+            let number = 1;
+
+            document.querySelectorAll('.customize-option-group').forEach(function(groupEl) {
+                const isVisible = groupEl.style.display !== 'none';
+                const numberEl = groupEl.querySelector('.visible-group-number');
+
+                if (!numberEl) {
+                    return;
+                }
+
+                if (isVisible) {
+                    numberEl.innerText = number;
+                    number++;
+                }
+            });
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | DOM Ready
+        |--------------------------------------------------------------------------
+        */
         document.addEventListener('DOMContentLoaded', function() {
             const quantityInput = document.getElementById('quantity');
 
@@ -2824,6 +3260,7 @@
                 select.addEventListener('change', function() {
                     updateSingleSelectDetailPreview(select);
                     updateOptionDependencies();
+                    applyQuantityRuleLock();
                     updateSummary();
                 });
 
@@ -2831,129 +3268,32 @@
             });
 
             document.querySelectorAll('#customize-form select:not(.option-select-detail)').forEach(function(
-                select) {
+            select) {
                 select.addEventListener('change', function() {
                     updateOptionDependencies();
                     updateSummary();
                 });
             });
-            document.querySelectorAll('#customize-form input[type="radio"].js-option-input').forEach(function(
-                input) {
-                input.addEventListener('change', function() {
-                    applyQuantityRuleLock();
+
+            document.querySelectorAll('.option-bs-dropdown-item').forEach(function(item) {
+                item.addEventListener('click', function() {
+                    selectBootstrapDropdownItem(this, true);
                 });
             });
-
-            document.querySelectorAll('#customize-form select.option-select-detail').forEach(function(select) {
-                select.addEventListener('change', function() {
-                    applyQuantityRuleLock();
-                });
-            });
-
-            applyQuantityRuleLock();
 
             if (quantityInput) {
                 quantityInput.addEventListener('input', updateSummary);
-                quantityInput.addEventListener('change', updateSummary);
+                quantityInput.addEventListener('change', function() {
+                    validateOptionQuantityRules();
+                    updateSummary();
+                });
             }
 
-            updateOptionDependencies();
-            applyRequiredRules();
-            updateVisibleGroupNumbers();
-            updateSummary();
-        });
-    </script>
-
-    {{-- <script>
-        document.querySelectorAll('.variant-dropdown-btn').forEach(function(button) {
-            button.addEventListener('click', function(event) {
-                event.preventDefault();
-                event.stopPropagation();
-
-                if (!window.bootstrap || !bootstrap.Dropdown) {
-                    return;
-                }
-
-                bootstrap.Dropdown.getOrCreateInstance(button).toggle();
-            });
-        });
-
-        document.querySelectorAll('.variant-dropdown-item').forEach(function(item) {
-            item.addEventListener('click', function(event) {
-                event.preventDefault();
-                event.stopPropagation();
-
-                const card = this.closest('.option-variant-card');
-
-                const variantId = this.dataset.variantId;
-                const variantName = this.dataset.variantName || '';
-                const colorCode = this.dataset.colorCode || '#ffffff';
-                const imageUrl = this.dataset.image || '';
-                const variantPrice = this.dataset.price || 0;
-
-                const img = card.querySelector('.variant-main-image');
-                const radio = card.querySelector('input[type="radio"]');
-                const hiddenInput = card.querySelector('.selected-variant-input');
-                const label = card.querySelector('.variant-dropdown-label');
-                const btnDot = card.querySelector('.variant-dropdown-btn .variant-color-dot');
-
-                if (img && imageUrl) {
-                    img.src = imageUrl;
-                }
-
-                if (hiddenInput) {
-                    hiddenInput.value = variantId;
-                }
-
-                if (label) {
-                    label.textContent = variantName;
-                }
-
-                if (btnDot) {
-                    btnDot.style.background = colorCode;
-                }
-
-                if (radio) {
-                    radio.checked = true;
-                    radio.dataset.variantName = variantName;
-                    radio.dataset.variantPrice = variantPrice;
-                    radio.dispatchEvent(new Event('change'));
-                }
-
-                updateSummary();
-
-                const dropdownButton = this.closest('.dropdown')?.querySelector('.variant-dropdown-btn');
-
-                if (dropdownButton && window.bootstrap && bootstrap.Dropdown) {
-                    bootstrap.Dropdown.getOrCreateInstance(dropdownButton).hide();
-                }
-            });
-        });
-
-        document.querySelectorAll('.option-variant-card').forEach(function(card) {
-            const radio = card.querySelector('input[type="radio"]');
-            const activeItem = card.querySelector('.variant-dropdown-item');
-            const label = card.querySelector('.variant-dropdown-label');
-            const hiddenInput = card.querySelector('.selected-variant-input');
-
-            if (radio && activeItem) {
-                radio.dataset.variantName = activeItem.dataset.variantName || '';
-                radio.dataset.variantPrice = activeItem.dataset.price || 0;
-
-                if (label) {
-                    label.textContent = activeItem.dataset.variantName || '';
-                }
-
-                if (hiddenInput) {
-                    hiddenInput.value = activeItem.dataset.variantId || '';
-                }
-            }
-        });
-
-        updateSummary();
-    </script> --}}
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
+            /*
+            |--------------------------------------------------------------------------
+            | Variant Select
+            |--------------------------------------------------------------------------
+            */
             document.querySelectorAll('.js-variant-select').forEach(function(select) {
                 function applyVariant() {
                     const card = select.closest('.option-variant-card');
@@ -2981,9 +3321,7 @@
                         radio.dispatchEvent(new Event('change'));
                     }
 
-                    if (typeof updateSummary === 'function') {
-                        updateSummary();
-                    }
+                    updateSummary();
                 }
 
                 select.addEventListener('change', function(e) {
@@ -2996,7 +3334,7 @@
 
             document.querySelectorAll('.option-variant-card').forEach(function(card) {
                 card.addEventListener('click', function(e) {
-                    if (e.target.closest('.js-variant-select')) {
+                    if (e.target.closest('.js-variant-select, .variant-dropdown')) {
                         return;
                     }
 
@@ -3008,151 +3346,100 @@
                     }
                 });
             });
-        });
-    </script>
 
-    <script>
-        document.querySelectorAll('.add-color-btn').forEach(function(button) {
-            button.addEventListener('click', function() {
-                const groupId = this.dataset.groupId;
-                const box = document.getElementById('custom-color-box-' + groupId);
+            /*
+            |--------------------------------------------------------------------------
+            | Custom Color
+            |--------------------------------------------------------------------------
+            */
+            document.querySelectorAll('.add-color-btn').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    const groupId = this.dataset.groupId;
+                    const box = document.getElementById('custom-color-box-' + groupId);
 
-                if (!box) {
-                    return;
-                }
+                    if (!box) {
+                        return;
+                    }
 
-                const colorRadios = document.querySelectorAll(
-                    '#customize-form input[type="radio"][name="options[' + groupId + ']"]'
-                );
+                    const colorRadios = document.querySelectorAll(
+                        '#customize-form input[type="radio"][name="options[' + groupId + ']"]'
+                    );
 
-                colorRadios.forEach(function(radio) {
-                    radio.checked = false;
-                });
+                    colorRadios.forEach(function(radio) {
+                        radio.checked = false;
+                    });
 
-                box.style.display = 'block';
-                this.classList.add('is-active');
-
-                const input = box.querySelector('.custom-color-input');
-
-                if (input) {
-                    const groupEl = this.closest('.customize-option-group');
-                    const isRequired = groupEl && groupEl.dataset.required === '1';
-
-                    input.required = isRequired;
-                    input.focus();
-                }
-
-                updateSummary();
-            });
-        });
-
-        document.querySelectorAll('.option-color-item input[type="radio"]').forEach(function(radio) {
-            radio.addEventListener('change', function() {
-                const groupId = this.name.match(/\[(.*?)\]/)?.[1];
-
-                if (!groupId) {
-                    return;
-                }
-
-                const box = document.getElementById('custom-color-box-' + groupId);
-                const addButton = document.querySelector('.add-color-btn[data-group-id="' + groupId + '"]');
-
-                if (box) {
-                    box.style.display = 'none';
+                    box.style.display = 'block';
+                    this.classList.add('is-active');
 
                     const input = box.querySelector('.custom-color-input');
 
                     if (input) {
-                        input.value = '';
-                        input.required = false;
+                        const groupEl = this.closest('.customize-option-group');
+                        const isRequired = groupEl && groupEl.dataset.required === '1';
+
+                        input.required = isRequired;
+                        input.focus();
                     }
-                }
 
-                if (addButton) {
-                    addButton.classList.remove('is-active');
-                }
-
-                updateSummary();
-            });
-        });
-
-        document.querySelectorAll('.custom-color-add-btn').forEach(function(button) {
-            button.addEventListener('click', function() {
-                const box = this.closest('.custom-color-box');
-                const input = box.querySelector('.custom-color-input');
-
-                if (!input || !input.value.trim()) {
-                    alert('Please specify Pantone color.');
-                    return;
-                }
-
-                updateSummary();
-            });
-        });
-
-        document.querySelectorAll('.custom-color-input').forEach(function(input) {
-            input.addEventListener('input', updateSummary);
-        });
-    </script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
-
-            popoverTriggerList.forEach(function(popoverTriggerEl) {
-                new bootstrap.Popover(popoverTriggerEl, {
-                    container: 'body',
-                    html: false
+                    updateSummary();
                 });
             });
 
-            document.addEventListener('click', function(e) {
-                popoverTriggerList.forEach(function(popoverTriggerEl) {
-                    const popover = bootstrap.Popover.getInstance(popoverTriggerEl);
+            document.querySelectorAll('.option-color-item input[type="radio"]').forEach(function(radio) {
+                radio.addEventListener('change', function() {
+                    const groupId = this.name.match(/\[(.*?)\]/)?.[1];
 
-                    if (
-                        popover &&
-                        !popoverTriggerEl.contains(e.target) &&
-                        !document.querySelector('.popover')?.contains(e.target)
-                    ) {
-                        popover.hide();
+                    if (!groupId) {
+                        return;
                     }
+
+                    const box = document.getElementById('custom-color-box-' + groupId);
+                    const addButton = document.querySelector('.add-color-btn[data-group-id="' +
+                        groupId + '"]');
+
+                    if (box) {
+                        box.style.display = 'none';
+
+                        const input = box.querySelector('.custom-color-input');
+
+                        if (input) {
+                            input.value = '';
+                            input.required = false;
+                        }
+                    }
+
+                    if (addButton) {
+                        addButton.classList.remove('is-active');
+                    }
+
+                    updateSummary();
                 });
             });
-        });
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const customizeForm = document.getElementById('customize-form');
 
-            if (!customizeForm) {
-                return;
-            }
+            document.querySelectorAll('.custom-color-add-btn').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    const box = this.closest('.custom-color-box');
+                    const input = box.querySelector('.custom-color-input');
 
-            customizeForm.addEventListener('submit', function(e) {
-                applyRequiredRules();
+                    if (!input || !input.value.trim()) {
+                        alert('Please specify Pantone color.');
+                        return;
+                    }
 
-                const isValid = validateRequiredOptions();
-
-                if (!isValid) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    alert('Please select all required options.');
-                    return false;
-                }
-
-                const isQuantityValid = validateOptionQuantityRules();
-
-                if (!isQuantityValid) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    return false;
-                }
+                    updateSummary();
+                });
             });
-        });
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
+
+            document.querySelectorAll('.custom-color-input').forEach(function(input) {
+                input.addEventListener('input', updateSummary);
+            });
+
+            /*
+            |--------------------------------------------------------------------------
+            | Previous Order
+            |--------------------------------------------------------------------------
+            */
             function togglePreviousOrderBox(groupId) {
                 const radios = document.querySelectorAll(
                     'input.previous-order-radio[name="options[' + groupId + ']"]'
@@ -3210,30 +3497,86 @@
                 });
             });
 
-            // เพิ่มตรงนี้
             document.querySelectorAll('.previous-order-input').forEach(function(input) {
-                input.addEventListener('input', function() {
-                    updateSummary();
+                input.addEventListener('input', updateSummary);
+            });
+
+            /*
+            |--------------------------------------------------------------------------
+            | Popover
+            |--------------------------------------------------------------------------
+            */
+            const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
+
+            popoverTriggerList.forEach(function(popoverTriggerEl) {
+                new bootstrap.Popover(popoverTriggerEl, {
+                    container: 'body',
+                    html: false
                 });
             });
-        });
-        document.querySelectorAll('.option-variant-card').forEach(function(card) {
-            card.addEventListener('click', function(e) {
-                if (e.target.closest('.variant-dropdown')) {
-                    return;
-                }
 
-                const radio = card.querySelector('input[type="radio"]');
+            document.addEventListener('click', function(e) {
+                popoverTriggerList.forEach(function(popoverTriggerEl) {
+                    const popover = bootstrap.Popover.getInstance(popoverTriggerEl);
 
-                if (radio) {
-                    radio.checked = true;
-                    radio.dispatchEvent(new Event('change'));
-                }
+                    if (
+                        popover &&
+                        !popoverTriggerEl.contains(e.target) &&
+                        !document.querySelector('.popover')?.contains(e.target)
+                    ) {
+                        popover.hide();
+                    }
+                });
             });
-        });
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
+
+            /*
+            |--------------------------------------------------------------------------
+            | View More compact options
+            |--------------------------------------------------------------------------
+            */
+            document.querySelectorAll('.option-view-more-btn').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    const group = this.closest('.customize-option-group');
+
+                    if (!group) {
+                        return;
+                    }
+
+                    const grid = group.querySelector('.option-compact-grid');
+
+                    if (!grid) {
+                        return;
+                    }
+
+                    const pageSize = parseInt(grid.dataset.pageSize || 8);
+
+                    const hiddenItems = Array.from(
+                        grid.querySelectorAll('.option-compact-card.is-hidden-compact-option')
+                    );
+
+                    hiddenItems.slice(0, pageSize).forEach(function(item) {
+                        item.classList.remove('is-hidden-compact-option');
+                    });
+
+                    const remainingHiddenItems = grid.querySelectorAll(
+                        '.option-compact-card.is-hidden-compact-option'
+                    );
+
+                    if (remainingHiddenItems.length === 0) {
+                        const wrap = button.closest('.option-view-more-wrap');
+
+                        if (wrap) {
+                            wrap.style.display = 'none';
+                        }
+                    }
+                });
+            });
+
+            /*
+            |--------------------------------------------------------------------------
+            | Step Focus
+            |--------------------------------------------------------------------------
+            */
             const overlay = document.getElementById('stepFocusOverlay');
             const closeBtn = document.getElementById('stepFocusClose');
             const bottomBar = document.getElementById('stepBottomBar');
@@ -3244,11 +3587,16 @@
 
             function getVisibleGroups() {
                 return Array.from(document.querySelectorAll('.customize-option-group'))
-                    .filter(group => group.style.display !== 'none');
+                    .filter(function(group) {
+                        return group.style.display !== 'none';
+                    });
             }
 
             function getActiveGroup() {
-                if (!activeGroupId) return null;
+                if (!activeGroupId) {
+                    return null;
+                }
+
                 return document.querySelector('.customize-option-group[data-group-id="' + activeGroupId + '"]');
             }
 
@@ -3280,7 +3628,9 @@
                     return;
                 }
 
-                const currentIndex = groups.findIndex(group => group === activeGroup);
+                const currentIndex = groups.findIndex(function(group) {
+                    return group === activeGroup;
+                });
 
                 prevBtn.disabled = currentIndex <= 0;
 
@@ -3294,7 +3644,9 @@
             }
 
             function setActiveGroup(groupEl, shouldScroll = true) {
-                if (!groupEl) return;
+                if (!groupEl || groupEl.style.display === 'none') {
+                    return;
+                }
 
                 document.querySelectorAll('.customize-option-group.is-step-active').forEach(function(el) {
                     el.classList.remove('is-step-active');
@@ -3326,7 +3678,10 @@
                     return;
                 }
 
-                const currentIndex = groups.findIndex(group => group === activeGroup);
+                const currentIndex = groups.findIndex(function(group) {
+                    return group === activeGroup;
+                });
+
                 const nextGroup = groups[currentIndex + 1];
 
                 if (nextGroup) {
@@ -3338,6 +3693,7 @@
 
                 if (quantitySection) {
                     closeStepMode();
+
                     quantitySection.scrollIntoView({
                         behavior: 'smooth',
                         block: 'center'
@@ -3349,9 +3705,14 @@
                 const groups = getVisibleGroups();
                 const activeGroup = getActiveGroup();
 
-                if (!activeGroup) return;
+                if (!activeGroup) {
+                    return;
+                }
 
-                const currentIndex = groups.findIndex(group => group === activeGroup);
+                const currentIndex = groups.findIndex(function(group) {
+                    return group === activeGroup;
+                });
+
                 const prevGroup = groups[currentIndex - 1];
 
                 if (prevGroup) {
@@ -3362,7 +3723,9 @@
             function refreshStepModeAfterDependencyChange() {
                 const activeGroup = getActiveGroup();
 
-                if (!activeGroup) return;
+                if (!activeGroup) {
+                    return;
+                }
 
                 if (activeGroup.style.display === 'none') {
                     const visibleGroups = getVisibleGroups();
@@ -3377,7 +3740,6 @@
                 }
             }
 
-            // คลิกที่ group ไหน ให้ group นั้นเด้งเป็น focus
             document.querySelectorAll('.customize-option-group').forEach(function(groupEl) {
                 groupEl.addEventListener('click', function(e) {
                     if (e.target.closest('.info-popover-btn, .step-focus-close')) {
@@ -3388,235 +3750,90 @@
                 });
             });
 
-            // ถ้ามีการเลือก option / focus input ให้ถือว่า group นั้น active
             document.querySelectorAll(
-                '#customize-form .js-option-input, .custom-color-input, .previous-order-input').forEach(
-                function(input) {
-                    input.addEventListener('change', function() {
-                        const groupEl = this.closest('.customize-option-group');
-                        if (groupEl) {
-                            setActiveGroup(groupEl, false);
-                        }
-                    });
+                '#customize-form .js-option-input, .custom-color-input, .previous-order-input'
+            ).forEach(function(input) {
+                input.addEventListener('change', function() {
+                    const groupEl = this.closest('.customize-option-group');
 
-                    input.addEventListener('focus', function() {
-                        const groupEl = this.closest('.customize-option-group');
-                        if (groupEl) {
-                            setActiveGroup(groupEl, false);
-                        }
-                    });
+                    if (groupEl) {
+                        setActiveGroup(groupEl, false);
+                    }
+
+                    applyQuantityRuleLock();
                 });
 
-            prevBtn.addEventListener('click', function() {
-                goToPrevGroup();
+                input.addEventListener('focus', function() {
+                    const groupEl = this.closest('.customize-option-group');
+
+                    if (groupEl) {
+                        setActiveGroup(groupEl, false);
+                    }
+                });
             });
 
-            nextBtn.addEventListener('click', function() {
-                goToNextGroup();
-            });
+            if (prevBtn) {
+                prevBtn.addEventListener('click', goToPrevGroup);
+            }
 
-            overlay.addEventListener('click', function() {
-                closeStepMode();
-            });
+            if (nextBtn) {
+                nextBtn.addEventListener('click', goToNextGroup);
+            }
 
-            closeBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                closeStepMode();
-            });
+            if (overlay) {
+                overlay.addEventListener('click', closeStepMode);
+            }
 
-            // เปิดให้ function อื่นเรียกได้
+            if (closeBtn) {
+                closeBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    closeStepMode();
+                });
+            }
+
             window.refreshStepModeAfterDependencyChange = refreshStepModeAfterDependencyChange;
-        });
-    </script>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('.option-view-more-btn').forEach(function(button) {
-                button.addEventListener('click', function() {
-                    const group = this.closest('.customize-option-group');
+            /*
+            |--------------------------------------------------------------------------
+            | Submit
+            |--------------------------------------------------------------------------
+            */
+            const customizeForm = document.getElementById('customize-form');
 
-                    if (!group) {
-                        return;
+            if (customizeForm) {
+                customizeForm.addEventListener('submit', function(e) {
+                    applyRequiredRules();
+
+                    const isValid = validateRequiredOptions();
+
+                    if (!isValid) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        alert('Please select all required options.');
+                        return false;
                     }
 
-                    const grid = group.querySelector('.option-compact-grid');
+                    const isQuantityValid = validateOptionQuantityRules();
 
-                    if (!grid) {
-                        return;
-                    }
-
-                    const pageSize = parseInt(grid.dataset.pageSize || 8);
-
-                    const hiddenItems = Array.from(
-                        grid.querySelectorAll('.option-compact-card.is-hidden-compact-option')
-                    );
-
-                    hiddenItems.slice(0, pageSize).forEach(function(item) {
-                        item.classList.remove('is-hidden-compact-option');
-                    });
-
-                    const remainingHiddenItems = grid.querySelectorAll(
-                        '.option-compact-card.is-hidden-compact-option');
-
-                    if (remainingHiddenItems.length === 0) {
-                        const wrap = button.closest('.option-view-more-wrap');
-
-                        if (wrap) {
-                            wrap.style.display = 'none';
-                        }
+                    if (!isQuantityValid) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return false;
                     }
                 });
-            });
-        });
-    </script>
-    <script>
-        function getSelectedQuantityRules() {
-            const rules = [];
-
-            document.querySelectorAll('#customize-form input[type="radio"]:checked').forEach(function(input) {
-                const groupEl = input.closest('.customize-option-group, .grouped-button-set');
-
-                if (groupEl && groupEl.style.display === 'none') {
-                    return;
-                }
-
-                const ruleType = input.dataset.qtyRuleType || '';
-
-                if (!ruleType) {
-                    return;
-                }
-
-                rules.push({
-                    optionName: input.dataset.optionName || 'Selected option',
-                    ruleType: ruleType,
-                    minQty: parseInt(input.dataset.minQty || 0),
-                    maxQty: parseInt(input.dataset.maxQty || 0),
-                    exactQty: parseInt(input.dataset.exactQty || 0),
-                });
-            });
-
-            document.querySelectorAll('#customize-form select.option-select-detail').forEach(function(select) {
-                const groupEl = select.closest('.customize-option-group');
-
-                if (groupEl && groupEl.style.display === 'none') {
-                    return;
-                }
-
-                const selected = select.options[select.selectedIndex];
-
-                if (!selected) {
-                    return;
-                }
-
-                const ruleType = selected.dataset.qtyRuleType || '';
-
-                if (!ruleType) {
-                    return;
-                }
-
-                rules.push({
-                    optionName: selected.dataset.optionName || selected.textContent || 'Selected option',
-                    ruleType: ruleType,
-                    minQty: parseInt(selected.dataset.minQty || 0),
-                    maxQty: parseInt(selected.dataset.maxQty || 0),
-                    exactQty: parseInt(selected.dataset.exactQty || 0),
-                });
-            });
-
-            return rules;
-        }
-    </script>
-    <script>
-        function getSelectedQuantityRuleInputs() {
-            const selectedItems = [];
-
-            document.querySelectorAll('#customize-form input[type="radio"]:checked').forEach(function(input) {
-                const groupEl = input.closest('.customize-option-group, .grouped-button-set');
-
-                if (groupEl && groupEl.style.display === 'none') {
-                    return;
-                }
-
-                selectedItems.push({
-                    element: input,
-                    optionName: input.dataset.optionName || 'Selected option',
-                    ruleType: input.dataset.qtyRuleType || '',
-                    minQty: parseInt(input.dataset.minQty || 0),
-                    maxQty: parseInt(input.dataset.maxQty || 0),
-                    exactQty: parseInt(input.dataset.exactQty || 0),
-                });
-            });
-
-            document.querySelectorAll('#customize-form select.option-select-detail').forEach(function(select) {
-                const groupEl = select.closest('.customize-option-group');
-
-                if (groupEl && groupEl.style.display === 'none') {
-                    return;
-                }
-
-                const selected = select.options[select.selectedIndex];
-
-                if (!selected || !selected.value) {
-                    return;
-                }
-
-                selectedItems.push({
-                    element: selected,
-                    optionName: selected.dataset.optionName || selected.textContent || 'Selected option',
-                    ruleType: selected.dataset.qtyRuleType || '',
-                    minQty: parseInt(selected.dataset.minQty || 0),
-                    maxQty: parseInt(selected.dataset.maxQty || 0),
-                    exactQty: parseInt(selected.dataset.exactQty || 0),
-                });
-            });
-
-            return selectedItems;
-        }
-
-        function applyQuantityRuleLock() {
-            const quantityInput = document.getElementById('quantity');
-            const messageBox = document.getElementById('quantity-rule-message');
-
-            if (!quantityInput) {
-                return;
             }
 
-            const selectedRules = getSelectedQuantityRuleInputs();
-
-            const exactRule = selectedRules.find(function(rule) {
-                return rule.ruleType === 'exact' && rule.exactQty > 0;
-            });
-
-            if (exactRule) {
-                quantityInput.value = exactRule.exactQty;
-                quantityInput.min = exactRule.exactQty;
-                quantityInput.max = exactRule.exactQty;
-                quantityInput.readOnly = true;
-                quantityInput.classList.add('is-locked-by-option');
-
-                if (messageBox) {
-                    messageBox.style.display = '';
-                    messageBox.textContent = exactRule.optionName + ': quantity is fixed at ' + exactRule.exactQty +
-                        ' pcs.';
-                }
-
-                updateSummary();
-                return;
-            }
-
-            quantityInput.readOnly = false;
-            quantityInput.classList.remove('is-locked-by-option');
-
-            quantityInput.min = 20;
-            quantityInput.removeAttribute('max');
-
-            if (messageBox) {
-                messageBox.style.display = 'none';
-                messageBox.textContent = '';
-            }
-
+            /*
+            |--------------------------------------------------------------------------
+            | Initial
+            |--------------------------------------------------------------------------
+            */
+            updateOptionDependencies();
+            applyRequiredRules();
+            updateVisibleGroupNumbers();
+            applyQuantityRuleLock();
             updateSummary();
-        }
+        });
     </script>
 @endsection
