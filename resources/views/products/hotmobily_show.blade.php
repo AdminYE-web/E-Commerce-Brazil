@@ -953,16 +953,16 @@
         }
 
         /* .customize-option-group.has-error h2 {
-                                                                                color: #dc2626;
-                                                                            } */
+                                                                                    color: #dc2626;
+                                                                                } */
 
         /* .customize-option-group.has-error .option-button-item,
-                                                                            .customize-option-group.has-error .option-image-card,
-                                                                            .customize-option-group.has-error .option-variant-card,
-                                                                            .customize-option-group.has-error .option-compact-card,
-                                                                            .customize-option-group.has-error .option-select-detail {
-                                                                                border-color: #dc2626;
-                                                                            } */
+                                                                                .customize-option-group.has-error .option-image-card,
+                                                                                .customize-option-group.has-error .option-variant-card,
+                                                                                .customize-option-group.has-error .option-compact-card,
+                                                                                .customize-option-group.has-error .option-select-detail {
+                                                                                    border-color: #dc2626;
+                                                                                } */
         .previous-order-box {
             max-width: 620px;
         }
@@ -1021,8 +1021,8 @@
         }
 
         /* =========================
-                                                       STEP FOCUS / OVERLAY MODE
-                                                    ========================= */
+                                                           STEP FOCUS / OVERLAY MODE
+                                                        ========================= */
 
         .customize-option-group {
             position: relative;
@@ -1237,6 +1237,26 @@
 
         .is-option-disabled-by-dependency * {
             cursor: not-allowed;
+        }
+
+        .option-select-detail {
+            width: 100%;
+            max-width: 620px;
+            min-height: 46px;
+            border: 1px solid #d9dde7;
+            border-radius: 10px;
+            padding: 10px 42px 10px 14px;
+            background-color: #fff;
+            font-size: 15px;
+            font-weight: 500;
+            color: #111827;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+            margin-bottom: 12px;
+        }
+
+        .option-select-detail:focus {
+            border-color: #3166f6;
+            box-shadow: 0 0 0 3px rgba(49, 102, 246, 0.15);
         }
     </style>
 @endsection
@@ -1561,7 +1581,7 @@
 
                                     <div class="option-select-detail-wrap">
                                         <select name="options[{{ $defaultOption->option_group_id }}]"
-                                            class="option-select-detail js-option-input"
+                                            class="form-select option-select-detail js-option-input"
                                             data-group-name="{{ $groupName }}">
                                             @foreach ($options as $option)
                                                 @php
@@ -1758,8 +1778,6 @@
 
                                 <span>{{ __('product.product_detail.unit') }}</span>
                             </div>
-
-                            <div id="quantity-rule-message" class="quantity-rule-message" style="display:none;"></div>
 
                             @error('quantity')
                                 <div style="color:red; margin-top:8px;">
