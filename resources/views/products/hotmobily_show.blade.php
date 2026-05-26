@@ -953,16 +953,16 @@
         }
 
         /* .customize-option-group.has-error h2 {
-                                                                                                    color: #dc2626;
-                                                                                                } */
+                                                                                                        color: #dc2626;
+                                                                                                    } */
 
         /* .customize-option-group.has-error .option-button-item,
-                                                                                                .customize-option-group.has-error .option-image-card,
-                                                                                                .customize-option-group.has-error .option-variant-card,
-                                                                                                .customize-option-group.has-error .option-compact-card,
-                                                                                                .customize-option-group.has-error .option-select-detail {
-                                                                                                    border-color: #dc2626;
-                                                                                                } */
+                                                                                                    .customize-option-group.has-error .option-image-card,
+                                                                                                    .customize-option-group.has-error .option-variant-card,
+                                                                                                    .customize-option-group.has-error .option-compact-card,
+                                                                                                    .customize-option-group.has-error .option-select-detail {
+                                                                                                        border-color: #dc2626;
+                                                                                                    } */
         .previous-order-box {
             max-width: 620px;
         }
@@ -1021,8 +1021,8 @@
         }
 
         /* =========================
-                                                                           STEP FOCUS / OVERLAY MODE
-                                                                        ========================= */
+                                                                               STEP FOCUS / OVERLAY MODE
+                                                                            ========================= */
 
         .customize-option-group {
             position: relative;
@@ -1314,6 +1314,12 @@
         .option-bs-dropdown-item.active {
             background: #3166f6;
             color: #fff;
+        }
+
+        .is-option-disabled-by-dependency {
+            opacity: 0.45;
+            cursor: not-allowed;
+            pointer-events: none;
         }
     </style>
 @endsection
@@ -2722,6 +2728,11 @@
             optionDependencies.forEach(function(dep) {
                 const actionType = dep.action_type || 'show';
 
+                /*
+                |--------------------------------------------------------------------------
+                | Reset Target Option
+                |--------------------------------------------------------------------------
+                */
                 if (dep.target_type === 'option' && dep.target_option_id) {
                     const optionId = parseInt(dep.target_option_id);
 
@@ -2740,8 +2751,16 @@
                             optionBox.classList.remove('is-option-disabled-by-dependency');
                         }
 
+                        /*
+                        |--------------------------------------------------------------------------
+                        | สำคัญ:
+                        | action show = ซ่อนไว้ก่อน แต่ห้าม input.checked = false
+                        | เพราะถ้าผู้ใช้กดเลือก target option แล้ว updateOptionDependencies ทำงาน
+                        | มันจะ uncheck ทันที ทำให้เหมือนเลือกไม่ได้
+                        |--------------------------------------------------------------------------
+                        */
                         if (actionType === 'show') {
-                            input.checked = false;
+                            input.disabled = true;
 
                             if (optionBox) {
                                 optionBox.style.display = 'none';
@@ -2774,7 +2793,9 @@
                     dropdownItems.forEach(function(item) {
                         item.hidden = false;
                         item.disabled = false;
+                        item.style.pointerEvents = '';
                         item.classList.remove('disabled');
+                        item.classList.remove('is-option-disabled-by-dependency');
 
                         if (actionType === 'show') {
                             item.hidden = true;
@@ -2786,25 +2807,47 @@
                                 null;
 
                             if (hiddenInput && hiddenInput.value == item.dataset.optionId) {
-                                clearBootstrapDropdown(wrap);
+                                hiddenInput.disabled = true;
                             }
                         }
                     });
                 }
 
+                /*
+                |--------------------------------------------------------------------------
+                | Reset Target Group
+                |--------------------------------------------------------------------------
+                */
                 if (dep.target_type === 'group' && dep.target_group_id) {
                     const groupEls = document.querySelectorAll('[data-group-id="' + dep.target_group_id + '"]');
 
                     groupEls.forEach(function(groupEl) {
                         groupEl.classList.remove('is-option-disabled-by-dependency');
+                        groupEl.style.pointerEvents = '';
 
                         groupEl.querySelectorAll('input, select, textarea').forEach(function(input) {
                             input.disabled = false;
                         });
 
+                        groupEl.querySelectorAll(
+                                'label, .option-compact-card, .option-button-item, .option-image-card')
+                            .forEach(function(el) {
+                                el.style.pointerEvents = '';
+                                el.classList.remove('is-option-disabled-by-dependency');
+                            });
+
+                        /*
+                        |--------------------------------------------------------------------------
+                        | action show = ซ่อน group ไว้ก่อน แต่ไม่ clear ค่า
+                        | ถ้า trigger ยังเลือกอยู่ applyDependencyActions จะเปิดกลับมา
+                        |--------------------------------------------------------------------------
+                        */
                         if (actionType === 'show') {
                             groupEl.style.display = 'none';
-                            clearInputsInside(groupEl);
+
+                            groupEl.querySelectorAll('input, select, textarea').forEach(function(input) {
+                                input.disabled = true;
+                            });
                         } else {
                             groupEl.style.display = '';
                         }
@@ -2831,6 +2874,19 @@
                     groupEls.forEach(function(groupEl) {
                         if (actionType === 'show') {
                             groupEl.style.display = '';
+                            groupEl.style.pointerEvents = '';
+                            groupEl.classList.remove('is-option-disabled-by-dependency');
+
+                            groupEl.querySelectorAll('input, select, textarea').forEach(function(input) {
+                                input.disabled = false;
+                            });
+
+                            groupEl.querySelectorAll(
+                                    'label, .option-compact-card, .option-button-item, .option-image-card')
+                                .forEach(function(el) {
+                                    el.style.pointerEvents = '';
+                                    el.classList.remove('is-option-disabled-by-dependency');
+                                });
                         }
 
                         if (actionType === 'hide') {
