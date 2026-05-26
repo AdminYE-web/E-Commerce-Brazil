@@ -175,12 +175,22 @@
                     <label>Trigger Option</label>
                     <select name="parent_option_id" required>
                         <option value="">-- Select Trigger Option --</option>
-                        @foreach ($options as $option)
-                            <option value="{{ $option->option_id }}"
-                                {{ old('parent_option_id') == $option->option_id ? 'selected' : '' }}>
-                                {{ $option->group->group_name ?? '-' }} / {{ $option->option_name }}
-                            </option>
-                        @endforeach
+                        <optgroup label="Hotstrap (Type 1)">
+                            @foreach ($options->filter(fn($o) => optional($o->group)->product_type == 1) as $option)
+                                <option value="{{ $option->option_id }}"
+                                    {{ old('parent_option_id') == $option->option_id ? 'selected' : '' }}>
+                                    {{ $option->group->group_name ?? '-' }} / {{ $option->option_name }}
+                                </option>
+                            @endforeach
+                        </optgroup>
+                        <optgroup label="Hotmobily (Type 2)">
+                            @foreach ($options->filter(fn($o) => optional($o->group)->product_type == 2) as $option)
+                                <option value="{{ $option->option_id }}"
+                                    {{ old('parent_option_id') == $option->option_id ? 'selected' : '' }}>
+                                    {{ $option->group->group_name ?? '-' }} / {{ $option->option_name }}
+                                </option>
+                            @endforeach
+                        </optgroup>
                     </select>
                 </div>
 
@@ -226,12 +236,22 @@
                     <label>Target Option</label>
                     <select name="target_option_id">
                         <option value="">-- Select Target Option --</option>
-                        @foreach ($options as $option)
-                            <option value="{{ $option->option_id }}"
-                                {{ old('target_option_id') == $option->option_id ? 'selected' : '' }}>
-                                {{ $option->group->group_name ?? '-' }} / {{ $option->option_name }}
-                            </option>
-                        @endforeach
+                        <optgroup label="Hotstrap (Type 1)">
+                            @foreach ($options->filter(fn($o) => optional($o->group)->product_type == 1) as $option)
+                                <option value="{{ $option->option_id }}"
+                                    {{ old('target_option_id') == $option->option_id ? 'selected' : '' }}>
+                                    {{ $option->group->group_name ?? '-' }} / {{ $option->option_name }}
+                                </option>
+                            @endforeach
+                        </optgroup>
+                        <optgroup label="Hotmobily (Type 2)">
+                            @foreach ($options->filter(fn($o) => optional($o->group)->product_type == 2) as $option)
+                                <option value="{{ $option->option_id }}"
+                                    {{ old('target_option_id') == $option->option_id ? 'selected' : '' }}>
+                                    {{ $option->group->group_name ?? '-' }} / {{ $option->option_name }}
+                                </option>
+                            @endforeach
+                        </optgroup>
                     </select>
                 </div>
 
@@ -239,12 +259,22 @@
                     <label>Target Group</label>
                     <select name="target_group_id">
                         <option value="">-- Select Target Group --</option>
-                        @foreach ($groups as $group)
-                            <option value="{{ $group->option_group_id }}"
-                                {{ old('target_group_id') == $group->option_group_id ? 'selected' : '' }}>
-                                {{ $group->group_name }}
-                            </option>
-                        @endforeach
+                        <optgroup label="Hotstrap (Type 1)">
+                            @foreach ($groups->where('product_type', 1) as $group)
+                                <option value="{{ $group->option_group_id }}"
+                                    {{ old('target_group_id') == $group->option_group_id ? 'selected' : '' }}>
+                                    {{ $group->group_name }}
+                                </option>
+                            @endforeach
+                        </optgroup>
+                        <optgroup label="Hotmobily (Type 2)">
+                            @foreach ($groups->where('product_type', 2) as $group)
+                                <option value="{{ $group->option_group_id }}"
+                                    {{ old('target_group_id') == $group->option_group_id ? 'selected' : '' }}>
+                                    {{ $group->group_name }}
+                                </option>
+                            @endforeach
+                        </optgroup>
                     </select>
                 </div>
             </div>
