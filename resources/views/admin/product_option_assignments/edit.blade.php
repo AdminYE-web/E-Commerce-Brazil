@@ -300,7 +300,7 @@
                                 <span class="group-drag-handle" title="Drag group">☰</span>
 
                                 <div>
-                                    <h3>{{ $group->group_name }}</h3>
+                                    <h3>{{ $group->group_name }} ({{ $group->group_code }})</h3>
                                     <span>{{ $group->options->count() }} options</span>
                                 </div>
                             </div>
