@@ -179,7 +179,7 @@
                             @foreach ($options->filter(fn($o) => optional($o->group)->product_type == 1) as $option)
                                 <option value="{{ $option->option_id }}"
                                     {{ old('parent_option_id') == $option->option_id ? 'selected' : '' }}>
-                                    {{ $option->group->group_name ?? '-' }} / {{ $option->option_name }}
+                                    {{ $option->group->group_name ?? '-' }} ({{ $option->group->group_code ?? '-' }}) / {{ $option->option_name }}
                                 </option>
                             @endforeach
                         </optgroup>
@@ -187,7 +187,7 @@
                             @foreach ($options->filter(fn($o) => optional($o->group)->product_type == 2) as $option)
                                 <option value="{{ $option->option_id }}"
                                     {{ old('parent_option_id') == $option->option_id ? 'selected' : '' }}>
-                                    {{ $option->group->group_name ?? '-' }} / {{ $option->option_name }}
+                                    {{ $option->group->group_name ?? '-' }} ({{ $option->group->group_code ?? '-' }}) / {{ $option->option_name }}
                                 </option>
                             @endforeach
                         </optgroup>
@@ -240,7 +240,7 @@
                             @foreach ($options->filter(fn($o) => optional($o->group)->product_type == 1) as $option)
                                 <option value="{{ $option->option_id }}"
                                     {{ old('target_option_id') == $option->option_id ? 'selected' : '' }}>
-                                    {{ $option->group->group_name ?? '-' }} / {{ $option->option_name }}
+                                    {{ $option->group->group_name ?? '-' }} ({{ $option->group->group_code ?? '-' }}) / {{ $option->option_name }}
                                 </option>
                             @endforeach
                         </optgroup>
@@ -248,7 +248,7 @@
                             @foreach ($options->filter(fn($o) => optional($o->group)->product_type == 2) as $option)
                                 <option value="{{ $option->option_id }}"
                                     {{ old('target_option_id') == $option->option_id ? 'selected' : '' }}>
-                                    {{ $option->group->group_name ?? '-' }} / {{ $option->option_name }}
+                                    {{ $option->group->group_name ?? '-' }} ({{ $option->group->group_code ?? '-' }}) / {{ $option->option_name }}
                                 </option>
                             @endforeach
                         </optgroup>
@@ -263,7 +263,7 @@
                             @foreach ($groups->where('product_type', 1) as $group)
                                 <option value="{{ $group->option_group_id }}"
                                     {{ old('target_group_id') == $group->option_group_id ? 'selected' : '' }}>
-                                    {{ $group->group_name }}
+                                    {{ $group->group_name }} ({{ $group->group_code }})
                                 </option>
                             @endforeach
                         </optgroup>
@@ -271,7 +271,7 @@
                             @foreach ($groups->where('product_type', 2) as $group)
                                 <option value="{{ $group->option_group_id }}"
                                     {{ old('target_group_id') == $group->option_group_id ? 'selected' : '' }}>
-                                    {{ $group->group_name }}
+                                    {{ $group->group_name }} ({{ $group->group_code }})
                                 </option>
                             @endforeach
                         </optgroup>
