@@ -339,6 +339,17 @@
                     <input type="number" step="0.01" name="additional_price"
                         value="{{ old('additional_price', $option->additional_price) }}">
                 </div>
+                <div class="form-group">
+                    <label>Free From Quantity</label>
+
+                    <input type="number" name="free_from_qty" value="{{ old('free_from_qty', $option->free_from_qty) }}"
+                        min="1" placeholder="เช่น 100">
+
+                    <small style="display:block; margin-top:6px; color:#6b7280;">
+                        ถ้าใส่ 100 หมายถึง เมื่อจำนวนสินค้าตั้งแต่ 100 ชิ้นขึ้นไป ค่า Additional Price ของ option
+                        นี้จะเป็นฟรี
+                    </small>
+                </div>
 
                 <div class="form-group">
                     <label>Price Type</label>

@@ -953,16 +953,16 @@
         }
 
         /* .customize-option-group.has-error h2 {
-                                                                                                            color: #dc2626;
-                                                                                                        } */
+                                                                                                                        color: #dc2626;
+                                                                                                                    } */
 
         /* .customize-option-group.has-error .option-button-item,
-                                                                                                        .customize-option-group.has-error .option-image-card,
-                                                                                                        .customize-option-group.has-error .option-variant-card,
-                                                                                                        .customize-option-group.has-error .option-compact-card,
-                                                                                                        .customize-option-group.has-error .option-select-detail {
-                                                                                                            border-color: #dc2626;
-                                                                                                        } */
+                                                                                                                    .customize-option-group.has-error .option-image-card,
+                                                                                                                    .customize-option-group.has-error .option-variant-card,
+                                                                                                                    .customize-option-group.has-error .option-compact-card,
+                                                                                                                    .customize-option-group.has-error .option-select-detail {
+                                                                                                                        border-color: #dc2626;
+                                                                                                                    } */
         .previous-order-box {
             max-width: 620px;
         }
@@ -1021,8 +1021,8 @@
         }
 
         /* =========================
-                                                                                   STEP FOCUS / OVERLAY MODE
-                                                                                ========================= */
+                                                                                               STEP FOCUS / OVERLAY MODE
+                                                                                            ========================= */
 
         .customize-option-group {
             position: relative;
@@ -1438,6 +1438,7 @@
                                                     data-min-qty="{{ $option->pivot->min_qty }}"
                                                     data-max-qty="{{ $option->pivot->max_qty }}"
                                                     data-exact-qty="{{ $option->pivot->exact_qty }}"
+                                                    data-free-from-qty="{{ $option->free_from_qty }}"
                                                     {{ old("options.{$option->option_group_id}", $editingOptions[$option->option_group_id] ?? null) == $option->option_id || (!$editingCartItem && $option->pivot->is_default) ? 'checked' : '' }}>
 
                                                 <div class="option-image-box">
@@ -1480,6 +1481,7 @@
                                                     data-min-qty="{{ $option->pivot->min_qty }}"
                                                     data-max-qty="{{ $option->pivot->max_qty }}"
                                                     data-exact-qty="{{ $option->pivot->exact_qty }}"
+                                                    data-free-from-qty="{{ $option->free_from_qty }}"
                                                     {{ old("options.{$option->option_group_id}", $editingOptions[$option->option_group_id] ?? null) == $option->option_id || (!$editingCartItem && $option->pivot->is_default) ? 'checked' : '' }}>
 
                                                 <span class="variant-title">
@@ -1540,6 +1542,7 @@
                                                     data-min-qty="{{ $option->pivot->min_qty }}"
                                                     data-max-qty="{{ $option->pivot->max_qty }}"
                                                     data-exact-qty="{{ $option->pivot->exact_qty }}"
+                                                    data-free-from-qty="{{ $option->free_from_qty }}"
                                                     {{ old("options.{$option->option_group_id}", $editingOptions[$option->option_group_id] ?? null) == $option->option_id || (!$editingCartItem && $option->pivot->is_default) ? 'checked' : '' }}>
 
                                                 <div class="option-compact-image">
@@ -1590,6 +1593,7 @@
                                                     data-min-qty="{{ $option->pivot->min_qty }}"
                                                     data-max-qty="{{ $option->pivot->max_qty }}"
                                                     data-exact-qty="{{ $option->pivot->exact_qty }}"
+                                                    data-free-from-qty="{{ $option->free_from_qty }}"
                                                     {{ old("options.{$option->option_group_id}", $editingOptions[$option->option_group_id] ?? null) == $option->option_id || (!$editingCartItem && $option->pivot->is_default) ? 'checked' : '' }}>
 
                                                 <span class="color-circle"
@@ -1758,6 +1762,7 @@
                                                                 data-min-qty="{{ $option->pivot->min_qty }}"
                                                                 data-max-qty="{{ $option->pivot->max_qty }}"
                                                                 data-exact-qty="{{ $option->pivot->exact_qty }}"
+                                                                data-free-from-qty="{{ $option->free_from_qty }}"
                                                                 {{ old("options.{$option->option_group_id}", $editingOptions[$option->option_group_id] ?? null) == $option->option_id || (!$editingCartItem && $option->pivot->is_default) ? 'checked' : '' }}>
 
                                                             <span>{{ $option->option_name }}</span>
@@ -1804,6 +1809,7 @@
                                                         data-min-qty="{{ $option->pivot->min_qty }}"
                                                         data-max-qty="{{ $option->pivot->max_qty }}"
                                                         data-exact-qty="{{ $option->pivot->exact_qty }}"
+                                                        data-free-from-qty="{{ $option->free_from_qty }}"
                                                         data-is-yes="{{ in_array(strtolower(trim($option->option_name)), ['yes', 'sim']) ? 1 : 0 }}"
                                                         {{ (int) $selectedOptionId === (int) $option->option_id ? 'checked' : '' }}>
 
@@ -1842,6 +1848,7 @@
                                                     data-min-qty="{{ $option->pivot->min_qty }}"
                                                     data-max-qty="{{ $option->pivot->max_qty }}"
                                                     data-exact-qty="{{ $option->pivot->exact_qty }}"
+                                                    data-free-from-qty="{{ $option->free_from_qty }}"
                                                     {{ old("options.{$option->option_group_id}", $editingOptions[$option->option_group_id] ?? null) == $option->option_id || (!$editingCartItem && $option->pivot->is_default) ? 'checked' : '' }}>
 
                                                 <span>{{ $option->option_name }}</span>
@@ -2439,6 +2446,7 @@
                 hiddenInput.dataset.optionName = '';
                 hiddenInput.dataset.price = 0;
                 hiddenInput.dataset.priceType = 'per_order';
+                hiddenInput.dataset.freeFromQty = 0;
                 hiddenInput.dataset.qtyRuleType = '';
                 hiddenInput.dataset.minQty = 0;
                 hiddenInput.dataset.maxQty = 0;
@@ -2478,6 +2486,7 @@
             hiddenInput.dataset.price = item.dataset.price || 0;
             hiddenInput.dataset.priceType = item.dataset.priceType || 'per_order';
             hiddenInput.dataset.qtyRuleType = item.dataset.qtyRuleType || '';
+            hiddenInput.dataset.freeFromQty = item.dataset.freeFromQty || 0;
             hiddenInput.dataset.minQty = item.dataset.minQty || 0;
             hiddenInput.dataset.maxQty = item.dataset.maxQty || 0;
             hiddenInput.dataset.exactQty = item.dataset.exactQty || 0;
@@ -2560,14 +2569,20 @@
                 const price = parseFloat(input.dataset.price || 0);
                 const variantPrice = parseFloat(input.dataset.variantPrice || 0);
                 const priceType = input.dataset.priceType || 'per_order';
+                const freeFromQty = parseInt(input.dataset.freeFromQty || 0);
+                let finalPrice = price;
+
+                if (freeFromQty > 0 && quantity >= freeFromQty) {
+                    finalPrice = 0;
+                }
 
                 const isRuleOption = isOptionInMatchedRule(optionId, matchedRule);
 
                 if (!isRuleOption) {
                     if (priceType === 'per_item') {
-                        optionTotal += (price + variantPrice) * quantity;
+                        optionTotal += (finalPrice + variantPrice) * quantity;
                     } else {
-                        optionTotal += price + variantPrice;
+                        optionTotal += finalPrice + variantPrice;
                     }
                 }
 
@@ -2611,6 +2626,7 @@
                 let optionName = '';
                 let price = 0;
                 let priceType = 'per_order';
+                let freeFromQty = 0;
 
                 if (select.classList.contains('option-select-detail-hidden')) {
                     if (!select.value) {
@@ -2622,6 +2638,7 @@
                     optionName = select.dataset.optionName || '';
                     price = parseFloat(select.dataset.price || 0);
                     priceType = select.dataset.priceType || 'per_order';
+                    freeFromQty = parseInt(select.dataset.freeFromQty || 0);
                 } else {
                     const selected = select.options[select.selectedIndex];
 
@@ -2634,15 +2651,22 @@
                     optionName = selected.dataset.optionName || selected.textContent || '';
                     price = parseFloat(selected.dataset.price || 0);
                     priceType = selected.dataset.priceType || 'per_order';
+                    freeFromQty = parseInt(selected.dataset.freeFromQty || 0);
+                }
+
+                let finalPrice = price;
+
+                if (freeFromQty > 0 && quantity >= freeFromQty) {
+                    finalPrice = 0;
                 }
 
                 const isRuleOption = isOptionInMatchedRule(optionId, matchedRule);
 
                 if (!isRuleOption) {
                     if (priceType === 'per_item') {
-                        optionTotal += price * quantity;
+                        optionTotal += finalPrice * quantity;
                     } else {
-                        optionTotal += price;
+                        optionTotal += finalPrice;
                     }
                 }
 
