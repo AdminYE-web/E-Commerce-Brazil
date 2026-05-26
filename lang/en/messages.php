@@ -99,7 +99,7 @@ return [
         'feature_easy_order' => 'Easy ordering',
         'feature_lowest_prices' => 'Lowest prices',
         'feature_fast_delivery' => 'Fast express delivery',
-        
+
         // Recommended products
         'recommended_title' => 'Recommended Products',
         'recommended_subtitle' => 'Selected for you',
@@ -258,5 +258,9 @@ return [
         'already_have_account' => 'Already have an account?',
         'login_here' => 'Log in here',
         'google_login_failed' => 'Unable to login with Google. Please try again.',
+    ],
+    'admin' => [
+        'select_all' => 'Select All',
+        'deselect_all' => 'Deselect All',
     ],
 ];

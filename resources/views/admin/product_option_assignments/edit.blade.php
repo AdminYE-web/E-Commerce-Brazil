@@ -304,6 +304,15 @@
                                     <span>{{ $group->options->count() }} options</span>
                                 </div>
                             </div>
+
+                            <div class="option-group-actions" style="display: flex; gap: 8px;">
+                                <button type="button" class="btn-outline btn-select-all" style="min-height: 28px; padding: 4px 10px; font-size: 12px; border-radius: 6px;">
+                                    {{ __('messages.admin.select_all') }}
+                                </button>
+                                <button type="button" class="btn-outline btn-deselect-all" style="min-height: 28px; padding: 4px 10px; font-size: 12px; border-radius: 6px;">
+                                    {{ __('messages.admin.deselect_all') }}
+                                </button>
+                            </div>
                         </div>
 
                         <div class="option-list option-sortable-list">
@@ -454,6 +463,33 @@
                         input.disabled = true;
                     });
                 }
+            });
+        });
+
+        // Select All / Deselect All handlers
+        document.querySelectorAll('.btn-select-all').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                const card = this.closest('.option-group-card');
+                const checkboxes = card.querySelectorAll('.option-checkbox');
+                checkboxes.forEach(function(checkbox) {
+                    if (!checkbox.checked) {
+                        checkbox.checked = true;
+                        checkbox.dispatchEvent(new Event('change'));
+                    }
+                });
+            });
+        });
+
+        document.querySelectorAll('.btn-deselect-all').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                const card = this.closest('.option-group-card');
+                const checkboxes = card.querySelectorAll('.option-checkbox');
+                checkboxes.forEach(function(checkbox) {
+                    if (checkbox.checked) {
+                        checkbox.checked = false;
+                        checkbox.dispatchEvent(new Event('change'));
+                    }
+                });
             });
         });
     </script>

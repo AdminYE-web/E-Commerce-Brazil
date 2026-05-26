@@ -259,4 +259,8 @@ return [
         'login_here' => 'ここからログイン',
         'google_login_failed' => 'Googleでログインできませんでした。もう一度お試しください。',
     ],
+    'admin' => [
+        'select_all' => 'すべて選択',
+        'deselect_all' => '選択解除',
+    ],
 ];

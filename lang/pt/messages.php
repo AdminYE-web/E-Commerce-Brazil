@@ -258,4 +258,8 @@ return [
         'login_here' => 'Entre aqui',
         'google_login_failed' => 'Não foi possível fazer login com o Google. Por favor, tente novamente.',
     ],
+    'admin' => [
+        'select_all' => 'Selecionar todos',
+        'deselect_all' => 'Desmarcar todos',
+    ],
 ];
