@@ -953,16 +953,16 @@
         }
 
         /* .customize-option-group.has-error h2 {
-                                                                                            color: #dc2626;
-                                                                                        } */
+                                                                                                    color: #dc2626;
+                                                                                                } */
 
         /* .customize-option-group.has-error .option-button-item,
-                                                                                        .customize-option-group.has-error .option-image-card,
-                                                                                        .customize-option-group.has-error .option-variant-card,
-                                                                                        .customize-option-group.has-error .option-compact-card,
-                                                                                        .customize-option-group.has-error .option-select-detail {
-                                                                                            border-color: #dc2626;
-                                                                                        } */
+                                                                                                .customize-option-group.has-error .option-image-card,
+                                                                                                .customize-option-group.has-error .option-variant-card,
+                                                                                                .customize-option-group.has-error .option-compact-card,
+                                                                                                .customize-option-group.has-error .option-select-detail {
+                                                                                                    border-color: #dc2626;
+                                                                                                } */
         .previous-order-box {
             max-width: 620px;
         }
@@ -1021,8 +1021,8 @@
         }
 
         /* =========================
-                                                                   STEP FOCUS / OVERLAY MODE
-                                                                ========================= */
+                                                                           STEP FOCUS / OVERLAY MODE
+                                                                        ========================= */
 
         .customize-option-group {
             position: relative;
@@ -2231,7 +2231,7 @@
                 if (rule.ruleType === 'exact' && rule.exactQty && quantity !== rule.exactQty) {
                     quantityInput.value = rule.exactQty;
                     showQuantityRuleMessage(rule.optionName + ': order quantity must be exactly ' + rule.exactQty +
-                    ' pcs.');
+                        ' pcs.');
                     quantityInput.focus();
                     updateSummary();
                     return false;
@@ -2733,9 +2733,10 @@
                         const optionBox = input.closest('label');
 
                         input.disabled = false;
+                        input.readOnly = false;
 
                         if (optionBox) {
-                            optionBox.style.display = '';
+                            optionBox.style.pointerEvents = '';
                             optionBox.classList.remove('is-option-disabled-by-dependency');
                         }
 
@@ -2744,6 +2745,10 @@
 
                             if (optionBox) {
                                 optionBox.style.display = 'none';
+                            }
+                        } else {
+                            if (optionBox) {
+                                optionBox.style.display = '';
                             }
                         }
                     });
@@ -2856,9 +2861,11 @@
 
                         if (actionType === 'show') {
                             input.disabled = false;
+                            input.readOnly = false;
 
                             if (optionBox) {
                                 optionBox.style.display = '';
+                                optionBox.style.pointerEvents = '';
                                 optionBox.classList.remove('is-option-disabled-by-dependency');
                             }
                         }
@@ -2929,7 +2936,7 @@
                     dropdownItems.forEach(function(item) {
                         const wrap = item.closest('.option-select-detail-wrap');
                         const hiddenInput = wrap ? wrap.querySelector('.option-select-detail-hidden') :
-                        null;
+                            null;
 
                         if (actionType === 'show') {
                             item.hidden = false;
@@ -3268,7 +3275,7 @@
             });
 
             document.querySelectorAll('#customize-form select:not(.option-select-detail)').forEach(function(
-            select) {
+                select) {
                 select.addEventListener('change', function() {
                     updateOptionDependencies();
                     updateSummary();
