@@ -245,16 +245,12 @@
                     <input type="file" name="specification_image" accept="image/*">
                 </div>
 
-                <div class="form-group">
-                    <label>Specification Image</label>
-                    <input type="file" name="specification_image" accept="image/*">
-                </div>
-
                 <!-- เพิ่มช่องอัปโหลด Sample Image ตรงนี้ -->
                 <div class="form-group">
                     <label>Sample Image</label>
                     <input type="file" name="sample_image" accept="image/*">
                 </div>
+
 
             </div>
 
