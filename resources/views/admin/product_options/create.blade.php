@@ -226,7 +226,7 @@
                             value="{{ $group->option_group_id }}"
                             {{ old('option_group_id') == $group->option_group_id ? 'selected' : '' }}
                         >
-                            {{ $group->group_name }}
+                            {{ $group->group_name }} ({{ $group->group_code }})
                         </option>
                     @endforeach
                 </select>
