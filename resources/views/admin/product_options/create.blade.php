@@ -221,14 +221,27 @@
                 <select name="option_group_id">
                     <option value="">-- Select Group --</option>
 
-                    @foreach($groups as $group)
-                        <option
-                            value="{{ $group->option_group_id }}"
-                            {{ old('option_group_id') == $group->option_group_id ? 'selected' : '' }}
-                        >
-                            {{ $group->group_name }} ({{ $group->group_code }})
-                        </option>
-                    @endforeach
+                    <optgroup label="Hotstrap (Type 1)">
+                        @foreach($groups->where('product_type', 1) as $group)
+                            <option
+                                value="{{ $group->option_group_id }}"
+                                {{ old('option_group_id') == $group->option_group_id ? 'selected' : '' }}
+                            >
+                                {{ $group->group_name }} ({{ $group->group_code }})
+                            </option>
+                        @endforeach
+                    </optgroup>
+
+                    <optgroup label="Hotmobily (Type 2)">
+                        @foreach($groups->where('product_type', 2) as $group)
+                            <option
+                                value="{{ $group->option_group_id }}"
+                                {{ old('option_group_id') == $group->option_group_id ? 'selected' : '' }}
+                            >
+                                {{ $group->group_name }} ({{ $group->group_code }})
+                            </option>
+                        @endforeach
+                    </optgroup>
                 </select>
             </div>
 
