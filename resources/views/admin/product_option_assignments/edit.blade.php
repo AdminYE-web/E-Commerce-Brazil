@@ -316,13 +316,14 @@
                         </div>
 
                         <div class="option-list option-sortable-list">
-                            @forelse ($group->options as $option)
+                            @forelse ($group->options as $index => $option)
                                 @php
                                     $isChecked = in_array((int) $option->option_id, $assignedOptionIds);
                                     $pivot = $assignedPivot[$option->option_id]->pivot ?? null;
+                                    $isExtra = ($index >= 4) && !$isChecked;
                                 @endphp
 
-                                <div class="option-row" data-option-id="{{ $option->option_id }}">
+                                <div class="option-row {{ $isExtra ? 'option-row-extra' : '' }}" data-option-id="{{ $option->option_id }}" style="{{ $isExtra ? 'display: none;' : '' }}">
                                     <div class="option-row-top">
                                         <span class="option-drag-handle" title="Drag option">☰</span>
 
@@ -423,6 +424,24 @@
                             @empty
                                 <p class="muted-text">No options in this group.</p>
                             @endforelse
+
+                            @php
+                                $extraCount = 0;
+                                foreach ($group->options as $index => $opt) {
+                                    $isOptChecked = in_array((int) $opt->option_id, $assignedOptionIds);
+                                    if ($index >= 4 && !$isOptChecked) {
+                                        $extraCount++;
+                                    }
+                                }
+                            @endphp
+
+                            @if ($extraCount > 0)
+                                <div class="show-more-wrapper" style="padding: 12px 0; text-align: center; border-top: 1px dashed var(--border);">
+                                    <button type="button" class="btn-outline btn-toggle-more" data-expanded="false" data-total-count="{{ $group->options->count() }}" style="min-height: 32px; padding: 6px 14px; font-size: 13px; border-radius: 6px;">
+                                        {{ __('messages.admin.show_all') }} ({{ $group->options->count() }})
+                                    </button>
+                                </div>
+                            @endif
                         </div>
                     </div>
                 @endforeach
@@ -477,6 +496,12 @@
                         checkbox.dispatchEvent(new Event('change'));
                     }
                 });
+
+                // Automatically expand the group to show all options
+                const toggleMoreBtn = card.querySelector('.btn-toggle-more');
+                if (toggleMoreBtn && toggleMoreBtn.getAttribute('data-expanded') !== 'true') {
+                    toggleMoreBtn.click();
+                }
             });
         });
 
@@ -490,6 +515,30 @@
                         checkbox.dispatchEvent(new Event('change'));
                     }
                 });
+            });
+        });
+
+        // Toggle More/Less handlers
+        document.querySelectorAll('.btn-toggle-more').forEach(function(btn) {
+            const totalCount = btn.getAttribute('data-total-count');
+            btn.addEventListener('click', function() {
+                const card = this.closest('.option-group-card');
+                const extraRows = card.querySelectorAll('.option-row-extra');
+                const isExpanded = this.getAttribute('data-expanded') === 'true';
+
+                if (isExpanded) {
+                    extraRows.forEach(function(row) {
+                        row.style.display = 'none';
+                    });
+                    this.setAttribute('data-expanded', 'false');
+                    this.textContent = "{{ __('messages.admin.show_all') }} (" + totalCount + ")";
+                } else {
+                    extraRows.forEach(function(row) {
+                        row.style.display = 'block';
+                    });
+                    this.setAttribute('data-expanded', 'true');
+                    this.textContent = "{{ __('messages.admin.show_less') }}";
+                }
             });
         });
     </script>

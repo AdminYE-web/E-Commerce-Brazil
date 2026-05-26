@@ -262,5 +262,7 @@ return [
     'admin' => [
         'select_all' => 'すべて選択',
         'deselect_all' => '選択解除',
+        'show_all' => 'すべて表示',
+        'show_less' => '一部表示',
     ],
 ];

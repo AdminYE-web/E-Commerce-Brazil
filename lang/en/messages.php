@@ -262,5 +262,7 @@ return [
     'admin' => [
         'select_all' => 'Select All',
         'deselect_all' => 'Deselect All',
+        'show_all' => 'Show All',
+        'show_less' => 'Show Less',
     ],
 ];

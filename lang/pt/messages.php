@@ -261,5 +261,7 @@ return [
     'admin' => [
         'select_all' => 'Selecionar todos',
         'deselect_all' => 'Desmarcar todos',
+        'show_all' => 'Mostrar todos',
+        'show_less' => 'Mostrar menos',
     ],
 ];
