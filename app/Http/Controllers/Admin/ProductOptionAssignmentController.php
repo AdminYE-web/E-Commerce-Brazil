@@ -16,6 +16,7 @@ class ProductOptionAssignmentController extends Controller
         $product->load('assignedOptions');
 
         $language = $product->language ?? session('admin_product_language', 'pt');
+        $productType = (int) $product->product_type;
 
         $groups = OptionGroup::with(['options' => function ($query) use ($language) {
             $query->where('language', $language)
@@ -23,6 +24,7 @@ class ProductOptionAssignmentController extends Controller
                 ->orderBy('option_name');
         }])
             ->where('language', $language)
+            ->where('product_type', $productType)
             ->where('is_active', 1)
             ->get();
 
