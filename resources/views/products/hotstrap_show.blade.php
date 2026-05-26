@@ -953,16 +953,16 @@
         }
 
         /* .customize-option-group.has-error h2 {
-                                                                                                                                color: #dc2626;
-                                                                                                                            } */
+                                                                                                                                    color: #dc2626;
+                                                                                                                                } */
 
         /* .customize-option-group.has-error .option-button-item,
-                                                                                                                            .customize-option-group.has-error .option-image-card,
-                                                                                                                            .customize-option-group.has-error .option-variant-card,
-                                                                                                                            .customize-option-group.has-error .option-compact-card,
-                                                                                                                            .customize-option-group.has-error .option-select-detail {
-                                                                                                                                border-color: #dc2626;
-                                                                                                                            } */
+                                                                                                                                .customize-option-group.has-error .option-image-card,
+                                                                                                                                .customize-option-group.has-error .option-variant-card,
+                                                                                                                                .customize-option-group.has-error .option-compact-card,
+                                                                                                                                .customize-option-group.has-error .option-select-detail {
+                                                                                                                                    border-color: #dc2626;
+                                                                                                                                } */
         .previous-order-box {
             max-width: 620px;
         }
@@ -1021,8 +1021,8 @@
         }
 
         /* =========================
-                                                                                                       STEP FOCUS / OVERLAY MODE
-                                                                                                    ========================= */
+                                                                                                           STEP FOCUS / OVERLAY MODE
+                                                                                                        ========================= */
 
         .customize-option-group {
             position: relative;
@@ -2892,173 +2892,163 @@
             });
         }
 
-        function applyDependencyActions() {
-            const selectedOptionIds = getSelectedOptionIds();
+        function isTriggerOptionActive(optionId) {
+            const triggerInputs = document.querySelectorAll(
+                '#customize-form input[type="radio"][data-option-id="' + optionId + '"]:checked'
+            );
 
-            optionDependencies.forEach(function(dep) {
-                const triggerOptionId = parseInt(dep.parent_option_id);
-
-                if (!selectedOptionIds.includes(triggerOptionId)) {
-                    return;
+            for (const input of triggerInputs) {
+                if (input.disabled) {
+                    continue;
                 }
 
-                const actionType = dep.action_type || 'show';
+                const groupEl = input.closest('.customize-option-group, .grouped-button-set');
+                const label = input.closest('label');
 
-                if (dep.target_type === 'group' && dep.target_group_id) {
-                    const groupEls = document.querySelectorAll('[data-group-id="' + dep.target_group_id + '"]');
-
-                    groupEls.forEach(function(groupEl) {
-                        if (actionType === 'show') {
-                            groupEl.style.display = '';
-                            groupEl.style.pointerEvents = '';
-                            groupEl.classList.remove('is-option-disabled-by-dependency');
-
-                            groupEl.querySelectorAll('input, select, textarea').forEach(function(input) {
-                                input.disabled = false;
-                            });
-
-                            groupEl.querySelectorAll(
-                                    'label, .option-compact-card, .option-button-item, .option-image-card')
-                                .forEach(function(el) {
-                                    el.style.pointerEvents = '';
-                                    el.classList.remove('is-option-disabled-by-dependency');
-                                });
-                        }
-
-                        if (actionType === 'hide') {
-                            groupEl.style.display = 'none';
-                            clearInputsInside(groupEl);
-                        }
-
-                        if (actionType === 'disable') {
-                            groupEl.style.display = '';
-                            groupEl.classList.add('is-option-disabled-by-dependency');
-
-                            groupEl.querySelectorAll('input, select, textarea').forEach(function(input) {
-                                input.disabled = true;
-                            });
-                        }
-                    });
+                if (groupEl && groupEl.style.display === 'none') {
+                    continue;
                 }
 
-                if (dep.target_type === 'option' && dep.target_option_id) {
-                    const optionId = parseInt(dep.target_option_id);
+                if (label && label.style.display === 'none') {
+                    continue;
+                }
 
-                    const radioInputs = document.querySelectorAll(
-                        '#customize-form input[type="radio"][data-option-id="' + optionId + '"]'
-                    );
+                return true;
+            }
 
-                    radioInputs.forEach(function(input) {
-                        const optionBox = input.closest('label');
+            const hiddenInput = document.querySelector(
+                '#customize-form .option-select-detail-hidden[value="' + optionId + '"]'
+            );
 
-                        if (actionType === 'show') {
+            if (hiddenInput && !hiddenInput.disabled) {
+                const groupEl = hiddenInput.closest('.customize-option-group');
+
+                if (!groupEl || groupEl.style.display !== 'none') {
+                    return true;
+                }
+            }
+
+            const selectOption = document.querySelector(
+                '#customize-form select.option-select-detail option[value="' + optionId + '"]'
+            );
+
+            if (selectOption && selectOption.selected && !selectOption.disabled && !selectOption.hidden) {
+                const select = selectOption.closest('select');
+                const groupEl = select ? select.closest('.customize-option-group') : null;
+
+                if (!groupEl || groupEl.style.display !== 'none') {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        function applySingleDependency(dep) {
+            const actionType = dep.action_type || 'show';
+
+            if (dep.target_type === 'group' && dep.target_group_id) {
+                const groupEls = document.querySelectorAll('[data-group-id="' + dep.target_group_id + '"]');
+
+                groupEls.forEach(function(groupEl) {
+                    if (actionType === 'show') {
+                        groupEl.style.display = '';
+                        groupEl.style.pointerEvents = '';
+                        groupEl.classList.remove('is-option-disabled-by-dependency');
+
+                        groupEl.querySelectorAll('input, select, textarea').forEach(function(input) {
                             input.disabled = false;
-                            input.readOnly = false;
+                        });
 
-                            if (optionBox) {
-                                optionBox.style.display = '';
-                                optionBox.style.pointerEvents = '';
-                                optionBox.classList.remove('is-option-disabled-by-dependency');
-                            }
-                        }
+                        groupEl.querySelectorAll(
+                            'label, .option-compact-card, .option-button-item, .option-image-card'
+                        ).forEach(function(el) {
+                            el.style.pointerEvents = '';
+                            el.classList.remove('is-option-disabled-by-dependency');
+                        });
+                    }
 
-                        if (actionType === 'hide') {
-                            input.checked = false;
-                            input.disabled = false;
+                    if (actionType === 'hide') {
+                        groupEl.style.display = 'none';
+                        clearInputsInside(groupEl);
+                    }
 
-                            if (optionBox) {
-                                optionBox.style.display = 'none';
-                                optionBox.classList.remove('is-option-disabled-by-dependency');
-                            }
-                        }
+                    if (actionType === 'disable') {
+                        groupEl.style.display = '';
+                        groupEl.classList.add('is-option-disabled-by-dependency');
 
-                        if (actionType === 'disable') {
-                            input.checked = false;
+                        groupEl.querySelectorAll('input, select, textarea').forEach(function(input) {
                             input.disabled = true;
+                        });
+                    }
+                });
+            }
 
-                            if (optionBox) {
-                                optionBox.style.display = '';
-                                optionBox.classList.add('is-option-disabled-by-dependency');
-                            }
+            if (dep.target_type === 'option' && dep.target_option_id) {
+                const optionId = parseInt(dep.target_option_id);
+
+                const radioInputs = document.querySelectorAll(
+                    '#customize-form input[type="radio"][data-option-id="' + optionId + '"]'
+                );
+
+                radioInputs.forEach(function(input) {
+                    const optionBox = input.closest('label');
+
+                    if (actionType === 'show') {
+                        input.disabled = false;
+                        input.readOnly = false;
+
+                        if (optionBox) {
+                            optionBox.style.display = '';
+                            optionBox.style.pointerEvents = '';
+                            optionBox.classList.remove('is-option-disabled-by-dependency');
                         }
-                    });
+                    }
 
-                    const selectOptions = document.querySelectorAll(
-                        '#customize-form select.option-select-detail option[data-option-id="' + optionId + '"]'
-                    );
+                    if (actionType === 'hide') {
+                        input.checked = false;
+                        input.disabled = false;
 
-                    selectOptions.forEach(function(option) {
-                        const select = option.closest('select');
-
-                        if (actionType === 'show') {
-                            option.hidden = false;
-                            option.disabled = false;
+                        if (optionBox) {
+                            optionBox.style.display = 'none';
+                            optionBox.classList.remove('is-option-disabled-by-dependency');
                         }
+                    }
 
-                        if (actionType === 'hide') {
-                            option.hidden = true;
-                            option.disabled = true;
+                    if (actionType === 'disable') {
+                        input.checked = false;
+                        input.disabled = true;
+
+                        if (optionBox) {
+                            optionBox.style.display = '';
+                            optionBox.classList.add('is-option-disabled-by-dependency');
                         }
+                    }
+                });
+            }
+        }
 
-                        if (actionType === 'disable') {
-                            option.hidden = false;
-                            option.disabled = true;
-                        }
+        function applyDependencyActions() {
+            /*
+            |--------------------------------------------------------------------------
+            | Run multiple passes for nested dependencies
+            |--------------------------------------------------------------------------
+            | เช่น:
+            | A show group tipo
+            | Horizontal ใน group tipo show group ต่อไป
+            |--------------------------------------------------------------------------
+            */
+            for (let pass = 0; pass < 5; pass++) {
+                optionDependencies.forEach(function(dep) {
+                    const triggerOptionId = parseInt(dep.parent_option_id);
 
-                        if (select && select.value == option.value && (actionType === 'hide' ||
-                                actionType === 'disable')) {
-                            const firstVisibleOption = Array.from(select.options).find(function(item) {
-                                return item.value && !item.disabled && !item.hidden;
-                            });
+                    if (!isTriggerOptionActive(triggerOptionId)) {
+                        return;
+                    }
 
-                            if (firstVisibleOption) {
-                                select.value = firstVisibleOption.value;
-                            } else {
-                                select.value = '';
-                            }
-
-                            updateSingleSelectDetailPreview(select);
-                        }
-                    });
-
-                    const dropdownItems = document.querySelectorAll(
-                        '#customize-form .option-bs-dropdown-item[data-option-id="' + optionId + '"]'
-                    );
-
-                    dropdownItems.forEach(function(item) {
-                        const wrap = item.closest('.option-select-detail-wrap');
-                        const hiddenInput = wrap ? wrap.querySelector('.option-select-detail-hidden') :
-                            null;
-
-                        if (actionType === 'show') {
-                            item.hidden = false;
-                            item.disabled = false;
-                            item.classList.remove('disabled');
-                        }
-
-                        if (actionType === 'hide') {
-                            item.hidden = true;
-                            item.disabled = true;
-                            item.classList.remove('active');
-
-                            if (hiddenInput && hiddenInput.value == item.dataset.optionId) {
-                                selectFirstAvailableBootstrapItem(wrap);
-                            }
-                        }
-
-                        if (actionType === 'disable') {
-                            item.hidden = false;
-                            item.disabled = true;
-                            item.classList.add('disabled');
-                            item.classList.remove('active');
-
-                            if (hiddenInput && hiddenInput.value == item.dataset.optionId) {
-                                selectFirstAvailableBootstrapItem(wrap);
-                            }
-                        }
-                    });
-                }
-            });
+                    applySingleDependency(dep);
+                });
+            }
         }
 
         function fixSelectDetailAfterDependency() {
