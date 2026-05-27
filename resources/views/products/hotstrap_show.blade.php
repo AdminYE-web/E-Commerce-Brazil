@@ -353,6 +353,30 @@
             top: 111px;
         }
 
+        html,
+        body,
+        main,
+        .customize-hero-section,
+        .customize-hero-section>.container,
+        .customize-layout,
+        .customize-options {
+            overflow: visible !important;
+        }
+
+        .customize-layout {
+            align-items: start;
+        }
+
+        .product-summary-box {
+            position: sticky !important;
+            top: 100px;
+            align-self: start;
+            height: fit-content;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+            z-index: 10;
+        }
+
         .product-summary-box h3 {
             font-size: 25px;
             font-weight: 800;
@@ -953,16 +977,16 @@
         }
 
         /* .customize-option-group.has-error h2 {
-                                                                                                                                            color: #dc2626;
-                                                                                                                                        } */
+                                                                                                                                                    color: #dc2626;
+                                                                                                                                                } */
 
         /* .customize-option-group.has-error .option-button-item,
-                                                                                                                                        .customize-option-group.has-error .option-image-card,
-                                                                                                                                        .customize-option-group.has-error .option-variant-card,
-                                                                                                                                        .customize-option-group.has-error .option-compact-card,
-                                                                                                                                        .customize-option-group.has-error .option-select-detail {
-                                                                                                                                            border-color: #dc2626;
-                                                                                                                                        } */
+                                                                                                                                                .customize-option-group.has-error .option-image-card,
+                                                                                                                                                .customize-option-group.has-error .option-variant-card,
+                                                                                                                                                .customize-option-group.has-error .option-compact-card,
+                                                                                                                                                .customize-option-group.has-error .option-select-detail {
+                                                                                                                                                    border-color: #dc2626;
+                                                                                                                                                } */
         .previous-order-box {
             max-width: 620px;
         }
@@ -1021,8 +1045,8 @@
         }
 
         /* =========================
-                                                                                                                   STEP FOCUS / OVERLAY MODE
-                                                                                                                ========================= */
+                                                                                                                           STEP FOCUS / OVERLAY MODE
+                                                                                                                        ========================= */
 
         .customize-option-group {
             position: relative;

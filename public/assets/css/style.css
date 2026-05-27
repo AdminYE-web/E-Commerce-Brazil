@@ -5398,7 +5398,7 @@ body {
 .site-header {
     position: sticky;
     top: 0;
-    z-index: 1;
+    z-index: 99;
     background: #fff;
 }
 
@@ -5443,7 +5443,8 @@ body {
 }
 
 main {
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: visible;
 }
 
 @keyframes announcementMarquee {
