@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 
+
 use Illuminate\Support\Facades\View;
 use App\Models\Product;
 use Illuminate\Support\ServiceProvider;
@@ -25,6 +26,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Paginator::useBootstrapFive();
         View::composer('partials.header', function ($view) {
             $langKey = session('locale', app()->getLocale());
             $fallbackLang = 'pt';
