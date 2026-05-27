@@ -343,6 +343,40 @@
             color: #fff;
             border-bottom-color: transparent;
         }
+
+        .option-group-header {
+            cursor: pointer;
+        }
+
+        .option-group-toggle {
+            width: 30px;
+            height: 30px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: #fff;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .option-group-card.is-collapsed .option-list {
+            display: none;
+        }
+
+        .mar-4 {
+            margin: 20px 0px;
+        }
+
+        .option-group-card.is-collapsed .option-list {
+            display: none;
+        }
+
+        .option-group-card {
+            cursor: pointer;
+        }
+
+        .option-list {
+            cursor: default;
+        }
     </style>
 @endsection
 
@@ -355,7 +389,7 @@
                 <p>{{ $product->product_name }}</p>
             </div>
 
-            <a href="{{ route('admin.products.index') }}" class="btn-outline">
+            <a href="{{ route('admin.products.index') }}" class="btn-outline mar-4">
                 Back
             </a>
         </div>
@@ -377,7 +411,7 @@
             <div class="options-layout">
                 <div class="option-group-list">
                     @foreach ($groups as $group)
-                        <div class="option-group-card" id="option-group-{{ $group->option_group_id }}"
+                        <div class="option-group-card is-collapsed" id="option-group-{{ $group->option_group_id }}"
                             data-group-id="{{ $group->option_group_id }}">
                             <div class="option-group-header">
                                 <div class="option-group-title-wrap">
@@ -390,6 +424,7 @@
                                 </div>
 
                                 <div class="option-group-actions" style="display: flex; gap: 8px;">
+                                    <button type="button" class="option-group-toggle">+</button>
                                     <button type="button" class="btn-outline btn-select-all"
                                         style="min-height: 28px; padding: 4px 10px; font-size: 12px; border-radius: 6px;">
                                         {{ __('messages.admin.select_all') }}
@@ -790,6 +825,35 @@
 
             window.addEventListener('scroll', setActiveLink);
             setActiveLink();
+        });
+
+        document.querySelectorAll('.option-group-toggle').forEach(function(button) {
+            button.addEventListener('click', function(e) {
+                e.stopPropagation();
+
+                const card = this.closest('.option-group-card');
+                card.classList.toggle('is-collapsed');
+
+                this.textContent = card.classList.contains('is-collapsed') ? '+' : '−';
+            });
+        });
+
+        document.querySelectorAll('.option-group-card').forEach(function(card) {
+            card.addEventListener('click', function(e) {
+                if (
+                    e.target.closest('input, select, textarea, button, a, label') ||
+                    e.target.closest('.group-drag-handle, .option-drag-handle')
+                ) {
+                    return;
+                }
+
+                card.classList.toggle('is-collapsed');
+
+                const toggleBtn = card.querySelector('.option-group-toggle');
+                if (toggleBtn) {
+                    toggleBtn.textContent = card.classList.contains('is-collapsed') ? '+' : '−';
+                }
+            });
         });
     </script>
 @endsection
