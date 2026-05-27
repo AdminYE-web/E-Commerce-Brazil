@@ -323,6 +323,26 @@
             background: #cbd5e1;
             border-radius: 999px;
         }
+
+        .option-scrollspy a {
+            display: block;
+            padding: 12px 12px;
+            border-radius: 8px;
+            color: var(--fg);
+            text-decoration: none;
+            font-size: 14px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .option-scrollspy a:last-child {
+            border-bottom: none;
+        }
+
+        .option-scrollspy a.active {
+            background: var(--accent);
+            color: #fff;
+            border-bottom-color: transparent;
+        }
     </style>
 @endsection
 
