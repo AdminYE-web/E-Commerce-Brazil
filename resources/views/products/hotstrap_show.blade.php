@@ -953,16 +953,16 @@
         }
 
         /* .customize-option-group.has-error h2 {
-                                                                                                                                    color: #dc2626;
-                                                                                                                                } */
+                                                                                                                                        color: #dc2626;
+                                                                                                                                    } */
 
         /* .customize-option-group.has-error .option-button-item,
-                                                                                                                                .customize-option-group.has-error .option-image-card,
-                                                                                                                                .customize-option-group.has-error .option-variant-card,
-                                                                                                                                .customize-option-group.has-error .option-compact-card,
-                                                                                                                                .customize-option-group.has-error .option-select-detail {
-                                                                                                                                    border-color: #dc2626;
-                                                                                                                                } */
+                                                                                                                                    .customize-option-group.has-error .option-image-card,
+                                                                                                                                    .customize-option-group.has-error .option-variant-card,
+                                                                                                                                    .customize-option-group.has-error .option-compact-card,
+                                                                                                                                    .customize-option-group.has-error .option-select-detail {
+                                                                                                                                        border-color: #dc2626;
+                                                                                                                                    } */
         .previous-order-box {
             max-width: 620px;
         }
@@ -1021,8 +1021,8 @@
         }
 
         /* =========================
-                                                                                                           STEP FOCUS / OVERLAY MODE
-                                                                                                        ========================= */
+                                                                                                               STEP FOCUS / OVERLAY MODE
+                                                                                                            ========================= */
 
         .customize-option-group {
             position: relative;
@@ -1260,27 +1260,32 @@
         }
 
         .option-bs-dropdown {
-            width: 100%;
-            max-width: 620px;
-            margin-bottom: 12px;
+            width: fit-content;
+            max-width: 100%;
         }
 
         .option-bs-dropdown-btn {
-            width: 100%;
-            min-height: 48px;
-            border: 1px solid #d9dde7;
-            border-radius: 12px;
-            background: #fff;
-            color: #111827;
-            font-size: 15px;
-            font-weight: 500;
-            text-align: left;
-            padding: 10px 44px 10px 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+            width: auto;
+            max-width: 100%;
+            display: inline-flex;
         }
+
+        /* .option-bs-dropdown-btn {
+                    width: 100%;
+                    min-height: 48px;
+                    border: 1px solid #d9dde7;
+                    border-radius: 12px;
+                    background: #fff;
+                    color: #111827;
+                    font-size: 15px;
+                    font-weight: 500;
+                    text-align: left;
+                    padding: 10px 44px 10px 16px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+                } */
 
         .option-bs-dropdown-btn:hover,
         .option-bs-dropdown-btn:focus {
