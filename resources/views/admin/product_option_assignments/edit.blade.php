@@ -261,6 +261,68 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        .options-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 180px;
+            gap: 20px;
+            align-items: start;
+        }
+
+        .option-scrollspy {
+            position: sticky;
+            top: 90px;
+            /* ปรับตามความสูง header */
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 10px;
+        }
+
+        .option-scrollspy a {
+            display: block;
+            padding: 10px 12px;
+            border-radius: 8px;
+            color: var(--fg);
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .option-scrollspy a.active {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        @media (max-width: 900px) {
+            .options-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .option-scrollspy {
+                display: none;
+            }
+        }
+
+        .option-scrollspy {
+            position: sticky;
+            top: 90px;
+            max-height: calc(100vh - 110px);
+            overflow-y: hidden;
+            overflow-x: hidden;
+        }
+
+        .option-scrollspy:hover {
+            overflow-y: auto;
+        }
+
+        .option-scrollspy::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .option-scrollspy::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 999px;
+        }
     </style>
 @endsection
 
@@ -292,171 +354,195 @@
             @csrf
             @method('PUT')
 
-            <div class="option-group-list">
-                @foreach ($groups as $group)
-                    <div class="option-group-card" data-group-id="{{ $group->option_group_id }}">
-                        <div class="option-group-header">
-                            <div class="option-group-title-wrap">
-                                <span class="group-drag-handle" title="Drag group">☰</span>
+            <div class="options-layout">
+                <div class="option-group-list">
+                    @foreach ($groups as $group)
+                        <div class="option-group-card" id="option-group-{{ $group->option_group_id }}"
+                            data-group-id="{{ $group->option_group_id }}">
+                            <div class="option-group-header">
+                                <div class="option-group-title-wrap">
+                                    <span class="group-drag-handle" title="Drag group">☰</span>
 
-                                <div>
-                                    <h3>{{ $group->group_name }} ({{ $group->group_code }})</h3>
-                                    <span>{{ $group->options->count() }} options</span>
-                                </div>
-                            </div>
-
-                            <div class="option-group-actions" style="display: flex; gap: 8px;">
-                                <button type="button" class="btn-outline btn-select-all" style="min-height: 28px; padding: 4px 10px; font-size: 12px; border-radius: 6px;">
-                                    {{ __('messages.admin.select_all') }}
-                                </button>
-                                <button type="button" class="btn-outline btn-deselect-all" style="min-height: 28px; padding: 4px 10px; font-size: 12px; border-radius: 6px;">
-                                    {{ __('messages.admin.deselect_all') }}
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="option-list option-sortable-list">
-                            @forelse ($group->options as $index => $option)
-                                @php
-                                    $isChecked = in_array((int) $option->option_id, $assignedOptionIds);
-                                    $pivot = $assignedPivot[$option->option_id]->pivot ?? null;
-                                    $isExtra = ($index >= 4) && !$isChecked;
-                                @endphp
-
-                                <div class="option-row {{ $isExtra ? 'option-row-extra' : '' }}" data-option-id="{{ $option->option_id }}" style="{{ $isExtra ? 'display: none;' : '' }}">
-                                    <div class="option-row-top">
-                                        <span class="option-drag-handle" title="Drag option">☰</span>
-
-                                        <label class="option-main-check">
-
-                                            <input type="checkbox" class="option-checkbox"
-                                                data-option-id="{{ $option->option_id }}" {{ $isChecked ? 'checked' : '' }}>
-
-                                            <span>
-                                                {{ $option->option_name }}
-
-                                                @if ($option->additional_price > 0)
-                                                    <small>
-                                                        +{{ number_format($option->additional_price, 2) }}
-                                                    </small>
-                                                @endif
-                                            </span>
-                                        </label>
-
-
-                                    </div>
-
-                                    <div class="option-setting option-setting-{{ $option->option_id }}"
-                                        style="{{ $isChecked ? '' : 'display:none;' }}">
-                                        <input type="hidden" name="options[{{ $option->option_id }}][option_id]"
-                                            value="{{ $option->option_id }}" {{ $isChecked ? '' : 'disabled' }}>
-
-                                        <div class="option-setting-grid option-setting-grid-qty">
-                                            <input type="hidden" class="option-sort-input"
-                                                name="options[{{ $option->option_id }}][sort_order]"
-                                                value="{{ $pivot->sort_order ?? $loop->iteration }}"
-                                                {{ $isChecked ? '' : 'disabled' }}>
-
-                                            <label class="mini-check">
-                                                <input type="checkbox" name="options[{{ $option->option_id }}][is_default]"
-                                                    value="1" {{ $pivot && $pivot->is_default ? 'checked' : '' }}
-                                                    {{ $isChecked ? '' : 'disabled' }}>
-                                                Default
-                                            </label>
-
-                                            <label class="mini-check">
-                                                <input type="checkbox" name="options[{{ $option->option_id }}][is_active]"
-                                                    value="1" {{ !$pivot || $pivot->is_active ? 'checked' : '' }}
-                                                    {{ $isChecked ? '' : 'disabled' }}>
-                                                Active
-                                            </label>
-
-                                            <label>
-                                                Quantity Rule
-                                                <select name="options[{{ $option->option_id }}][qty_rule_type]"
-                                                    class="qty-rule-select" {{ $isChecked ? '' : 'disabled' }}>
-                                                    <option value=""
-                                                        {{ empty($pivot?->qty_rule_type) ? 'selected' : '' }}>
-                                                        No limit
-                                                    </option>
-                                                    <option value="min"
-                                                        {{ ($pivot?->qty_rule_type ?? '') === 'min' ? 'selected' : '' }}>
-                                                        Minimum only
-                                                    </option>
-                                                    <option value="max"
-                                                        {{ ($pivot?->qty_rule_type ?? '') === 'max' ? 'selected' : '' }}>
-                                                        Maximum only
-                                                    </option>
-                                                    <option value="exact"
-                                                        {{ ($pivot?->qty_rule_type ?? '') === 'exact' ? 'selected' : '' }}>
-                                                        Exact quantity only
-                                                    </option>
-                                                    <option value="range"
-                                                        {{ ($pivot?->qty_rule_type ?? '') === 'range' ? 'selected' : '' }}>
-                                                        Min - Max range
-                                                    </option>
-                                                </select>
-                                            </label>
-
-                                            <label>
-                                                Min Qty
-                                                <input type="number" name="options[{{ $option->option_id }}][min_qty]"
-                                                    value="{{ $pivot->min_qty ?? '' }}" min="1"
-                                                    {{ $isChecked ? '' : 'disabled' }}>
-                                            </label>
-
-                                            <label>
-                                                Max Qty
-                                                <input type="number" name="options[{{ $option->option_id }}][max_qty]"
-                                                    value="{{ $pivot->max_qty ?? '' }}" min="1"
-                                                    {{ $isChecked ? '' : 'disabled' }}>
-                                            </label>
-
-                                            <label>
-                                                Exact Qty
-                                                <input type="number" name="options[{{ $option->option_id }}][exact_qty]"
-                                                    value="{{ $pivot->exact_qty ?? '' }}" min="1"
-                                                    {{ $isChecked ? '' : 'disabled' }}>
-                                            </label>
-                                        </div>
+                                    <div>
+                                        <h3>{{ $group->group_name }} ({{ $group->group_code }})</h3>
+                                        <span>{{ $group->options->count() }} options</span>
                                     </div>
                                 </div>
-                            @empty
-                                <p class="muted-text">No options in this group.</p>
-                            @endforelse
 
-                            @php
-                                $extraCount = 0;
-                                foreach ($group->options as $index => $opt) {
-                                    $isOptChecked = in_array((int) $opt->option_id, $assignedOptionIds);
-                                    if ($index >= 4 && !$isOptChecked) {
-                                        $extraCount++;
-                                    }
-                                }
-                            @endphp
-
-                            @if ($extraCount > 0)
-                                <div class="show-more-wrapper" style="padding: 12px 0; text-align: center; border-top: 1px dashed var(--border);">
-                                    <button type="button" class="btn-outline btn-toggle-more" data-expanded="false" data-total-count="{{ $group->options->count() }}" style="min-height: 32px; padding: 6px 14px; font-size: 13px; border-radius: 6px;">
-                                        {{ __('messages.admin.show_all') }} ({{ $group->options->count() }})
+                                <div class="option-group-actions" style="display: flex; gap: 8px;">
+                                    <button type="button" class="btn-outline btn-select-all"
+                                        style="min-height: 28px; padding: 4px 10px; font-size: 12px; border-radius: 6px;">
+                                        {{ __('messages.admin.select_all') }}
+                                    </button>
+                                    <button type="button" class="btn-outline btn-deselect-all"
+                                        style="min-height: 28px; padding: 4px 10px; font-size: 12px; border-radius: 6px;">
+                                        {{ __('messages.admin.deselect_all') }}
                                     </button>
                                 </div>
-                            @endif
+                            </div>
+
+                            <div class="option-list option-sortable-list">
+                                @forelse ($group->options as $index => $option)
+                                    @php
+                                        $isChecked = in_array((int) $option->option_id, $assignedOptionIds);
+                                        $pivot = $assignedPivot[$option->option_id]->pivot ?? null;
+                                        $isExtra = $index >= 4 && !$isChecked;
+                                    @endphp
+
+                                    <div class="option-row {{ $isExtra ? 'option-row-extra' : '' }}"
+                                        data-option-id="{{ $option->option_id }}"
+                                        style="{{ $isExtra ? 'display: none;' : '' }}">
+                                        <div class="option-row-top">
+                                            <span class="option-drag-handle" title="Drag option">☰</span>
+
+                                            <label class="option-main-check">
+
+                                                <input type="checkbox" class="option-checkbox"
+                                                    data-option-id="{{ $option->option_id }}"
+                                                    {{ $isChecked ? 'checked' : '' }}>
+
+                                                <span>
+                                                    {{ $option->option_name }}
+
+                                                    @if ($option->additional_price > 0)
+                                                        <small>
+                                                            +{{ number_format($option->additional_price, 2) }}
+                                                        </small>
+                                                    @endif
+                                                </span>
+                                            </label>
+
+
+                                        </div>
+
+                                        <div class="option-setting option-setting-{{ $option->option_id }}"
+                                            style="{{ $isChecked ? '' : 'display:none;' }}">
+                                            <input type="hidden" name="options[{{ $option->option_id }}][option_id]"
+                                                value="{{ $option->option_id }}" {{ $isChecked ? '' : 'disabled' }}>
+
+                                            <div class="option-setting-grid option-setting-grid-qty">
+                                                <input type="hidden" class="option-sort-input"
+                                                    name="options[{{ $option->option_id }}][sort_order]"
+                                                    value="{{ $pivot->sort_order ?? $loop->iteration }}"
+                                                    {{ $isChecked ? '' : 'disabled' }}>
+
+                                                <label class="mini-check">
+                                                    <input type="checkbox"
+                                                        name="options[{{ $option->option_id }}][is_default]" value="1"
+                                                        {{ $pivot && $pivot->is_default ? 'checked' : '' }}
+                                                        {{ $isChecked ? '' : 'disabled' }}>
+                                                    Default
+                                                </label>
+
+                                                <label class="mini-check">
+                                                    <input type="checkbox"
+                                                        name="options[{{ $option->option_id }}][is_active]" value="1"
+                                                        {{ !$pivot || $pivot->is_active ? 'checked' : '' }}
+                                                        {{ $isChecked ? '' : 'disabled' }}>
+                                                    Active
+                                                </label>
+
+                                                <label>
+                                                    Quantity Rule
+                                                    <select name="options[{{ $option->option_id }}][qty_rule_type]"
+                                                        class="qty-rule-select" {{ $isChecked ? '' : 'disabled' }}>
+                                                        <option value=""
+                                                            {{ empty($pivot?->qty_rule_type) ? 'selected' : '' }}>
+                                                            No limit
+                                                        </option>
+                                                        <option value="min"
+                                                            {{ ($pivot?->qty_rule_type ?? '') === 'min' ? 'selected' : '' }}>
+                                                            Minimum only
+                                                        </option>
+                                                        <option value="max"
+                                                            {{ ($pivot?->qty_rule_type ?? '') === 'max' ? 'selected' : '' }}>
+                                                            Maximum only
+                                                        </option>
+                                                        <option value="exact"
+                                                            {{ ($pivot?->qty_rule_type ?? '') === 'exact' ? 'selected' : '' }}>
+                                                            Exact quantity only
+                                                        </option>
+                                                        <option value="range"
+                                                            {{ ($pivot?->qty_rule_type ?? '') === 'range' ? 'selected' : '' }}>
+                                                            Min - Max range
+                                                        </option>
+                                                    </select>
+                                                </label>
+
+                                                <label>
+                                                    Min Qty
+                                                    <input type="number" name="options[{{ $option->option_id }}][min_qty]"
+                                                        value="{{ $pivot->min_qty ?? '' }}" min="1"
+                                                        {{ $isChecked ? '' : 'disabled' }}>
+                                                </label>
+
+                                                <label>
+                                                    Max Qty
+                                                    <input type="number" name="options[{{ $option->option_id }}][max_qty]"
+                                                        value="{{ $pivot->max_qty ?? '' }}" min="1"
+                                                        {{ $isChecked ? '' : 'disabled' }}>
+                                                </label>
+
+                                                <label>
+                                                    Exact Qty
+                                                    <input type="number"
+                                                        name="options[{{ $option->option_id }}][exact_qty]"
+                                                        value="{{ $pivot->exact_qty ?? '' }}" min="1"
+                                                        {{ $isChecked ? '' : 'disabled' }}>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @empty
+                                    <p class="muted-text">No options in this group.</p>
+                                @endforelse
+
+                                @php
+                                    $extraCount = 0;
+                                    foreach ($group->options as $index => $opt) {
+                                        $isOptChecked = in_array((int) $opt->option_id, $assignedOptionIds);
+                                        if ($index >= 4 && !$isOptChecked) {
+                                            $extraCount++;
+                                        }
+                                    }
+                                @endphp
+
+                                @if ($extraCount > 0)
+                                    <div class="show-more-wrapper"
+                                        style="padding: 12px 0; text-align: center; border-top: 1px dashed var(--border);">
+                                        <button type="button" class="btn-outline btn-toggle-more" data-expanded="false"
+                                            data-total-count="{{ $group->options->count() }}"
+                                            style="min-height: 32px; padding: 6px 14px; font-size: 13px; border-radius: 6px;">
+                                            {{ __('messages.admin.show_all') }} ({{ $group->options->count() }})
+                                        </button>
+                                    </div>
+                                @endif
+                            </div>
                         </div>
-                    </div>
-                @endforeach
+                    @endforeach
+                </div>
+
+                <nav class="option-scrollspy">
+                    @foreach ($groups as $group)
+                        <a href="#option-group-{{ $group->option_group_id }}">
+                            {{ $group->group_name }}
+                        </a>
+                    @endforeach
+                </nav>
             </div>
 
-            <div class="form-actions">
-                <a href="{{ route('admin.products.index') }}" class="btn-outline">
-                    Cancel
-                </a>
+    </div>
 
-                <button type="submit" class="btn-primary">
-                    Save Options
-                </button>
-            </div>
-        </form>
+    <div class="form-actions">
+        <a href="{{ route('admin.products.index') }}" class="btn-outline">
+            Cancel
+        </a>
+
+        <button type="submit" class="btn-primary">
+            Save Options
+        </button>
+    </div>
+    </form>
     </div>
 
     <script>
@@ -638,5 +724,52 @@
             });
         }
     </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sections = document.querySelectorAll('.option-group-card[id]');
+            const navLinks = document.querySelectorAll('.option-scrollspy a');
 
+            function setActiveLink() {
+                let currentId = '';
+
+                sections.forEach(function(section) {
+                    const rect = section.getBoundingClientRect();
+
+                    if (rect.top <= 120) {
+                        currentId = section.id;
+                    }
+                });
+
+                navLinks.forEach(function(link) {
+                    link.classList.remove('active');
+
+                    if (link.getAttribute('href') === '#' + currentId) {
+                        link.classList.add('active');
+                    }
+                });
+            }
+
+            navLinks.forEach(function(link) {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+
+                    const target = document.querySelector(this.getAttribute('href'));
+
+                    if (!target) return;
+
+                    const headerOffset = 100;
+                    const targetPosition = target.getBoundingClientRect().top + window.pageYOffset -
+                        headerOffset;
+
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+            window.addEventListener('scroll', setActiveLink);
+            setActiveLink();
+        });
+    </script>
 @endsection
