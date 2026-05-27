@@ -953,16 +953,16 @@
         }
 
         /* .customize-option-group.has-error h2 {
-                                                                                                                                        color: #dc2626;
-                                                                                                                                    } */
+                                                                                                                                            color: #dc2626;
+                                                                                                                                        } */
 
         /* .customize-option-group.has-error .option-button-item,
-                                                                                                                                    .customize-option-group.has-error .option-image-card,
-                                                                                                                                    .customize-option-group.has-error .option-variant-card,
-                                                                                                                                    .customize-option-group.has-error .option-compact-card,
-                                                                                                                                    .customize-option-group.has-error .option-select-detail {
-                                                                                                                                        border-color: #dc2626;
-                                                                                                                                    } */
+                                                                                                                                        .customize-option-group.has-error .option-image-card,
+                                                                                                                                        .customize-option-group.has-error .option-variant-card,
+                                                                                                                                        .customize-option-group.has-error .option-compact-card,
+                                                                                                                                        .customize-option-group.has-error .option-select-detail {
+                                                                                                                                            border-color: #dc2626;
+                                                                                                                                        } */
         .previous-order-box {
             max-width: 620px;
         }
@@ -1021,8 +1021,8 @@
         }
 
         /* =========================
-                                                                                                               STEP FOCUS / OVERLAY MODE
-                                                                                                            ========================= */
+                                                                                                                   STEP FOCUS / OVERLAY MODE
+                                                                                                                ========================= */
 
         .customize-option-group {
             position: relative;
@@ -1878,9 +1878,8 @@
                             <div class="quantity-label-row">
                                 <label for="quantity">{{ __('product.product_detail.Quantity') }}</label>
 
-                                <span class="minimum-note" id="quantity-rule-message"
-                                    data-default-text="** {{ __('product.product_detail.minimum_order') }} **">
-                                    ** {{ __('product.product_detail.minimum_order') }} **
+                                <span class="minimum-note" id="quantity-rule-message" data-default-text="">
+
                                 </span>
                             </div>
 
