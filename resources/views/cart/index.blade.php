@@ -423,34 +423,41 @@
             background: #255fac;
             color: #fff;
         }
-         @media (max-width: 768px) {
-             .cart-summary-title {
-            font-size: 16px;
-            
-        }
-        .summary-total {
-    font-size: 16px;
-}
-.cart-checkout-btn {
-    padding: 6px 12px;
-}
-.btn-outline-secondary {
 
-    border-radius: 50px;
-}
+        @media (max-width: 768px) {
+            .cart-summary-title {
+                font-size: 16px;
+
+            }
+
+            .summary-total {
+                font-size: 16px;
+            }
+
+            .cart-checkout-btn {
+                padding: 6px 12px;
+            }
+
+            .btn-outline-secondary {
+
+                border-radius: 50px;
+            }
+
             .cart-product-name {
-    font-size: 14px;
- 
-}
-.cart-icon-link img {
-    width: 18px;
-  
-}
-.cart-delete-btn img {
-    width: 15px;
-  
-}
-         }
+                font-size: 14px;
+
+            }
+
+            .cart-icon-link img {
+                width: 18px;
+
+            }
+
+            .cart-delete-btn img {
+                width: 15px;
+
+            }
+        }
     </style>
 @endsection
 @section('content')
@@ -520,6 +527,65 @@
                                             $displayUnitPrice = $quantity > 0 ? $itemTotal / $quantity : 0;
                                             $options = $item['options'] ?? [];
                                             $customColors = $item['custom_colors'] ?? [];
+
+                                            $qtyRuleType = null;
+                                            $minQty = 1;
+                                            $maxQty = null;
+                                            $exactQty = null;
+                                            $qtyRuleMessage = null;
+
+                                            foreach ($options as $opt) {
+                                                $ruleType = $opt['qty_rule_type'] ?? null;
+
+                                                if (!$ruleType) {
+                                                    continue;
+                                                }
+
+                                                if ($ruleType === 'exact' && !empty($opt['exact_qty'])) {
+                                                    $qtyRuleType = 'exact';
+                                                    $exactQty = (int) $opt['exact_qty'];
+                                                    $minQty = $exactQty;
+                                                    $maxQty = $exactQty;
+                                                    $qtyRuleMessage = 'Quantity fixed at ' . $exactQty . ' pcs.';
+                                                    break;
+                                                }
+
+                                                if ($ruleType === 'range') {
+                                                    $qtyRuleType = 'range';
+
+                                                    if (!empty($opt['min_qty'])) {
+                                                        $minQty = max($minQty, (int) $opt['min_qty']);
+                                                    }
+
+                                                    if (!empty($opt['max_qty'])) {
+                                                        $maxQty = $maxQty
+                                                            ? min($maxQty, (int) $opt['max_qty'])
+                                                            : (int) $opt['max_qty'];
+                                                    }
+
+                                                    $qtyRuleMessage =
+                                                        'Quantity must be between ' .
+                                                        $minQty .
+                                                        ' - ' .
+                                                        $maxQty .
+                                                        ' pcs.';
+                                                }
+
+                                                if ($ruleType === 'min' && !empty($opt['min_qty'])) {
+                                                    $qtyRuleType = 'min';
+                                                    $minQty = max($minQty, (int) $opt['min_qty']);
+                                                    $qtyRuleMessage = 'Minimum quantity is ' . $minQty . ' pcs.';
+                                                }
+
+                                                if ($ruleType === 'max' && !empty($opt['max_qty'])) {
+                                                    $qtyRuleType = 'max';
+                                                    $maxQty = $maxQty
+                                                        ? min($maxQty, (int) $opt['max_qty'])
+                                                        : (int) $opt['max_qty'];
+
+                                                    $qtyRuleMessage = 'Maximum quantity is ' . $maxQty . ' pcs.';
+                                                }
+                                            }
                                         @endphp
 
                                         <div class="cart-card mb-3" data-cart-item-id="{{ $cartItemId }}"
@@ -569,16 +635,30 @@
                                                                         <input type="hidden" name="cart_item_id"
                                                                             value="{{ $cartItemId }}">
 
-                                                                        <button type="button"
-                                                                            class="qty-btn qty-minus">-</button>
+                                                                        <button type="button" class="qty-btn qty-minus"
+                                                                            {{ $quantity <= $minQty || $qtyRuleType === 'exact' ? 'disabled' : '' }}>
+                                                                            -
+                                                                        </button>
 
                                                                         <input type="number" name="quantity"
                                                                             class="qty-input" value="{{ $quantity }}"
-                                                                            min="1">
+                                                                            min="{{ $minQty }}"
+                                                                            @if ($maxQty) max="{{ $maxQty }}" @endif
+                                                                            data-min="{{ $minQty }}"
+                                                                            data-max="{{ $maxQty ?? '' }}"
+                                                                            data-exact="{{ $exactQty ?? '' }}"
+                                                                            {{ $qtyRuleType === 'exact' ? 'readonly' : '' }}>
 
-                                                                        <button type="button"
-                                                                            class="qty-btn qty-plus">+</button>
+                                                                        <button type="button" class="qty-btn qty-plus"
+                                                                            {{ ($maxQty && $quantity >= $maxQty) || $qtyRuleType === 'exact' ? 'disabled' : '' }}>
+                                                                            +
+                                                                        </button>
                                                                     </form>
+                                                                    @if ($qtyRuleMessage)
+                                                                        <div class="small text-danger mt-1">
+                                                                            {{ $qtyRuleMessage }}
+                                                                        </div>
+                                                                    @endif
                                                                 </div>
                                                             </div>
 
@@ -587,7 +667,8 @@
                                                                 <div class="cart-unit-price">¥
                                                                     {{ number_format($displayUnitPrice, 2) }} /un</div>
 
-                                                                <div class="small text-muted mt-2">{!! __('product.cart.total_item') !!}</div>
+                                                                <div class="small text-muted mt-2">{!! __('product.cart.total_item') !!}
+                                                                </div>
                                                                 <div class="cart-item-total-text">¥
                                                                     {{ number_format($itemTotal, 2) }}</div>
                                                             </div>
@@ -736,7 +817,8 @@
 
                             <div class="summary-line">
                                 <span>{!! __('product.cart.items') !!} :</span>
-                                <strong><span id="summaryItems">{{ $totalItems }}</span> {!! __('product.cart.products') !!}</strong>
+                                <strong><span id="summaryItems">{{ $totalItems }}</span>
+                                    {!! __('product.cart.products') !!}</strong>
                             </div>
 
                             <div class="summary-line">
@@ -770,16 +852,17 @@
 
                             <div class="coupon-box mt-3">
                                 <div class="input-group">
-                                    <input type="text" class="form-control" placeholder="{{ __('product.cart.coupon') }}" aria-label="Coupon code">
+                                    <input type="text" class="form-control"
+                                        placeholder="{{ __('product.cart.coupon') }}" aria-label="Coupon code">
                                     <button class="btn btn-primary" type="button">›</button>
                                 </div>
                             </div>
 
                             <div class="d-grid gap-2 mt-4">
-                               <a href="{{ auth()->check() ? route('checkout.index') : route('checkout.authChoice') }}"
-    class="btn btn-primary cart-checkout-btn">
+                                <a href="{{ auth()->check() ? route('checkout.index') : route('checkout.authChoice') }}"
+                                    class="btn btn-primary cart-checkout-btn">
                                     {!! __('product.cart.checkout') !!}
-</a>
+                                </a>
                                 <a href="{{ route('products.index') }}" class="btn btn-outline-secondary">
                                     {!! __('product.cart.continue_shopping') !!}
                                 </a>
@@ -887,36 +970,118 @@
                 });
             });
 
-            document.querySelectorAll('.qty-minus').forEach(function(button) {
-                button.addEventListener('click', function() {
-                    const form = this.closest('.cart-qty-form');
-                    const input = form.querySelector('.qty-input');
-                    let value = parseInt(input.value || 1);
-                    if (value > 1) {
-                        input.value = value - 1;
+            document.querySelectorAll('.cart-qty-form').forEach(function(form) {
+                const minusBtn = form.querySelector('.qty-minus');
+                const plusBtn = form.querySelector('.qty-plus');
+                const input = form.querySelector('.qty-input');
+
+                if (!input) {
+                    return;
+                }
+
+                function getMin() {
+                    return parseInt(input.dataset.min || input.min || 1);
+                }
+
+                function getMax() {
+                    return input.dataset.max ? parseInt(input.dataset.max) : null;
+                }
+
+                function getExact() {
+                    return input.dataset.exact ? parseInt(input.dataset.exact) : null;
+                }
+
+                function updateButtons() {
+                    const value = parseInt(input.value || 0);
+                    const min = getMin();
+                    const max = getMax();
+                    const exact = getExact();
+
+                    if (minusBtn) {
+                        minusBtn.disabled = !!exact || value <= min;
+                    }
+
+                    if (plusBtn) {
+                        plusBtn.disabled = !!exact || (max !== null && value >= max);
+                    }
+                }
+
+                if (minusBtn) {
+                    minusBtn.addEventListener('click', function() {
+                        const min = getMin();
+                        const exact = getExact();
+
+                        if (exact) {
+                            input.value = exact;
+                            updateButtons();
+                            return;
+                        }
+
+                        let value = parseInt(input.value || min);
+                        value = Math.max(min, value - 1);
+
+                        input.value = value;
+                        updateButtons();
                         form.submit();
-                    }
-                });
-            });
+                    });
+                }
 
-            document.querySelectorAll('.qty-plus').forEach(function(button) {
-                button.addEventListener('click', function() {
-                    const form = this.closest('.cart-qty-form');
-                    const input = form.querySelector('.qty-input');
-                    let value = parseInt(input.value || 1);
-                    input.value = value + 1;
-                    form.submit();
-                });
-            });
+                if (plusBtn) {
+                    plusBtn.addEventListener('click', function() {
+                        const max = getMax();
+                        const exact = getExact();
 
-            document.querySelectorAll('.qty-input').forEach(function(input) {
+                        if (exact) {
+                            input.value = exact;
+                            updateButtons();
+                            return;
+                        }
+
+                        let value = parseInt(input.value || getMin());
+
+                        if (max !== null && value >= max) {
+                            input.value = max;
+                            updateButtons();
+                            return;
+                        }
+
+                        value = value + 1;
+
+                        if (max !== null && value > max) {
+                            value = max;
+                        }
+
+                        input.value = value;
+                        updateButtons();
+                        form.submit();
+                    });
+                }
+
                 input.addEventListener('change', function() {
-                    const form = this.closest('.cart-qty-form');
-                    if (parseInt(this.value || 0) < 1) {
-                        this.value = 1;
+                    const min = getMin();
+                    const max = getMax();
+                    const exact = getExact();
+
+                    let value = parseInt(input.value || min);
+
+                    if (exact) {
+                        value = exact;
                     }
+
+                    if (value < min) {
+                        value = min;
+                    }
+
+                    if (max !== null && value > max) {
+                        value = max;
+                    }
+
+                    input.value = value;
+                    updateButtons();
                     form.submit();
                 });
+
+                updateButtons();
             });
 
             updateSummary();
