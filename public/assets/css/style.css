@@ -5442,6 +5442,10 @@ body {
     font-weight: 500;
 }
 
+main {
+    overflow: hidden;
+}
+
 @keyframes announcementMarquee {
     from {
         transform: translateX(0);
