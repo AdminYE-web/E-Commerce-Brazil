@@ -272,7 +272,10 @@
         .option-scrollspy {
             position: sticky;
             top: 90px;
-            /* ปรับตามความสูง header */
+            max-height: calc(100vh - 110px);
+            overflow-y: auto;
+            overflow-x: hidden;
+
             background: #fff;
             border: 1px solid var(--border);
             border-radius: 12px;
@@ -376,6 +379,20 @@
 
         .option-list {
             cursor: default;
+        }
+
+
+
+        .option-scrollspy {
+            position: sticky;
+            top: 90px;
+            max-height: calc(100vh - 110px);
+            overflow-y: auto;
+            overflow-x: hidden;
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 10px;
         }
     </style>
 @endsection
@@ -783,6 +800,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             const sections = document.querySelectorAll('.option-group-card[id]');
             const navLinks = document.querySelectorAll('.option-scrollspy a');
+            const sidebar = document.querySelector('.option-scrollspy');
 
             function setActiveLink() {
                 let currentId = '';
@@ -790,7 +808,7 @@
                 sections.forEach(function(section) {
                     const rect = section.getBoundingClientRect();
 
-                    if (rect.top <= 120) {
+                    if (rect.top <= 140) {
                         currentId = section.id;
                     }
                 });
@@ -800,6 +818,16 @@
 
                     if (link.getAttribute('href') === '#' + currentId) {
                         link.classList.add('active');
+
+                        if (sidebar) {
+                            const targetScroll =
+                                link.offsetTop - (sidebar.clientHeight / 2) + (link.offsetHeight / 2);
+
+                            sidebar.scrollTo({
+                                top: targetScroll,
+                                behavior: 'smooth'
+                            });
+                        }
                     }
                 });
             }
@@ -809,12 +837,11 @@
                     e.preventDefault();
 
                     const target = document.querySelector(this.getAttribute('href'));
-
                     if (!target) return;
 
                     const headerOffset = 100;
-                    const targetPosition = target.getBoundingClientRect().top + window.pageYOffset -
-                        headerOffset;
+                    const targetPosition =
+                        target.getBoundingClientRect().top + window.pageYOffset - headerOffset;
 
                     window.scrollTo({
                         top: targetPosition,
