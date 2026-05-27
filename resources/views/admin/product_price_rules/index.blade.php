@@ -190,6 +190,11 @@
             opacity: .45;
             pointer-events: none;
         }
+
+        .pagination .page-item:first-child,
+        .pagination .page-item:last-child {
+            display: none;
+        }
     </style>
 @endsection
 @section('content')
@@ -323,7 +328,7 @@
         </table>
 
         <div class="pagination-container">
-            {{ $rules->links() }}
+            {{ $rules->links('pagination::bootstrap-5') }}
         </div>
     </div>
 
