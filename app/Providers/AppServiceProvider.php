@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+
+use Illuminate\Support\Facades\View;
+use App\Models\Product;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Pagination\Paginator;
 
@@ -12,7 +15,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->bind('path.public', function() {
+        $this->app->bind('path.public', function () {
             return base_path();
         });
     }
@@ -20,9 +23,74 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-   public function boot(): void
-{
-    Paginator::useBootstrapFive();
-}
-    
+    public function boot(): void
+    {
+        View::composer('partials.header', function ($view) {
+            $langKey = session('locale', app()->getLocale());
+            $fallbackLang = 'pt';
+
+            $megaType1Products = Product::query()
+                ->where('product_type', 1)
+                ->where('language', $langKey)
+                ->where('is_active', 1)
+                ->orderBy('product_name')
+                ->limit(12)
+                ->get();
+
+            $megaType2Products = Product::query()
+                ->where('product_type', 2)
+                ->where('language', $langKey)
+                ->where('is_active', 1)
+                ->orderBy('product_name')
+                ->limit(12)
+                ->get();
+
+            // fallback ถ้าภาษาปัจจุบันไม่มีสินค้า
+            if ($megaType1Products->isEmpty() && $langKey !== $fallbackLang) {
+                $megaType1Products = Product::query()
+                    ->where('product_type', 1)
+                    ->where('language', $fallbackLang)
+                    ->where('is_active', 1)
+                    ->orderBy('product_name')
+                    ->limit(12)
+                    ->get();
+            }
+
+            if ($megaType2Products->isEmpty() && $langKey !== $fallbackLang) {
+                $megaType2Products = Product::query()
+                    ->where('product_type', 2)
+                    ->where('language', $fallbackLang)
+                    ->where('is_active', 1)
+                    ->orderBy('product_name')
+                    ->limit(12)
+                    ->get();
+            }
+            $megaRecommendType1Products = Product::query()
+                ->with(['mainImage', 'detail'])
+                ->where('product_type', 1)
+                ->where('product_recomend', 1)
+                ->where('language', $langKey)
+                ->where('is_active', 1)
+                ->orderBy('product_name')
+                ->limit(1)
+                ->get();
+            $megaRecommendType2Products = Product::query()
+                ->with(['mainImage', 'detail'])
+                ->where('product_type', 2)
+                ->where('product_recomend', 1)
+                ->where('language', $langKey)
+                ->where('is_active', 1)
+                ->orderBy('product_name')
+                ->limit(1)
+                ->get();
+
+            $view->with([
+                'megaType1Products' => $megaType1Products,
+                'megaType2Products' => $megaType2Products,
+                'megaRecommendType1Products' => $megaRecommendType1Products,
+                'megaRecommendType2Products' => $megaRecommendType2Products,
+
+            ]);
+        });
+    }
 }

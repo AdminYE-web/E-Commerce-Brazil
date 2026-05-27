@@ -2,10 +2,12 @@
     $currentLocale = app()->getLocale();
     $supportedLanguages = config('app.supported_locales', ['pt', 'ja', 'en']);
     $languageFlags = config('app.locale_flags', ['pt' => 'br', 'ja' => 'jp', 'en' => 'us']);
-    $currentLanguage = in_array($currentLocale, $supportedLanguages, true) ? $currentLocale : config('app.locale', 'pt');
+    $currentLanguage = in_array($currentLocale, $supportedLanguages, true)
+        ? $currentLocale
+        : config('app.locale', 'pt');
     $currentLanguageFlag = $languageFlags[$currentLanguage] ?? 'br';
 
-     $cart = session('cart', []);
+    $cart = session('cart', []);
     $cartCount = count($cart);
 @endphp
 
@@ -40,7 +42,9 @@
 
                     <li class="nav-item">
                         <button type="button" class="nav-link desktop-menu-toggle " data-target="lanyardMegaMenu">
-                            {{ __('messages.header.product') }}<img src="{{ asset('assets/images/icon/Polygon 28.png') }}" alt="" aria-hidden="true" class="desktop-menu-toggle-icon">
+                            {{ __('messages.header.product') }}<img
+                                src="{{ asset('assets/images/icon/Polygon 28.png') }}" alt="" aria-hidden="true"
+                                class="desktop-menu-toggle-icon">
                         </button>
                     </li>
 
@@ -68,15 +72,11 @@
                 </ul>
 
                 <!-- Search -->
-               <form class="search-box" action="{{ route('search.index') }}" method="GET">
-    <i class="bi bi-search search-icon"></i>
-    <input 
-        type="text" 
-        name="keyword" 
-        value="{{ request('keyword') }}"
-        placeholder="{{ __('messages.header.search') }}"
-    >
-</form>
+                <form class="search-box" action="{{ route('search.index') }}" method="GET">
+                    <i class="bi bi-search search-icon"></i>
+                    <input type="text" name="keyword" value="{{ request('keyword') }}"
+                        placeholder="{{ __('messages.header.search') }}">
+                </form>
 
                 <!-- Icons -->
                 <div class="header-icons">
@@ -85,14 +85,14 @@
                     </a>
 
                     <a href="{{ route('cart.index') }}" class="icon-link cart-icon-link">
-    <i class="bi bi-cart"></i>
+                        <i class="bi bi-cart"></i>
 
-    @if($cartCount > 0)
-        <span class="cart-count-badge">
-            {{ $cartCount > 99 ? '99+' : $cartCount }}
-        </span>
-    @endif
-</a>
+                        @if ($cartCount > 0)
+                            <span class="cart-count-badge">
+                                {{ $cartCount > 99 ? '99+' : $cartCount }}
+                            </span>
+                        @endif
+                    </a>
 
                     <div class="language-dropdown">
                         <button type="button" class="language-toggle">
@@ -102,7 +102,8 @@
 
                         <div class="language-menu">
                             @foreach ($supportedLanguages as $language)
-                                <a href="{{ route('language.switch', $language) }}" class="language-item {{ $currentLanguage === $language ? 'active' : '' }}">
+                                <a href="{{ route('language.switch', $language) }}"
+                                    class="language-item {{ $currentLanguage === $language ? 'active' : '' }}">
                                     <span class="fi fi-{{ $languageFlags[$language] ?? $language }} lang-flag"></span>
                                     <span>{{ __("messages.header.language.$language") }}</span>
                                 </a>
@@ -110,8 +111,9 @@
                         </div>
                     </div>
 
-                    <a href="{{ auth()->check() ? route('account.index') : route('login') }}" class="icon-link account-icon-link"
-                        aria-label="{{ __('messages.footer.account') }}" title="{{ __('messages.footer.account') }}">
+                    <a href="{{ auth()->check() ? route('account.index') : route('login') }}"
+                        class="icon-link account-icon-link" aria-label="{{ __('messages.footer.account') }}"
+                        title="{{ __('messages.footer.account') }}">
                         <img src="{{ asset('assets/images/icon/account-icon.png') }}" alt="">
                     </a>
                 </div>
@@ -129,58 +131,131 @@
                     <div class="mega-menu-col">
                         <div class="mega-menu-title">{{ __('messages.header.mega.printed_lanyards') }}</div>
                         <ul class="mega-menu-list">
-                            <li><a href="#">{{ __('messages.header.mega.polyester_lanyards') }}</a></li>
-                            <li><a href="#">{{ __('messages.header.mega.nylon_lanyards') }}</a></li>
-                            <li><a href="#">{{ __('messages.header.mega.pu_leather_lanyards') }}</a></li>
-                            <li><a href="#">{{ __('messages.header.mega.sublimation_lanyards') }}</a></li>
-                            <li><a href="#">{{ __('messages.header.mega.reflector_lanyards') }}</a></li>
-                            <li><a href="#">{{ __('messages.header.mega.premium_lanyards') }}</a></li>
-                            <li><a href="#">{{ __('messages.header.mega.jacquard_lanyards') }}</a></li>
-                            <li><a href="#">{{ __('messages.header.mega.yoyo_badge_lanyard') }}</a></li>
-                            <li><a href="#">{{ __('messages.header.mega.eco_friendly_lanyards') }}</a></li>
-                            <li><a href="#">{{ __('messages.header.mega.ready_to_use_lanyards') }}</a></li>
-                            <li><a href="#">{{ __('messages.header.mega.antibacterial_lanyards') }}</a></li>
+                            @forelse ($megaType1Products ?? [] as $megaProduct)
+                                <li>
+                                    <a href="{{ route('products.description', $megaProduct->product_code) }}">
+                                        {{ $megaProduct->product_name }}
+                                    </a>
+                                </li>
+                            @empty
+                                <li>
+                                    <a href="{{ route('products.index', ['type' => 1]) }}">
+                                        {{ __('messages.header.view_all') }}
+                                    </a>
+                                </li>
+                            @endforelse
                         </ul>
 
-                        <a href="{{ route('products.index') }}" class="mega-menu-view-all">{{ __('messages.header.view_all') }} <i class="bi bi-arrow-right"></i></a>
+                        <a href="{{ route('products.index') }}"
+                            class="mega-menu-view-all">{{ __('messages.header.view_all') }} <i
+                                class="bi bi-arrow-right"></i></a>
                     </div>
 
                     <!-- column 2 -->
                     <div class="mega-menu-col">
                         <div class="mega-menu-title">{{ __('messages.header.mega.blank_lanyards') }}</div>
                         <ul class="mega-menu-list">
-                            <li><a href="#">{{ __('messages.header.mega.polyester_lanyards_flag_red') }}</a></li>
-                            <li><a href="#">{{ __('messages.header.mega.polyester_lanyards_348c') }}</a></li>
-                            <li><a href="#">{{ __('messages.header.mega.polyester_lanyards_293c') }}</a></li>
+                            @forelse ($megaType2Products ?? [] as $megaProduct)
+                                <li>
+                                    <a href="{{ route('products.description', $megaProduct->product_code) }}">
+                                        {{ $megaProduct->product_name }}
+                                    </a>
+                                </li>
+                            @empty
+                                <li>
+                                    <a href="{{ route('products.index', ['type' => 2]) }}">
+                                        {{ __('messages.header.view_all') }}
+                                    </a>
+                                </li>
+                            @endforelse
                         </ul>
                     </div>
 
                     <!-- card 1 -->
-                    <div class="mega-product-card">
-                        <div class="mega-product-image">
-                            <img src="{{ asset('assets/images/home/lanyard-red.png') }}"
-                                alt="{{ __('messages.header.mega.polyester_lanyards_flag_red') }}">
+                    @forelse ($megaRecommendType1Products ?? [] as $megaProduct)
+                        @php
+                            $megaImage = null;
+
+                            if ($megaProduct->mainImage) {
+                                $megaImage = asset('storage/' . $megaProduct->mainImage->image_path);
+                            } elseif ($megaProduct->detail && $megaProduct->detail->sample_image) {
+                                $megaImage = asset('storage/' . $megaProduct->detail->sample_image);
+                            } else {
+                                $megaImage = asset('images/no-image.png');
+                            }
+                        @endphp
+
+                        <a href="{{ route('products.description', $megaProduct->product_code) }}"
+                            class="mega-product-card">
+                            <div class="mega-product-image">
+                                <img src="{{ $megaImage }}" alt="{{ $megaProduct->product_name }}">
+                            </div>
+
+                            <div class="mega-product-content">
+                                <h4>{{ $megaProduct->product_name }}</h4>
+
+                                @if (!empty($megaProduct->description))
+                                    <p>{{ Str::limit(strip_tags($megaProduct->description), 80) }}</p>
+                                @elseif ($megaProduct->detail && !empty($megaProduct->detail->description))
+                                    <p>{{ Str::limit(strip_tags($megaProduct->detail->description), 80) }}</p>
+                                @endif
+                            </div>
+                        </a>
+                    @empty
+                        <div class="mega-product-card">
+                            <div class="mega-product-image">
+                                <img src="{{ asset('images/no-image.png') }}" alt="No image">
+                            </div>
+
+                            <div class="mega-product-content">
+                                <h4>{{ __('messages.header.view_all') }}</h4>
+                                <p></p>
+                            </div>
                         </div>
-                        <div class="mega-product-content">
-                            <h4>{{ __('messages.header.mega.polyester_lanyards_flag_red_10mm') }}</h4>
-                            <p>
-                                {{ __('messages.header.mega.blank_lanyard_description') }}
-                            </p>
-                        </div>
-                    </div>
+                    @endforelse
 
                     <!-- card 2 -->
-                    <div class="mega-product-card">
-                        <div class="mega-product-image">
-                            <img src="{{ asset('assets/images/home/lanyard-orange.png') }}" alt="{{ __('messages.header.mega.polyester_lanyards') }}">
+                    @forelse ($megaRecommendType2Products ?? [] as $megaProduct)
+                        @php
+                            $megaImage = null;
+
+                            if ($megaProduct->mainImage) {
+                                $megaImage = asset('storage/' . $megaProduct->mainImage->image_path);
+                            } elseif ($megaProduct->detail && $megaProduct->detail->sample_image) {
+                                $megaImage = asset('storage/' . $megaProduct->detail->sample_image);
+                            } else {
+                                $megaImage = asset('images/no-image.png');
+                            }
+                        @endphp
+
+                        <a href="{{ route('products.description', $megaProduct->product_code) }}"
+                            class="mega-product-card">
+                            <div class="mega-product-image">
+                                <img src="{{ $megaImage }}" alt="{{ $megaProduct->product_name }}">
+                            </div>
+
+                            <div class="mega-product-content">
+                                <h4>{{ $megaProduct->product_name }}</h4>
+
+                                @if (!empty($megaProduct->description))
+                                    <p>{{ Str::limit(strip_tags($megaProduct->description), 80) }}</p>
+                                @elseif ($megaProduct->detail && !empty($megaProduct->detail->description))
+                                    <p>{{ Str::limit(strip_tags($megaProduct->detail->description), 80) }}</p>
+                                @endif
+                            </div>
+                        </a>
+                    @empty
+                        <div class="mega-product-card">
+                            <div class="mega-product-image">
+                                <img src="{{ asset('images/no-image.png') }}" alt="No image">
+                            </div>
+
+                            <div class="mega-product-content">
+                                <h4>{{ __('messages.header.view_all') }}</h4>
+                                <p></p>
+                            </div>
                         </div>
-                        <div class="mega-product-content">
-                            <h4>{{ __('messages.header.mega.polyester_lanyards') }}</h4>
-                            <p>
-                                {{ __('messages.header.mega.polyester_lanyard_description') }}
-                            </p>
-                        </div>
-                    </div>
+                    @endforelse
 
                 </div>
             </div>
@@ -193,17 +268,25 @@
                     <div class="mega-menu-col">
                         <div class="mega-menu-title">{{ __('messages.header.mega.id_case') }}</div>
                         <ul class="mega-menu-list">
-                            <li><a href="#">{{ __('messages.header.mega.soft_id_card_holder_horizontal_std_1') }}</a></li>
-                            <li><a href="#">{{ __('messages.header.mega.soft_id_card_holder_horizontal_std_2') }}</a></li>
-                            <li><a href="#">{{ __('messages.header.mega.soft_id_card_holder_horizontal_std_3') }}</a></li>
+                            <li><a
+                                    href="#">{{ __('messages.header.mega.soft_id_card_holder_horizontal_std_1') }}</a>
+                            </li>
+                            <li><a
+                                    href="#">{{ __('messages.header.mega.soft_id_card_holder_horizontal_std_2') }}</a>
+                            </li>
+                            <li><a
+                                    href="#">{{ __('messages.header.mega.soft_id_card_holder_horizontal_std_3') }}</a>
+                            </li>
                             <li><a href="#">{{ __('messages.header.mega.soft_id_card_holder_1n') }}</a></li>
                             <li><a href="#">{{ __('messages.header.mega.soft_id_card_holder_2n') }}</a></li>
                             <li><a href="#">{{ __('messages.header.mega.soft_id_card_holder_3n') }}</a></li>
                             <li><a href="#">{{ __('messages.header.mega.soft_id_card_holder_4n') }}</a></li>
                             <li><a href="#">{{ __('messages.header.mega.soft_id_card_holder_6n') }}</a></li>
                             <li><a href="#">{{ __('messages.header.mega.leather_badge_holder') }}</a></li>
-                            <li><a href="#">{{ __('messages.header.mega.rigid_frame_id_card_holder_f001') }}</a></li>
-                            <li><a href="#">{{ __('messages.header.mega.rigid_frame_id_card_holder_f002') }}</a></li>
+                            <li><a href="#">{{ __('messages.header.mega.rigid_frame_id_card_holder_f001') }}</a>
+                            </li>
+                            <li><a href="#">{{ __('messages.header.mega.rigid_frame_id_card_holder_f002') }}</a>
+                            </li>
                         </ul>
 
                         <a href="{{ route('products.index') }}" class="mega-menu-view-all">
@@ -256,7 +339,8 @@
                     <!-- Product card -->
                     <div class="mega-product-card other-product-card">
                         <div class="mega-product-image">
-                            <img src="{{ asset('assets/images/home/wrist-straps.png') }}" alt="{{ __('messages.header.mega.wrist_straps') }}">
+                            <img src="{{ asset('assets/images/home/wrist-straps.png') }}"
+                                alt="{{ __('messages.header.mega.wrist_straps') }}">
                         </div>
 
                         <div class="mega-product-content">
@@ -293,31 +377,28 @@
                     <i class="bi bi-envelope"></i>
                 </a>
                 <a href="{{ route('cart.index') }}" class="icon-link cart-icon-link">
-    <i class="bi bi-cart"></i>
+                    <i class="bi bi-cart"></i>
 
-    @if($cartCount > 0)
-        <span class="cart-count-badge">
-            {{ $cartCount > 99 ? '99+' : $cartCount }}
-        </span>
-    @endif
-</a>
-                <a href="{{ auth()->check() ? route('account.index') : route('login') }}" class="icon-link account-icon-link"
-                        aria-label="{{ __('messages.footer.account') }}" title="{{ __('messages.footer.account') }}">
-                        <img src="{{ asset('assets/images/icon/account-icon.png') }}" alt="">
-                    </a>
+                    @if ($cartCount > 0)
+                        <span class="cart-count-badge">
+                            {{ $cartCount > 99 ? '99+' : $cartCount }}
+                        </span>
+                    @endif
+                </a>
+                <a href="{{ auth()->check() ? route('account.index') : route('login') }}"
+                    class="icon-link account-icon-link" aria-label="{{ __('messages.footer.account') }}"
+                    title="{{ __('messages.footer.account') }}">
+                    <img src="{{ asset('assets/images/icon/account-icon.png') }}" alt="">
+                </a>
             </div>
         </div>
 
         <!-- Search -->
-       <form class="search-box mobile-search-box d-flex" action="{{ route('search.index') }}" method="GET">
-    <i class="bi bi-search search-icon"></i>
-    <input 
-        type="text" 
-        name="keyword" 
-        value="{{ request('keyword') }}"
-        placeholder="{{ __('messages.header.search') }}"
-    >
-</form>
+        <form class="search-box mobile-search-box d-flex" action="{{ route('search.index') }}" method="GET">
+            <i class="bi bi-search search-icon"></i>
+            <input type="text" name="keyword" value="{{ request('keyword') }}"
+                placeholder="{{ __('messages.header.search') }}">
+        </form>
     </div>
 
 </header>
@@ -360,14 +441,22 @@
                     </button>
                 </li>
 
-                <li><a href="#" class="mobile-menu-link"><span>{{ __('messages.header.track_order') }}</span></a></li>
-                <li><a href="#" class="mobile-menu-link"><span>{{ __('messages.header.gallery') }}</span></a></li>
-                <li><a href="#" class="mobile-menu-link"><span>{{ __('messages.header.blog') }}</span></a></li>
+                <li><a href="#"
+                        class="mobile-menu-link"><span>{{ __('messages.header.track_order') }}</span></a></li>
+                <li><a href="#" class="mobile-menu-link"><span>{{ __('messages.header.gallery') }}</span></a>
+                </li>
+                <li><a href="#" class="mobile-menu-link"><span>{{ __('messages.header.blog') }}</span></a>
+                </li>
                 <li><a href="#" class="mobile-menu-link"><span>{{ __('messages.header.faq') }}</span></a></li>
-                <li><a href="{{ route('about') }}" class="mobile-menu-link"><span>{{ __('messages.header.about_us') }}</span></a></li>
-                <li><a href="{{ route('contact') }}" class="mobile-menu-link"><span>{{ __('messages.header.contact_us') }}</span></a></li>
+                <li><a href="{{ route('about') }}"
+                        class="mobile-menu-link"><span>{{ __('messages.header.about_us') }}</span></a></li>
+                <li><a href="{{ route('contact') }}"
+                        class="mobile-menu-link"><span>{{ __('messages.header.contact_us') }}</span></a></li>
                 @foreach ($supportedLanguages as $language)
-                    <li><a href="{{ route('language.switch', $language) }}" class="mobile-menu-link {{ $currentLanguage === $language ? 'active' : '' }}"><span class="fi fi-{{ $languageFlags[$language] ?? $language }} lang-flag"></span><span>{{ __("messages.header.language.$language") }}</span></a></li>
+                    <li><a href="{{ route('language.switch', $language) }}"
+                            class="mobile-menu-link {{ $currentLanguage === $language ? 'active' : '' }}"><span
+                                class="fi fi-{{ $languageFlags[$language] ?? $language }} lang-flag"></span><span>{{ __("messages.header.language.$language") }}</span></a>
+                    </li>
                 @endforeach
             </ul>
         </div>

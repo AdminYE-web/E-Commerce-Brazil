@@ -223,8 +223,8 @@
     <div class="order-page-container">
 
         <div class="order-header">
-            <h1 class="header-title">How to order</h1>
-            <p class="header-subtitle">Start your custom order in just a few easy steps.</p>
+            <h1 class="header-title">Passos para Comprar</h1>
+            <p class="header-subtitle">Inicie seu pedido personalizado em apenas alguns passos simples.</p>
         </div>
 
         <div class="order-content-wrap">
@@ -234,15 +234,13 @@
 
                     <img src="{{ asset('assets/images/icon/fluent-mdl2_product-variant.png') }}" alt="Product Variant">
 
-                    <h2 class="step-title">Step 1 : Choose Your Product</h2>
+                    <h2 class="step-title">Passo 1 : Escolha e personalize seu produto</h2>
                 </div>
 
                 <div class="step-body-card">
-                    <p class="body-highlight">Choose Your Product</p>
-                    <p>Our website offers a wide variety of employee lanyards and customizable components.</p>
-                    <p>We provide 22 standard lanyard colors, optional special custom colors, and over 10 types of ID
-                        holders—some free when ordered with lanyards.</p>
-                    <a href="#" class="step-link">Click here to start your order.</a>
+                    <p>Explore nosso catálogo completo e selecione o produto de seu interesse. Em seguida, você poderá
+                        personalizá-lo como desejar, escolhendอ detalhes como tamanho, cor e outras opções.</p>
+                    <a href="#" class="step-link">Clique aqui para iniciar seu pedido.</a>
                 </div>
             </div>
 
@@ -251,69 +249,13 @@
 
                     <img src="{{ asset('assets/images/icon/fluent_box-edit-20-regular.png') }}" alt="Start Your Order">
 
-                    <h2 class="step-title">Step 2 : Start Your Order</h2>
+                    <h2 class="step-title">Passo 2 : Adicione ao carrinho e revise os detalhes</h2>
                 </div>
 
-                <div class="step-body-card list-section">
-
-                    <div class="sub-step">
-                        <h3>Step 1: Select Your Lanyard Type</h3>
-                        <p>Choose from four lanyard styles:</p>
-                        <ul>
-                            <li>Premium</li>
-                            <li>Polyester</li>
-                            <li>Nylon</li>
-                            <li>Sublimation</li>
-                        </ul>
-                    </div>
-
-                    <div class="sub-step">
-                        <h3>Step 2: Select Your Lanyard Color</h3>
-                        <ul>
-                            <li>Up to 5 standard colors</li>
-                            <li>Additional standard colors: $8 per color / per order</li>
-                            <li>Up to 3 special colors</li>
-                            <li>Special colors: $40 per color / per order</li>
-                        </ul>
-                    </div>
-
-                    <div class="sub-step">
-                        <h3>Step 3: Choose Your Print Color</h3>
-                        <p>If no color is selected, white will be used by default.</p>
-                        <p class="price-notice">Print color fee: $25 per color / per order</p>
-                    </div>
-
-                    <div class="sub-step">
-                        <h3>Step 4: Choose Your Parts & Options</h3>
-                        <div class="nested-parts">
-                            <p><strong>4.1 Attachments</strong><br>Choose from 8 clip options, including badge reels. (Some
-                                attachments are free; others have additional fees.)</p>
-                            <p><strong>4.2 Add-On Components</strong><br>Optional accessories can be added for an extra
-                                cost.</p>
-                            <p><strong>4.3 Sample Production</strong><br>Physical samples can be produced based on standard
-                                production time.</p>
-                            <p><strong>4.4 Urgent Production Service</strong></p>
-                            <ul>
-                                <li>+20% rush fee (min. $55 per order)</li>
-                                <li>Max 500 pcs</li>
-                                <li>Available for Polyester, Nylon, and Sublimation lanyards</li>
-                            </ul>
-                            <span class="italic-text">Same quality — delivered faster.</span>
-                        </div>
-                    </div>
-
-                    <div class="sub-step">
-                        <h3>Step 5: Select Your ID Holder</h3>
-                        <p>Choose from multiple ID holders — free or paid options.</p>
-                    </div>
-
-                    <div class="sub-step">
-                        <h3>Step 6: Enter Your Order Quantity</h3>
-                        <p>Minimum: 20 pcs</p>
-                        <p>Maximum: 50,000 pcs</p>
-                        <p class="muted-text">Minimum quantity may vary based on previous selections.</p>
-                    </div>
-
+                <div class="step-body-card">
+                    <p>Após configurar a personalização, adicione o produto ao carrinho. Nesta etapa, revise atentamente
+                        todos os detalhes do seu pedido, como a quantidade total e o design escolhido, garantindo que tudo
+                        esteja correto antes de prosseguir.</p>
                 </div>
             </div>
             <div class="step-block">
@@ -321,15 +263,14 @@
 
                     <img src="{{ asset('assets/images/icon/solar_document-add-outline.png') }}" alt="Product Variant">
 
-                    <h2 class="step-title">Step 3 : Enter Your Order Details</h2>
+                    <h2 class="step-title">Passo 3 : Confirme o pedido e realize o pagamento</h2>
                 </div>
 
                 <div class="step-body-card">
-                    <p>On the next page, fill in your contact information to confirm your order.
-                        <br>Your information will be kept strictly confidential and used only for communication regarding
-                        your order.
-                        <br>Upload your lanyard design file under Design File, or download our design template to simplify
-                        the process.
+                    <p>Finalize seu pedido preenchendo os dados de entrega. Em seguida, escolha a forma de pagamento de sua
+                        preferência (como Cartão de PayPal ou Transferência Bancária[JP banks]). Assim que o pagamento for
+                        confirmado, você receberá o número do pedido (Order Number) e nossa equipe iniciará o processo de
+                        revisão e produção.
                     </p>
                 </div>
             </div>
@@ -338,17 +279,14 @@
 
                     <img src="{{ asset('assets/images/icon/fluent_box-checkmark-16-regular.png') }}" alt="Product Variant">
 
-                    <h2 class="step-title">Step 4 : Review & Confirm</h2>
+                    <h2 class="step-title">Passo 4 : Receba seu produto com total segurança</h2>
                 </div>
 
                 <div class="step-body-card">
-                    <p>After reviewing your details, click Send to finalize your order.
-                        <br>You will receive a confirmation email from xxxxx@xxxxxx.com
-                        <br>Your quotation is valid for 7 days for payment.
-                        <br>Once payment is completed—or if you have further questions—please contact us at:
-                        <br>Email: xxxxx@xxxxxx.com
-                        <br>Tel: -
+                    <p>Seu produto será fabricado sob um rigoroso controle de qualidade, embalado cuidadosamente e enviado.
+                        Você poderá rastrear seu pacote e acompanhar o status da entrega diretamente em nosso site.
                     </p>
+                    <a href="#" class="step-link">Clique aqui para iniciar seu pedido.</a>
                 </div>
             </div>
 
