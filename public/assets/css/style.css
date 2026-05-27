@@ -5442,8 +5442,8 @@ body {
     font-weight: 500;
 }
 
-main {
-    overflow: hidden;
+body {
+    overflow-x: hidden;
 }
 
 @keyframes announcementMarquee {
