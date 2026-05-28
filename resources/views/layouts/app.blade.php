@@ -29,86 +29,144 @@
     <script src="{{ asset('assets/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const mainMenuPanel = document.getElementById('mainMenuPanel');
-            const menuPanels = document.querySelectorAll('.mobile-menu-panel');
-            const openSubmenuButtons = document.querySelectorAll('.open-submenu');
-            const backButtons = document.querySelectorAll('.back-main-menu');
-            const mobileMenu = document.getElementById('mobileMenu');
+   <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const mainMenuPanel = document.getElementById('mainMenuPanel');
+    const menuPanels = document.querySelectorAll('.mobile-menu-panel');
+    const openSubmenuButtons = document.querySelectorAll('.open-submenu');
+    const backMainButtons = document.querySelectorAll('.back-main-menu');
+    const backSubmenuButtons = document.querySelectorAll('.back-submenu');
+    const mobileMenu = document.getElementById('mobileMenu');
 
-            function resetPanels() {
-                menuPanels.forEach(function(panel) {
-                    panel.classList.remove('active', 'move-left', 'from-right', 'move-right');
-                });
+    function clearMotionClasses(panel) {
+        panel.classList.remove('from-right', 'from-left', 'move-left', 'move-right');
+    }
 
-                mainMenuPanel.classList.add('active');
-            }
+    function resetPanels() {
+        menuPanels.forEach(function(panel) {
+            panel.classList.remove('active', 'from-right', 'from-left', 'move-left', 'move-right');
+        });
 
-            function openSubmenu(panelId) {
-                const targetPanel = document.getElementById(panelId);
+        if (mainMenuPanel) {
+            mainMenuPanel.classList.add('active');
+        }
+    }
 
-                if (!targetPanel) return;
+    function getActivePanel() {
+    return Array.from(menuPanels).find(function(panel) {
+        return panel.classList.contains('active') &&
+            !panel.classList.contains('move-left') &&
+            !panel.classList.contains('move-right');
+    });
+}
+    function goForward(targetId) {
+        const targetPanel = document.getElementById(targetId);
+        const currentPanel = getActivePanel();
 
-                // reset submenu ก่อน
-                menuPanels.forEach(function(panel) {
-                    if (panel !== mainMenuPanel) {
-                        panel.classList.remove('active', 'move-left', 'move-right');
-                        panel.classList.add('from-right');
-                    }
-                });
+        if (!targetPanel || !currentPanel || targetPanel === currentPanel) {
+            return;
+        }
 
-                // ให้เมนูหลักอยู่ตรงกลางก่อน
-                mainMenuPanel.classList.add('active');
-                mainMenuPanel.classList.remove('move-left');
-
-                // เตรียม submenu ให้อยู่ขวา
-                targetPanel.classList.add('active', 'from-right');
-
-                // สั่ง animation
-                requestAnimationFrame(function() {
-                    mainMenuPanel.classList.add('move-left');
-                    targetPanel.classList.remove('from-right');
-                });
-            }
-
-            function backToMain() {
-                const activeSubPanel = document.querySelector('.mobile-menu-panel.active:not(#mainMenuPanel)');
-
-                if (!activeSubPanel) return;
-
-                // ให้ main menu กลับมาจากซ้าย
-                mainMenuPanel.classList.add('active');
-                mainMenuPanel.classList.remove('move-left');
-
-                // ให้ submenu เลื่อนออกไปขวา
-                activeSubPanel.classList.add('move-right');
-
-                setTimeout(function() {
-                    activeSubPanel.classList.remove('active', 'move-right', 'from-right');
-                }, 350);
-            }
-
-            openSubmenuButtons.forEach(function(button) {
-                button.addEventListener('click', function() {
-                    const target = this.getAttribute('data-target');
-                    openSubmenu(target);
-                });
-            });
-
-            backButtons.forEach(function(button) {
-                button.addEventListener('click', function() {
-                    backToMain();
-                });
-            });
-
-            if (mobileMenu) {
-                mobileMenu.addEventListener('hidden.bs.offcanvas', function() {
-                    resetPanels();
-                });
+        menuPanels.forEach(function(panel) {
+            if (panel !== currentPanel && panel !== targetPanel) {
+                panel.classList.remove('active', 'from-right', 'from-left', 'move-left', 'move-right');
             }
         });
-    </script>
+
+        clearMotionClasses(currentPanel);
+        clearMotionClasses(targetPanel);
+
+        targetPanel.classList.add('active', 'from-right');
+
+        requestAnimationFrame(function() {
+            currentPanel.classList.add('move-left');
+            targetPanel.classList.remove('from-right');
+        });
+
+        setTimeout(function() {
+            currentPanel.classList.remove('active', 'move-left');
+        }, 340);
+    }
+
+   function goBack(targetId) {
+    const targetPanel = document.getElementById(targetId);
+    const currentPanel = Array.from(menuPanels).find(function(panel) {
+        return panel.classList.contains('active') &&
+            !panel.classList.contains('move-left') &&
+            !panel.classList.contains('move-right');
+    });
+
+    if (!targetPanel || !currentPanel || targetPanel === currentPanel) {
+        return;
+    }
+
+    menuPanels.forEach(function(panel) {
+        if (panel !== currentPanel && panel !== targetPanel) {
+            panel.classList.remove('active', 'from-right', 'from-left', 'move-left', 'move-right');
+        }
+    });
+
+    clearMotionClasses(currentPanel);
+    clearMotionClasses(targetPanel);
+
+    /*
+    |--------------------------------------------------------------------------
+    | Back animation
+    |--------------------------------------------------------------------------
+    | currentPanel: ออกไปทางขวา
+    | targetPanel: เริ่มจากซ้าย แล้วเข้ามาตรงกลาง
+    |--------------------------------------------------------------------------
+    */
+    // ปิดการใช้ transition ชั่วคราวเพื่อให้กระโดดไปตำแหน่ง -100% ทางซ้ายทันทีโดยไม่มีแอนิเมชัน
+    targetPanel.style.transition = 'none';
+    targetPanel.classList.add('active', 'from-left');
+
+    // บังคับ browser ให้ประมวลผลตำแหน่งเริ่มต้นจากซ้ายก่อน
+    targetPanel.offsetHeight;
+
+    // เปิดการใช้ transition คืนค่าเดิม
+    targetPanel.style.transition = '';
+
+    // ใช้ requestAnimationFrame เพื่อให้การเลื่อนแอนิเมชันเกิดขึ้นอย่างราบรื่นในเฟรมถัดไป
+    requestAnimationFrame(function() {
+        currentPanel.classList.add('move-right');
+        targetPanel.classList.remove('from-left');
+    });
+
+    setTimeout(function() {
+        currentPanel.classList.remove('active', 'move-right', 'from-right', 'from-left', 'move-left');
+    }, 360);
+}
+
+    openSubmenuButtons.forEach(function(button) {
+        button.addEventListener('click', function() {
+            const target = this.getAttribute('data-target');
+            goForward(target);
+        });
+    });
+
+    backMainButtons.forEach(function(button) {
+        button.addEventListener('click', function() {
+            goBack('mainMenuPanel');
+        });
+    });
+
+    backSubmenuButtons.forEach(function(button) {
+        button.addEventListener('click', function() {
+            const target = this.getAttribute('data-target') || 'mainMenuPanel';
+            goBack(target);
+        });
+    });
+
+    if (mobileMenu) {
+        mobileMenu.addEventListener('hidden.bs.offcanvas', function() {
+            resetPanels();
+        });
+    }
+
+    resetPanels();
+});
+</script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const desktopToggles = document.querySelectorAll('.desktop-menu-toggle');

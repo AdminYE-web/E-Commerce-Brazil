@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+
 use App\Models\Category;
 use App\Models\Faq;
 use App\Models\Material;
@@ -45,10 +46,16 @@ class ProductListController extends Controller
         $categories = $sharedData['categories'];
         $materials = $sharedData['materials'];
 
-        $products = Product::with(['mainImage', 'category', 'material', 'detail'])
-            ->where('language', $langKey)
-            ->where('is_active', 1)
-            ->where('product_type', $productType)
+       $products = Product::with([
+        'mainImage',
+        'category',
+        'material',
+        'detail',
+        'displayPriceTier',
+    ])
+    ->where('language', $langKey)
+    ->where('is_active', 1)
+    ->where('product_type', $productType)
             ->when(! empty($categoryIds), function ($query) use ($categoryIds) {
                 $query->whereIn('category_id', $categoryIds);
             })

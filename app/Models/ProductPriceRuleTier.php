@@ -14,6 +14,7 @@ class ProductPriceRuleTier extends Model
         'max_qty',
         'unit_price',
         'is_active',
+        'is_display',
     ];
 
     public function rule()

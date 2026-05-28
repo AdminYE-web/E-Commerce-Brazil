@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\ProductPriceRuleTier;
 use App\Models\ProductPriceRule;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\ProductDetail;
@@ -138,4 +139,18 @@ class Product extends Model
     {
         return $this->hasMany(Faq::class, 'product_id', 'product_id');
     }
+   public function displayPriceTier()
+{
+    return $this->hasOneThrough(
+        ProductPriceRuleTier::class,
+        ProductPriceRule::class,
+        'product_id',
+        'rule_id',
+        'product_id',
+        'rule_id'
+    )
+        ->where('product_price_rule_tiers.is_display', 1)
+        ->where('product_price_rule_tiers.is_active', 1);
+}
+    
 }

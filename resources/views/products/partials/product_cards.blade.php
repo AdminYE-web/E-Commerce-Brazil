@@ -16,6 +16,15 @@
             <div class="stars">
                 ★★★★★
             </div>
+              @if ($product->displayPriceTier)
+                <div class="special-offer-badge">
+                    <strong>Oferta Especial:</strong>
+                    ¥{{ number_format($product->displayPriceTier->unit_price, 0) }}/un. <br>
+                    <span>
+                        (pedidos de {{ number_format($product->displayPriceTier->min_qty) }}+ un.)
+                    </span>
+                </div>
+            @endif
         </div>
 
         <a href="{{ route('products.description', $product->product_code) }}" class="detail-btn">

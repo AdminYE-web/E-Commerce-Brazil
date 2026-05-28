@@ -275,6 +275,26 @@
                 overflow: hidden;
             }
         }
+        .special-offer-badge {
+    display: inline-block;
+    margin-top: 8px;
+    margin-bottom: 14px;
+    padding: 6px 9px;
+    background: #f1f2f5;
+    border-radius: 6px;
+    color: #111;
+    font-size: 14px;
+    line-height: 1.3;
+}
+
+.special-offer-badge strong {
+    font-weight: 700;
+}
+
+.special-offer-badge span {
+    color: #333;
+    font-size: 13px;
+}
     </style>
 @endsection
 @section('content')

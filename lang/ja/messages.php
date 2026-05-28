@@ -13,6 +13,8 @@ return [
         'about_us' => '会社概要',
         'contact_us' => 'お問い合わせ',
         'view_all' => 'すべて見る',
+        'printed_lanyards' => '名入れランヤード',
+        'promotional_goods' => '販促品',
         'language' => [
             'pt' => 'ポルトガル語 (BR)',
             'ja' => '日本語 (JP)',

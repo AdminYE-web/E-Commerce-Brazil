@@ -105,8 +105,8 @@
             box-sizing: border-box;
 
             background: #fff;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
             margin-bottom: 16px;
             overflow: hidden;
             cursor: pointer;
@@ -155,9 +155,45 @@
         }
 
         .payment-check {
-            width: 18px;
-            height: 18px;
-            accent-color: #2563eb;
+            -webkit-appearance: none !important;
+            appearance: none !important;
+            background-color: #fff !important;
+            margin: 0 !important;
+            width: 22px !important;
+            height: 22px !important;
+            border: 1.5px solid #cbd5e1 !important;
+            border-radius: 6px !important;
+            display: inline-grid !important;
+            place-content: center !important;
+            cursor: pointer !important;
+            transition: all 0.2s ease !important;
+            position: relative !important;
+        }
+
+        .payment-check:hover:not(:disabled) {
+            border-color: #9ca3af !important;
+        }
+
+        .payment-check:checked {
+            border-color: #2f6fc2 !important;
+            background-color: #2f6fc2 !important;
+        }
+
+        /* Beautiful Image Checkmark */
+        .payment-check::before {
+            content: "" !important;
+            width: 14px !important;
+            height: 14px !important;
+            background-image: url('/assets/images/icon/ion_checkmark-sharp.png') !important;
+            background-size: contain !important;
+            background-repeat: no-repeat !important;
+            background-position: center !important;
+            transform: scale(0) !important;
+            transition: 120ms transform ease-in-out !important;
+        }
+
+        .payment-check:checked::before {
+            transform: scale(1) !important;
         }
 
         .bank-icon {
@@ -353,6 +389,165 @@
             cursor: not-allowed;
             pointer-events: none;
         }
+
+        /* Bank Transfer Card Custom Premium Styles */
+        .bank-transfer-card {
+            border-radius: 12px !important;
+            border: 1px solid #cbd5e1 !important;
+            background: #fff !important;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+            transition: all 0.2s ease-in-out !important;
+        }
+
+        .bank-transfer-card.is-selected {
+            border-color: #cbd5e1 !important;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+        }
+
+        .bank-transfer-card .payment-card-header {
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            padding: 16px 20px !important;
+            min-height: auto !important;
+            border-bottom: 1px solid #eeeeee !important;
+            background: #fff !important;
+        }
+
+        /* Bank Transfer Card Custom Premium Styles */
+        .bank-transfer-card {
+            border-radius: 12px !important;
+            border: 1px solid #cbd5e1 !important;
+            background: #fff !important;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+            transition: all 0.2s ease-in-out !important;
+        }
+
+        .bank-transfer-card.is-selected {
+            border-color: #2f6fc2 !important;
+            background: #eef6ff !important;
+            box-shadow: 0 0 0 1px #2f6fc2, 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+        }
+
+        .bank-transfer-card .payment-card-header {
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            padding: 16px 20px !important;
+            min-height: auto !important;
+            border-bottom: 1px solid #eeeeee !important;
+            background: transparent !important;
+        }
+
+        .bank-transfer-card .bank-header-left {
+            display: flex !important;
+            align-items: center !important;
+            gap: 12px !important;
+            font-size: 16px !important;
+            font-weight: 700 !important;
+            color: #000000 !important;
+        }
+
+        .bank-transfer-card .bank-icon {
+            font-size: 22px !important;
+            margin-right: 0 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+
+        .bank-transfer-card .bank-title-text {
+            font-size: 16px !important;
+            font-weight: 700 !important;
+            color: #000000 !important;
+        }
+
+        .bank-transfer-card .payment-bank-body {
+            border-top: none !important;
+            padding: 20px !important;
+            background: transparent !important;
+            font-size: 14px !important;
+            line-height: 1.6 !important;
+            color: #111111 !important;
+        }
+
+        .bank-transfer-card .payment-bank-body p {
+            margin: 0 0 16px 0 !important;
+        }
+
+        .bank-transfer-card .payment-bank-body p:last-child {
+            margin-bottom: 0 !important;
+        }
+
+        /* Warning alignment and style */
+        .bank-transfer-card .payment-warning {
+            display: flex !important;
+            align-items: flex-start !important;
+            gap: 8px !important;
+            margin-top: 16px !important;
+            font-size: 14px !important;
+            line-height: 1.6 !important;
+            color: #111111 !important;
+        }
+
+        .bank-transfer-card .payment-warning .warning-icon {
+            font-size: 16px !important;
+            flex-shrink: 0 !important;
+            margin-top: 2px !important;
+        }
+
+        /* PayPal Card Custom Premium Styles */
+        .paypal-card {
+            border-radius: 12px !important;
+            border: 1px solid #cbd5e1 !important;
+            background: #fff !important;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+            transition: all 0.2s ease-in-out !important;
+        }
+
+        .paypal-card.is-selected {
+            border-color: #2f6fc2 !important;
+            background: #eef6ff !important;
+            box-shadow: 0 0 0 1px #2f6fc2, 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+        }
+
+        .paypal-card .payment-card-header {
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            padding: 20px 20px 10px 20px !important;
+            min-height: auto !important;
+            background: transparent !important;
+        }
+
+        .paypal-card .payment-logo.paypal-text {
+            font-size: 26px !important;
+            font-weight: 800 !important;
+            color: #1f5fae !important;
+            letter-spacing: -1px !important;
+        }
+
+        .paypal-card .payment-paypal-body {
+            padding: 0 20px 20px 20px !important;
+            background: transparent !important;
+        }
+
+        .paypal-card .payment-title {
+            font-size: 16px !important;
+            font-weight: 700 !important;
+            color: #000000 !important;
+            margin-bottom: 6px !important;
+        }
+
+        .paypal-card .payment-desc {
+            font-size: 14px !important;
+            line-height: 1.5 !important;
+            color: #555555 !important;
+        }
+
+        .paypal-card.is-disabled {
+            opacity: 0.6 !important;
+        }
     </style>
 @endsection
 
@@ -378,51 +573,50 @@
                             </div>
                         @endif
 
-                        {{-- <label class="payment-card {{ $selectedPayment === 'paypal' ? 'is-selected' : '' }}">
-                        <div class="payment-card-header">
-                            <div class="payment-logo paypal-text">
-                                PayPal
-                            </div>
-
-                            <div>
-                                <div class="payment-title">Paypal.</div>
-                                <div class="payment-desc">Rápido e Seguro. Pague com sua conta PayPal.</div>
-                            </div>
-
-                            <input
-                                type="radio"
-                                name="payment_method"
-                                value="paypal"
-                                class="payment-check"
-                                {{ $selectedPayment === 'paypal' ? 'checked' : '' }}
-                            >
-                        </div>
-                    </label> --}}
-                        <label class="payment-card is-disabled">
+                        {{-- <label class="payment-card paypal-card {{ $selectedPayment === 'paypal' ? 'is-selected' : '' }}">
                             <div class="payment-card-header">
                                 <div class="payment-logo paypal-text">
                                     PayPal
                                 </div>
 
-                                <div>
-                                    <div class="payment-title">PayPal</div>
-                                    <div class="payment-desc">
-                                        {{ __('checkout.step_4.maintenance') }}
-                                    </div>
+                                <input
+                                    type="radio"
+                                    name="payment_method"
+                                    value="paypal"
+                                    class="payment-check"
+                                    {{ $selectedPayment === 'paypal' ? 'checked' : '' }}
+                                >
+                            </div>
+
+                            <div class="payment-paypal-body">
+                                <div class="payment-title">Paypal.</div>
+                                <div class="payment-desc">Rápido e Seguro. Pague com sua conta PayPal.</div>
+                            </div>
+                        </label> --}}
+
+                        <label class="payment-card paypal-card is-disabled">
+                            <div class="payment-card-header">
+                                <div class="payment-logo paypal-text">
+                                    PayPal
                                 </div>
 
                                 <input type="radio" name="payment_method" value="paypal" class="payment-check" disabled>
                             </div>
+
+                            <div class="payment-paypal-body">
+                                <div class="payment-title">PayPal</div>
+                                <div class="payment-desc">
+                                    {{ __('checkout.step_4.maintenance') }}
+                                </div>
+                            </div>
                         </label>
 
-                        <label class="payment-card {{ $selectedPayment === 'bank_transfer' ? 'is-selected' : '' }}">
+                        <label class="payment-card bank-transfer-card {{ $selectedPayment === 'bank_transfer' ? 'is-selected' : '' }}">
                             <div class="payment-card-header">
                                 <div class="bank-header-left">
-                                    <span class="bank-icon">🏦</span>
-                                    <span>{{ __('checkout.step_4.bank_transfer') }}</span>
+                                    <span class="bank-icon">🏛️</span>
+                                    <span class="bank-title-text">{{ __('checkout.step_4.bank_transfer') }}</span>
                                 </div>
-
-                                <div></div>
 
                                 <input type="radio" name="payment_method" value="bank_transfer" class="payment-check"
                                     {{ $selectedPayment === 'bank_transfer' ? 'checked' : '' }}>
@@ -437,9 +631,18 @@
                                     {{ __('checkout.step_4.bank_transfer_notice') }}
                                 </p>
 
+                                @php
+                                    $warningBody = __('checkout.step_4.bank_transfer_warning_body');
+                                    $parts = preg_split('/(\.|。)/u', $warningBody, 2, PREG_SPLIT_DELIM_CAPTURE);
+                                    $boldPart = ($parts[0] ?? '') . ($parts[1] ?? '');
+                                    $restPart = $parts[2] ?? '';
+                                @endphp
+
                                 <p class="payment-warning">
-                                    ⚠️ <strong>{{ __('checkout.step_4.bank_transfer_warning') }}</strong>
-                                    {{ __('checkout.step_4.bank_transfer_warning_body') }}
+                                    <span class="warning-icon">⚠️</span>
+                                    <span>
+                                        <strong>{{ __('checkout.step_4.bank_transfer_warning') }} {{ $boldPart }}</strong>{{ $restPart }}
+                                    </span>
                                 </p>
                             </div>
                         </label>

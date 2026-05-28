@@ -65,11 +65,27 @@
             height: 51px;
             border: 0;
             border-radius: 9px;
-            background: #fff;
-            padding: 0 18px;
+            background-color: #fff;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23111111' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 18px center;
+            background-size: 15px;
+            padding: 0 40px 0 18px;
             font-size: 15px;
             color: #111;
             outline: none;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            cursor: pointer;
+        }
+
+        .gallery-filter-select.placeholder-active {
+            color: #999;
+        }
+
+        .gallery-filter-select.placeholder-active option {
+            color: #111;
         }
 
         .clear-filter-link {
@@ -156,9 +172,10 @@
                 position: relative;
                 top: auto;
                 z-index: auto;
-                padding: 14px;
-                border-radius: 9px;
+                padding: 18px 18px 22px;
+                border-radius: 18px;
                 box-shadow: none;
+                background: #f4f4f4;
             }
 
             .gallery-filter-wrap::before {
@@ -166,14 +183,58 @@
             }
 
             .gallery-filter-wrap.is-sticky-full {
-                border-radius: 9px;
+                border-radius: 18px;
                 box-shadow: none;
+            }
+
+            .gallery-filter-form {
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+                align-items: center;
+            }
+
+            .gallery-filter-select {
+                border-radius: 12px;
+                height: 48px;
+            }
+
+            .gallery-filter-form select[name="category_id"],
+            .gallery-filter-form select[name="material_id"],
+            .gallery-filter-form select[name="purpose"] {
+                grid-column: span 2;
+            }
+
+            .gallery-filter-form select[name="sort"] {
+                grid-column: 1 / 2;
+                max-width: 100%;
+            }
+
+            .clear-filter-link {
+                grid-column: 2 / 3;
+                justify-self: center;
+                margin-left: auto;
+                margin-right: auto;
+                font-size: 15px;
+            }
+
+            .gallery-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 14px;
+            }
+
+            .gallery-title {
+                font-size: 15px;
+            }
+
+            .gallery-date {
+                font-size: 13px;
             }
         }
 
         @media (max-width: 480px) {
             .gallery-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
             }
         }
 
@@ -519,7 +580,7 @@
                         @endforeach
                     </select>
 
-                    <select name="material_id" class="gallery-filter-select js-auto-submit">
+                    <select name="material_id" class="gallery-filter-select js-auto-submit {{ empty($materialId) ? 'placeholder-active' : '' }}">
                         <option value="">{{ __('gallery.gallery.material') }}</option>
 
                         @foreach ($materials as $material)
@@ -530,7 +591,7 @@
                         @endforeach
                     </select>
 
-                    <select name="purpose" class="gallery-filter-select js-auto-submit">
+                    <select name="purpose" class="gallery-filter-select js-auto-submit {{ empty($purpose) ? 'placeholder-active' : '' }}">
                         <option value="">{{ __('gallery.gallery.purpose') }}</option>
 
                         @foreach ($purposes as $purposeItem)

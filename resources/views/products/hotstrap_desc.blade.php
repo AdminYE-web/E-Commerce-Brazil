@@ -382,7 +382,7 @@
                                 <div class="swiper-slide">
 
                                     <div class="recommended-card">
-                                        <a href="{{ route('products.description', $relatedProduct->product_id) }}"
+                                        <a href="{{ route('products.description', $relatedProduct->product_code) }}"
                                             class="no-underline">
                                             <h3>{{ $relatedProduct->product_name }}</h3>
 

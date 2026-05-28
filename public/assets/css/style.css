@@ -948,6 +948,7 @@ body {
 }
 
 .mobile-top {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -962,13 +963,19 @@ body {
     font-size: 28px;
     color: #111;
     line-height: 1;
+    position: relative;
+    z-index: 2;
 }
 
 .mobile-logo-wrap {
-    flex: 1;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    text-decoration: none;
     display: flex;
     justify-content: center;
-    text-decoration: none;
+    z-index: 1;
 }
 
 .mobile-logo {
@@ -980,6 +987,8 @@ body {
     display: flex;
     align-items: center;
     gap: 14px;
+    position: relative;
+    z-index: 2;
 }
 
 .mobile-icons .icon-link {
@@ -1073,7 +1082,6 @@ body {
     min-height: calc(100vh - 90px);
 }
 
-/* ทุก panel อยู่ซ้อนกันเต็มพื้นที่ */
 .mobile-menu-panel {
     position: absolute;
     top: 20px;
@@ -1084,25 +1092,26 @@ body {
     transform: translateX(100%);
     transition: transform 0.35s ease;
     pointer-events: none;
+    will-change: transform;
 }
 
-/* panel ที่แสดงอยู่ */
 .mobile-menu-panel.active {
     transform: translateX(0);
     pointer-events: auto;
 }
 
-/* เมนูหลักเลื่อนออกไปทางซ้าย */
 .mobile-menu-panel.move-left {
     transform: translateX(-100%);
 }
 
-/* เมนูย่อยอยู่ทางขวารอก่อน */
 .mobile-menu-panel.from-right {
     transform: translateX(100%);
 }
 
-/* เมนูย่อยเลื่อนออกไปทางขวาตอนย้อนกลับ */
+.mobile-menu-panel.from-left {
+    transform: translateX(-100%);
+}
+
 .mobile-menu-panel.move-right {
     transform: translateX(100%);
 }
@@ -1116,6 +1125,7 @@ body {
     text-decoration: none;
     color: #111;
     font-size: 16px;
+    font-weight: 700;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -1133,14 +1143,17 @@ body {
     gap: 18px;
     margin-bottom: 28px;
     font-size: 16px;
+    font-weight: 700;
     color: #111;
 }
 
-.back-main-menu {
+.back-main-menu,
+.back-submenu {
     border: none;
     background: transparent;
     padding: 0;
     font-size: 18px;
+    font-weight: 700;
     color: #111;
     display: flex;
     align-items: center;

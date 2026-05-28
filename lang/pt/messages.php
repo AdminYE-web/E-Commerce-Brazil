@@ -13,6 +13,8 @@ return [
         'about_us' => 'Sobre nos',
         'contact_us' => 'Contato ',
         'view_all' => 'Ver tudo',
+        'printed_lanyards' => 'Cordão Personalizado',
+        'promotional_goods' => 'Brindes Personalizados',
         'language' => [
             'pt' => 'Português (BR)',
             'ja' => 'Japonês (JP)',

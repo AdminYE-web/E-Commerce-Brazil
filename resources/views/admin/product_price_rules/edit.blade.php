@@ -272,12 +272,7 @@
             max-width: 680px;
         }
 
-        .price-tier-header {
-            display: grid;
-            grid-template-columns: 1fr 1fr 70px;
-            background: #f8fafc;
-            border-bottom: 1px solid #d9e0ea;
-        }
+
 
         .price-tier-title {
             padding: 14px 16px;
@@ -286,13 +281,32 @@
             color: #23324a;
         }
 
+        .price-tier-header {
+            display: grid;
+            grid-template-columns: 1fr 1fr 90px 70px;
+            background: #f8fafc;
+            border-bottom: 1px solid #d9e0ea;
+        }
+
         .price-tier-row {
             display: grid;
-            grid-template-columns: 1fr 1fr 70px;
+            grid-template-columns: 1fr 1fr 90px 70px;
             gap: 16px;
             padding: 14px 16px;
             border-bottom: 1px solid #eef2f7;
             align-items: center;
+        }
+
+        .tier-display {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .tier-display input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #2563eb;
         }
 
         .price-tier-row:last-child {
@@ -524,10 +538,23 @@
                                 'min_qty' => $tier->min_qty,
                                 'max_qty' => $tier->max_qty,
                                 'unit_price' => $tier->unit_price,
+                                'is_display' => $tier->is_display,
                             ];
                         })
                         ->toArray(),
                 );
+
+                $displayTierIndex = old('display_tier_index');
+
+                if ($displayTierIndex === null) {
+                    $displayTierIndex = collect($oldTiers)->search(function ($tier) {
+                        return !empty($tier['is_display']);
+                    });
+
+                    if ($displayTierIndex === false) {
+                        $displayTierIndex = 0;
+                    }
+                }
 
                 if (empty($oldTiers)) {
                     $oldTiers = [
@@ -535,8 +562,11 @@
                             'min_qty' => '',
                             'max_qty' => '',
                             'unit_price' => '',
+                            'is_display' => 1,
                         ],
                     ];
+
+                    $displayTierIndex = 0;
                 }
             @endphp
 
@@ -544,6 +574,7 @@
                 <div class="price-tier-header">
                     <div class="price-tier-title">Quantity</div>
                     <div class="price-tier-title">Unit Price </div>
+                    <div class="price-tier-title">Display</div>
                     <div class="price-tier-title"></div>
                 </div>
 
@@ -565,6 +596,10 @@
 
                                 <input type="number" step="0.01" name="tiers[{{ $index }}][unit_price]"
                                     value="{{ $tier['unit_price'] ?? '' }}" class="tier-input" min="0">
+                            </div>
+                            <div class="tier-display">
+                                <input type="radio" name="display_tier_index" value="{{ $index }}"
+                                    {{ (int) $displayTierIndex === (int) $index ? 'checked' : '' }}>
                             </div>
 
                             <div class="tier-action">
@@ -613,50 +648,102 @@
     <script>
         let tierIndex = document.querySelectorAll('.price-tier-row').length;
 
+        function reindexTiers() {
+            document.querySelectorAll('.price-tier-row').forEach(function(row, index) {
+                const minInput = row.querySelector('input[name*="[min_qty]"]');
+                const maxInput = row.querySelector('input[name*="[max_qty]"]');
+                const priceInput = row.querySelector('input[name*="[unit_price]"]');
+                const displayRadio = row.querySelector('input[name="display_tier_index"]');
+
+                if (minInput) {
+                    minInput.name = `tiers[${index}][min_qty]`;
+                }
+
+                if (maxInput) {
+                    maxInput.name = `tiers[${index}][max_qty]`;
+                }
+
+                if (priceInput) {
+                    priceInput.name = `tiers[${index}][unit_price]`;
+                }
+
+                if (displayRadio) {
+                    displayRadio.value = index;
+                }
+            });
+
+            tierIndex = document.querySelectorAll('.price-tier-row').length;
+        }
+
+        function ensureOneDisplayTier() {
+            const radios = document.querySelectorAll('input[name="display_tier_index"]');
+
+            if (!radios.length) {
+                return;
+            }
+
+            const hasChecked = Array.from(radios).some(function(radio) {
+                return radio.checked;
+            });
+
+            if (!hasChecked) {
+                radios[0].checked = true;
+            }
+        }
+
         document.getElementById('add-tier').addEventListener('click', function() {
             const wrapper = document.getElementById('tier-wrapper');
 
             const html = `
-            <div class="price-tier-row">
-                <div class="tier-input-group">
-                    <input
-                        type="number"
-                        name="tiers[${tierIndex}][min_qty]"
-                        class="tier-input"
-                        min="1"
-                    >
+                <div class="price-tier-row">
+                    <div class="tier-input-group">
+                        <input
+                            type="number"
+                            name="tiers[${tierIndex}][min_qty]"
+                            class="tier-input"
+                            min="1"
+                        >
 
-                    <span class="tier-suffix"></span>
+                        <span class="tier-suffix"></span>
 
-                    <input
-                        type="hidden"
-                        name="tiers[${tierIndex}][max_qty]"
-                        value=""
-                    >
+                        <input
+                            type="hidden"
+                            name="tiers[${tierIndex}][max_qty]"
+                            value=""
+                        >
+                    </div>
+
+                    <div class="tier-input-group">
+                        <span class="tier-prefix">¥</span>
+
+                        <input
+                            type="number"
+                            step="0.01"
+                            name="tiers[${tierIndex}][unit_price]"
+                            class="tier-input"
+                            min="0"
+                        >
+                    </div>
+
+                    <div class="tier-display">
+                        <input
+                            type="radio"
+                            name="display_tier_index"
+                            value="${tierIndex}"
+                        >
+                    </div>
+
+                    <div class="tier-action">
+                        <button type="button" class="remove-tier">
+                            Remove
+                        </button>
+                    </div>
                 </div>
-
-                <div class="tier-input-group">
-                    <span class="tier-prefix">¥</span>
-
-                    <input
-                        type="number"
-                        step="0.01"
-                        name="tiers[${tierIndex}][unit_price]"
-                        class="tier-input"
-                        min="0"
-                    >
-                </div>
-
-                <div class="tier-action">
-                    <button type="button" class="remove-tier">
-                        Remove
-                    </button>
-                </div>
-            </div>
-        `;
+            `;
 
             wrapper.insertAdjacentHTML('beforeend', html);
             tierIndex++;
+            ensureOneDisplayTier();
         });
 
         document.addEventListener('click', function(e) {
@@ -668,9 +755,23 @@
                     return;
                 }
 
-                e.target.closest('.price-tier-row').remove();
+                const row = e.target.closest('.price-tier-row');
+                const wasDisplay = row.querySelector('input[name="display_tier_index"]')?.checked;
+
+                row.remove();
+                reindexTiers();
+
+                if (wasDisplay) {
+                    ensureOneDisplayTier();
+                }
             }
         });
+
+        document.querySelector('form').addEventListener('submit', function() {
+            reindexTiers();
+            ensureOneDisplayTier();
+        });
+
         /*
         |--------------------------------------------------------------------------
         | Load Required Options by selected product
@@ -685,46 +786,44 @@
         function renderRequiredOptions(groups) {
             if (!groups || groups.length === 0) {
                 requiredOptionsBox.innerHTML = `
-            <p class="muted-text">
-                No options assigned to this product.
-            </p>
-        `;
+                    <p class="muted-text">
+                        No options assigned to this product.
+                    </p>
+                `;
                 return;
             }
 
             let html = `
-        
-
-        <div class="required-option-list">
-    `;
+                <div class="required-option-list">
+            `;
 
             groups.forEach(function(group) {
                 html += `
-            <div class="required-option-group">
-                <div class="required-option-group-title">
-                    ${group.group_name || '-'}
-                </div>
-        `;
+                    <div class="required-option-group">
+                        <div class="required-option-group-title">
+                            ${group.group_name || '-'}
+                        </div>
+                `;
 
                 group.options.forEach(function(option) {
                     const checked = selectedOptionIds.includes(String(option.option_id)) ? 'checked' : '';
 
                     html += `
-                <label class="required-option-item">
-                    <input
-                        type="checkbox"
-                        name="option_ids[]"
-                        value="${option.option_id}"
-                        ${checked}
-                    >
-                    <span>${option.option_name}</span>
-                </label>
-            `;
+                        <label class="required-option-item">
+                            <input
+                                type="checkbox"
+                                name="option_ids[]"
+                                value="${option.option_id}"
+                                ${checked}
+                            >
+                            <span>${option.option_name}</span>
+                        </label>
+                    `;
                 });
 
                 html += `
-            </div>
-        `;
+                    </div>
+                `;
             });
 
             html += `</div>`;
@@ -735,18 +834,18 @@
         function loadProductOptions(productId) {
             if (!productId) {
                 requiredOptionsBox.innerHTML = `
-            <p class="muted-text">
-                Please select a product first.
-            </p>
-        `;
+                    <p class="muted-text">
+                        Please select a product first.
+                    </p>
+                `;
                 return;
             }
 
             requiredOptionsBox.innerHTML = `
-        <p class="muted-text">
-            Loading options...
-        </p>
-    `;
+                <p class="muted-text">
+                    Loading options...
+                </p>
+            `;
 
             const url = `{{ url('admin-panel/product-price-rules/product-options') }}/${productId}`;
 
@@ -770,10 +869,10 @@
                     console.error(error);
 
                     requiredOptionsBox.innerHTML = `
-            <p class="muted-text" style="color:#b91c1c;">
-                Cannot load product options.
-            </p>
-        `;
+                        <p class="muted-text" style="color:#b91c1c;">
+                            Cannot load product options.
+                        </p>
+                    `;
                 });
         }
 
@@ -786,12 +885,6 @@
                 loadProductOptions(productSelect.value);
             }
         }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Select all / unselect all
-        |--------------------------------------------------------------------------
-        */
 
         document.addEventListener('click', function(e) {
             const selectAllLink = e.target.closest('.required-option-category-link');
@@ -812,5 +905,7 @@
                 checkbox.checked = hasUnchecked;
             });
         });
+
+        ensureOneDisplayTier();
     </script>
 @endsection
