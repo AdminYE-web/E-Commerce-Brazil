@@ -192,6 +192,7 @@ class QuotationController extends Controller
                 return [
                     'group_id' => $group?->option_group_id,
                     'group_name' => $group?->group_name,
+                    'group_code' => $group?->group_code,
                     'is_required' => (int) ($group?->is_required ?? 0),
                     'options' => $options->map(function ($option) {
                         return [

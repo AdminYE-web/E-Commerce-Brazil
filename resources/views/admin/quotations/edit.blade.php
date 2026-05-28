@@ -358,7 +358,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 data.groups.forEach(group => {
                     html += `
                         <div class="quotation-option-group">
-                            <div class="quotation-option-group-title">${group.group_name}</div>
+                            <div class="quotation-option-group-title">${group.group_name}/${group.group_code}</div>
                     `;
 
                     group.options.forEach(option => {
