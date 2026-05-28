@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CancelamentoController;
 use App\Http\Controllers\AccountAddressController;
 use App\Http\Controllers\AccountContactController;
 use App\Http\Controllers\AccountController;
@@ -171,6 +172,10 @@ Route::get('/faqs', [FaqPageController::class, 'index'])
 Route::get('/how-to-order', [OrderStepController::class, 'index'])->name('how-to-order');
 Route::get('/payment-options', [PaymentOptionController::class, 'index'])
     ->name('payment.options');
+
+
+Route::get('/cancel-order', [CancelamentoController::class, 'index'])
+    ->name('cancelamento.alteracao');
 
 Route::middleware('auth')->group(function () {
     Route::get('/account', [AccountController::class, 'index'])
