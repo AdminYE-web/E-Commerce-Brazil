@@ -11,22 +11,22 @@ return new class extends Migration
      */
     public function up(): void
     {
-       Schema::create('option_groups', function (Blueprint $table) {
-    $table->id('option_group_id');
+        Schema::create('option_groups', function (Blueprint $table) {
+            $table->id('option_group_id');
 
-    $table->string('group_code');
-    // เช่น print_surface, delivery_time, pouch_type
+            $table->string('group_code');
+            // เช่น print_surface, delivery_time, pouch_type
 
-    $table->string('group_name');
-    // เช่น พื้นผิวการพิมพ์
+            $table->string('group_name');
+            // เช่น พื้นผิวการพิมพ์
 
-    $table->boolean('is_required')->default(false);
-    // บังคับเลือกไหม
+            $table->boolean('is_required')->default(false);
+            // บังคับเลือกไหม
 
-    $table->boolean('is_active')->default(true);
+            $table->boolean('is_active')->default(true);
 
-    $table->timestamps();
-});
+            $table->timestamps();
+        });
     }
 
     /**

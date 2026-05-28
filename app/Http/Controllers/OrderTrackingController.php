@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Order;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
 class OrderTrackingController extends Controller
@@ -36,7 +36,7 @@ class OrderTrackingController extends Controller
         }
 
         session([
-            'tracking_order_email_' . $order->order_id => strtolower($request->email),
+            'tracking_order_email_'.$order->order_id => strtolower($request->email),
         ]);
 
         return redirect()->route('track-order.result', $order->order_id);
@@ -44,7 +44,33 @@ class OrderTrackingController extends Controller
 
     public function result(Order $order)
     {
-        $trackingEmail = session('tracking_order_email_' . $order->order_id);
+        $trackingEmail = session('tracking_order_email_'.$order->order_id);
+
+        if (! $trackingEmail) {
+            return redirect()
+                ->route('track-order.index')
+                ->withErrors([
+                    'order_no' => 'Please enter your order number and email first.',
+                ]);
+        }
+
+        $order->load([
+            'customer',
+            'items.product',
+            'payment',
+            'artworks',
+        ]);
+
+        if (strtolower($order->customer->personal_email ?? '') !== strtolower($trackingEmail)) {
+            abort(403);
+        }
+
+        return view('orders.track-result', compact('order'));
+    }
+
+    public function downloadReceipt(Order $order)
+    {
+        $trackingEmail = session('tracking_order_email_'.$order->order_id);
 
         if (! $trackingEmail) {
             return redirect()
@@ -58,41 +84,16 @@ class OrderTrackingController extends Controller
             'customer',
             'items',
             'payment',
-            'artworks',
         ]);
 
         if (strtolower($order->customer->personal_email ?? '') !== strtolower($trackingEmail)) {
             abort(403);
         }
 
-        return view('orders.track-result', compact('order'));
+        $pdf = Pdf::loadView('orders.receipt-pdf', [
+            'order' => $order,
+        ])->setPaper('a4', 'portrait');
+
+        return $pdf->download('receipt-'.$order->order_no.'.pdf');
     }
-    public function downloadReceipt(Order $order)
-{
-    $trackingEmail = session('tracking_order_email_' . $order->order_id);
-
-    if (! $trackingEmail) {
-        return redirect()
-            ->route('track-order.index')
-            ->withErrors([
-                'order_no' => 'Please enter your order number and email first.',
-            ]);
-    }
-
-    $order->load([
-        'customer',
-        'items',
-        'payment',
-    ]);
-
-    if (strtolower($order->customer->personal_email ?? '') !== strtolower($trackingEmail)) {
-        abort(403);
-    }
-
-    $pdf = Pdf::loadView('orders.receipt-pdf', [
-        'order' => $order,
-    ])->setPaper('a4', 'portrait');
-
-    return $pdf->download('receipt-' . $order->order_no . '.pdf');
-}
 }

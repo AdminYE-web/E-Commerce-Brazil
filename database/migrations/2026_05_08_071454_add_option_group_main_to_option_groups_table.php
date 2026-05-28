@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('option_groups', function (Blueprint $table) {
-            if (!Schema::hasColumn('option_groups', 'option_group_main')) {
+            if (! Schema::hasColumn('option_groups', 'option_group_main')) {
                 $table->tinyInteger('option_group_main')
                     ->default(0)
                     ->after('is_required');

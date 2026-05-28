@@ -41,8 +41,6 @@ return [
         'details' => 'Detalhes',
         'download_receipt' => 'Baixar recibo',
 
-
-
-    ]
+    ],
 
 ];

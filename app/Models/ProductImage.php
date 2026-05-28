@@ -8,14 +8,14 @@ class ProductImage extends Model
 {
     protected $primaryKey = 'image_id';
 
-   protected $fillable = [
-    'product_id',
-    'image_path',
-    'image_alt',
-    'image_type',
-    'is_main',
-    'sort_order',
-];
+    protected $fillable = [
+        'product_id',
+        'image_path',
+        'image_alt',
+        'image_type',
+        'is_main',
+        'sort_order',
+    ];
 
     public function product()
     {

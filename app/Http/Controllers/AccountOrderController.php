@@ -15,19 +15,19 @@ class AccountOrderController extends Controller
         $search = $request->get('search');
 
         $orders = Order::with([
-                'items.optionDetails',
-                'payment',
-            ])
+            'items.optionDetails',
+            'payment',
+        ])
             ->where('user_id', $user->user_id)
             ->when($status && $status !== 'all', function ($query) use ($status) {
                 $query->where('status', $status);
             })
             ->when($search, function ($query) use ($search) {
                 $query->where(function ($q) use ($search) {
-                    $q->where('order_no', 'like', '%' . $search . '%')
+                    $q->where('order_no', 'like', '%'.$search.'%')
                         ->orWhereHas('items', function ($itemQuery) use ($search) {
-                            $itemQuery->where('product_name_snapshot', 'like', '%' . $search . '%')
-                                ->orWhere('product_name', 'like', '%' . $search . '%');
+                            $itemQuery->where('product_name_snapshot', 'like', '%'.$search.'%')
+                                ->orWhere('product_name', 'like', '%'.$search.'%');
                         });
                 });
             })

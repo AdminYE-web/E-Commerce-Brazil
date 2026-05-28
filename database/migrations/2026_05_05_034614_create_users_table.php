@@ -9,20 +9,20 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-   public function up(): void
-{
-    Schema::create('users', function (Blueprint $table) {
-        $table->id('user_id');
-        $table->string('name')->nullable();
-        $table->string('email')->unique();
-        $table->string('password')->nullable();
-        $table->string('status')->default('active');
-        $table->timestamp('email_verified_at')->nullable();
-        $table->timestamp('last_login_at')->nullable();
-        $table->rememberToken();
-        $table->timestamps();
-    });
-}
+    public function up(): void
+    {
+        Schema::create('users', function (Blueprint $table) {
+            $table->id('user_id');
+            $table->string('name')->nullable();
+            $table->string('email')->unique();
+            $table->string('password')->nullable();
+            $table->string('status')->default('active');
+            $table->timestamp('email_verified_at')->nullable();
+            $table->timestamp('last_login_at')->nullable();
+            $table->rememberToken();
+            $table->timestamps();
+        });
+    }
 
     /**
      * Reverse the migrations.

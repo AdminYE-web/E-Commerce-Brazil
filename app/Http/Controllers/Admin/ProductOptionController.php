@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\OptionGroup;
+use App\Models\OptionImage;
 use App\Models\ProductOption;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use App\Models\OptionImage;
 
 class ProductOptionController extends Controller
 {
@@ -23,11 +23,11 @@ class ProductOptionController extends Controller
             ->where('language', $language)
             ->when($search, function ($query) use ($search) {
                 $query->where(function ($q) use ($search) {
-                    $q->where('option_name', 'like', '%' . $search . '%')
-                        ->orWhere('option_code', 'like', '%' . $search . '%')
+                    $q->where('option_name', 'like', '%'.$search.'%')
+                        ->orWhere('option_code', 'like', '%'.$search.'%')
                         ->orWhereHas('group', function ($groupQuery) use ($search) {
-                            $groupQuery->where('group_name', 'like', '%' . $search . '%')
-                                ->orWhere('group_code', 'like', '%' . $search . '%');
+                            $groupQuery->where('group_name', 'like', '%'.$search.'%')
+                                ->orWhere('group_code', 'like', '%'.$search.'%');
                         });
                 });
             })
@@ -166,7 +166,7 @@ class ProductOptionController extends Controller
                     'option_id' => $productOption->option_id,
                     'image_path' => $path,
                     'image_alt' => $productOption->option_name,
-                    'is_main' => !$hasMainImage && $index === 0 ? 1 : 0,
+                    'is_main' => ! $hasMainImage && $index === 0 ? 1 : 0,
                     'sort_order' => $currentMaxSort + $index + 1,
                 ]);
             }

@@ -27,32 +27,32 @@ class ProductPriceTierController extends Controller
         return view('admin.product_price_tiers.create', compact('products'));
     }
 
-   public function store(Request $request)
-{
-    $request->validate([
-        'product_id' => 'required|exists:products,product_id',
+    public function store(Request $request)
+    {
+        $request->validate([
+            'product_id' => 'required|exists:products,product_id',
 
-        'tiers' => 'required|array|min:1',
-        'tiers.*.min_qty' => 'required|integer|min:1',
-        'tiers.*.max_qty' => 'nullable|integer|min:1',
-        'tiers.*.unit_price' => 'required|numeric|min:0',
-        'tiers.*.is_active' => 'nullable|boolean',
-    ]);
-
-    foreach ($request->tiers as $tier) {
-        ProductPriceTier::create([
-            'product_id' => $request->product_id,
-            'min_qty' => $tier['min_qty'],
-            'max_qty' => $tier['max_qty'] ?? null,
-            'unit_price' => $tier['unit_price'],
-            'is_active' => !empty($tier['is_active']) ? 1 : 0,
+            'tiers' => 'required|array|min:1',
+            'tiers.*.min_qty' => 'required|integer|min:1',
+            'tiers.*.max_qty' => 'nullable|integer|min:1',
+            'tiers.*.unit_price' => 'required|numeric|min:0',
+            'tiers.*.is_active' => 'nullable|boolean',
         ]);
-    }
 
-    return redirect()
-        ->route('admin.product-price-tiers.index')
-        ->with('success', 'Product price tiers created successfully.');
-}
+        foreach ($request->tiers as $tier) {
+            ProductPriceTier::create([
+                'product_id' => $request->product_id,
+                'min_qty' => $tier['min_qty'],
+                'max_qty' => $tier['max_qty'] ?? null,
+                'unit_price' => $tier['unit_price'],
+                'is_active' => ! empty($tier['is_active']) ? 1 : 0,
+            ]);
+        }
+
+        return redirect()
+            ->route('admin.product-price-tiers.index')
+            ->with('success', 'Product price tiers created successfully.');
+    }
 
     public function edit(ProductPriceTier $productPriceTier)
     {

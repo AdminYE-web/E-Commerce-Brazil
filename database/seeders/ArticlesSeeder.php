@@ -117,7 +117,7 @@ class ArticlesSeeder extends Seeder
 
         foreach ($articles as $index => $article) {
             $number = $index + 1;
-            $translationKey = 'test_article_' . str_pad((string) $number, 2, '0', STR_PAD_LEFT);
+            $translationKey = 'test_article_'.str_pad((string) $number, 2, '0', STR_PAD_LEFT);
 
             Article::updateOrCreate(
                 [

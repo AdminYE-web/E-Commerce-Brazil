@@ -19,8 +19,8 @@ class Order extends Model
         'shipping_fee',
         'grand_total',
         'status',
-            'order_status',
-    'payment_status',
+        'order_status',
+        'payment_status',
 
     ];
 

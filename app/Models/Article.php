@@ -16,7 +16,7 @@ class Article extends Model
         'article_date',
         'detail',
         'cover_image',
-         'description',
+        'description',
         'is_active',
     ];
 }

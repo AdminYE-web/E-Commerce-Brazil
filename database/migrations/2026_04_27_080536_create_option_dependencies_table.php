@@ -11,27 +11,27 @@ return new class extends Migration
      */
     public function up(): void
     {
-       Schema::create('option_dependencies', function (Blueprint $table) {
-    $table->id('dependency_id');
+        Schema::create('option_dependencies', function (Blueprint $table) {
+            $table->id('dependency_id');
 
-    $table->unsignedBigInteger('parent_option_id');
-    // เช่น แบบนุ่ม
+            $table->unsignedBigInteger('parent_option_id');
+            // เช่น แบบนุ่ม
 
-    $table->unsignedBigInteger('child_option_id');
-    // เช่น แนวนอนของแบบนุ่ม
+            $table->unsignedBigInteger('child_option_id');
+            // เช่น แนวนอนของแบบนุ่ม
 
-    $table->timestamps();
+            $table->timestamps();
 
-    $table->foreign('parent_option_id')
-        ->references('option_id')
-        ->on('product_options')
-        ->onDelete('cascade');
+            $table->foreign('parent_option_id')
+                ->references('option_id')
+                ->on('product_options')
+                ->onDelete('cascade');
 
-    $table->foreign('child_option_id')
-        ->references('option_id')
-        ->on('product_options')
-        ->onDelete('cascade');
-});
+            $table->foreign('child_option_id')
+                ->references('option_id')
+                ->on('product_options')
+                ->onDelete('cascade');
+        });
     }
 
     /**

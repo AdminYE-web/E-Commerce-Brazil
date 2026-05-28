@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\HomeBanner;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 
 class HomeBannerController extends Controller
 {
@@ -148,7 +148,6 @@ class HomeBannerController extends Controller
         }
 
         $homeBanner->delete();
-       
 
         return redirect()
             ->route('admin.home-banners.index')

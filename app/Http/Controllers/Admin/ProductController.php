@@ -8,9 +8,8 @@ use App\Models\Material;
 use App\Models\Product;
 use App\Models\ProductImage;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Cache;
-
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -23,8 +22,8 @@ class ProductController extends Controller
             ->where('language', $language)
             ->when($search, function ($query) use ($search) {
                 $query->where(function ($q) use ($search) {
-                    $q->where('product_name', 'like', '%' . $search . '%')
-                        ->orWhere('product_code', 'like', '%' . $search . '%');
+                    $q->where('product_name', 'like', '%'.$search.'%')
+                        ->orWhere('product_code', 'like', '%'.$search.'%');
                 });
             })
             ->orderBy('product_id', 'desc')
@@ -33,6 +32,7 @@ class ProductController extends Controller
 
         return view('admin.products.index', compact('products', 'search', 'language'));
     }
+
     public function create()
     {
         $language = session('admin_product_language', 'pt');
@@ -128,7 +128,7 @@ class ProductController extends Controller
                 ]);
             }
         }
-        Cache::forget('home_page_data_' . $language);
+        Cache::forget('home_page_data_'.$language);
         Cache::forget('home_page_data');
 
         return redirect()
@@ -181,7 +181,7 @@ class ProductController extends Controller
             'delete_gallery_images' => 'nullable|array',
             'delete_gallery_images.*' => 'integer',
             'translation_key' => 'nullable|string|max:255',
-            
+
         ]);
 
         $product->update([
@@ -265,7 +265,7 @@ class ProductController extends Controller
             }
         }
         $language = $product->language;
-        Cache::forget('home_page_data_' . $language);
+        Cache::forget('home_page_data_'.$language);
         Cache::forget('home_page_data');
 
         return redirect()
@@ -278,7 +278,7 @@ class ProductController extends Controller
         $product->delete();
 
         $language = $product->language;
-        Cache::forget('home_page_data_' . $language);
+        Cache::forget('home_page_data_'.$language);
         Cache::forget('home_page_data');
 
         return redirect()

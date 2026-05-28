@@ -11,32 +11,32 @@ return new class extends Migration
      */
     public function up(): void
     {
-      Schema::create('orders', function (Blueprint $table) {
-    $table->id('order_id');
+        Schema::create('orders', function (Blueprint $table) {
+            $table->id('order_id');
 
-    $table->string('order_no')->unique();
+            $table->string('order_no')->unique();
 
-    $table->unsignedBigInteger('user_id')->nullable();
+            $table->unsignedBigInteger('user_id')->nullable();
 
-    $table->integer('qty');
+            $table->integer('qty');
 
-    $table->decimal('base_unit_price', 10, 2);
-    // ราคาต่อชิ้นจากขั้นบันได ณ วันที่สั่ง
+            $table->decimal('base_unit_price', 10, 2);
+            // ราคาต่อชิ้นจากขั้นบันได ณ วันที่สั่ง
 
-    $table->decimal('option_total', 10, 2)->default(0);
-    $table->decimal('subtotal', 10, 2)->default(0);
-    $table->decimal('vat_amount', 10, 2)->default(0);
-    $table->decimal('grand_total', 10, 2)->default(0);
+            $table->decimal('option_total', 10, 2)->default(0);
+            $table->decimal('subtotal', 10, 2)->default(0);
+            $table->decimal('vat_amount', 10, 2)->default(0);
+            $table->decimal('grand_total', 10, 2)->default(0);
 
-    $table->enum('status', [
-        'pending',
-        'confirmed',
-        'paid',
-        'cancelled'
-    ])->default('pending');
+            $table->enum('status', [
+                'pending',
+                'confirmed',
+                'paid',
+                'cancelled',
+            ])->default('pending');
 
-    $table->timestamps();
-});
+            $table->timestamps();
+        });
     }
 
     /**

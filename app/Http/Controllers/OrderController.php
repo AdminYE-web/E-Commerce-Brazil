@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\OrderItemOption;
+use App\Mail\OrderConfirmationMail;
 use App\Models\Order;
 use App\Models\OrderArtwork;
 use App\Models\OrderCustomer;
 use App\Models\OrderItem;
+use App\Models\OrderItemOption;
 use App\Models\OrderPayment;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Mail\OrderConfirmationMail;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
 {
@@ -399,8 +399,8 @@ class OrderController extends Controller
     {
         $cartItems = collect($cart);
 
-        $subtotal = $cartItems->sum(fn($item) => (float) ($item['item_total'] ?? 0));
-        $totalQty = $cartItems->sum(fn($item) => (int) ($item['quantity'] ?? 0));
+        $subtotal = $cartItems->sum(fn ($item) => (float) ($item['item_total'] ?? 0));
+        $totalQty = $cartItems->sum(fn ($item) => (int) ($item['quantity'] ?? 0));
         $totalItems = $cartItems->count();
 
         $shipping = $subtotal > 10000 ? 0 : ($totalItems > 0 ? 800 : 0);
@@ -424,8 +424,8 @@ class OrderController extends Controller
 
         $cartItems = collect($cart);
 
-        $subtotal = $cartItems->sum(fn($item) => (float) ($item['item_total'] ?? 0));
-        $totalQty = $cartItems->sum(fn($item) => (int) ($item['quantity'] ?? 0));
+        $subtotal = $cartItems->sum(fn ($item) => (float) ($item['item_total'] ?? 0));
+        $totalQty = $cartItems->sum(fn ($item) => (int) ($item['quantity'] ?? 0));
         $totalItems = $cartItems->count();
 
         $shipping = $subtotal > 10000 ? 0 : ($totalItems > 0 ? 800 : 0);
@@ -447,16 +447,16 @@ class OrderController extends Controller
 | ให้ดึงจาก table users มาเติมในหน้า Address
 */
         if (auth()->check()) {
-    $user = auth()->user();
-    $mainContact = $user->mainContact;
+            $user = auth()->user();
+            $mainContact = $user->mainContact;
 
-    $personal = array_merge([
-        'first_name' => $mainContact->first_name ?? $user->first_name ?? '',
-        'last_name' => $mainContact->last_name ?? $user->last_name ?? '',
-        'phone' => $mainContact->phone ?? $user->phone ?? '',
-        'email' => $mainContact->email ?? $user->email ?? '',
-    ], $personal);
-}
+            $personal = array_merge([
+                'first_name' => $mainContact->first_name ?? $user->first_name ?? '',
+                'last_name' => $mainContact->last_name ?? $user->last_name ?? '',
+                'phone' => $mainContact->phone ?? $user->phone ?? '',
+                'email' => $mainContact->email ?? $user->email ?? '',
+            ], $personal);
+        }
 
         $artworks = session('checkout_artworks', []);
 
@@ -494,7 +494,6 @@ class OrderController extends Controller
         $payment = session()->get('checkout_payment', []);
         $artworks = session()->get('checkout_artworks', []);
 
-
         if (empty($cart)) {
             return redirect()
                 ->route('cart.index')
@@ -515,11 +514,11 @@ class OrderController extends Controller
 
         $cartItems = collect($cart);
 
-        $subtotal = $cartItems->sum(fn($item) => (float) ($item['item_total'] ?? 0));
-        $totalQty = $cartItems->sum(fn($item) => (int) ($item['quantity'] ?? 0));
+        $subtotal = $cartItems->sum(fn ($item) => (float) ($item['item_total'] ?? 0));
+        $totalQty = $cartItems->sum(fn ($item) => (int) ($item['quantity'] ?? 0));
         $totalItems = $cartItems->count();
 
-        $optionTotal = $cartItems->sum(fn($item) => (float) ($item['option_total'] ?? 0));
+        $optionTotal = $cartItems->sum(fn ($item) => (float) ($item['option_total'] ?? 0));
 
         $shipping = $subtotal > 10000 ? 0 : ($totalItems > 0 ? 800 : 0);
 
@@ -603,8 +602,8 @@ class OrderController extends Controller
 
                         'group_name_snapshot' => $option['group_name'] ?? null,
                         'option_name_snapshot' => trim(
-                            ($option['option_name'] ?? '') .
-                                (!empty($option['variant_name']) ? ' - ' . $option['variant_name'] : '')
+                            ($option['option_name'] ?? '').
+                                (! empty($option['variant_name']) ? ' - '.$option['variant_name'] : '')
                         ),
 
                         'additional_price' => $totalOptionPrice,
@@ -739,29 +738,29 @@ class OrderController extends Controller
 | Send order confirmation email
 |--------------------------------------------------------------------------
 */
-try {
-    $order->load([
-        'items.optionDetails',
-        'customer',
-        'payment',
-        'artworks',
-    ]);
+            try {
+                $order->load([
+                    'items.optionDetails',
+                    'customer',
+                    'payment',
+                    'artworks',
+                ]);
 
-    $customerEmail = $order->customer->personal_email
-        ?? $order->customer->billing_email
-        ?? null;
+                $customerEmail = $order->customer->personal_email
+                    ?? $order->customer->billing_email
+                    ?? null;
 
-    if ($customerEmail) {
-        Mail::to($customerEmail)->send(new OrderConfirmationMail($order));
-    }
+                if ($customerEmail) {
+                    Mail::to($customerEmail)->send(new OrderConfirmationMail($order));
+                }
 
-} catch (\Throwable $mailError) {
-    Log::error('Send order confirmation email failed', [
-        'order_id' => $order->order_id ?? null,
-        'order_no' => $order->order_no ?? null,
-        'error' => $mailError->getMessage(),
-    ]);
-}
+            } catch (\Throwable $mailError) {
+                Log::error('Send order confirmation email failed', [
+                    'order_id' => $order->order_id ?? null,
+                    'order_no' => $order->order_no ?? null,
+                    'error' => $mailError->getMessage(),
+                ]);
+            }
 
             session()->forget([
                 'cart',
@@ -795,18 +794,18 @@ try {
 
     private function generateOrderNo(): string
     {
-        $prefix = 'ORD' . now()->format('Ymd');
+        $prefix = 'ORD'.now()->format('Ymd');
 
-        $latestOrder = Order::where('order_no', 'like', $prefix . '%')
+        $latestOrder = Order::where('order_no', 'like', $prefix.'%')
             ->orderBy('order_id', 'desc')
             ->first();
 
         if (! $latestOrder) {
-            return $prefix . '0001';
+            return $prefix.'0001';
         }
 
         $latestNumber = (int) substr($latestOrder->order_no, -4);
 
-        return $prefix . str_pad($latestNumber + 1, 4, '0', STR_PAD_LEFT);
+        return $prefix.str_pad($latestNumber + 1, 4, '0', STR_PAD_LEFT);
     }
 }

@@ -9,30 +9,30 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-   public function up(): void
-{
-    Schema::create('option_images', function (Blueprint $table) {
-        $table->id('image_id');
+    public function up(): void
+    {
+        Schema::create('option_images', function (Blueprint $table) {
+            $table->id('image_id');
 
-        $table->unsignedBigInteger('option_id');
+            $table->unsignedBigInteger('option_id');
 
-        $table->string('image_path');
-        $table->string('image_alt')->nullable();
+            $table->string('image_path');
+            $table->string('image_alt')->nullable();
 
-        $table->boolean('is_main')->default(false);
-        $table->integer('sort_order')->default(0);
+            $table->boolean('is_main')->default(false);
+            $table->integer('sort_order')->default(0);
 
-        $table->timestamps();
+            $table->timestamps();
 
-        $table->foreign('option_id')
-            ->references('option_id')
-            ->on('product_options')
-            ->onDelete('cascade');
-    });
-}
+            $table->foreign('option_id')
+                ->references('option_id')
+                ->on('product_options')
+                ->onDelete('cascade');
+        });
+    }
 
-public function down(): void
-{
-    Schema::dropIfExists('option_images');
-}
+    public function down(): void
+    {
+        Schema::dropIfExists('option_images');
+    }
 };

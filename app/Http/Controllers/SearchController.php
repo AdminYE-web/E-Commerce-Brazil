@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
 use App\Models\Category;
 use App\Models\Material;
+use App\Models\Product;
 use Illuminate\Http\Request;
 
 class SearchController extends Controller
@@ -48,10 +48,10 @@ class SearchController extends Controller
             ->when($productType, function ($query) use ($productType) {
                 $query->where('product_type', $productType);
             })
-            ->when(!empty($categoryIds), function ($query) use ($categoryIds) {
+            ->when(! empty($categoryIds), function ($query) use ($categoryIds) {
                 $query->whereIn('category_id', $categoryIds);
             })
-            ->when(!empty($materialIds), function ($query) use ($materialIds) {
+            ->when(! empty($materialIds), function ($query) use ($materialIds) {
                 $query->whereIn('material_id', $materialIds);
             })
             ->orderBy('updated_at', 'desc')

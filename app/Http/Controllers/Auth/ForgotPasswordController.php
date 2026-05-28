@@ -22,7 +22,7 @@ class ForgotPasswordController extends Controller
 
         $user = User::where('email', strtolower($request->email))->first();
 
-        if (!$user) {
+        if (! $user) {
             return back()->with('message', 'If this email exists, we have sent a password reset link.');
         }
 

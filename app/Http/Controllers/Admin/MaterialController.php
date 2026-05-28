@@ -9,22 +9,22 @@ use Illuminate\Support\Facades\Cache;
 
 class MaterialController extends Controller
 {
-   public function index(Request $request)
-{
-    $search = $request->input('search');
-    $language = session('admin_product_language', 'pt');
+    public function index(Request $request)
+    {
+        $search = $request->input('search');
+        $language = session('admin_product_language', 'pt');
 
-    $materials = Material::query()
-    ->where('language', $language)
-    ->when($search, function ($query) use ($search) {
-        $query->where('material_name', 'like', '%' . $search . '%');
-    })
-    ->orderBy('material_id', 'desc')
-    ->paginate(15)
-    ->withQueryString();
+        $materials = Material::query()
+            ->where('language', $language)
+            ->when($search, function ($query) use ($search) {
+                $query->where('material_name', 'like', '%'.$search.'%');
+            })
+            ->orderBy('material_id', 'desc')
+            ->paginate(15)
+            ->withQueryString();
 
-    return view('admin.materials.index', compact('materials', 'search', 'language'));
-}
+        return view('admin.materials.index', compact('materials', 'search', 'language'));
+    }
 
     public function create()
     {
@@ -48,9 +48,9 @@ class MaterialController extends Controller
 
         Cache::forget('home_page_data');
         Cache::forget('product_list_shared_components_pt');
-Cache::forget('product_list_shared_components_ja');
-Cache::forget('product_list_shared_components_en');
-Cache::forget('product_list_shared_components');
+        Cache::forget('product_list_shared_components_ja');
+        Cache::forget('product_list_shared_components_en');
+        Cache::forget('product_list_shared_components');
 
         return redirect()
             ->route('admin.materials.index')
@@ -78,9 +78,9 @@ Cache::forget('product_list_shared_components');
 
         Cache::forget('home_page_data');
         Cache::forget('product_list_shared_components_pt');
-Cache::forget('product_list_shared_components_ja');
-Cache::forget('product_list_shared_components_en');
-Cache::forget('product_list_shared_components');
+        Cache::forget('product_list_shared_components_ja');
+        Cache::forget('product_list_shared_components_en');
+        Cache::forget('product_list_shared_components');
 
         return redirect()
             ->route('admin.materials.index')
@@ -93,9 +93,9 @@ Cache::forget('product_list_shared_components');
 
         Cache::forget('home_page_data');
         Cache::forget('product_list_shared_components_pt');
-Cache::forget('product_list_shared_components_ja');
-Cache::forget('product_list_shared_components_en');
-Cache::forget('product_list_shared_components');
+        Cache::forget('product_list_shared_components_ja');
+        Cache::forget('product_list_shared_components_en');
+        Cache::forget('product_list_shared_components');
 
         return redirect()
             ->route('admin.materials.index')

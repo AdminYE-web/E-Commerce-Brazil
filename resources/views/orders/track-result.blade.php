@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
 @section('title', 'Track Order Result')
 
@@ -293,14 +293,45 @@
             }
 
             .progress-track {
-                grid-template-columns: repeat(5, minmax(52px, 1fr));
-                gap: 0;
-                overflow-x: auto;
+                display: flex !important;
+                gap: 0 !important;
+                overflow-x: auto !important;
+                padding-bottom: 24px !important;
+                -webkit-overflow-scrolling: touch !important;
+            }
+
+            .progress-track::-webkit-scrollbar {
+                height: 5px;
+            }
+
+            .progress-track::-webkit-scrollbar-track {
+                background: #f1f1f1;
+            }
+
+            .progress-track::-webkit-scrollbar-thumb {
+                background: #cbd5e1;
+                border-radius: 999px;
+            }
+
+            .progress-step {
+                flex: 0 0 135px !important;
+                min-width: 135px !important;
             }
 
             .progress-line {
-                left: 26px;
-                right: 26px;
+                left: 67.5px !important;
+                right: 67.5px !important;
+                width: calc(100% - 135px) !important;
+                top: 56px !important;
+            }
+
+            .progress-title {
+                font-size: 13px !important;
+            }
+
+            .progress-date {
+                font-size: 11px !important;
+                white-space: nowrap !important;
             }
 
             .order-items-table,
@@ -654,8 +685,12 @@
                     </div>
 
                     <div>
-                        @if (!empty($item->product_id))
-                            <a href="#" class="buy-again-btn">
+                        @if (!empty($item->product_id) && !empty($item->product))
+                            <a href="{{ route('products.description', $item->product->product_code) }}" class="buy-again-btn">
+                                {{ __('track_order.track_detail.buy_again') }}
+                            </a>
+                        @else
+                            <a href="{{ route('products.index') }}" class="buy-again-btn">
                                 {{ __('track_order.track_detail.buy_again') }}
                             </a>
                         @endif

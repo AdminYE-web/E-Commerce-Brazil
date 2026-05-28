@@ -109,8 +109,6 @@ return [
         'need_help' => ' Alguma dúvida? Fale conosco via WhatsApp',
         'whatsapp_number' => ' +81 090-1234-4567',
 
-
-
-    ]
+    ],
 
 ];

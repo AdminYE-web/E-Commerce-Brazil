@@ -7,17 +7,17 @@ return new class extends Migration
 {
     public function up(): void
     {
-        DB::statement("
+        DB::statement('
             ALTER TABLE option_dependencies 
             MODIFY child_option_id BIGINT UNSIGNED NULL
-        ");
+        ');
     }
 
     public function down(): void
     {
-        DB::statement("
+        DB::statement('
             ALTER TABLE option_dependencies 
             MODIFY child_option_id BIGINT UNSIGNED NOT NULL
-        ");
+        ');
     }
 };

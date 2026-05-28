@@ -11,24 +11,24 @@ return new class extends Migration
      */
     public function up(): void
     {
-       Schema::create('products', function (Blueprint $table) {
-    $table->id('product_id');
+        Schema::create('products', function (Blueprint $table) {
+            $table->id('product_id');
 
-    $table->string('product_code')->nullable(); 
-    // เช่น FLAT_10MM, FLAT_15MM
+            $table->string('product_code')->nullable();
+            // เช่น FLAT_10MM, FLAT_15MM
 
-    $table->string('product_name');
-    // เช่น ทอแบบเรียบ 10มม.
+            $table->string('product_name');
+            // เช่น ทอแบบเรียบ 10มม.
 
-    $table->text('description')->nullable();
+            $table->text('description')->nullable();
 
-    $table->boolean('is_antivirus_included')->default(false);
-    // ถ้าสินค้านี้รวมยาต้านไวรัสอยู่แล้ว
+            $table->boolean('is_antivirus_included')->default(false);
+            // ถ้าสินค้านี้รวมยาต้านไวรัสอยู่แล้ว
 
-    $table->boolean('is_active')->default(true);
+            $table->boolean('is_active')->default(true);
 
-    $table->timestamps();
-});
+            $table->timestamps();
+        });
     }
 
     /**

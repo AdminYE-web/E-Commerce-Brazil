@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-
 use App\Models\Category;
 use App\Models\Faq;
 use App\Models\Material;
@@ -23,7 +22,7 @@ class ProductListController extends Controller
 
         $langKey = $this->getLangKey();
 
-        $sharedData = Cache::remember('product_list_shared_components_' . $langKey, 86400, function () use ($langKey) {
+        $sharedData = Cache::remember('product_list_shared_components_'.$langKey, 86400, function () use ($langKey) {
             return [
                 'banners' => ProductListBanner::where('is_active', 1)
                     ->orderBy('sort_order')
@@ -46,16 +45,16 @@ class ProductListController extends Controller
         $categories = $sharedData['categories'];
         $materials = $sharedData['materials'];
 
-       $products = Product::with([
-        'mainImage',
-        'category',
-        'material',
-        'detail',
-        'displayPriceTier',
-    ])
-    ->where('language', $langKey)
-    ->where('is_active', 1)
-    ->where('product_type', $productType)
+        $products = Product::with([
+            'mainImage',
+            'category',
+            'material',
+            'detail',
+            'displayPriceTier',
+        ])
+            ->where('language', $langKey)
+            ->where('is_active', 1)
+            ->where('product_type', $productType)
             ->when(! empty($categoryIds), function ($query) use ($categoryIds) {
                 $query->whereIn('category_id', $categoryIds);
             })
@@ -195,7 +194,7 @@ class ProductListController extends Controller
                             return $option->language === $langKey;
                         })
                         ->pluck('option_id')
-                        ->map(fn($id) => (int) $id)
+                        ->map(fn ($id) => (int) $id)
                         ->values(),
                     'tiers' => $rule->tiers
                         ->map(function ($tier) {
@@ -321,7 +320,7 @@ class ProductListController extends Controller
                             return $option->language === $langKey;
                         })
                         ->pluck('option_id')
-                        ->map(fn($id) => (int) $id)
+                        ->map(fn ($id) => (int) $id)
                         ->values(),
                     'tiers' => $rule->tiers
                         ->map(function ($tier) {
@@ -526,7 +525,7 @@ class ProductListController extends Controller
                             return $option->language === $langKey;
                         })
                         ->pluck('option_id')
-                        ->map(fn($id) => (int) $id)
+                        ->map(fn ($id) => (int) $id)
                         ->values(),
                     'tiers' => $rule->tiers
                         ->map(function ($tier) {

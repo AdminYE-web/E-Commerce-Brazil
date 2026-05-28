@@ -13,6 +13,6 @@ return [
         'category' => 'Categoria',
         'materials' => 'Materiais',
         'contact_us' => 'Fale Conosco',
-    ]
+    ],
 
 ];

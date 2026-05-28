@@ -1,11 +1,5 @@
 <?php
 
-
-use App\Http\Controllers\PaymentOptionController;
-use App\Http\Controllers\OrderStepController;
-use App\Http\Controllers\FaqPageController;
-use App\Http\Controllers\Admin\QuotationController;
-use App\Http\Controllers\Admin\FaqController;
 use App\Http\Controllers\AccountAddressController;
 use App\Http\Controllers\AccountContactController;
 use App\Http\Controllers\AccountController;
@@ -15,6 +9,7 @@ use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\ArticleController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ContactSubmissionController;
+use App\Http\Controllers\Admin\FaqController;
 use App\Http\Controllers\Admin\GalleryBannerController;
 use App\Http\Controllers\Admin\GalleryController;
 use App\Http\Controllers\Admin\HomeBannerController;
@@ -33,6 +28,7 @@ use App\Http\Controllers\Admin\ProductOptionVariantController;
 use App\Http\Controllers\Admin\ProductPriceRuleController;
 use App\Http\Controllers\Admin\ProductPriceTierController;
 use App\Http\Controllers\Admin\ProductTemplateController;
+use App\Http\Controllers\Admin\QuotationController;
 use App\Http\Controllers\Admin\UserAdminController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
@@ -44,12 +40,15 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\DesignTemplateController;
+use App\Http\Controllers\FaqPageController;
 use App\Http\Controllers\GalleryPageController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\NewsletterSubscriptionController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\OrderStepController;
 use App\Http\Controllers\OrderTrackingController;
+use App\Http\Controllers\PaymentOptionController;
 use App\Http\Controllers\ProductListController;
 use App\Http\Controllers\SearchController;
 use App\Models\User;

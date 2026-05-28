@@ -5,6 +5,6 @@ return [
         'product_details' => 'Detalhes do produto',
         'you_may_also_like' => 'Você também pode gostar',
 
-    ]
+    ],
 
 ];

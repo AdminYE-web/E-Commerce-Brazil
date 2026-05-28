@@ -135,54 +135,55 @@ class AccountContactController extends Controller
             ->route('account.contacts.index')
             ->with('success', 'Contact deleted successfully.');
     }
+
     public function edit(UserContact $contact)
-{
-    $user = auth()->user();
+    {
+        $user = auth()->user();
 
-    if ((int) $contact->user_id !== (int) $user->user_id) {
-        abort(403);
-    }
-
-    return view('account.contacts.edit', compact('user', 'contact'));
-}
-
-public function update(Request $request, UserContact $contact)
-{
-    $user = auth()->user();
-
-    if ((int) $contact->user_id !== (int) $user->user_id) {
-        abort(403);
-    }
-
-    $request->validate([
-        'first_name' => ['required', 'string', 'max:100'],
-        'last_name' => ['required', 'string', 'max:100'],
-        'phone' => ['required', 'string', 'max:50'],
-        'email' => ['required', 'email', 'max:255'],
-        'is_main' => ['nullable', 'boolean'],
-        'receive_email' => ['nullable', 'boolean'],
-    ]);
-
-    DB::transaction(function () use ($request, $user, $contact) {
-        $isMain = $request->boolean('is_main');
-
-        if ($isMain) {
-            UserContact::where('user_id', $user->user_id)
-                ->update(['is_main' => 0]);
+        if ((int) $contact->user_id !== (int) $user->user_id) {
+            abort(403);
         }
 
-        $contact->update([
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
-            'phone' => $request->phone,
-            'email' => strtolower($request->email),
-            'is_main' => $isMain ? 1 : $contact->is_main,
-            'receive_email' => $request->boolean('receive_email') ? 1 : 0,
-        ]);
-    });
+        return view('account.contacts.edit', compact('user', 'contact'));
+    }
 
-    return redirect()
-        ->route('account.contacts.index')
-        ->with('success', 'Contact updated successfully.');
-}
+    public function update(Request $request, UserContact $contact)
+    {
+        $user = auth()->user();
+
+        if ((int) $contact->user_id !== (int) $user->user_id) {
+            abort(403);
+        }
+
+        $request->validate([
+            'first_name' => ['required', 'string', 'max:100'],
+            'last_name' => ['required', 'string', 'max:100'],
+            'phone' => ['required', 'string', 'max:50'],
+            'email' => ['required', 'email', 'max:255'],
+            'is_main' => ['nullable', 'boolean'],
+            'receive_email' => ['nullable', 'boolean'],
+        ]);
+
+        DB::transaction(function () use ($request, $user, $contact) {
+            $isMain = $request->boolean('is_main');
+
+            if ($isMain) {
+                UserContact::where('user_id', $user->user_id)
+                    ->update(['is_main' => 0]);
+            }
+
+            $contact->update([
+                'first_name' => $request->first_name,
+                'last_name' => $request->last_name,
+                'phone' => $request->phone,
+                'email' => strtolower($request->email),
+                'is_main' => $isMain ? 1 : $contact->is_main,
+                'receive_email' => $request->boolean('receive_email') ? 1 : 0,
+            ]);
+        });
+
+        return redirect()
+            ->route('account.contacts.index')
+            ->with('success', 'Contact updated successfully.');
+    }
 }

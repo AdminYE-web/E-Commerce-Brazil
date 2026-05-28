@@ -75,18 +75,84 @@
     }
 
     .quotation-option-group {
-        padding: 16px;
         margin-bottom: 14px;
         border: 1px solid var(--border);
         border-radius: 12px;
         background: #f8fafc;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .quotation-option-group-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px;
+        cursor: pointer;
+        user-select: none;
+        background: #f1f5f9;
+        transition: background-color 0.2s ease;
+    }
+
+    .quotation-option-group-header:hover {
+        background: #e2e8f0;
+    }
+
+    .quotation-option-group-title-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
 
     .quotation-option-group-title {
-        margin-bottom: 10px;
         font-size: 15px;
         font-weight: 800;
         color: #0b2d68;
+        margin: 0;
+    }
+
+    .quotation-option-group-selected-badge {
+        font-size: 12px;
+        font-weight: 500;
+        color: #0284c7;
+        background: #e0f2fe;
+        padding: 2px 8px;
+        border-radius: 9999px;
+        white-space: nowrap;
+    }
+
+    .quotation-option-group-arrow {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: #fff;
+        border: 1px solid var(--border);
+        color: #0b2d68;
+        font-size: 10px;
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .quotation-option-group-content {
+        padding: 0 16px;
+        background: #fff;
+        max-height: 0;
+        overflow: hidden;
+        opacity: 0;
+        transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, padding 0.3s ease;
+    }
+
+    .quotation-option-group.open .quotation-option-group-content {
+        max-height: 500px;
+        opacity: 1;
+        padding: 16px;
+        border-top: 1px solid var(--border);
+    }
+
+    .quotation-option-group.open .quotation-option-group-arrow {
+        transform: rotate(180deg);
     }
 
     .quotation-option-label {
@@ -322,9 +388,25 @@ document.addEventListener('DOMContentLoaded', function () {
         itemIndex++;
     }
 
+    function updateGroupSelectedBadge(group) {
+        const checkedInput = group.querySelector('.quotation-option-input:checked');
+        const badge = group.querySelector('.quotation-option-group-selected-badge');
+        if (checkedInput && badge) {
+            const labelText = checkedInput.closest('label').textContent.trim();
+            badge.textContent = labelText;
+            badge.style.display = 'inline-block';
+        } else if (badge) {
+            badge.style.display = 'none';
+        }
+    }
+
     wrapper.addEventListener('change', function (e) {
         if (e.target.classList.contains('quotation-product-select')) {
             loadProductOptions(e.target, []);
+        }
+
+        if (e.target.classList.contains('quotation-option-input')) {
+            updateGroupSelectedBadge(e.target.closest('.quotation-option-group'));
         }
 
         if (e.target.classList.contains('quotation-option-input') || e.target.classList.contains('quotation-qty')) {
@@ -335,6 +417,13 @@ document.addEventListener('DOMContentLoaded', function () {
     wrapper.addEventListener('click', function (e) {
         if (e.target.classList.contains('remove-item-btn')) {
             e.target.closest('.quotation-item-box').remove();
+            return;
+        }
+
+        const header = e.target.closest('.quotation-option-group-header');
+        if (header) {
+            const group = header.closest('.quotation-option-group');
+            group.classList.toggle('open');
         }
     });
 
@@ -358,7 +447,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 data.groups.forEach(group => {
                     html += `
                         <div class="quotation-option-group">
-                            <div class="quotation-option-group-title">${group.group_name}/${group.group_code}</div>
+                            <div class="quotation-option-group-header">
+                                <div class="quotation-option-group-title-wrapper">
+                                    <span class="quotation-option-group-title">${group.group_name} / ${group.group_code}</span>
+                                    <span class="quotation-option-group-selected-badge" style="display: none;"></span>
+                                </div>
+                                <span class="quotation-option-group-arrow">▼</span>
+                            </div>
+                            <div class="quotation-option-group-content">
                     `;
 
                     group.options.forEach(option => {
@@ -386,10 +482,20 @@ document.addEventListener('DOMContentLoaded', function () {
                         `;
                     });
 
-                    html += `</div>`;
+                    html += `
+                            </div>
+                        </div>`;
                 });
 
                 optionsArea.innerHTML = html;
+
+                optionsArea.querySelectorAll('.quotation-option-group').forEach(group => {
+                    updateGroupSelectedBadge(group);
+                    const hasChecked = group.querySelector('.quotation-option-input:checked');
+                    if (hasChecked) {
+                        group.classList.add('open');
+                    }
+                });
 
                 itemBox.dataset.priceRules = JSON.stringify(data.price_rules || []);
 

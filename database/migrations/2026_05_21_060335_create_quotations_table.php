@@ -11,27 +11,27 @@ return new class extends Migration
      */
     public function up(): void
     {
-      Schema::create('quotations', function (Blueprint $table) {
-    $table->id('quotation_id');
+        Schema::create('quotations', function (Blueprint $table) {
+            $table->id('quotation_id');
 
-    $table->string('quotation_no')->unique();
-    $table->date('quotation_date');
+            $table->string('quotation_no')->unique();
+            $table->date('quotation_date');
 
-    $table->string('customer_name');
-    $table->string('customer_email')->nullable();
-    $table->text('customer_address')->nullable();
+            $table->string('customer_name');
+            $table->string('customer_email')->nullable();
+            $table->text('customer_address')->nullable();
 
-    $table->text('note')->nullable();
+            $table->text('note')->nullable();
 
-    $table->decimal('subtotal', 12, 2)->default(0);
-    $table->decimal('discount_amount', 12, 2)->default(0);
-    $table->decimal('grand_total', 12, 2)->default(0);
+            $table->decimal('subtotal', 12, 2)->default(0);
+            $table->decimal('discount_amount', 12, 2)->default(0);
+            $table->decimal('grand_total', 12, 2)->default(0);
 
-    $table->string('status', 30)->default('draft'); // draft, issued, cancelled
-    $table->string('language', 20)->default('pt');
+            $table->string('status', 30)->default('draft'); // draft, issued, cancelled
+            $table->string('language', 20)->default('pt');
 
-    $table->timestamps();
-});
+            $table->timestamps();
+        });
     }
 
     /**

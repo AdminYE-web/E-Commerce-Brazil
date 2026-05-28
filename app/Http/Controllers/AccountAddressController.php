@@ -12,7 +12,7 @@ class AccountAddressController extends Controller
 
     public function index(string $type = 'shipping')
     {
-        if (!in_array($type, $this->allowedTypes, true)) {
+        if (! in_array($type, $this->allowedTypes, true)) {
             abort(404);
         }
 
@@ -30,7 +30,7 @@ class AccountAddressController extends Controller
 
     public function create(string $type)
     {
-        if (!in_array($type, $this->allowedTypes, true)) {
+        if (! in_array($type, $this->allowedTypes, true)) {
             abort(404);
         }
 
@@ -44,7 +44,7 @@ class AccountAddressController extends Controller
         if ($addressCount >= 5) {
             return redirect()
                 ->route('account.addresses.index', $type)
-                ->with('error', 'You can add up to 5 ' . $type . ' addresses only.');
+                ->with('error', 'You can add up to 5 '.$type.' addresses only.');
         }
 
         return view('account.addresses.create', compact('user', 'type'));
@@ -52,7 +52,7 @@ class AccountAddressController extends Controller
 
     public function store(Request $request, string $type)
     {
-        if (!in_array($type, $this->allowedTypes, true)) {
+        if (! in_array($type, $this->allowedTypes, true)) {
             abort(404);
         }
 
@@ -66,7 +66,7 @@ class AccountAddressController extends Controller
         if ($addressCount >= 5) {
             return redirect()
                 ->route('account.addresses.index', $type)
-                ->with('error', 'You can add up to 5 ' . $type . ' addresses only.');
+                ->with('error', 'You can add up to 5 '.$type.' addresses only.');
         }
 
         $request->validate([
@@ -118,7 +118,7 @@ class AccountAddressController extends Controller
 
         return redirect()
             ->route('account.addresses.index', $type)
-            ->with('success', ucfirst($type) . ' address created successfully.');
+            ->with('success', ucfirst($type).' address created successfully.');
     }
 
     public function setMain(UserAddress $address)
@@ -171,71 +171,72 @@ class AccountAddressController extends Controller
 
         return redirect()
             ->route('account.addresses.index', $type)
-            ->with('success', ucfirst($type) . ' address deleted successfully.');
+            ->with('success', ucfirst($type).' address deleted successfully.');
     }
+
     public function edit(UserAddress $address)
-{
-    $user = auth()->user();
+    {
+        $user = auth()->user();
 
-    if ((int) $address->user_id !== (int) $user->user_id) {
-        abort(403);
-    }
-
-    $type = $address->address_type;
-
-    return view('account.addresses.edit', compact('user', 'address', 'type'));
-}
-
-public function update(Request $request, UserAddress $address)
-{
-    $user = auth()->user();
-
-    if ((int) $address->user_id !== (int) $user->user_id) {
-        abort(403);
-    }
-
-    $request->validate([
-        'label' => ['required', 'string', 'max:100'],
-        'first_name' => ['required', 'string', 'max:100'],
-        'last_name' => ['required', 'string', 'max:100'],
-        'phone' => ['required', 'string', 'max:50'],
-        'company_name' => ['nullable', 'string', 'max:255'],
-        'address' => ['required', 'string', 'max:255'],
-        'apartment' => ['nullable', 'string', 'max:255'],
-        'country' => ['required', 'string', 'max:100'],
-        'city' => ['required', 'string', 'max:100'],
-        'state' => ['required', 'string', 'max:100'],
-        'zip_code' => ['required', 'string', 'max:50'],
-        'is_main' => ['nullable', 'boolean'],
-    ]);
-
-    DB::transaction(function () use ($request, $user, $address) {
-        $isMain = $request->boolean('is_main');
-
-        if ($isMain) {
-            UserAddress::where('user_id', $user->user_id)
-                ->where('address_type', $address->address_type)
-                ->update(['is_main' => 0]);
+        if ((int) $address->user_id !== (int) $user->user_id) {
+            abort(403);
         }
 
-        $address->update([
-            'label' => $request->label,
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
-            'phone' => $request->phone,
-            'company_name' => $request->company_name,
-            'address' => $request->address,
-            'apartment' => $request->apartment,
-            'country' => $request->country,
-            'city' => $request->city,
-            'state' => $request->state,
-            'zip_code' => $request->zip_code,
-            'is_main' => $isMain ? 1 : $address->is_main,
-        ]);
-    });
+        $type = $address->address_type;
 
-    return redirect()
-        ->route('account.addresses.index', $address->address_type)
-        ->with('success', ucfirst($address->address_type) . ' address updated successfully.');
-}
+        return view('account.addresses.edit', compact('user', 'address', 'type'));
+    }
+
+    public function update(Request $request, UserAddress $address)
+    {
+        $user = auth()->user();
+
+        if ((int) $address->user_id !== (int) $user->user_id) {
+            abort(403);
+        }
+
+        $request->validate([
+            'label' => ['required', 'string', 'max:100'],
+            'first_name' => ['required', 'string', 'max:100'],
+            'last_name' => ['required', 'string', 'max:100'],
+            'phone' => ['required', 'string', 'max:50'],
+            'company_name' => ['nullable', 'string', 'max:255'],
+            'address' => ['required', 'string', 'max:255'],
+            'apartment' => ['nullable', 'string', 'max:255'],
+            'country' => ['required', 'string', 'max:100'],
+            'city' => ['required', 'string', 'max:100'],
+            'state' => ['required', 'string', 'max:100'],
+            'zip_code' => ['required', 'string', 'max:50'],
+            'is_main' => ['nullable', 'boolean'],
+        ]);
+
+        DB::transaction(function () use ($request, $user, $address) {
+            $isMain = $request->boolean('is_main');
+
+            if ($isMain) {
+                UserAddress::where('user_id', $user->user_id)
+                    ->where('address_type', $address->address_type)
+                    ->update(['is_main' => 0]);
+            }
+
+            $address->update([
+                'label' => $request->label,
+                'first_name' => $request->first_name,
+                'last_name' => $request->last_name,
+                'phone' => $request->phone,
+                'company_name' => $request->company_name,
+                'address' => $request->address,
+                'apartment' => $request->apartment,
+                'country' => $request->country,
+                'city' => $request->city,
+                'state' => $request->state,
+                'zip_code' => $request->zip_code,
+                'is_main' => $isMain ? 1 : $address->is_main,
+            ]);
+        });
+
+        return redirect()
+            ->route('account.addresses.index', $address->address_type)
+            ->with('success', ucfirst($address->address_type).' address updated successfully.');
+    }
 }

@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         // ตรวจสอบก่อนว่าถ้า "ยังไม่มี" ตารางนี้ ถึงจะทำการสร้าง
-        if (!Schema::hasTable('quotation_item_options')) {
+        if (! Schema::hasTable('quotation_item_options')) {
             Schema::create('quotation_item_options', function (Blueprint $table) {
                 $table->id('quotation_item_option_id');
 

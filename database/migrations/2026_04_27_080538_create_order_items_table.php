@@ -11,34 +11,34 @@ return new class extends Migration
      */
     public function up(): void
     {
-      Schema::create('order_items', function (Blueprint $table) {
-    $table->id('order_item_id');
+        Schema::create('order_items', function (Blueprint $table) {
+            $table->id('order_item_id');
 
-    $table->unsignedBigInteger('order_id');
-    $table->unsignedBigInteger('product_id');
+            $table->unsignedBigInteger('order_id');
+            $table->unsignedBigInteger('product_id');
 
-    $table->string('product_name_snapshot');
-    // เก็บชื่อสินค้าตอนสั่ง เผื่ออนาคตแก้ชื่อสินค้า
+            $table->string('product_name_snapshot');
+            // เก็บชื่อสินค้าตอนสั่ง เผื่ออนาคตแก้ชื่อสินค้า
 
-    $table->integer('qty');
+            $table->integer('qty');
 
-    $table->decimal('base_unit_price', 10, 2);
-    $table->decimal('base_total', 10, 2);
+            $table->decimal('base_unit_price', 10, 2);
+            $table->decimal('base_total', 10, 2);
 
-    $table->decimal('option_total', 10, 2)->default(0);
-    $table->decimal('item_total', 10, 2);
+            $table->decimal('option_total', 10, 2)->default(0);
+            $table->decimal('item_total', 10, 2);
 
-    $table->timestamps();
+            $table->timestamps();
 
-    $table->foreign('order_id')
-        ->references('order_id')
-        ->on('orders')
-        ->onDelete('cascade');
+            $table->foreign('order_id')
+                ->references('order_id')
+                ->on('orders')
+                ->onDelete('cascade');
 
-    $table->foreign('product_id')
-        ->references('product_id')
-        ->on('products');
-});
+            $table->foreign('product_id')
+                ->references('product_id')
+                ->on('products');
+        });
     }
 
     /**

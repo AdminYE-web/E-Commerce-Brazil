@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
-
-use App\Models\ProductOptionGroupOrder;
 use App\Http\Controllers\Controller;
 use App\Models\OptionGroup;
 use App\Models\Product;
+use App\Models\ProductOptionGroupOrder;
 use Illuminate\Http\Request;
 
 class ProductOptionAssignmentController extends Controller
@@ -52,7 +51,7 @@ class ProductOptionAssignmentController extends Controller
 
         $assignedOptionIds = $product->assignedOptions
             ->pluck('option_id')
-            ->map(fn($id) => (int) $id)
+            ->map(fn ($id) => (int) $id)
             ->toArray();
 
         $assignedPivot = $product->assignedOptions
@@ -111,26 +110,26 @@ class ProductOptionAssignmentController extends Controller
             $exactQty = null;
 
             if ($qtyRuleType === 'min') {
-                $minQty = !empty($item['min_qty']) ? (int) $item['min_qty'] : null;
+                $minQty = ! empty($item['min_qty']) ? (int) $item['min_qty'] : null;
             }
 
             if ($qtyRuleType === 'max') {
-                $maxQty = !empty($item['max_qty']) ? (int) $item['max_qty'] : null;
+                $maxQty = ! empty($item['max_qty']) ? (int) $item['max_qty'] : null;
             }
 
             if ($qtyRuleType === 'exact') {
-                $exactQty = !empty($item['exact_qty']) ? (int) $item['exact_qty'] : null;
+                $exactQty = ! empty($item['exact_qty']) ? (int) $item['exact_qty'] : null;
             }
 
             if ($qtyRuleType === 'range') {
-                $minQty = !empty($item['min_qty']) ? (int) $item['min_qty'] : null;
-                $maxQty = !empty($item['max_qty']) ? (int) $item['max_qty'] : null;
+                $minQty = ! empty($item['min_qty']) ? (int) $item['min_qty'] : null;
+                $maxQty = ! empty($item['max_qty']) ? (int) $item['max_qty'] : null;
             }
 
             $syncData[$optionId] = [
                 'sort_order' => $item['sort_order'] ?? 0,
-                'is_default' => !empty($item['is_default']) ? 1 : 0,
-                'is_active' => !empty($item['is_active']) ? 1 : 0,
+                'is_default' => ! empty($item['is_default']) ? 1 : 0,
+                'is_active' => ! empty($item['is_active']) ? 1 : 0,
 
                 'qty_rule_type' => $qtyRuleType,
                 'min_qty' => $minQty,
@@ -145,6 +144,7 @@ class ProductOptionAssignmentController extends Controller
             ->route('admin.products.index')
             ->with('success', 'Product options updated successfully.');
     }
+
     public function updateGroupSort(Request $request, Product $product)
     {
         $request->validate([

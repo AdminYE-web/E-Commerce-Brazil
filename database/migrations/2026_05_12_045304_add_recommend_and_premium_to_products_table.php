@@ -9,13 +9,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('products', function (Blueprint $table) {
-            if (!Schema::hasColumn('products', 'product_recomend')) {
+            if (! Schema::hasColumn('products', 'product_recomend')) {
                 $table->tinyInteger('product_recomend')
                     ->default(0)
                     ->after('is_active');
             }
 
-            if (!Schema::hasColumn('products', 'product_premium')) {
+            if (! Schema::hasColumn('products', 'product_premium')) {
                 $table->tinyInteger('product_premium')
                     ->default(0)
                     ->after('product_recomend');

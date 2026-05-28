@@ -31,38 +31,38 @@ class ProductArtworkTemplateController extends Controller
     }
 
     public function store(Request $request)
-{
-    $request->validate([
-        'product_id' => 'required|exists:products,product_id',
+    {
+        $request->validate([
+            'product_id' => 'required|exists:products,product_id',
 
-        'templates' => 'required|array|min:1',
-        'templates.*.template_name' => 'required|string|max:255',
-        'templates.*.image_path' => 'nullable|image|mimes:jpg,jpeg,png,webp,gif|max:2048',
-        'templates.*.sort_order' => 'nullable|integer|min:0',
-        'templates.*.is_active' => 'nullable|boolean',
-    ]);
+            'templates' => 'required|array|min:1',
+            'templates.*.template_name' => 'required|string|max:255',
+            'templates.*.image_path' => 'nullable|image|mimes:jpg,jpeg,png,webp,gif|max:2048',
+            'templates.*.sort_order' => 'nullable|integer|min:0',
+            'templates.*.is_active' => 'nullable|boolean',
+        ]);
 
-    foreach ($request->templates as $index => $templateData) {
-        $imagePath = null;
+        foreach ($request->templates as $index => $templateData) {
+            $imagePath = null;
 
-        if ($request->hasFile("templates.$index.image_path")) {
-            $imagePath = $request->file("templates.$index.image_path")
-                ->store('artwork-templates', 'public');
+            if ($request->hasFile("templates.$index.image_path")) {
+                $imagePath = $request->file("templates.$index.image_path")
+                    ->store('artwork-templates', 'public');
+            }
+
+            ProductArtworkTemplate::create([
+                'product_id' => $request->product_id,
+                'template_name' => $templateData['template_name'],
+                'image_path' => $imagePath,
+                'sort_order' => $templateData['sort_order'] ?? 0,
+                'is_active' => isset($templateData['is_active']) ? 1 : 0,
+            ]);
         }
 
-        ProductArtworkTemplate::create([
-            'product_id' => $request->product_id,
-            'template_name' => $templateData['template_name'],
-            'image_path' => $imagePath,
-            'sort_order' => $templateData['sort_order'] ?? 0,
-            'is_active' => isset($templateData['is_active']) ? 1 : 0,
-        ]);
+        return redirect()
+            ->route('admin.product-artwork-templates.index')
+            ->with('success', 'Artwork templates created successfully.');
     }
-
-    return redirect()
-        ->route('admin.product-artwork-templates.index')
-        ->with('success', 'Artwork templates created successfully.');
-}
 
     public function edit(ProductArtworkTemplate $productArtworkTemplate)
     {

@@ -126,7 +126,7 @@ class CartController extends Controller
         // ]);
 
         $ruleOptionIds = $matchedRule
-            ? $matchedRule->options->pluck('option_id')->map(fn($id) => (int) $id)->toArray()
+            ? $matchedRule->options->pluck('option_id')->map(fn ($id) => (int) $id)->toArray()
             : [];
 
         foreach ($selectedOptions as $selectedOption) {
@@ -232,14 +232,14 @@ class CartController extends Controller
 
             $selectedOptionIds = collect($item['options'] ?? [])
                 ->pluck('option_id')
-                ->map(fn($id) => (int) $id)
+                ->map(fn ($id) => (int) $id)
                 ->toArray();
 
             $matchedRule = $this->findMatchedPriceRule($product, $selectedOptionIds);
             $unitPrice = $this->findTierPrice($matchedRule, $quantity);
 
             $ruleOptionIds = $matchedRule
-                ? $matchedRule->options->pluck('option_id')->map(fn($id) => (int) $id)->toArray()
+                ? $matchedRule->options->pluck('option_id')->map(fn ($id) => (int) $id)->toArray()
                 : [];
 
             $optionTotal = 0;
@@ -328,7 +328,7 @@ class CartController extends Controller
         */
         $selectedOptionIds = collect($cartItem['options'] ?? [])
             ->pluck('option_id')
-            ->map(fn($id) => (int) $id)
+            ->map(fn ($id) => (int) $id)
             ->toArray();
 
         /*
@@ -346,7 +346,7 @@ class CartController extends Controller
         $unitPrice = $this->findTierPrice($matchedRule, $quantity);
 
         $ruleOptionIds = $matchedRule
-            ? $matchedRule->options->pluck('option_id')->map(fn($id) => (int) $id)->toArray()
+            ? $matchedRule->options->pluck('option_id')->map(fn ($id) => (int) $id)->toArray()
             : [];
 
         /*
@@ -419,7 +419,7 @@ class CartController extends Controller
     private function findMatchedPriceRule(Product $product, array $selectedOptionIds)
     {
         $selectedOptionIds = collect($selectedOptionIds)
-            ->map(fn($id) => (int) $id)
+            ->map(fn ($id) => (int) $id)
             ->filter()
             ->unique()
             ->values()
@@ -432,7 +432,7 @@ class CartController extends Controller
         $matchedRules = $rules->filter(function ($rule) use ($selectedOptionIds) {
             $ruleOptionIds = $rule->options
                 ->pluck('option_id')
-                ->map(fn($id) => (int) $id)
+                ->map(fn ($id) => (int) $id)
                 ->filter()
                 ->unique()
                 ->values()
@@ -511,20 +511,21 @@ class CartController extends Controller
             ->route('cart.index')
             ->with('error', 'Product type not found.');
     }
+
     private function validateCartItemQuantityRules(array $cartItem, int $quantity): ?string
     {
         foreach (($cartItem['options'] ?? []) as $option) {
             $ruleType = $option['qty_rule_type'] ?? null;
 
-            if (!$ruleType) {
+            if (! $ruleType) {
                 continue;
             }
 
             $optionName = $option['option_name'] ?? 'Selected option';
 
-            $minQty = !empty($option['min_qty']) ? (int) $option['min_qty'] : null;
-            $maxQty = !empty($option['max_qty']) ? (int) $option['max_qty'] : null;
-            $exactQty = !empty($option['exact_qty']) ? (int) $option['exact_qty'] : null;
+            $minQty = ! empty($option['min_qty']) ? (int) $option['min_qty'] : null;
+            $maxQty = ! empty($option['max_qty']) ? (int) $option['max_qty'] : null;
+            $exactQty = ! empty($option['exact_qty']) ? (int) $option['exact_qty'] : null;
 
             if ($ruleType === 'min' && $minQty && $quantity < $minQty) {
                 return "{$optionName}: minimum quantity is {$minQty} pcs.";

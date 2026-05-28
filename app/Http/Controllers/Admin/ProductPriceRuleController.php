@@ -23,10 +23,10 @@ class ProductPriceRuleController extends Controller
             })
             ->when($search, function ($query) use ($search) {
                 $query->where(function ($q) use ($search) {
-                    $q->where('rule_name', 'like', '%' . $search . '%')
+                    $q->where('rule_name', 'like', '%'.$search.'%')
                         ->orWhereHas('product', function ($productQuery) use ($search) {
-                            $productQuery->where('product_name', 'like', '%' . $search . '%')
-                                ->orWhere('product_code', 'like', '%' . $search . '%');
+                            $productQuery->where('product_name', 'like', '%'.$search.'%')
+                                ->orWhere('product_code', 'like', '%'.$search.'%');
                         });
                 });
             })
@@ -58,6 +58,7 @@ class ProductPriceRuleController extends Controller
 
         return view('admin.product_price_rules.create', compact('products', 'options', 'language'));
     }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -98,10 +99,11 @@ class ProductPriceRuleController extends Controller
         $tiers = collect($request->tiers)
             ->map(function ($tier, $index) {
                 $tier['form_index'] = (int) $index;
+
                 return $tier;
             })
             ->filter(function ($tier) {
-                return !empty($tier['min_qty']) && isset($tier['unit_price']);
+                return ! empty($tier['min_qty']) && isset($tier['unit_price']);
             })
             ->sortBy(function ($tier) {
                 return (int) $tier['min_qty'];
@@ -161,6 +163,7 @@ class ProductPriceRuleController extends Controller
             'language' => $language,
         ]);
     }
+
     public function update(Request $request, ProductPriceRule $productPriceRule)
     {
         $request->validate([
@@ -204,10 +207,11 @@ class ProductPriceRuleController extends Controller
         $tiers = collect($request->tiers)
             ->map(function ($tier, $index) {
                 $tier['form_index'] = (int) $index;
+
                 return $tier;
             })
             ->filter(function ($tier) {
-                return !empty($tier['min_qty']) && isset($tier['unit_price']);
+                return ! empty($tier['min_qty']) && isset($tier['unit_price']);
             })
             ->sortBy(function ($tier) {
                 return (int) $tier['min_qty'];
@@ -246,6 +250,7 @@ class ProductPriceRuleController extends Controller
             ->route('admin.product-price-rules.index')
             ->with('success', 'Product price rule deleted successfully.');
     }
+
     public function show($id)
     {
         $rule = ProductPriceRule::with([
@@ -258,6 +263,7 @@ class ProductPriceRuleController extends Controller
 
         return view('admin.product_price_rules.show', compact('rule'));
     }
+
     public function getProductOptions(Product $product)
     {
         $language = $product->language ?? session('admin_product_language', 'pt');
@@ -297,6 +303,7 @@ class ProductPriceRuleController extends Controller
             'groups' => $groupedOptions,
         ]);
     }
+
     private function resetDisplayTiersByProduct(int $productId): void
     {
         $ruleIds = ProductPriceRule::where('product_id', $productId)

@@ -13,6 +13,6 @@ return [
         'category' => 'カテゴリ',
         'materials' => '材料',
         'contact_us' => 'お問い合わせ',
-    ]
+    ],
 
 ];

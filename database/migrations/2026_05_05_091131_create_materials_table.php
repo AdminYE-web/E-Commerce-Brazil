@@ -9,19 +9,19 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-  public function up(): void
-{
-    Schema::create('materials', function (Blueprint $table) {
-        $table->id('material_id');
-        $table->string('material_name');
-        $table->string('material_code')->nullable();
-        $table->boolean('is_active')->default(true);
-        $table->timestamps();
-    });
-}
+    public function up(): void
+    {
+        Schema::create('materials', function (Blueprint $table) {
+            $table->id('material_id');
+            $table->string('material_name');
+            $table->string('material_code')->nullable();
+            $table->boolean('is_active')->default(true);
+            $table->timestamps();
+        });
+    }
 
-public function down(): void
-{
-    Schema::dropIfExists('materials');
-}
+    public function down(): void
+    {
+        Schema::dropIfExists('materials');
+    }
 };

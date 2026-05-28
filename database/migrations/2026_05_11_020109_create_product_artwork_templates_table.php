@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (!Schema::hasTable('product_artwork_templates')) {
+        if (! Schema::hasTable('product_artwork_templates')) {
             Schema::create('product_artwork_templates', function (Blueprint $table) {
                 $table->id('template_id');
 

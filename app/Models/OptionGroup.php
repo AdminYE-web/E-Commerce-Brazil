@@ -22,7 +22,6 @@ class OptionGroup extends Model
         'product_type',
     ];
 
-
     public function parent()
     {
         return $this->belongsTo(OptionGroup::class, 'parent_group_id', 'option_group_id');

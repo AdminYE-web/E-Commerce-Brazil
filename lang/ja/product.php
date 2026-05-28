@@ -60,6 +60,6 @@ return [
         'no_template_found' => '選択された商品のテンプレートファイルは見つかりませんでした。',
         'select_product_and_size_to_download_template_files' => 'テンプレートファイルをダウンロードするには、製品とサイズを選択してください。',
 
-    ]
+    ],
 
 ];

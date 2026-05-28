@@ -1,9 +1,10 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Models\GalleryBanner;
+
 use App\Models\Category;
 use App\Models\Gallery;
+use App\Models\GalleryBanner;
 use App\Models\Material;
 use Illuminate\Http\Request;
 
@@ -38,10 +39,10 @@ class GalleryPageController extends Controller
             ->when($purpose, function ($query) use ($purpose) {
                 $query->where('purpose', $purpose);
             });
-            $galleryBanners = GalleryBanner::where('is_active', 1)
-    ->orderBy('sort_order')
-    ->orderBy('gallery_banner_id', 'desc')
-    ->get();
+        $galleryBanners = GalleryBanner::where('is_active', 1)
+            ->orderBy('sort_order')
+            ->orderBy('gallery_banner_id', 'desc')
+            ->get();
 
         if ($sort === 'oldest') {
             $galleries->orderBy('gallery_date', 'asc')
@@ -52,8 +53,6 @@ class GalleryPageController extends Controller
         }
 
         $galleries = $galleries->paginate(12)->withQueryString();
-
-
 
         return view('gallery.index', compact(
             'galleries',

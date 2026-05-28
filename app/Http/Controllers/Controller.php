@@ -4,20 +4,20 @@ namespace App\Http\Controllers;
 
 abstract class Controller
 {
+    public function getLangKey()
+    {
+        $default = 'pt';
 
-public function getLangKey()
-{
-    $default = 'pt';
+        $locale = request()->session()->get('locale', $default);
 
-    $locale = request()->session()->get('locale', $default);
+        if (! in_array($locale, ['pt', 'ja', 'en'])) {
+            $locale = $default;
+            request()->session()->put('locale', $default);
+        }
 
-    if (!in_array($locale, ['pt', 'ja', 'en'])) {
-        $locale = $default;
-        request()->session()->put('locale', $default);
+        return $locale;
     }
 
-    return $locale;
-}
     public function AllProvince()
     {
         return [

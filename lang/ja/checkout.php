@@ -104,5 +104,5 @@ return [
         'track_order_link' => ' 注文を追跡する',
         'need_help' => ' 質問がありますか？WhatsAppでご連絡ください',
         'whatsapp_number' => ' +81 090-1234-4567',
-    ]
+    ],
 ];

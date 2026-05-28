@@ -11,27 +11,27 @@ return new class extends Migration
      */
     public function up(): void
     {
-       Schema::create('product_price_tiers', function (Blueprint $table) {
-    $table->id('tier_id');
+        Schema::create('product_price_tiers', function (Blueprint $table) {
+            $table->id('tier_id');
 
-    $table->unsignedBigInteger('product_id');
+            $table->unsignedBigInteger('product_id');
 
-    $table->integer('min_qty');
-    $table->integer('max_qty')->nullable();
-    // nullable = ไม่จำกัด เช่น 201 ชิ้นขึ้นไป
+            $table->integer('min_qty');
+            $table->integer('max_qty')->nullable();
+            // nullable = ไม่จำกัด เช่น 201 ชิ้นขึ้นไป
 
-    $table->decimal('unit_price', 10, 2);
-    // ราคาต่อชิ้น
+            $table->decimal('unit_price', 10, 2);
+            // ราคาต่อชิ้น
 
-    $table->boolean('is_active')->default(true);
+            $table->boolean('is_active')->default(true);
 
-    $table->timestamps();
+            $table->timestamps();
 
-    $table->foreign('product_id')
-        ->references('product_id')
-        ->on('products')
-        ->onDelete('cascade');
-});
+            $table->foreign('product_id')
+                ->references('product_id')
+                ->on('products')
+                ->onDelete('cascade');
+        });
     }
 
     /**

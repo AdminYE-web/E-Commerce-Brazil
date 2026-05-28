@@ -467,20 +467,21 @@ class QuotationController extends Controller
             ->route('admin.quotations.show', $quotation->quotation_id)
             ->with('success', 'Quotation updated successfully.');
     }
+
     public function updateStatus(Request $request, Quotation $quotation)
-{
-    $request->validate([
-        'status' => ['required', 'in:active,not_active'],
-    ]);
+    {
+        $request->validate([
+            'status' => ['required', 'in:active,not_active'],
+        ]);
 
-    $quotation->update([
-        'status' => $request->status,
-    ]);
+        $quotation->update([
+            'status' => $request->status,
+        ]);
 
-    return response()->json([
-        'success' => true,
-        'message' => 'Quotation status updated successfully.',
-        'status' => $quotation->status,
-    ]);
-}
+        return response()->json([
+            'success' => true,
+            'message' => 'Quotation status updated successfully.',
+            'status' => $quotation->status,
+        ]);
+    }
 }

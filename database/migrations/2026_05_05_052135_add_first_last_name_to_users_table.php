@@ -9,19 +9,19 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-   public function up(): void
-{
-    Schema::table('users', function (Blueprint $table) {
-        $table->string('first_name')->nullable()->after('user_id');
-        $table->string('last_name')->nullable()->after('first_name');
-        $table->boolean('newsletter_consent')->default(false)->after('status');
-    });
-}
+    public function up(): void
+    {
+        Schema::table('users', function (Blueprint $table) {
+            $table->string('first_name')->nullable()->after('user_id');
+            $table->string('last_name')->nullable()->after('first_name');
+            $table->boolean('newsletter_consent')->default(false)->after('status');
+        });
+    }
 
-public function down(): void
-{
-    Schema::table('users', function (Blueprint $table) {
-        $table->dropColumn(['first_name', 'last_name', 'newsletter_consent']);
-    });
-}
+    public function down(): void
+    {
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn(['first_name', 'last_name', 'newsletter_consent']);
+        });
+    }
 };

@@ -16,7 +16,7 @@ class OptionGroupController extends Controller
         $groups = OptionGroup::query()
             ->where('language', $language)
             ->when($search, function ($query) use ($search) {
-                $query->where('group_name', 'like', '%' . $search . '%');
+                $query->where('group_name', 'like', '%'.$search.'%');
             })
             ->orderBy('sort_order')
             ->orderBy('option_group_id', 'desc')
@@ -86,7 +86,7 @@ class OptionGroupController extends Controller
     public function update(Request $request, OptionGroup $optionGroup)
     {
         $request->validate([
-            'group_code' => 'required|string|max:100|unique:option_groups,group_code,' . $optionGroup->option_group_id . ',option_group_id',
+            'group_code' => 'required|string|max:100|unique:option_groups,group_code,'.$optionGroup->option_group_id.',option_group_id',
             'group_name' => 'required|string|max:255',
             'display_type' => 'required|string|in:button,image_card,color,select_detail,image_card_variant,image_grid_compact,grouped_buttons,previous_order_design',
             'is_required' => 'nullable|boolean',

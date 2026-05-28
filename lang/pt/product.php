@@ -56,6 +56,6 @@ return [
         'template' => 'Modelo',
         'no_template_found' => 'Nenhum arquivo de modelo foi encontrado para esta seleção.',
         'select_product_and_size_to_download_template_files' => 'Selecione o produto e o tamanho para baixar os arquivos de modelo.',
-    ]
+    ],
 
 ];

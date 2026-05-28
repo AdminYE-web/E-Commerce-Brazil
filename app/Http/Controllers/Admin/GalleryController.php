@@ -18,13 +18,13 @@ class GalleryController extends Controller
 
         $galleries = Gallery::with(['category', 'material', 'images'])
             ->when($search, function ($query) use ($search) {
-                $query->where('title', 'like', '%' . $search . '%')
-                    ->orWhere('purpose', 'like', '%' . $search . '%')
+                $query->where('title', 'like', '%'.$search.'%')
+                    ->orWhere('purpose', 'like', '%'.$search.'%')
                     ->orWhereHas('category', function ($q) use ($search) {
-                        $q->where('category_name', 'like', '%' . $search . '%');
+                        $q->where('category_name', 'like', '%'.$search.'%');
                     })
                     ->orWhereHas('material', function ($q) use ($search) {
-                        $q->where('material_name', 'like', '%' . $search . '%');
+                        $q->where('material_name', 'like', '%'.$search.'%');
                     });
             })
             ->orderBy('sort_order')

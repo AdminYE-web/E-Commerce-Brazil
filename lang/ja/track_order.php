@@ -41,6 +41,6 @@ return [
         'buy_again' => '再度購入する',
         'details' => '詳細',
         'download_receipt' => 'レシートをダウンロードする',
-    ]
+    ],
 
 ];

@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\ProductListBanner;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 
 class ProductListBannerController extends Controller
 {
@@ -61,9 +61,9 @@ class ProductListBannerController extends Controller
             'is_active' => $request->has('is_active') ? 1 : 0,
         ]);
         Cache::forget('product_list_shared_components_pt');
-Cache::forget('product_list_shared_components_ja');
-Cache::forget('product_list_shared_components_en');
-Cache::forget('product_list_shared_components');
+        Cache::forget('product_list_shared_components_ja');
+        Cache::forget('product_list_shared_components_en');
+        Cache::forget('product_list_shared_components');
 
         return redirect()
             ->route('admin.product-list-banners.index')
@@ -122,9 +122,9 @@ Cache::forget('product_list_shared_components');
             'is_active' => $request->has('is_active') ? 1 : 0,
         ]);
         Cache::forget('product_list_shared_components_pt');
-Cache::forget('product_list_shared_components_ja');
-Cache::forget('product_list_shared_components_en');
-Cache::forget('product_list_shared_components');
+        Cache::forget('product_list_shared_components_ja');
+        Cache::forget('product_list_shared_components_en');
+        Cache::forget('product_list_shared_components');
 
         return redirect()
             ->route('admin.product-list-banners.index')
@@ -143,9 +143,10 @@ Cache::forget('product_list_shared_components');
 
         $productListBanner->delete();
         Cache::forget('product_list_shared_components_pt');
-Cache::forget('product_list_shared_components_ja');
-Cache::forget('product_list_shared_components_en');
-Cache::forget('product_list_shared_components');
+        Cache::forget('product_list_shared_components_ja');
+        Cache::forget('product_list_shared_components_en');
+        Cache::forget('product_list_shared_components');
+
         return redirect()
             ->route('admin.product-list-banners.index')
             ->with('success', 'ลบ Product List Banner เรียบร้อยแล้ว');

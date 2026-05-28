@@ -20,8 +20,8 @@ return new class extends Migration
     {
         Schema::table('option_groups', function (Blueprint $table) {
             $table->dropColumn([
-                
-                'sort_order'
+
+                'sort_order',
             ]);
         });
     }

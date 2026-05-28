@@ -53,7 +53,7 @@ class DesignTemplateController extends Controller
         | ถ้ายังไม่ได้เลือก product ให้เลือกตัวแรกอัตโนมัติ
         |--------------------------------------------------------------------------
         */
-        if (!$selectedProductId && $products->count() > 0) {
+        if (! $selectedProductId && $products->count() > 0) {
             $selectedProductId = $products->first()->product_id;
         }
 
@@ -77,7 +77,7 @@ class DesignTemplateController extends Controller
                 ->pluck('template_size');
         }
 
-        if (!$selectedSize && $sizes->count() > 0) {
+        if (! $selectedSize && $sizes->count() > 0) {
             $selectedSize = $sizes->first();
         }
 
@@ -86,7 +86,7 @@ class DesignTemplateController extends Controller
         | ถ้ายังไม่ได้เลือก size ให้เลือกตัวแรกอัตโนมัติ
         |--------------------------------------------------------------------------
         */
-        if (!$selectedSize && $sizes->count() > 0) {
+        if (! $selectedSize && $sizes->count() > 0) {
             $selectedSize = $sizes->first();
         }
 

@@ -17,10 +17,10 @@ class FaqController extends Controller
             ->where('language', $language)
             ->when($request->search, function ($query) use ($request) {
                 $query->where(function ($q) use ($request) {
-                    $q->where('question', 'like', '%' . $request->search . '%')
-                        ->orWhere('answer', 'like', '%' . $request->search . '%')
+                    $q->where('question', 'like', '%'.$request->search.'%')
+                        ->orWhere('answer', 'like', '%'.$request->search.'%')
                         ->orWhereHas('product', function ($productQuery) use ($request) {
-                            $productQuery->where('product_name', 'like', '%' . $request->search . '%');
+                            $productQuery->where('product_name', 'like', '%'.$request->search.'%');
                         });
                 });
             })
@@ -124,23 +124,24 @@ class FaqController extends Controller
             ->route('admin.faqs.index')
             ->with('success', 'FAQ deleted successfully.');
     }
-    public function updateSort(Request $request)
-{
-    $request->validate([
-        'items' => ['required', 'array'],
-        'items.*.faq_id' => ['required', 'exists:faqs,faq_id'],
-        'items.*.sort_order' => ['required', 'integer', 'min:0'],
-    ]);
 
-    foreach ($request->items as $item) {
-        Faq::where('faq_id', $item['faq_id'])->update([
-            'sort_order' => $item['sort_order'],
+    public function updateSort(Request $request)
+    {
+        $request->validate([
+            'items' => ['required', 'array'],
+            'items.*.faq_id' => ['required', 'exists:faqs,faq_id'],
+            'items.*.sort_order' => ['required', 'integer', 'min:0'],
+        ]);
+
+        foreach ($request->items as $item) {
+            Faq::where('faq_id', $item['faq_id'])->update([
+                'sort_order' => $item['sort_order'],
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'FAQ order updated successfully.',
         ]);
     }
-
-    return response()->json([
-        'success' => true,
-        'message' => 'FAQ order updated successfully.',
-    ]);
-}
 }

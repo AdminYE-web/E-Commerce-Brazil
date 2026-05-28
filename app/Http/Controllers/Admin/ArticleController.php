@@ -5,34 +5,36 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Article;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class ArticleController extends Controller
 {
-  public function index(Request $request)
-{
-    $search = $request->input('search');
-    $category = $request->input('category');
-    $language = session('admin_product_language', 'pt');
+    public function index(Request $request)
+    {
+        $search = $request->input('search');
+        $category = $request->input('category');
+        $language = session('admin_product_language', 'pt');
 
-    $articles = Article::query()
-        ->where('language', $language)
-        ->when($search, function ($query) use ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('title', 'like', '%' . $search . '%')
-                    ->orWhere('category', 'like', '%' . $search . '%');
-            });
-        })
-        ->when($category, function ($query) use ($category) {
-            $query->where('category', $category);
-        })
-        ->orderBy('article_date', 'desc')
-        ->orderBy('article_id', 'desc')
-        ->paginate(15)
-        ->withQueryString();
+        $articles = Article::query()
+            ->where('language', $language)
+            ->when($search, function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('title', 'like', '%'.$search.'%')
+                        ->orWhere('category', 'like', '%'.$search.'%');
+                });
+            })
+            ->when($category, function ($query) use ($category) {
+                $query->where('category', $category);
+            })
+            ->orderBy('article_date', 'desc')
+            ->orderBy('article_id', 'desc')
+            ->paginate(15)
+            ->withQueryString();
 
-    return view('admin.articles.index', compact('articles', 'search', 'category', 'language'));
-}
+        return view('admin.articles.index', compact('articles', 'search', 'category', 'language'));
+    }
 
     public function create()
     {
@@ -51,7 +53,7 @@ class ArticleController extends Controller
             'description' => ['nullable', 'string'],
             'language' => ['nullable', 'string', 'max:20'],
             'translation_key' => ['nullable', 'string', 'max:255'],
-            
+
         ]);
 
         $coverPath = null;
@@ -69,9 +71,9 @@ class ArticleController extends Controller
             'detail' => $request->detail,
             'cover_image' => $coverPath,
             'is_active' => $request->has('is_active') ? 1 : 0,
-             'description' => $request->description,
-             'language' => $language,
-             'translation_key' => $request->translation_key ?: \Illuminate\Support\Str::slug($request->title) . '_' . time(),
+            'description' => $request->description,
+            'language' => $language,
+            'translation_key' => $request->translation_key ?: Str::slug($request->title).'_'.time(),
         ]);
 
         $this->forgetHomeCache();
@@ -151,16 +153,16 @@ class ArticleController extends Controller
         $path = $request->file('upload')->store('articles/editor', 'public');
 
         return response()->json([
-            'url' => asset('storage/' . $path),
+            'url' => asset('storage/'.$path),
         ]);
     }
 
     private function forgetHomeCache(): void
     {
         foreach (['pt', 'ja', 'en'] as $language) {
-            \Illuminate\Support\Facades\Cache::forget('home_page_data_' . $language);
+            Cache::forget('home_page_data_'.$language);
         }
 
-        \Illuminate\Support\Facades\Cache::forget('home_page_data');
+        Cache::forget('home_page_data');
     }
 }

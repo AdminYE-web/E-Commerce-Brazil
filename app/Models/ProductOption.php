@@ -36,6 +36,7 @@ class ProductOption extends Model
         return $this->hasOne(OptionImage::class, 'option_id', 'option_id')
             ->where('is_main', 1);
     }
+
     public function childDependencies()
     {
         return $this->hasMany(OptionDependency::class, 'parent_option_id', 'option_id');
@@ -45,6 +46,7 @@ class ProductOption extends Model
     {
         return $this->hasMany(OptionDependency::class, 'child_option_id', 'option_id');
     }
+
     public function productAssignments()
     {
         return $this->hasMany(ProductOptionAssignment::class, 'option_id', 'option_id');
@@ -68,6 +70,7 @@ class ProductOption extends Model
             ])
             ->withTimestamps();
     }
+
     public function variants()
     {
         return $this->hasMany(ProductOptionVariant::class, 'option_id', 'option_id')

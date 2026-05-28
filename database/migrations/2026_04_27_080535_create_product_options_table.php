@@ -11,30 +11,30 @@ return new class extends Migration
      */
     public function up(): void
     {
-       Schema::create('product_options', function (Blueprint $table) {
-    $table->id('option_id');
+        Schema::create('product_options', function (Blueprint $table) {
+            $table->id('option_id');
 
-    $table->unsignedBigInteger('option_group_id');
+            $table->unsignedBigInteger('option_group_id');
 
-    $table->string('option_code')->nullable();
-    $table->string('option_name');
+            $table->string('option_code')->nullable();
+            $table->string('option_name');
 
-    $table->decimal('additional_price', 10, 2)->default(0);
-    // ราคาบวกเพิ่มต่อชิ้น หรือบวกเพิ่มต่อ order แล้วแต่ price_type
+            $table->decimal('additional_price', 10, 2)->default(0);
+            // ราคาบวกเพิ่มต่อชิ้น หรือบวกเพิ่มต่อ order แล้วแต่ price_type
 
-    $table->enum('price_type', ['per_item', 'per_order'])->default('per_item');
-    // per_item = เพิ่มต่อชิ้น
-    // per_order = เพิ่มครั้งเดียวต่อออเดอร์
+            $table->enum('price_type', ['per_item', 'per_order'])->default('per_item');
+            // per_item = เพิ่มต่อชิ้น
+            // per_order = เพิ่มครั้งเดียวต่อออเดอร์
 
-    $table->boolean('is_active')->default(true);
+            $table->boolean('is_active')->default(true);
 
-    $table->timestamps();
+            $table->timestamps();
 
-    $table->foreign('option_group_id')
-        ->references('option_group_id')
-        ->on('option_groups')
-        ->onDelete('cascade');
-});
+            $table->foreign('option_group_id')
+                ->references('option_group_id')
+                ->on('option_groups')
+                ->onDelete('cascade');
+        });
     }
 
     /**

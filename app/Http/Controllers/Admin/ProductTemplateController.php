@@ -18,10 +18,10 @@ class ProductTemplateController extends Controller
             ->where('language', $language)
             ->when($request->search, function ($query) use ($request) {
                 $query->whereHas('product', function ($productQuery) use ($request) {
-                    $productQuery->where('product_name', 'like', '%' . $request->search . '%');
+                    $productQuery->where('product_name', 'like', '%'.$request->search.'%');
                 })
-                ->orWhere('template_size', 'like', '%' . $request->search . '%')
-                ->orWhere('original_name', 'like', '%' . $request->search . '%');
+                    ->orWhere('template_size', 'like', '%'.$request->search.'%')
+                    ->orWhere('original_name', 'like', '%'.$request->search.'%');
             })
             ->orderBy('template_id', 'desc')
             ->paginate(15)
@@ -44,23 +44,23 @@ class ProductTemplateController extends Controller
 
     public function store(Request $request)
     {
-        
+
         $request->validate([
             'product_id' => ['required', 'exists:products,product_id'],
             'template_size' => ['nullable', 'string', 'max:100'],
             'template_file' => [
-    'required',
-    'file',
-    'max:51200',
-    function ($attribute, $value, $fail) {
-        $allowed = ['pdf', 'ai'];
-        $extension = strtolower($value->getClientOriginalExtension());
+                'required',
+                'file',
+                'max:51200',
+                function ($attribute, $value, $fail) {
+                    $allowed = ['pdf', 'ai'];
+                    $extension = strtolower($value->getClientOriginalExtension());
 
-        if (! in_array($extension, $allowed, true)) {
-            $fail('The template file must be a PDF or AI file.');
-        }
-    },
-],
+                    if (! in_array($extension, $allowed, true)) {
+                        $fail('The template file must be a PDF or AI file.');
+                    }
+                },
+            ],
             'is_active' => ['nullable', 'boolean'],
         ]);
 
@@ -104,24 +104,24 @@ class ProductTemplateController extends Controller
     {
         $request->validate([
             'product_id' => ['required', 'exists:products,product_id'],
-           'template_size' => ['nullable', 'string', 'max:100'],
+            'template_size' => ['nullable', 'string', 'max:100'],
             'template_file' => [
-    'nullable',
-    'file',
-    'max:51200',
-    function ($attribute, $value, $fail) {
-        if (! $value) {
-            return;
-        }
+                'nullable',
+                'file',
+                'max:51200',
+                function ($attribute, $value, $fail) {
+                    if (! $value) {
+                        return;
+                    }
 
-        $allowed = ['pdf', 'ai'];
-        $extension = strtolower($value->getClientOriginalExtension());
+                    $allowed = ['pdf', 'ai'];
+                    $extension = strtolower($value->getClientOriginalExtension());
 
-        if (! in_array($extension, $allowed, true)) {
-            $fail('The template file must be a PDF or AI file.');
-        }
-    },
-],
+                    if (! in_array($extension, $allowed, true)) {
+                        $fail('The template file must be a PDF or AI file.');
+                    }
+                },
+            ],
             'is_active' => ['nullable', 'boolean'],
         ]);
 
