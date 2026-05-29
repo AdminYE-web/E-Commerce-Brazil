@@ -17,10 +17,20 @@ class GalleryPageController extends Controller
         $purpose = $request->input('purpose');
         $sort = $request->input('sort', 'newest');
 
-        $categories = Category::orderBy('category_name')->get();
-        $materials = Material::orderBy('material_name')->get();
+        $langKey = $this->getLangKey();
 
-        $purposes = Gallery::where('is_active', 1)
+        $categories = Category::where('language', $langKey)
+            ->where('is_active', 1)
+            ->orderBy('category_name')
+            ->get();
+
+        $materials = Material::where('language', $langKey)
+            ->where('is_active', 1)
+            ->orderBy('material_name')
+            ->get();
+
+        $purposes = Gallery::where('language', $langKey)
+            ->where('is_active', 1)
             ->whereNotNull('purpose')
             ->where('purpose', '!=', '')
             ->select('purpose')
@@ -29,6 +39,7 @@ class GalleryPageController extends Controller
             ->pluck('purpose');
 
         $galleries = Gallery::with(['category', 'material'])
+            ->where('language', $langKey)
             ->where('is_active', 1)
             ->when($categoryId, function ($query) use ($categoryId) {
                 $query->where('category_id', $categoryId);
@@ -39,6 +50,7 @@ class GalleryPageController extends Controller
             ->when($purpose, function ($query) use ($purpose) {
                 $query->where('purpose', $purpose);
             });
+
         $galleryBanners = GalleryBanner::where('is_active', 1)
             ->orderBy('sort_order')
             ->orderBy('gallery_banner_id', 'desc')
@@ -63,7 +75,8 @@ class GalleryPageController extends Controller
             'materialId',
             'purpose',
             'sort',
-            'galleryBanners'
+            'galleryBanners',
+            'langKey'
         ));
     }
 }

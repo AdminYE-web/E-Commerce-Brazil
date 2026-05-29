@@ -599,22 +599,22 @@
                 });
             });
 
-            document.querySelectorAll('.product-type-link').forEach(function(link) {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
+            // document.querySelectorAll('.product-type-link').forEach(function(link) {
+            //     link.addEventListener('click', function(e) {
+            //         e.preventDefault();
 
-                    const selectedType = this.dataset.productType;
-                    productTypeInput.value = selectedType;
+            //         const selectedType = this.dataset.productType;
+            //         productTypeInput.value = selectedType;
 
-                    document.querySelectorAll('.product-type-link').forEach(function(item) {
-                        item.classList.remove('active');
-                    });
+            //         document.querySelectorAll('.product-type-link').forEach(function(item) {
+            //             item.classList.remove('active');
+            //         });
 
-                    this.classList.add('active');
+            //         this.classList.add('active');
 
-                    loadProducts();
-                });
-            });
+            //         loadProducts();
+            //     });
+            // });
 
             document.addEventListener('click', function(e) {
                 const paginationLink = e.target.closest('#products-pagination a');

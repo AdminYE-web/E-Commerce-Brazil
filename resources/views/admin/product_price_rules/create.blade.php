@@ -328,20 +328,9 @@
             flex-shrink: 0;
         }
 
-        .price-tier-card {
-            border: 1px solid #d9e0ea;
-            border-radius: 8px;
-            overflow: hidden;
-            background: #fff;
-            max-width: 680px;
-        }
+      
 
-        .price-tier-header {
-            display: grid;
-            grid-template-columns: 1fr 1fr 90px 70px;
-            background: #f8fafc;
-            border-bottom: 1px solid #d9e0ea;
-        }
+      
 
         .price-tier-title {
             padding: 14px 16px;
@@ -350,14 +339,45 @@
             color: #23324a;
         }
 
-        .price-tier-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr 90px 70px;
-            gap: 16px;
-            padding: 14px 16px;
-            border-bottom: 1px solid #eef2f7;
-            align-items: center;
-        }
+      .price-tier-card {
+    border: 1px solid #d9e0ea;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+    max-width: 680px;
+}
+
+.price-tier-header,
+.price-tier-row {
+    display: grid;
+    grid-template-columns: 280px 280px 90px 70px;
+    align-items: center;
+}
+
+.price-tier-header {
+    background: #f8fafc;
+    border-bottom: 1px solid #d9e0ea;
+}
+
+.price-tier-title {
+    padding: 14px 16px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #23324a;
+}
+
+.price-tier-row {
+    padding: 14px 16px;
+    border-bottom: 1px solid #eef2f7;
+}
+
+.price-tier-row > div {
+    padding-right: 16px;
+}
+
+.price-tier-row > div:last-child {
+    padding-right: 0;
+}
 
         .price-tier-row:last-child {
             border-bottom: 0;
@@ -388,12 +408,12 @@
             border-radius: 0 6px 6px 0;
         }
 
-        .tier-display {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
+       .tier-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-right: 0 !important;
+}
         .tier-display input[type="radio"] {
             width: 18px;
             height: 18px;
@@ -455,6 +475,53 @@
                 justify-content: flex-start;
             }
         }
+      .price-tier-card {
+    border: 1px solid #d9e0ea;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+    max-width: 1060px;
+}
+
+.price-tier-header,
+.price-tier-row {
+    display: grid;
+    grid-template-columns: 250px 250px 250px 90px 90px;
+    align-items: center;
+}
+
+.price-tier-header {
+    background: #f8fafc;
+    border-bottom: 1px solid #d9e0ea;
+}
+
+.price-tier-title {
+    padding: 14px 16px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #23324a;
+}
+
+.price-tier-row {
+    padding: 14px 16px;
+    border-bottom: 1px solid #eef2f7;
+}
+
+.price-tier-row > div {
+    padding-right: 16px;
+}
+
+.price-tier-row > div:last-child {
+    padding-right: 0;
+}
+
+.tier-display,
+.tier-action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-right: 0 !important;
+}
     </style>
 @endsection
 
@@ -532,6 +599,7 @@
                 <div class="price-tier-header">
                     <div class="price-tier-title">Quantity</div>
                     <div class="price-tier-title">Unit Price </div>
+                     <div class="price-tier-title">Unit Price With Tax</div>
                     <div class="price-tier-title">Display</div>
                     <div class="price-tier-title"></div>
                 </div>
@@ -543,6 +611,7 @@
                                 'min_qty' => '',
                                 'max_qty' => '',
                                 'unit_price' => '',
+                                 'unit_price_with_tax' => '',
                             ],
                         ]);
                     @endphp
@@ -563,6 +632,11 @@
                                 <input type="number" step="0.01" name="tiers[{{ $index }}][unit_price]"
                                     value="{{ $tier['unit_price'] ?? '' }}" class="tier-input" min="0">
                             </div>
+                            <div class="tier-input-group">
+    <span class="tier-prefix">¥</span>
+    <input type="number" step="0.01" name="tiers[{{ $index }}][unit_price_with_tax]"
+        value="{{ $tier['unit_price_with_tax'] ?? '' }}" class="tier-input" min="0">
+</div>
                             <div class="tier-display">
                                 <input type="radio" name="display_tier_index" value="{{ $index }}"
                                     {{ old('display_tier_index', 0) == $index ? 'checked' : '' }}>
@@ -619,6 +693,7 @@
                 const minInput = row.querySelector('input[name*="[min_qty]"]');
                 const maxInput = row.querySelector('input[name*="[max_qty]"]');
                 const priceInput = row.querySelector('input[name*="[unit_price]"]');
+                const priceWithTaxInput = row.querySelector('input[name*="[unit_price_with_tax]"]');
                 const displayRadio = row.querySelector('input[name="display_tier_index"]');
 
                 if (minInput) {
@@ -632,6 +707,9 @@
                 if (priceInput) {
                     priceInput.name = `tiers[${index}][unit_price]`;
                 }
+                if (priceWithTaxInput) {
+    priceWithTaxInput.name = `tiers[${index}][unit_price_with_tax]`;
+}
 
                 if (displayRadio) {
                     displayRadio.value = index;
@@ -688,6 +766,16 @@
                             min="0"
                         >
                     </div>
+                    <div class="tier-input-group">
+    <span class="tier-prefix">¥</span>
+    <input
+        type="number"
+        step="0.01"
+        name="tiers[${tierIndex}][unit_price_with_tax]"
+        class="tier-input"
+        min="0"
+    >
+</div>
 
                     <div class="tier-display">
                         <input

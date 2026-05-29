@@ -125,6 +125,7 @@ class ProductOptionController extends Controller
             'option_detail' => 'nullable|string',
             'free_from_qty' => 'nullable|integer|min:1',
             'translation_key' => 'nullable|string|max:255',
+            'additional_price_with_tax' => 'nullable|numeric|min:0',
 
         ]);
 
@@ -140,6 +141,7 @@ class ProductOptionController extends Controller
             'language' => session('admin_product_language', 'pt'),
             'free_from_qty' => $request->free_from_qty,
             'translation_key' => $request->translation_key ?: 'opt_' . strtolower(Str::random(12)),
+            'additional_price_with_tax' => $request->additional_price_with_tax,
 
         ]);
         if ($request->hasFile('images')) {
@@ -192,6 +194,7 @@ class ProductOptionController extends Controller
             'option_detail' => 'nullable|string',
             'free_from_qty' => 'nullable|integer|min:1',
             'translation_key' => 'nullable|string|max:255',
+            'additional_price_with_tax' => 'nullable|numeric|min:0',
 
         ]);
         if ($request->has('delete_images')) {
@@ -221,6 +224,7 @@ class ProductOptionController extends Controller
             'option_detail' => $request->option_detail,
             'free_from_qty' => $request->free_from_qty,
             'translation_key' => $request->translation_key ?: $productOption->translation_key ?: 'opt_' . strtolower(Str::random(12)),
+            'additional_price_with_tax' => $request->additional_price_with_tax,
         ]);
         if ($request->hasFile('images')) {
             $currentMaxSort = $productOption->images()->max('sort_order') ?? 0;

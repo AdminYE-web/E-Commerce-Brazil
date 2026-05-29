@@ -97,6 +97,7 @@ class CategoryController extends Controller
             'sort_order' => 'nullable|integer|min:0',
             'is_active' => 'nullable|boolean',
             'translation_key' => 'nullable|string|max:255',
+            'product_type' => 'required|in:1,2',
         ]);
 
         $imagePath = null;
@@ -114,6 +115,7 @@ class CategoryController extends Controller
             'is_active' => $request->has('is_active') ? 1 : 0,
             'language' => session('admin_product_language', 'pt'),
             'translation_key' => $request->translation_key ?: 'cat_' . strtolower(Str::random(12)),
+            'product_type' => $request->product_type,
         ]);
 
         Cache::forget('product_list_shared_components_pt');
@@ -140,6 +142,7 @@ class CategoryController extends Controller
             'sort_order' => 'nullable|integer|min:0',
             'is_active' => 'nullable|boolean',
             'translation_key' => 'nullable|string|max:255',
+            'product_type' => 'required|in:1,2',
         ]);
 
         $imagePath = $category->image_path;
@@ -156,6 +159,7 @@ class CategoryController extends Controller
         $category->update([
             'category_code' => $request->category_code,
             'category_name' => $request->category_name,
+            'product_type' => $request->product_type,
             'image_path' => $imagePath,
             'sort_order' => $request->sort_order ?? 0,
             'is_active' => $request->has('is_active') ? 1 : 0,
@@ -222,6 +226,7 @@ class CategoryController extends Controller
 
         $newCategory->language = $targetLanguage;
         $newCategory->translation_key = $translationKey;
+        $newCategory->product_type = $category->product_type;
         $newCategory->category_code = $category->category_code
             ? $category->category_code . '-' . $targetLanguage
             : null;

@@ -264,14 +264,7 @@
             background: #fee2e2;
         }
 
-        .price-tier-card {
-            border: 1px solid #d9e0ea;
-            border-radius: 8px;
-            overflow: hidden;
-            background: #fff;
-            max-width: 680px;
-        }
-
+      
 
 
         .price-tier-title {
@@ -279,22 +272,6 @@
             font-size: 15px;
             font-weight: 700;
             color: #23324a;
-        }
-
-        .price-tier-header {
-            display: grid;
-            grid-template-columns: 1fr 1fr 90px 70px;
-            background: #f8fafc;
-            border-bottom: 1px solid #d9e0ea;
-        }
-
-        .price-tier-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr 90px 70px;
-            gap: 16px;
-            padding: 14px 16px;
-            border-bottom: 1px solid #eef2f7;
-            align-items: center;
         }
 
         .tier-display {
@@ -455,6 +432,46 @@
             accent-color: #2563eb;
             flex-shrink: 0;
         }
+        .price-tier-card {
+    border: 1px solid #d9e0ea;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+    max-width: 1060px;
+}
+
+.price-tier-header,
+.price-tier-row {
+    display: grid;
+    grid-template-columns: 250px 250px 250px 90px 90px;
+    align-items: center;
+}
+
+.price-tier-header {
+    background: #f8fafc;
+    border-bottom: 1px solid #d9e0ea;
+}
+
+.price-tier-row {
+    padding: 14px 16px;
+    border-bottom: 1px solid #eef2f7;
+}
+
+.price-tier-row > div {
+    padding-right: 16px;
+}
+
+.price-tier-row > div:last-child {
+    padding-right: 0;
+}
+
+.tier-display,
+.tier-action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-right: 0 !important;
+}
     </style>
 @endsection
 
@@ -530,19 +547,20 @@
             <div class="section-title">Price Tiers</div>
 
             @php
-                $oldTiers = old(
-                    'tiers',
-                    $rule->tiers
-                        ->map(function ($tier) {
-                            return [
-                                'min_qty' => $tier->min_qty,
-                                'max_qty' => $tier->max_qty,
-                                'unit_price' => $tier->unit_price,
-                                'is_display' => $tier->is_display,
-                            ];
-                        })
-                        ->toArray(),
-                );
+               $oldTiers = old(
+    'tiers',
+    $rule->tiers
+        ->map(function ($tier) {
+            return [
+                'min_qty' => $tier->min_qty,
+                'max_qty' => $tier->max_qty,
+                'unit_price' => $tier->unit_price,
+                'unit_price_with_tax' => $tier->unit_price_with_tax,
+                'is_display' => $tier->is_display,
+            ];
+        })
+        ->toArray(),
+);
 
                 $displayTierIndex = old('display_tier_index');
 
@@ -557,14 +575,15 @@
                 }
 
                 if (empty($oldTiers)) {
-                    $oldTiers = [
-                        [
-                            'min_qty' => '',
-                            'max_qty' => '',
-                            'unit_price' => '',
-                            'is_display' => 1,
-                        ],
-                    ];
+                   $oldTiers = [
+    [
+        'min_qty' => '',
+        'max_qty' => '',
+        'unit_price' => '',
+        'unit_price_with_tax' => '',
+        'is_display' => 1,
+    ],
+];
 
                     $displayTierIndex = 0;
                 }
@@ -574,6 +593,7 @@
                 <div class="price-tier-header">
                     <div class="price-tier-title">Quantity</div>
                     <div class="price-tier-title">Unit Price </div>
+                     <div class="price-tier-title">Unit Price With Tax</div>
                     <div class="price-tier-title">Display</div>
                     <div class="price-tier-title"></div>
                 </div>
@@ -597,6 +617,12 @@
                                 <input type="number" step="0.01" name="tiers[{{ $index }}][unit_price]"
                                     value="{{ $tier['unit_price'] ?? '' }}" class="tier-input" min="0">
                             </div>
+                            <div class="tier-input-group">
+    <span class="tier-prefix">¥</span>
+
+    <input type="number" step="0.01" name="tiers[{{ $index }}][unit_price_with_tax]"
+        value="{{ $tier['unit_price_with_tax'] ?? '' }}" class="tier-input" min="0">
+</div>
                             <div class="tier-display">
                                 <input type="radio" name="display_tier_index" value="{{ $index }}"
                                     {{ (int) $displayTierIndex === (int) $index ? 'checked' : '' }}>
@@ -652,8 +678,9 @@
             document.querySelectorAll('.price-tier-row').forEach(function(row, index) {
                 const minInput = row.querySelector('input[name*="[min_qty]"]');
                 const maxInput = row.querySelector('input[name*="[max_qty]"]');
-                const priceInput = row.querySelector('input[name*="[unit_price]"]');
-                const displayRadio = row.querySelector('input[name="display_tier_index"]');
+                const priceInput = row.querySelector('input[name*="[unit_price]"]:not([name*="[unit_price_with_tax]"])');
+const priceWithTaxInput = row.querySelector('input[name*="[unit_price_with_tax]"]');
+const displayRadio = row.querySelector('input[name="display_tier_index"]');
 
                 if (minInput) {
                     minInput.name = `tiers[${index}][min_qty]`;
@@ -666,6 +693,9 @@
                 if (priceInput) {
                     priceInput.name = `tiers[${index}][unit_price]`;
                 }
+                if (priceWithTaxInput) {
+    priceWithTaxInput.name = `tiers[${index}][unit_price_with_tax]`;
+}
 
                 if (displayRadio) {
                     displayRadio.value = index;
@@ -724,6 +754,17 @@
                             min="0"
                         >
                     </div>
+                    <div class="tier-input-group">
+    <span class="tier-prefix">¥</span>
+
+    <input
+        type="number"
+        step="0.01"
+        name="tiers[${tierIndex}][unit_price_with_tax]"
+        class="tier-input"
+        min="0"
+    >
+</div>
 
                     <div class="tier-display">
                         <input

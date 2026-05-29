@@ -11,7 +11,7 @@
     <ul class="nav-list">
         {{-- <li class="nav-item">
             <a href="{{ route('admin.dashboard') }}"
-               class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                 Dashboard
             </a>
         </li> --}}
@@ -153,6 +153,31 @@
                     <a href="{{ route('admin.articles.index') }}"
                         class="sub-nav-link {{ request()->routeIs('admin.articles.*') ? 'active' : '' }}">
                         Articles
+                    </a>
+                </li>
+                {{-- <li>
+                    <a href="{{ route('admin.article-banners.index') }}"
+                        class="sub-nav-link {{ request()->routeIs('admin.article-banners.*') ? 'active' : '' }}">
+                        Article Banners
+                    </a>
+                </li> --}}
+            </ul>
+        </li>
+        @php
+            $systemMenuActive = request()->routeIs('admin.system-management.*');
+        @endphp
+        <li class="nav-item has-dropdown {{ $systemMenuActive ? 'open' : '' }}">
+            <button type="button" class="nav-link dropdown-toggle {{ $systemMenuActive ? 'active' : '' }}"
+                onclick="this.closest('.has-dropdown').classList.toggle('open')">
+                <span>System</span>
+                <span class="dropdown-arrow">▾</span>
+            </button>
+
+            <ul class="sub-nav">
+                <li>
+                    <a href="{{ route('admin.system-management.index') }}"
+                        class="sub-nav-link {{ request()->routeIs('admin.system-management.*') ? 'active' : '' }}">
+                        System Management
                     </a>
                 </li>
                 {{-- <li>

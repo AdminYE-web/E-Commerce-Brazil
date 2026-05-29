@@ -70,6 +70,38 @@ class AdminContactSubmissionsTest extends TestCase
             ->assertSee('sample-logo.pdf');
     }
 
+    public function test_admin_can_send_reply_to_contact_submission(): void
+    {
+        $admin = $this->adminUser();
+
+        $submission = ContactSubmission::create([
+            'contact_method' => 'email',
+            'subject' => 'general',
+            'name' => 'John Doe',
+            'email' => 'john@example.com',
+            'message' => 'Hello, I have a question.',
+            'ip_address' => '127.0.0.1',
+        ]);
+
+        $response = $this
+            ->actingAs($admin, 'admin')
+            ->post(route('admin.contact-submissions.send-reply', $submission), [
+                'reply_subject' => 'Re: Hello, I have a question.',
+                'reply_message' => 'This is our helpful response.',
+            ]);
+
+        $response->assertRedirect(route('admin.contact-submissions.show', $submission));
+
+        $this->assertDatabaseHas('contact_submission_replies', [
+            'contact_submission_id' => $submission->id,
+            'admin_user_id' => $admin->id,
+            'admin_name' => $admin->name,
+            'admin_email' => $admin->email,
+            'reply_subject' => 'Re: Hello, I have a question.',
+            'reply_message' => 'This is our helpful response.',
+        ]);
+    }
+
     private function adminUser(): AdminUser
     {
         return AdminUser::create([

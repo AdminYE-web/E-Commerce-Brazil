@@ -49,19 +49,31 @@
         color: var(--fg-dark);
     }
 
-    .form-group input[type="text"],
-    .form-group input[type="number"],
-    .form-group input[type="file"] {
-        width: 100%;
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        padding: 10px 12px;
-        font-size: 14px;
-        font-family: inherit;
-        background: #fff;
-        color: var(--fg);
-    }
-
+  .form-group input[type="text"],
+.form-group input[type="number"],
+.form-group input[type="file"],
+.form-group select {
+    width: 100%;
+    height: 42px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0 12px;
+    font-size: 14px;
+    font-family: inherit;
+    background: #fff;
+    color: var(--fg);
+    outline: none;
+}
+.form-group select {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, #6b7280 50%),
+        linear-gradient(135deg, #6b7280 50%, transparent 50%);
+    background-position: calc(100% - 18px) 17px, calc(100% - 13px) 17px;
+    background-size: 5px 5px, 5px 5px;
+    background-repeat: no-repeat;
+    padding-right: 36px;
+}
     .section-title {
         margin: 28px 0 16px;
         padding-top: 20px;
@@ -215,6 +227,17 @@
                     value="{{ old('category_code', $category->category_code) }}"
                 >
             </div>
+            <div class="form-group">
+    <label>Product Type</label>
+    <select name="product_type" required>
+        <option value="1" {{ old('product_type', $category->product_type ?? 1) == 1 ? 'selected' : '' }}>
+            Hotstrap
+        </option>
+        <option value="2" {{ old('product_type', $category->product_type ?? 1) == 2 ? 'selected' : '' }}>
+            Hotmobily
+        </option>
+    </select>
+</div>
             <div class="form-group">
     <label>Translation Key</label>
     <input type="text"

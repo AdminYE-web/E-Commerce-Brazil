@@ -15,6 +15,7 @@ class ProductPriceRuleTier extends Model
         'unit_price',
         'is_active',
         'is_display',
+        'unit_price_with_tax',
     ];
 
     public function rule()

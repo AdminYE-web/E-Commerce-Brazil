@@ -20,6 +20,7 @@ class ProductOption extends Model
         'is_active',
         'language',
         'translation_key',
+        'additional_price_with_tax',
     ];
 
     public function group()

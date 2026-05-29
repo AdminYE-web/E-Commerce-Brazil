@@ -20,7 +20,7 @@ class HomeController extends Controller
         $langKey = $this->getLangKey();
 
         // 3. ทำ cache key แยกตามภาษา
-        $cacheKey = 'home_page_data_'.$langKey;
+        $cacheKey = 'home_page_data_' . $langKey;
 
         // 4. Cache ข้อมูลตามภาษา
         $homeData = Cache::remember($cacheKey, 3600, function () use ($langKey) {
@@ -54,8 +54,10 @@ class HomeController extends Controller
                 'materialHomes' => MaterialHome::with(['material' => function ($query) use ($langKey) {
                     $query->where('language', $langKey);
                 }])
+                    ->where('language', $langKey)
                     ->where('is_active', 1)
                     ->orderBy('sort_order')
+                    ->orderBy('material_home_id', 'desc')
                     ->get(),
 
                 'homeBanners' => HomeBanner::where('is_active', 1)

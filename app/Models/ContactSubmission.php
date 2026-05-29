@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\ContactSubmissionReply;
 use Illuminate\Database\Eloquent\Model;
 
 class ContactSubmission extends Model
@@ -23,5 +24,10 @@ class ContactSubmission extends Model
         'attachment_path',
         'attachment_original_name',
         'ip_address',
+        'status_reply',
     ];
+    public function replies()
+    {
+        return $this->hasMany(ContactSubmissionReply::class, 'contact_submission_id');
+    }
 }

@@ -49,17 +49,24 @@
         color: var(--fg-dark);
     }
 
-    .form-group input[type="text"] {
-        width: 100%;
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        padding: 10px 12px;
-        font-size: 14px;
-        font-family: inherit;
-        background: #fff;
-        color: var(--fg);
-    }
-
+   .form-group input[type="text"],
+.form-group select {
+    width: 100%;
+    height: 42px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0 12px;
+    font-size: 14px;
+    font-family: inherit;
+    background: #fff;
+    color: var(--fg);
+    outline: none;
+}
+.form-group input[type="text"]:focus,
+.form-group select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
     .section-title {
         margin: 28px 0 16px;
         padding-top: 20px;
@@ -185,6 +192,17 @@
                 <label>Material Code</label>
                 <input type="text" name="material_code" value="{{ old('material_code', $material->material_code) }}">
             </div>
+            <div class="form-group">
+    <label>Product Type</label>
+    <select name="product_type" required>
+        <option value="1" {{ old('product_type', $material->product_type ?? 1) == 1 ? 'selected' : '' }}>
+            Hotstrap
+        </option>
+        <option value="2" {{ old('product_type', $material->product_type ?? 1) == 2 ? 'selected' : '' }}>
+            Hotmobily
+        </option>
+    </select>
+</div>
             <div class="form-group">
     <label>Translation Key</label>
     <input type="text"

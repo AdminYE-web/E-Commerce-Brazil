@@ -1,5 +1,7 @@
 <?php
 
+
+use App\Http\Controllers\Admin\SystemManagementController;
 use App\Http\Controllers\CancelamentoController;
 use App\Http\Controllers\AccountAddressController;
 use App\Http\Controllers\AccountContactController;
@@ -352,6 +354,18 @@ Route::prefix('admin-panel')->name('admin.')->group(function () {
             ->name('galleries.duplicate-translation');
         Route::post('articles/{article}/duplicate-translation', [ArticleController::class, 'duplicateTranslation'])
             ->name('articles.duplicate-translation');
+
+        Route::get('contact-submissions/{submission}/reply', [ContactSubmissionController::class, 'reply'])
+            ->name('contact-submissions.reply');
+
+        Route::post('contact-submissions/{submission}/reply', [ContactSubmissionController::class, 'sendReply'])
+            ->name('contact-submissions.send-reply');
+
+        Route::get('system-management', [SystemManagementController::class, 'index'])
+            ->name('system-management.index');
+
+        Route::post('system-management', [SystemManagementController::class, 'update'])
+            ->name('system-management.update');
     });
 });
 

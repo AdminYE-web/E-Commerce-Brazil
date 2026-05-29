@@ -91,6 +91,7 @@ class MaterialController extends Controller
             'material_name' => 'required|string|max:255',
             'is_active' => 'nullable|boolean',
             'translation_key' => 'nullable|string|max:255',
+            'product_type' => 'required|in:1,2',
         ]);
 
         Material::create([
@@ -99,6 +100,7 @@ class MaterialController extends Controller
             'material_name' => $request->material_name,
             'is_active' => $request->has('is_active') ? 1 : 0,
             'language' => session('admin_product_language', 'pt'),
+            'product_type' => $request->product_type,
         ]);
 
         Cache::forget('home_page_data');
@@ -124,6 +126,7 @@ class MaterialController extends Controller
             'material_name' => 'required|string|max:255',
             'is_active' => 'nullable|boolean',
             'translation_key' => 'nullable|string|max:255',
+            'product_type' => 'required|in:1,2',
         ]);
 
         $material->update([
@@ -131,6 +134,7 @@ class MaterialController extends Controller
             'translation_key' => $request->translation_key ?: $material->translation_key ?: 'mat_' . strtolower(Str::random(12)),
             'material_name' => $request->material_name,
             'is_active' => $request->has('is_active') ? 1 : 0,
+            'product_type' => $request->product_type,
         ]);
 
         Cache::forget('home_page_data');
@@ -195,6 +199,7 @@ class MaterialController extends Controller
         $newMaterial = $material->replicate();
 
         $newMaterial->language = $targetLanguage;
+        $newMaterial->product_type = $material->product_type;
         $newMaterial->translation_key = $translationKey;
         $newMaterial->material_code = $material->material_code
             ? $material->material_code . '-' . $targetLanguage

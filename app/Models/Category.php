@@ -16,6 +16,7 @@ class Category extends Model
         'is_active',
         'language',
         'translation_key',
+        'product_type',
     ];
 
     public function products()

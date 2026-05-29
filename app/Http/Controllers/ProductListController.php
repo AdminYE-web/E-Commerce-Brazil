@@ -18,28 +18,38 @@ class ProductListController extends Controller
     {
         $categoryIds = $request->input('categories', []);
         $materialIds = $request->input('materials', []);
-        $productType = $request->input('product_type', 1);
+        $productType = (int) $request->input('product_type', 1);
+
+        if (!in_array($productType, [1, 2], true)) {
+            $productType = 1;
+        }
 
         $langKey = $this->getLangKey();
 
-        $sharedData = Cache::remember('product_list_shared_components_'.$langKey, 86400, function () use ($langKey) {
-            return [
-                'banners' => ProductListBanner::where('is_active', 1)
-                    ->orderBy('sort_order')
-                    ->orderBy('banner_id', 'desc')
-                    ->get(),
+        $sharedData = Cache::remember(
+            'product_list_shared_components_' . $langKey . '_type_' . $productType,
+            86400,
+            function () use ($langKey, $productType) {
+                return [
+                    'banners' => ProductListBanner::where('is_active', 1)
+                        ->orderBy('sort_order')
+                        ->orderBy('banner_id', 'desc')
+                        ->get(),
 
-                'categories' => Category::where('is_active', 1)
-                    ->where('language', $langKey)
-                    ->orderBy('category_id', 'desc')
-                    ->get(),
+                    'categories' => Category::where('is_active', 1)
+                        ->where('language', $langKey)
+                        ->where('product_type', $productType)
+                        ->orderBy('category_id', 'desc')
+                        ->get(),
 
-                'materials' => Material::where('is_active', 1)
-                    ->where('language', $langKey)
-                    ->orderBy('material_name')
-                    ->get(),
-            ];
-        });
+                    'materials' => Material::where('is_active', 1)
+                        ->where('language', $langKey)
+                        ->where('product_type', $productType)
+                        ->orderBy('material_name')
+                        ->get(),
+                ];
+            }
+        );
 
         $banners = $sharedData['banners'];
         $categories = $sharedData['categories'];
@@ -194,7 +204,7 @@ class ProductListController extends Controller
                             return $option->language === $langKey;
                         })
                         ->pluck('option_id')
-                        ->map(fn ($id) => (int) $id)
+                        ->map(fn($id) => (int) $id)
                         ->values(),
                     'tiers' => $rule->tiers
                         ->map(function ($tier) {
@@ -320,7 +330,7 @@ class ProductListController extends Controller
                             return $option->language === $langKey;
                         })
                         ->pluck('option_id')
-                        ->map(fn ($id) => (int) $id)
+                        ->map(fn($id) => (int) $id)
                         ->values(),
                     'tiers' => $rule->tiers
                         ->map(function ($tier) {
@@ -525,7 +535,7 @@ class ProductListController extends Controller
                             return $option->language === $langKey;
                         })
                         ->pluck('option_id')
-                        ->map(fn ($id) => (int) $id)
+                        ->map(fn($id) => (int) $id)
                         ->values(),
                     'tiers' => $rule->tiers
                         ->map(function ($tier) {

@@ -23,10 +23,10 @@ class ProductPriceRuleController extends Controller
             })
             ->when($search, function ($query) use ($search) {
                 $query->where(function ($q) use ($search) {
-                    $q->where('rule_name', 'like', '%'.$search.'%')
+                    $q->where('rule_name', 'like', '%' . $search . '%')
                         ->orWhereHas('product', function ($productQuery) use ($search) {
-                            $productQuery->where('product_name', 'like', '%'.$search.'%')
-                                ->orWhere('product_code', 'like', '%'.$search.'%');
+                            $productQuery->where('product_name', 'like', '%' . $search . '%')
+                                ->orWhere('product_code', 'like', '%' . $search . '%');
                         });
                 });
             })
@@ -73,6 +73,7 @@ class ProductPriceRuleController extends Controller
             'tiers.*.min_qty' => 'required|integer|min:1',
             'tiers.*.max_qty' => 'nullable|integer|min:1',
             'tiers.*.unit_price' => 'required|numeric|min:0',
+            'tiers.*.unit_price_with_tax' => 'nullable|numeric|min:0',
 
             'is_active' => 'nullable|boolean',
             'display_tier_index' => 'nullable|integer|min:0',
@@ -126,6 +127,7 @@ class ProductPriceRuleController extends Controller
                 'unit_price' => $tier['unit_price'],
                 'is_display' => (int) $tier['form_index'] === $displayTierIndex ? 1 : 0,
                 'is_active' => 1,
+                'unit_price_with_tax' => $tier['unit_price_with_tax'] ?? null,
             ]);
         }
 
@@ -178,6 +180,7 @@ class ProductPriceRuleController extends Controller
             'tiers.*.min_qty' => 'required|integer|min:1',
             'tiers.*.max_qty' => 'nullable|integer|min:1',
             'tiers.*.unit_price' => 'required|numeric|min:0',
+            'tiers.*.unit_price_with_tax' => 'nullable|numeric|min:0',
 
             'is_active' => 'nullable|boolean',
             'display_tier_index' => 'nullable|integer|min:0',
@@ -234,6 +237,7 @@ class ProductPriceRuleController extends Controller
                 'unit_price' => $tier['unit_price'],
                 'is_display' => (int) $tier['form_index'] === $displayTierIndex ? 1 : 0,
                 'is_active' => 1,
+                'unit_price_with_tax' => $tier['unit_price_with_tax'] ?? null,
             ]);
         }
 

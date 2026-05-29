@@ -265,6 +265,12 @@
                     <input type="number" step="0.01" name="additional_price" value="{{ old('additional_price', 0) }}">
                 </div>
                 <div class="form-group">
+                    <label>Additional Price With Tax</label>
+
+                    <input type="number" step="0.01" name="additional_price_with_tax"
+                        value="{{ old('additional_price_with_tax') }}" min="0" placeholder="เช่น 220">
+                </div>
+                <div class="form-group">
                     <label>Free From Quantity</label>
 
                     <input type="number" name="free_from_qty" value="{{ old('free_from_qty') }}" min="1"
