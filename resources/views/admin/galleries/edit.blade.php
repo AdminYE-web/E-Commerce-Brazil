@@ -216,6 +216,14 @@
                 <label>Gallery Title</label>
                 <input type="text" name="title" value="{{ old('title', $gallery->title) }}">
             </div>
+            <div class="form-group">
+    <label>Translation Key</label>
+    <input type="text"
+        name="translation_key"
+        value="{{ old('translation_key', $gallery->translation_key ?? '') }}"
+        placeholder="เช่น gal_xxxxxxxx">
+    <small>ใช้สำหรับผูก Gallery เดียวกันข้ามภาษา</small>
+</div>
 
             <div class="form-group">
                 <label>Category</label>

@@ -222,6 +222,13 @@
                     <label>Group Code</label>
                     <input type="text" name="group_code" value="{{ old('group_code') }}" placeholder="เช่น pouch_type">
                 </div>
+                <div class="form-group">
+                    <label>Translation Key</label>
+                    <input type="text" name="translation_key" value="{{ old('translation_key', $translationKey ?? '') }}"
+                        placeholder="เช่น og_xxxxxxxx">
+
+                    <small>ใช้สำหรับผูก option group เดียวกันข้ามภาษา</small>
+                </div>
 
                 <div class="form-group">
                     <label>Group Name</label>
@@ -234,8 +241,7 @@
                         <option value="">-- No Parent --</option>
 
                         @foreach ($parentGroups as $parent)
-                            <option value="{{ $parent->option_group_id }}"
-                                {{ old('parent_group_id') == $parent->option_group_id ? 'selected' : '' }}>
+                            <option value="{{ $parent->option_group_id }}" {{ old('parent_group_id') == $parent->option_group_id ? 'selected' : '' }}>
                                 {{ $parent->group_name }}
                             </option>
                         @endforeach
@@ -261,13 +267,11 @@
                             select_detail - Dropdown พร้อมรูปและรายละเอียด
                         </option>
 
-                        <option value="image_card_variant"
-                            {{ old('display_type') == 'image_card_variant' ? 'selected' : '' }}>
+                        <option value="image_card_variant" {{ old('display_type') == 'image_card_variant' ? 'selected' : '' }}>
                             image_card_variant - การ์ดรูปภาพพร้อมเลือกสี
                         </option>
 
-                        <option value="image_grid_compact"
-                            {{ old('display_type') == 'image_grid_compact' ? 'selected' : '' }}>
+                        <option value="image_grid_compact" {{ old('display_type') == 'image_grid_compact' ? 'selected' : '' }}>
                             image_grid_compact - การ์ดรูปภาพเล็กหลายคอลัมน์
                         </option>
 
@@ -275,8 +279,7 @@
                             grouped_buttons - หัวข้อหลักพร้อมคำถามย่อยหลายชุด
                         </option>
 
-                        <option value="previous_order_design"
-                            {{ old('display_type') == 'previous_order_design' ? 'selected' : '' }}>
+                        <option value="previous_order_design" {{ old('display_type') == 'previous_order_design' ? 'selected' : '' }}>
                             previous_order_design - Yes/No + Previous Order No
                         </option>
                     </select>
@@ -289,7 +292,8 @@
 
                 <div class="form-group full">
                     <label>Help Text</label>
-                    <textarea name="help_text" rows="4" placeholder="ข้อความที่จะแสดงเมื่อกดปุ่ม info">{{ old('help_text') }}</textarea>
+                    <textarea name="help_text" rows="4"
+                        placeholder="ข้อความที่จะแสดงเมื่อกดปุ่ม info">{{ old('help_text') }}</textarea>
                 </div>
             </div>
 
@@ -297,8 +301,7 @@
 
             <div class="checkbox-grid">
                 <label>
-                    <input type="checkbox" name="option_group_main" value="1"
-                        {{ old('option_group_main') ? 'checked' : '' }}>
+                    <input type="checkbox" name="option_group_main" value="1" {{ old('option_group_main') ? 'checked' : '' }}>
                     Main Price Group
                     <small>ใช้เป็นเงื่อนไขหลักใน Product Price Rules</small>
                 </label>

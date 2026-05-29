@@ -128,64 +128,87 @@
             opacity: .45;
             pointer-events: none;
         }
-        .pagination-container nav > div:first-child {
-    display: none !important;
-}
 
-.pagination-container nav > div:last-child {
-    display: block !important;
-}
+        .pagination-container nav>div:first-child {
+            display: none !important;
+        }
 
-.pagination-container .pagination {
-    margin-top: 8px;
-}
-.product-option-search-form {
-    margin: 0 24px 18px;
-}
+        .pagination-container nav>div:last-child {
+            display: block !important;
+        }
 
-.product-option-search-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-}
+        .pagination-container .pagination {
+            margin-top: 8px;
+        }
 
-.product-option-search-input {
-    width: 420px;
-    max-width: 100%;
-    height: 38px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 0 12px;
-    font-size: 14px;
-    background: #fff;
-}
+        .product-option-search-form {
+            margin: 0 24px 18px;
+        }
 
-.product-option-search-btn,
-.product-option-reset-btn {
-    height: 38px;
-    border-radius: 8px;
-    padding: 0 16px;
-    font-size: 14px;
-    font-weight: 600;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-}
+        .product-option-search-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
 
-.product-option-search-btn {
-    border: 0;
-    background: var(--accent);
-    color: #fff;
-    cursor: pointer;
-}
+        .product-option-search-input {
+            width: 420px;
+            max-width: 100%;
+            height: 38px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0 12px;
+            font-size: 14px;
+            background: #fff;
+        }
 
-.product-option-reset-btn {
-    border: 1px solid var(--border);
-    background: #fff;
-    color: var(--fg);
-}
+        .product-option-search-btn,
+        .product-option-reset-btn {
+            height: 38px;
+            border-radius: 8px;
+            padding: 0 16px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .product-option-search-btn {
+            border: 0;
+            background: var(--accent);
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .product-option-reset-btn {
+            border: 1px solid var(--border);
+            background: #fff;
+            color: var(--fg);
+        }
+
+        .translation-missing-row {
+            opacity: 0.45;
+            background: #f8fafc;
+        }
+
+        .translation-missing-row .product-name::after {
+            content: "Missing translation";
+            display: inline-block;
+            margin-left: 8px;
+            padding: 2px 7px;
+            border-radius: 999px;
+            background: #fef3c7;
+            color: #92400e;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .action-link.duplicate {
+            color: #2563eb;
+        }
     </style>
 @endsection
 
@@ -207,26 +230,21 @@
             </div>
         </div>
         <form method="GET" action="{{ route('admin.product-options.index') }}" class="product-option-search-form">
-    <div class="product-option-search-row">
-        <input
-            type="text"
-            name="search"
-            value="{{ request('search') }}"
-            class="product-option-search-input"
-            placeholder="Search by option name, option code or group..."
-        >
+            <div class="product-option-search-row">
+                <input type="text" name="search" value="{{ request('search') }}" class="product-option-search-input"
+                    placeholder="Search by option name, option code or group...">
 
-        <button type="submit" class="product-option-search-btn">
-            Search
-        </button>
+                <button type="submit" class="product-option-search-btn">
+                    Search
+                </button>
 
-        @if(request('search'))
-            <a href="{{ route('admin.product-options.index') }}" class="product-option-reset-btn">
-                Reset
-            </a>
-        @endif
-    </div>
-</form>
+                @if(request('search'))
+                    <a href="{{ route('admin.product-options.index') }}" class="product-option-reset-btn">
+                        Reset
+                    </a>
+                @endif
+            </div>
+        </form>
 
         @if (session('success'))
             <div class="alert-success">
@@ -248,7 +266,7 @@
 
             <tbody>
                 @forelse ($options as $option)
-                    <tr>
+                    <tr class="{{ !empty($option->is_missing_translation) ? 'translation-missing-row' : '' }}">
                         <td>
                             <div class="product-cell">
                                 @if ($option->mainImage)
@@ -293,26 +311,37 @@
 
                         <td style="text-align: right;">
                             <div class="action-btns" style="justify-content: flex-end;">
-                                <a href="{{ route('admin.product-options.edit', $option->option_id) }}"
-                                    class="action-link">
-                                    Edit
-                                </a>
+                                @if (!empty($option->is_missing_translation))
+                                    <form action="{{ route('admin.product-options.duplicate-translation', $option->option_id) }}"
+                                        method="POST" style="display:inline;">
+                                        @csrf
 
-                                <a href="{{ route('admin.product-options.variants.index', $option->option_id) }}"
-                                    class="action-link">
-                                    Variants
-                                </a>
+                                        <button type="submit" class="action-link duplicate"
+                                            onclick="return confirm('Duplicate this PT option for {{ strtoupper($language) }}?')">
+                                            Duplicate
+                                        </button>
+                                    </form>
+                                @else
+                                    <a href="{{ route('admin.product-options.edit', $option->option_id) }}" class="action-link">
+                                        Edit
+                                    </a>
 
-                                <form action="{{ route('admin.product-options.destroy', $option->option_id) }}"
-                                    method="POST" style="display:inline;">
-                                    @csrf
-                                    @method('DELETE')
+                                    <a href="{{ route('admin.product-options.variants.index', $option->option_id) }}"
+                                        class="action-link">
+                                        Variants
+                                    </a>
 
-                                    <button type="submit" class="action-link delete"
-                                        onclick="return confirm('Delete this product option?')">
-                                        Delete
-                                    </button>
-                                </form>
+                                    <form action="{{ route('admin.product-options.destroy', $option->option_id) }}" method="POST"
+                                        style="display:inline;">
+                                        @csrf
+                                        @method('DELETE')
+
+                                        <button type="submit" class="action-link delete"
+                                            onclick="return confirm('Delete this product option?')">
+                                            Delete
+                                        </button>
+                                    </form>
+                                @endif
                             </div>
                         </td>
                     </tr>

@@ -215,6 +215,14 @@
                     value="{{ old('category_code', $category->category_code) }}"
                 >
             </div>
+            <div class="form-group">
+    <label>Translation Key</label>
+    <input type="text"
+        name="translation_key"
+        value="{{ old('translation_key', $category->translation_key ?? '') }}"
+        placeholder="เช่น cat_xxxxxxxx">
+    <small>ใช้สำหรับผูก category เดียวกันข้ามภาษา</small>
+</div>
 
             <div class="form-group">
                 <label>Category Name</label>

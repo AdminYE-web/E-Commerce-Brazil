@@ -18,6 +18,8 @@ class Gallery extends Model
         'cover_image',
         'is_active',
         'sort_order',
+        'language',
+        'translation_key',
     ];
 
     protected $casts = [

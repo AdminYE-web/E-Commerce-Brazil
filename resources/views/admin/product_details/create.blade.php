@@ -403,7 +403,7 @@
             </div>
 
             <div class="form-actions">
-                <a href="{{ route('admin.product-details.index') }}" class="btn-outline">
+                <a href="{{ route('admin.products.index') }}" class="btn-outline">
                     Cancel
                 </a>
 

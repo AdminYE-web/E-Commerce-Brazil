@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+
+use Illuminate\Support\Str;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Gallery;
@@ -15,34 +17,107 @@ class GalleryController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
+        $language = session('admin_product_language', 'pt');
+        $baseLanguage = 'pt';
 
-        $galleries = Gallery::with(['category', 'material', 'images'])
-            ->when($search, function ($query) use ($search) {
-                $query->where('title', 'like', '%'.$search.'%')
-                    ->orWhere('purpose', 'like', '%'.$search.'%')
-                    ->orWhereHas('category', function ($q) use ($search) {
-                        $q->where('category_name', 'like', '%'.$search.'%');
-                    })
-                    ->orWhereHas('material', function ($q) use ($search) {
-                        $q->where('material_name', 'like', '%'.$search.'%');
+        if ($language === $baseLanguage) {
+            $galleries = Gallery::with(['category', 'material', 'images'])
+                ->where('language', $baseLanguage)
+                ->when($search, function ($query) use ($search) {
+                    $query->where(function ($q) use ($search) {
+                        $q->where('title', 'like', '%' . $search . '%')
+                            ->orWhere('purpose', 'like', '%' . $search . '%')
+                            ->orWhereHas('category', function ($categoryQuery) use ($search) {
+                                $categoryQuery->where('category_name', 'like', '%' . $search . '%');
+                            })
+                            ->orWhereHas('material', function ($materialQuery) use ($search) {
+                                $materialQuery->where('material_name', 'like', '%' . $search . '%');
+                            });
                     });
+                })
+                ->orderBy('sort_order')
+                ->orderBy('gallery_id', 'desc')
+                ->paginate(15)
+                ->withQueryString();
+
+            return view('admin.galleries.index', compact('galleries', 'search', 'language'));
+        }
+
+        $baseGalleries = Gallery::with(['category', 'material', 'images'])
+            ->where('language', $baseLanguage)
+            ->when($search, function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('title', 'like', '%' . $search . '%')
+                        ->orWhere('purpose', 'like', '%' . $search . '%')
+                        ->orWhereHas('category', function ($categoryQuery) use ($search) {
+                            $categoryQuery->where('category_name', 'like', '%' . $search . '%');
+                        })
+                        ->orWhereHas('material', function ($materialQuery) use ($search) {
+                            $materialQuery->where('material_name', 'like', '%' . $search . '%');
+                        });
+                });
             })
             ->orderBy('sort_order')
             ->orderBy('gallery_id', 'desc')
             ->paginate(15)
             ->withQueryString();
 
-        return view('admin.galleries.index', compact('galleries', 'search'));
+        $translationKeys = $baseGalleries
+            ->getCollection()
+            ->pluck('translation_key')
+            ->filter()
+            ->values();
+
+        $translatedGalleries = Gallery::with(['category', 'material', 'images'])
+            ->where('language', $language)
+            ->whereIn('translation_key', $translationKeys)
+            ->get()
+            ->keyBy('translation_key');
+
+        $baseGalleries->getCollection()->transform(function ($baseGallery) use ($translatedGalleries) {
+            $translatedGallery = $translatedGalleries->get($baseGallery->translation_key);
+
+            if ($translatedGallery) {
+                $translatedGallery->is_missing_translation = false;
+                $translatedGallery->base_gallery_id = $baseGallery->gallery_id;
+
+                return $translatedGallery;
+            }
+
+            $baseGallery->is_missing_translation = true;
+            $baseGallery->base_gallery_id = $baseGallery->gallery_id;
+
+            return $baseGallery;
+        });
+
+        $galleries = $baseGalleries;
+
+        return view('admin.galleries.index', compact('galleries', 'search', 'language'));
     }
 
     public function create()
     {
-        $categories = Category::orderBy('category_name')->get();
-        $materials = Material::orderBy('material_name')->get();
+        $language = session('admin_product_language', 'pt');
 
-        return view('admin.galleries.create', compact('categories', 'materials'));
+        $categories = Category::where('language', $language)
+            ->where('is_active', 1)
+            ->orderBy('category_name')
+            ->get();
+
+        $materials = Material::where('language', $language)
+            ->where('is_active', 1)
+            ->orderBy('material_name')
+            ->get();
+
+        $translationKey = 'gal_' . strtolower(Str::random(12));
+
+        return view('admin.galleries.create', compact(
+            'categories',
+            'materials',
+            'language',
+            'translationKey'
+        ));
     }
-
     public function store(Request $request)
     {
         $request->validate([
@@ -57,6 +132,7 @@ class GalleryController extends Controller
             'is_active' => ['nullable', 'boolean'],
             'sort_order' => ['nullable', 'integer'],
             'product_link' => ['nullable', 'string', 'max:255'],
+            'translation_key' => ['nullable', 'string', 'max:255'],
         ]);
 
         $coverImagePath = null;
@@ -69,6 +145,8 @@ class GalleryController extends Controller
             'title' => $request->title,
             'category_id' => $request->category_id,
             'material_id' => $request->material_id,
+            'language' => session('admin_product_language', 'pt'),
+            'translation_key' => $request->translation_key ?: 'gal_' . strtolower(Str::random(12)),
             'purpose' => $request->purpose,
             'gallery_date' => $request->gallery_date,
             'cover_image' => $coverImagePath,
@@ -99,10 +177,24 @@ class GalleryController extends Controller
     {
         $gallery->load(['images', 'category', 'material']);
 
-        $categories = Category::orderBy('category_name')->get();
-        $materials = Material::orderBy('material_name')->get();
+        $language = $gallery->language ?? session('admin_product_language', 'pt');
 
-        return view('admin.galleries.edit', compact('gallery', 'categories', 'materials'));
+        $categories = Category::where('language', $language)
+            ->where('is_active', 1)
+            ->orderBy('category_name')
+            ->get();
+
+        $materials = Material::where('language', $language)
+            ->where('is_active', 1)
+            ->orderBy('material_name')
+            ->get();
+
+        return view('admin.galleries.edit', compact(
+            'gallery',
+            'categories',
+            'materials',
+            'language'
+        ));
     }
 
     public function update(Request $request, Gallery $gallery)
@@ -122,6 +214,7 @@ class GalleryController extends Controller
             'is_active' => ['nullable', 'boolean'],
             'sort_order' => ['nullable', 'integer'],
             'product_link' => ['nullable', 'string', 'max:255'],
+            'translation_key' => ['nullable', 'string', 'max:255'],
         ]);
 
         $coverImagePath = $gallery->cover_image;
@@ -146,6 +239,7 @@ class GalleryController extends Controller
             'title' => $request->title,
             'category_id' => $request->category_id,
             'material_id' => $request->material_id,
+            'translation_key' => $request->translation_key ?: $gallery->translation_key ?: 'gal_' . strtolower(Str::random(12)),
             'purpose' => $request->purpose,
             'gallery_date' => $request->gallery_date,
             'cover_image' => $coverImagePath,
@@ -186,6 +280,101 @@ class GalleryController extends Controller
         return redirect()
             ->route('admin.galleries.edit', $gallery->gallery_id)
             ->with('success', 'Gallery updated successfully.');
+    }
+
+    public function duplicateTranslation(Gallery $gallery)
+    {
+        $targetLanguage = session('admin_product_language', 'pt');
+
+        if ($targetLanguage === 'pt') {
+            return redirect()
+                ->route('admin.galleries.index')
+                ->with('success', 'You are already in PT language.');
+        }
+
+        if ($gallery->language !== 'pt') {
+            return redirect()
+                ->route('admin.galleries.index')
+                ->with('success', 'Only PT gallery can be duplicated as translation.');
+        }
+
+        $translationKey = $gallery->translation_key ?: 'gal_' . strtolower(Str::random(12));
+
+        $existing = Gallery::where('translation_key', $translationKey)
+            ->where('language', $targetLanguage)
+            ->first();
+
+        if ($existing) {
+            return redirect()
+                ->route('admin.galleries.edit', $existing->gallery_id)
+                ->with('success', 'Translation already exists.');
+        }
+
+        if (!$gallery->translation_key) {
+            $gallery->update([
+                'translation_key' => $translationKey,
+            ]);
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | Map category / material translation
+    |--------------------------------------------------------------------------
+    */
+        $targetCategoryId = $gallery->category_id;
+
+        if ($gallery->category) {
+            $categoryTranslationKey = $gallery->category->translation_key ?: $gallery->category->category_code;
+
+            $translatedCategory = Category::where('translation_key', $categoryTranslationKey)
+                ->where('language', $targetLanguage)
+                ->first();
+
+            if ($translatedCategory) {
+                $targetCategoryId = $translatedCategory->category_id;
+            }
+        }
+
+        $targetMaterialId = $gallery->material_id;
+
+        if ($gallery->material) {
+            $materialTranslationKey = $gallery->material->translation_key ?: $gallery->material->material_code;
+
+            $translatedMaterial = Material::where('translation_key', $materialTranslationKey)
+                ->where('language', $targetLanguage)
+                ->first();
+
+            if ($translatedMaterial) {
+                $targetMaterialId = $translatedMaterial->material_id;
+            }
+        }
+
+        $gallery->load('images');
+
+        $newGallery = $gallery->replicate();
+
+        $newGallery->category_id = $targetCategoryId;
+        $newGallery->material_id = $targetMaterialId;
+        $newGallery->language = $targetLanguage;
+        $newGallery->translation_key = $translationKey;
+        $newGallery->title = $gallery->title . ' (' . strtoupper($targetLanguage) . ')';
+        $newGallery->is_active = 0;
+        $newGallery->created_at = now();
+        $newGallery->updated_at = now();
+        $newGallery->save();
+
+        foreach ($gallery->images as $image) {
+            GalleryImage::create([
+                'gallery_id' => $newGallery->gallery_id,
+                'image_path' => $image->image_path,
+                'original_name' => $image->original_name,
+                'sort_order' => $image->sort_order,
+            ]);
+        }
+
+        return redirect()
+            ->route('admin.galleries.edit', $newGallery->gallery_id)
+            ->with('success', 'Gallery duplicated for ' . strtoupper($targetLanguage) . '. Please update the translated content.');
     }
 
     public function destroy(Gallery $gallery)

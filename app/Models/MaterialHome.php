@@ -15,6 +15,8 @@ class MaterialHome extends Model
         'image_path',
         'is_active',
         'sort_order',
+        'language',
+        'translation_key',
     ];
 
     public function material()

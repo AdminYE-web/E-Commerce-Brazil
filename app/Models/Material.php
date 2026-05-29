@@ -13,6 +13,7 @@ class Material extends Model
         'material_code',
         'is_active',
         'language',
+        'translation_key',
     ];
 
     public function products()

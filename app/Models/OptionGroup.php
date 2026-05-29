@@ -20,6 +20,7 @@ class OptionGroup extends Model
         'is_active',
         'language',
         'product_type',
+        'translation_key',
     ];
 
     public function parent()

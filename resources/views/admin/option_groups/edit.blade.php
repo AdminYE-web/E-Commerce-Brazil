@@ -226,6 +226,14 @@
                     <label>Group Code</label>
                     <input type="text" name="group_code" value="{{ old('group_code', $optionGroup->group_code) }}">
                 </div>
+                <div class="form-group">
+    <label>Translation Key</label>
+    <input type="text"
+        name="translation_key"
+        value="{{ old('translation_key', $optionGroup->translation_key ?? '') }}"
+        placeholder="เช่น strap_width">
+    <small>ใช้สำหรับผูก option group เดียวกันข้ามภาษา</small>
+</div>
 
                 <div class="form-group">
                     <label>Group Name</label>

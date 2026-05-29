@@ -190,6 +190,14 @@
                     @endforeach
                 </select>
             </div>
+            <div class="form-group">
+    <label>Translation Key</label>
+    <input type="text"
+        name="translation_key"
+        value="{{ old('translation_key', $materialHome->translation_key ?? '') }}"
+        placeholder="เช่น mh_xxxxxxxx">
+    <small>ใช้สำหรับผูก Material Home เดียวกันข้ามภาษา</small>
+</div>
 
             <div class="form-group">
                 <label>Title</label>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\Support\Str;
 use App\Http\Controllers\Controller;
 use App\Models\OptionGroup;
 use App\Models\OptionImage;
@@ -15,25 +16,82 @@ class ProductOptionController extends Controller
     {
         $search = $request->input('search');
         $language = session('admin_product_language', 'pt');
+        $baseLanguage = 'pt';
 
-        $options = ProductOption::with([
+        if ($language === $baseLanguage) {
+            $options = ProductOption::with([
+                'group',
+                'mainImage',
+            ])
+                ->where('language', $baseLanguage)
+                ->when($search, function ($query) use ($search) {
+                    $query->where(function ($q) use ($search) {
+                        $q->where('option_name', 'like', '%' . $search . '%')
+                            ->orWhere('option_code', 'like', '%' . $search . '%')
+                            ->orWhereHas('group', function ($groupQuery) use ($search) {
+                                $groupQuery->where('group_name', 'like', '%' . $search . '%')
+                                    ->orWhere('group_code', 'like', '%' . $search . '%');
+                            });
+                    });
+                })
+                ->orderBy('option_id', 'desc')
+                ->paginate(15)
+                ->withQueryString();
+
+            return view('admin.product_options.index', compact('options', 'search', 'language'));
+        }
+
+        $baseOptions = ProductOption::with([
             'group',
             'mainImage',
         ])
-            ->where('language', $language)
+            ->where('language', $baseLanguage)
             ->when($search, function ($query) use ($search) {
                 $query->where(function ($q) use ($search) {
-                    $q->where('option_name', 'like', '%'.$search.'%')
-                        ->orWhere('option_code', 'like', '%'.$search.'%')
+                    $q->where('option_name', 'like', '%' . $search . '%')
+                        ->orWhere('option_code', 'like', '%' . $search . '%')
                         ->orWhereHas('group', function ($groupQuery) use ($search) {
-                            $groupQuery->where('group_name', 'like', '%'.$search.'%')
-                                ->orWhere('group_code', 'like', '%'.$search.'%');
+                            $groupQuery->where('group_name', 'like', '%' . $search . '%')
+                                ->orWhere('group_code', 'like', '%' . $search . '%');
                         });
                 });
             })
             ->orderBy('option_id', 'desc')
             ->paginate(15)
             ->withQueryString();
+
+        $translationKeys = $baseOptions
+            ->getCollection()
+            ->pluck('translation_key')
+            ->filter()
+            ->values();
+
+        $translatedOptions = ProductOption::with([
+            'group',
+            'mainImage',
+        ])
+            ->where('language', $language)
+            ->whereIn('translation_key', $translationKeys)
+            ->get()
+            ->keyBy('translation_key');
+
+        $baseOptions->getCollection()->transform(function ($baseOption) use ($translatedOptions) {
+            $translatedOption = $translatedOptions->get($baseOption->translation_key);
+
+            if ($translatedOption) {
+                $translatedOption->is_missing_translation = false;
+                $translatedOption->base_option_id = $baseOption->option_id;
+
+                return $translatedOption;
+            }
+
+            $baseOption->is_missing_translation = true;
+            $baseOption->base_option_id = $baseOption->option_id;
+
+            return $baseOption;
+        });
+
+        $options = $baseOptions;
 
         return view('admin.product_options.index', compact('options', 'search', 'language'));
     }
@@ -47,9 +105,14 @@ class ProductOptionController extends Controller
             ->orderBy('group_name')
             ->get();
 
-        return view('admin.product_options.create', compact('groups', 'language'));
-    }
+        $translationKey = 'opt_' . strtolower(Str::random(12));
 
+        return view('admin.product_options.create', compact(
+            'groups',
+            'language',
+            'translationKey'
+        ));
+    }
     public function store(Request $request)
     {
         $request->validate([
@@ -61,6 +124,7 @@ class ProductOptionController extends Controller
             'price_type' => 'required|in:per_item,per_order',
             'option_detail' => 'nullable|string',
             'free_from_qty' => 'nullable|integer|min:1',
+            'translation_key' => 'nullable|string|max:255',
 
         ]);
 
@@ -75,6 +139,7 @@ class ProductOptionController extends Controller
             'option_detail' => $request->option_detail,
             'language' => session('admin_product_language', 'pt'),
             'free_from_qty' => $request->free_from_qty,
+            'translation_key' => $request->translation_key ?: 'opt_' . strtolower(Str::random(12)),
 
         ]);
         if ($request->hasFile('images')) {
@@ -126,6 +191,7 @@ class ProductOptionController extends Controller
             'price_type' => 'required|in:per_item,per_order',
             'option_detail' => 'nullable|string',
             'free_from_qty' => 'nullable|integer|min:1',
+            'translation_key' => 'nullable|string|max:255',
 
         ]);
         if ($request->has('delete_images')) {
@@ -154,6 +220,7 @@ class ProductOptionController extends Controller
             'is_active' => $request->has('is_active') ? 1 : 0,
             'option_detail' => $request->option_detail,
             'free_from_qty' => $request->free_from_qty,
+            'translation_key' => $request->translation_key ?: $productOption->translation_key ?: 'opt_' . strtolower(Str::random(12)),
         ]);
         if ($request->hasFile('images')) {
             $currentMaxSort = $productOption->images()->max('sort_order') ?? 0;
@@ -175,6 +242,92 @@ class ProductOptionController extends Controller
         return redirect()
             ->route('admin.product-options.index')
             ->with('success', 'แก้ไขตัวเลือกสินค้าเรียบร้อยแล้ว');
+    }
+    public function duplicateTranslation(ProductOption $productOption)
+    {
+        $targetLanguage = session('admin_product_language', 'pt');
+
+        if ($targetLanguage === 'pt') {
+            return redirect()
+                ->route('admin.product-options.index')
+                ->with('success', 'You are already in PT language.');
+        }
+
+        if ($productOption->language !== 'pt') {
+            return redirect()
+                ->route('admin.product-options.index')
+                ->with('success', 'Only PT product option can be duplicated as translation.');
+        }
+
+        $translationKey = $productOption->translation_key ?: $productOption->option_code ?: 'opt_' . strtolower(Str::random(12));
+
+        $existing = ProductOption::where('translation_key', $translationKey)
+            ->where('language', $targetLanguage)
+            ->first();
+
+        if ($existing) {
+            return redirect()
+                ->route('admin.product-options.edit', $existing->option_id)
+                ->with('success', 'Translation already exists.');
+        }
+
+        if (!$productOption->translation_key) {
+            $productOption->update([
+                'translation_key' => $translationKey,
+            ]);
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | Map option group translation
+    |--------------------------------------------------------------------------
+    | ถ้า group ของ PT มีตัวแปลในภาษาปัจจุบันแล้ว ให้ผูกกับ group ภาษานั้น
+    | ถ้ายังไม่มี ให้ใช้ group เดิมไว้ก่อนหรือจะให้ null ก็ได้
+    |--------------------------------------------------------------------------
+    */
+        $targetGroupId = $productOption->option_group_id;
+
+        if ($productOption->group) {
+            $groupTranslationKey = $productOption->group->translation_key ?: $productOption->group->group_code;
+
+            $translatedGroup = OptionGroup::where('translation_key', $groupTranslationKey)
+                ->where('language', $targetLanguage)
+                ->first();
+
+            if ($translatedGroup) {
+                $targetGroupId = $translatedGroup->option_group_id;
+            }
+        }
+
+        $newOption = $productOption->replicate();
+
+        $newOption->option_group_id = $targetGroupId;
+        $newOption->language = $targetLanguage;
+        $newOption->translation_key = $translationKey;
+        $newOption->option_code = $productOption->option_code
+            ? $productOption->option_code . '-' . $targetLanguage
+            : null;
+        $newOption->option_name = $productOption->option_name . ' (' . strtoupper($targetLanguage) . ')';
+        $newOption->is_active = 0;
+        $newOption->created_at = now();
+        $newOption->updated_at = now();
+        $newOption->save();
+
+        $productOption->load('images');
+
+        foreach ($productOption->images as $image) {
+            OptionImage::create([
+                'option_id' => $newOption->option_id,
+                'image_path' => $image->image_path,
+                'image_alt' => $newOption->option_name,
+                'is_main' => $image->is_main,
+                'sort_order' => $image->sort_order,
+            ]);
+        }
+
+        return redirect()
+            ->route('admin.product-options.edit', $newOption->option_id)
+            ->with('success', 'Product option duplicated for ' . strtoupper($targetLanguage) . '. Please update the translated content.');
     }
 
     public function destroy(ProductOption $productOption)

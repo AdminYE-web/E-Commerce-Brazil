@@ -16,13 +16,34 @@ class ArticleController extends Controller
         $search = $request->input('search');
         $category = $request->input('category');
         $language = session('admin_product_language', 'pt');
+        $baseLanguage = 'pt';
 
-        $articles = Article::query()
-            ->where('language', $language)
+        if ($language === $baseLanguage) {
+            $articles = Article::query()
+                ->where('language', $baseLanguage)
+                ->when($search, function ($query) use ($search) {
+                    $query->where(function ($q) use ($search) {
+                        $q->where('title', 'like', '%' . $search . '%')
+                            ->orWhere('category', 'like', '%' . $search . '%');
+                    });
+                })
+                ->when($category, function ($query) use ($category) {
+                    $query->where('category', $category);
+                })
+                ->orderBy('article_date', 'desc')
+                ->orderBy('article_id', 'desc')
+                ->paginate(15)
+                ->withQueryString();
+
+            return view('admin.articles.index', compact('articles', 'search', 'category', 'language'));
+        }
+
+        $baseArticles = Article::query()
+            ->where('language', $baseLanguage)
             ->when($search, function ($query) use ($search) {
                 $query->where(function ($q) use ($search) {
-                    $q->where('title', 'like', '%'.$search.'%')
-                        ->orWhere('category', 'like', '%'.$search.'%');
+                    $q->where('title', 'like', '%' . $search . '%')
+                        ->orWhere('category', 'like', '%' . $search . '%');
                 });
             })
             ->when($category, function ($query) use ($category) {
@@ -33,12 +54,45 @@ class ArticleController extends Controller
             ->paginate(15)
             ->withQueryString();
 
+        $translationKeys = $baseArticles
+            ->getCollection()
+            ->pluck('translation_key')
+            ->filter()
+            ->values();
+
+        $translatedArticles = Article::query()
+            ->where('language', $language)
+            ->whereIn('translation_key', $translationKeys)
+            ->get()
+            ->keyBy('translation_key');
+
+        $baseArticles->getCollection()->transform(function ($baseArticle) use ($translatedArticles) {
+            $translatedArticle = $translatedArticles->get($baseArticle->translation_key);
+
+            if ($translatedArticle) {
+                $translatedArticle->is_missing_translation = false;
+                $translatedArticle->base_article_id = $baseArticle->article_id;
+
+                return $translatedArticle;
+            }
+
+            $baseArticle->is_missing_translation = true;
+            $baseArticle->base_article_id = $baseArticle->article_id;
+
+            return $baseArticle;
+        });
+
+        $articles = $baseArticles;
+
         return view('admin.articles.index', compact('articles', 'search', 'category', 'language'));
     }
 
     public function create()
     {
-        return view('admin.articles.create');
+        $language = session('admin_product_language', 'pt');
+        $translationKey = 'art_' . strtolower(Str::random(12));
+
+        return view('admin.articles.create', compact('language', 'translationKey'));
     }
 
     public function store(Request $request)
@@ -73,7 +127,7 @@ class ArticleController extends Controller
             'is_active' => $request->has('is_active') ? 1 : 0,
             'description' => $request->description,
             'language' => $language,
-            'translation_key' => $request->translation_key ?: Str::slug($request->title).'_'.time(),
+            'translation_key' => $request->translation_key ?: 'art_' . strtolower(Str::random(12)),
         ]);
 
         $this->forgetHomeCache();
@@ -119,7 +173,7 @@ class ArticleController extends Controller
             'cover_image' => $coverPath,
             'is_active' => $request->has('is_active') ? 1 : 0,
             'description' => $request->description,
-            'translation_key' => $request->translation_key ?: $article->translation_key,
+            'translation_key' => $request->translation_key ?: $article->translation_key ?: 'art_' . strtolower(Str::random(12)),
         ]);
 
         $this->forgetHomeCache();
@@ -127,6 +181,56 @@ class ArticleController extends Controller
         return redirect()
             ->route('admin.articles.index')
             ->with('success', 'Article updated successfully.');
+    }
+    public function duplicateTranslation(Article $article)
+    {
+        $targetLanguage = session('admin_product_language', 'pt');
+
+        if ($targetLanguage === 'pt') {
+            return redirect()
+                ->route('admin.articles.index')
+                ->with('success', 'You are already in PT language.');
+        }
+
+        if ($article->language !== 'pt') {
+            return redirect()
+                ->route('admin.articles.index')
+                ->with('success', 'Only PT article can be duplicated as translation.');
+        }
+
+        $translationKey = $article->translation_key ?: 'art_' . strtolower(Str::random(12));
+
+        $existing = Article::where('translation_key', $translationKey)
+            ->where('language', $targetLanguage)
+            ->first();
+
+        if ($existing) {
+            return redirect()
+                ->route('admin.articles.edit', $existing->article_id)
+                ->with('success', 'Translation already exists.');
+        }
+
+        if (!$article->translation_key) {
+            $article->update([
+                'translation_key' => $translationKey,
+            ]);
+        }
+
+        $newArticle = $article->replicate();
+
+        $newArticle->language = $targetLanguage;
+        $newArticle->translation_key = $translationKey;
+        $newArticle->title = $article->title . ' (' . strtoupper($targetLanguage) . ')';
+        $newArticle->is_active = 0;
+        $newArticle->created_at = now();
+        $newArticle->updated_at = now();
+        $newArticle->save();
+
+        $this->forgetHomeCache();
+
+        return redirect()
+            ->route('admin.articles.edit', $newArticle->article_id)
+            ->with('success', 'Article duplicated for ' . strtoupper($targetLanguage) . '. Please update the translated content.');
     }
 
     public function destroy(Article $article)
@@ -153,14 +257,14 @@ class ArticleController extends Controller
         $path = $request->file('upload')->store('articles/editor', 'public');
 
         return response()->json([
-            'url' => asset('storage/'.$path),
+            'url' => asset('storage/' . $path),
         ]);
     }
 
     private function forgetHomeCache(): void
     {
         foreach (['pt', 'ja', 'en'] as $language) {
-            Cache::forget('home_page_data_'.$language);
+            Cache::forget('home_page_data_' . $language);
         }
 
         Cache::forget('home_page_data');

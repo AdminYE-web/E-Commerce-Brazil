@@ -332,6 +332,14 @@
 
                     <input type="text" name="option_name" value="{{ old('option_name', $option->option_name) }}">
                 </div>
+                <div class="form-group">
+    <label>Translation Key</label>
+    <input type="text"
+        name="translation_key"
+        value="{{ old('translation_key', $option->translation_key ?? '') }}"
+        placeholder="เช่น opt_xxxxxxxx">
+    <small>ใช้สำหรับผูก option เดียวกันข้ามภาษา</small>
+</div>
 
                 <div class="form-group">
                     <label>Additional Price</label>

@@ -185,6 +185,14 @@
                 <label>Material Code</label>
                 <input type="text" name="material_code" value="{{ old('material_code', $material->material_code) }}">
             </div>
+            <div class="form-group">
+    <label>Translation Key</label>
+    <input type="text"
+        name="translation_key"
+        value="{{ old('translation_key', $material->translation_key ?? '') }}"
+        placeholder="เช่น mat_xxxxxxxx">
+    <small>ใช้สำหรับผูก material เดียวกันข้ามภาษา</small>
+</div>
 
             <div class="form-group">
                 <label>Material Name</label>

@@ -224,8 +224,7 @@
 
                         <optgroup label="Hotstrap (Type 1)">
                             @foreach ($groups->where('product_type', 1) as $group)
-                                <option value="{{ $group->option_group_id }}"
-                                    {{ old('option_group_id') == $group->option_group_id ? 'selected' : '' }}>
+                                <option value="{{ $group->option_group_id }}" {{ old('option_group_id') == $group->option_group_id ? 'selected' : '' }}>
                                     {{ $group->group_name }} ({{ $group->group_code }})
                                 </option>
                             @endforeach
@@ -233,8 +232,7 @@
 
                         <optgroup label="Hotmobily (Type 2)">
                             @foreach ($groups->where('product_type', 2) as $group)
-                                <option value="{{ $group->option_group_id }}"
-                                    {{ old('option_group_id') == $group->option_group_id ? 'selected' : '' }}>
+                                <option value="{{ $group->option_group_id }}" {{ old('option_group_id') == $group->option_group_id ? 'selected' : '' }}>
                                     {{ $group->group_name }} ({{ $group->group_code }})
                                 </option>
                             @endforeach
@@ -247,6 +245,12 @@
 
                     <input type="text" name="option_code" value="{{ old('option_code') }}"
                         placeholder="เช่น HARD, SOFT, WHITE_BACK">
+                </div>
+                <div class="form-group">
+                    <label>Translation Key</label>
+                    <input type="text" name="translation_key" value="{{ old('translation_key', $translationKey ?? '') }}"
+                        placeholder="เช่น opt_xxxxxxxx">
+                    <small>ใช้สำหรับผูก option เดียวกันข้ามภาษา</small>
                 </div>
 
                 <div class="form-group">

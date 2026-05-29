@@ -6,19 +6,16 @@
             @error('title') <div class="error-text">{{ $message }}</div> @enderror
         </div>
         <div class="article-form-group">
-    <label>Translation Key</label>
-    <input
-        type="text"
-        name="translation_key"
-        value="{{ old('translation_key', $article->translation_key ?? '') }}"
-        placeholder="เช่น acrylic_cut_path_001"
-    >
-    <small>ใช้ key เดียวกันสำหรับบทความเดียวกันในหลายภาษา</small>
+            <label>Translation Key</label>
+            <input type="text" name="translation_key"
+                value="{{ old('translation_key', $article->translation_key ?? $translationKey ?? '') }}"
+                placeholder="เช่น art_xxxxxxxx">
+            <small>ใช้ key เดียวกันสำหรับบทความเดียวกันในหลายภาษา</small>
 
-    @error('translation_key')
-        <div class="error-text">{{ $message }}</div>
-    @enderror
-</div>
+            @error('translation_key')
+                <div class="error-text">{{ $message }}</div>
+            @enderror
+        </div>
 
         <div class="article-form-group">
             <label>Category</label>
@@ -28,11 +25,8 @@
 
         <div class="article-form-group">
             <label>Article Date</label>
-            <input
-                type="date"
-                name="article_date"
-                value="{{ old('article_date', isset($article) && $article->article_date ? \Carbon\Carbon::parse($article->article_date)->format('Y-m-d') : '') }}"
-            >
+            <input type="date" name="article_date"
+                value="{{ old('article_date', isset($article) && $article->article_date ? \Carbon\Carbon::parse($article->article_date)->format('Y-m-d') : '') }}">
             @error('article_date') <div class="error-text">{{ $message }}</div> @enderror
         </div>
 
@@ -49,17 +43,14 @@
             @error('cover_image') <div class="error-text">{{ $message }}</div> @enderror
         </div>
         <div class="article-form-group article-form-group-full">
-    <label>Description</label>
-    <textarea
-        name="description"
-        rows="4"
-        placeholder="Short description shown under cover image..."
-    >{{ old('description', $article->description ?? '') }}</textarea>
+            <label>Description</label>
+            <textarea name="description" rows="4"
+                placeholder="Short description shown under cover image...">{{ old('description', $article->description ?? '') }}</textarea>
 
-    @error('description')
-        <div class="error-text">{{ $message }}</div>
-    @enderror
-</div>
+            @error('description')
+                <div class="error-text">{{ $message }}</div>
+            @enderror
+        </div>
     </div>
 
     <div class="article-form-group">
@@ -71,8 +62,7 @@
     </div>
 
     <label class="article-active-box">
-        <input type="checkbox" name="is_active" value="1"
-            {{ old('is_active', $article->is_active ?? 1) ? 'checked' : '' }}>
+        <input type="checkbox" name="is_active" value="1" {{ old('is_active', $article->is_active ?? 1) ? 'checked' : '' }}>
         Active
     </label>
 </div>

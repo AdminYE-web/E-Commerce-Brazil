@@ -334,6 +334,24 @@ Route::prefix('admin-panel')->name('admin.')->group(function () {
             ->name('quotations.pdf');
         Route::post('products/{product}/option-groups/update-sort', [ProductOptionAssignmentController::class, 'updateGroupSort'])
             ->name('products.option-groups.updateSort');
+        Route::post('/products/{product}/duplicate-translation', [ProductController::class, 'duplicateTranslation'])
+            ->name('products.duplicate-translation');
+        Route::post('option-groups/{optionGroup}/duplicate-translation', [OptionGroupController::class, 'duplicateTranslation'])
+            ->name('option-groups.duplicate-translation');
+        Route::post('categories/{category}/duplicate-translation', [CategoryController::class, 'duplicateTranslation'])
+            ->name('categories.duplicate-translation');
+        Route::post('materials/{material}/duplicate-translation', [MaterialController::class, 'duplicateTranslation'])
+            ->name('materials.duplicate-translation');
+        Route::post('product-options/{productOption}/duplicate-translation', [ProductOptionController::class, 'duplicateTranslation'])
+            ->name('product-options.duplicate-translation');
+        Route::post('option-dependencies/{optionDependency}/duplicate-translation', [OptionDependencyController::class, 'duplicateTranslation'])
+            ->name('option-dependencies.duplicate-translation');
+        Route::post('material-homes/{materialHome}/duplicate-translation', [MaterialHomeController::class, 'duplicateTranslation'])
+            ->name('material-homes.duplicate-translation');
+        Route::post('galleries/{gallery}/duplicate-translation', [GalleryController::class, 'duplicateTranslation'])
+            ->name('galleries.duplicate-translation');
+        Route::post('articles/{article}/duplicate-translation', [ArticleController::class, 'duplicateTranslation'])
+            ->name('articles.duplicate-translation');
     });
 });
 
