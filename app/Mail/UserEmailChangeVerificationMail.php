@@ -13,7 +13,9 @@ class UserEmailChangeVerificationMail extends Mailable
     use Queueable, SerializesModels;
 
     public User $user;
+
     public UserEmailChangeRequest $emailChangeRequest;
+
     public string $verifyUrl;
 
     public function __construct(User $user, UserEmailChangeRequest $emailChangeRequest, string $verifyUrl)

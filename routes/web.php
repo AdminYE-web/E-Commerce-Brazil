@@ -231,7 +231,6 @@ Route::middleware('auth')->group(function () {
         ->name('account.orders.index');
 });
 
-
 Route::prefix('admin-panel')->name('admin.')->group(function () {
     Route::get('/login', [AdminAuthController::class, 'showLoginForm'])
         ->name('login');

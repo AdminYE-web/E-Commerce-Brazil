@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers\Admin;
 
-
+use App\Http\Controllers\Controller;
 use App\Mail\UserEmailChangeVerificationMail;
+use App\Models\User;
 use App\Models\UserEmailChangeRequest;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
-use App\Http\Controllers\Controller;
-use App\Models\User;
-use Illuminate\Http\Request;
 
 class UserAdminController extends Controller
 {
@@ -63,6 +62,7 @@ class UserAdminController extends Controller
 
         return view('admin.users.show', compact('user', 'orders', 'loginLogs'));
     }
+
     public function sendEmailChangeVerification(Request $request, User $user)
     {
         $request->validate([

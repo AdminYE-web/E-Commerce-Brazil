@@ -18,54 +18,20 @@ class ProductController extends Controller
     {
         $search = $request->input('search');
         $language = session('admin_product_language', 'pt');
-        $baseLanguage = 'pt';
 
-        if ($language === $baseLanguage) {
-            $products = Product::with(['category', 'material', 'mainImage'])
-                ->when($search, function ($query) use ($search) {
-                    $query->where(function ($q) use ($search) {
-                        $q->where('product_name', 'like', '%'.$search.'%')
-                            ->orWhere('product_code', 'like', '%'.$search.'%');
+        $productsQuery = Product::with(['category', 'material', 'mainImage'])
+            ->where(function ($query) use ($language) {
+                $query->where('language', $language)
+                    ->orWhere(function ($q) use ($language) {
+                        $q->where('language', '!=', $language)
+                            ->whereNotExists(function ($subQuery) use ($language) {
+                                $subQuery->selectRaw(1)
+                                    ->from('products as p2')
+                                    ->whereColumn('p2.translation_key', 'products.translation_key')
+                                    ->where('p2.language', $language);
+                            });
                     });
-                })
-                ->orderBy('product_id', 'desc')
-                ->paginate(15)
-                ->withQueryString();
-
-            $translationKeys = $products
-                ->getCollection()
-                ->where('language', 'pt')
-                ->pluck('translation_key')
-                ->filter()
-                ->values();
-
-            $jaTranslations = Product::where('language', 'ja')
-                ->whereIn('translation_key', $translationKeys)
-                ->pluck('translation_key')
-                ->toArray();
-
-            $products->getCollection()->transform(function ($product) use ($jaTranslations) {
-                if ($product->language === 'pt') {
-                    $product->has_ja_translation = in_array($product->translation_key, $jaTranslations);
-                } else {
-                    $product->has_ja_translation = true;
-                }
-
-                return $product;
-            });
-
-            return view('admin.products.index', compact('products', 'search', 'language'));
-        }
-
-        /*
-    |--------------------------------------------------------------------------
-    | Other language mode
-    |--------------------------------------------------------------------------
-    | ยึดสินค้า pt เป็นหลัก แล้ว map ว่ามีตัวแปลของภาษาปัจจุบันหรือยัง
-    |--------------------------------------------------------------------------
-    */
-        $baseQuery = Product::with(['category', 'material', 'mainImage'])
-            ->where('language', $baseLanguage)
+            })
             ->when($search, function ($query) use ($search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('product_name', 'like', '%'.$search.'%')
@@ -74,39 +40,39 @@ class ProductController extends Controller
             })
             ->orderBy('product_id', 'desc');
 
-        $baseProducts = $baseQuery
+        $products = $productsQuery
             ->paginate(15)
             ->withQueryString();
 
-        $translationKeys = $baseProducts
-            ->getCollection()
-            ->pluck('translation_key')
-            ->filter()
-            ->values();
+        $translationKeys = $products->pluck('translation_key')->filter()->unique();
 
-        $translatedProducts = Product::with(['category', 'material', 'mainImage'])
-            ->where('language', $language)
-            ->whereIn('translation_key', $translationKeys)
+        $allLanguages = Product::whereIn('translation_key', $translationKeys)
+            ->select('translation_key', 'language')
             ->get()
-            ->keyBy('translation_key');
+            ->groupBy('translation_key')
+            ->map(function ($items) {
+                return $items->pluck('language')
+                    ->map(function ($lang) {
+                        return $lang === 'ja' ? 'jp' : $lang;
+                    })
+                    ->unique()
+                    ->sortBy(function ($lang) {
+                        $order = ['pt' => 1, 'jp' => 2, 'en' => 3];
 
-        $baseProducts->getCollection()->transform(function ($baseProduct) use ($translatedProducts) {
-            $translatedProduct = $translatedProducts->get($baseProduct->translation_key);
+                        return $order[$lang] ?? 99;
+                    })
+                    ->implode(' ');
+            });
 
-            if ($translatedProduct) {
-                $translatedProduct->is_missing_translation = false;
-                $translatedProduct->base_product_id = $baseProduct->product_id;
+        $products->getCollection()->transform(function ($product) use ($language, $allLanguages) {
+            $product->is_missing_translation = $product->language !== $language;
 
-                return $translatedProduct;
-            }
+            $product->all_languages = $product->translation_key && isset($allLanguages[$product->translation_key])
+                ? $allLanguages[$product->translation_key]
+                : ($product->language === 'ja' ? 'jp' : $product->language);
 
-            $baseProduct->is_missing_translation = true;
-            $baseProduct->base_product_id = $baseProduct->product_id;
-
-            return $baseProduct;
+            return $product;
         });
-
-        $products = $baseProducts;
 
         return view('admin.products.index', compact('products', 'search', 'language'));
     }
@@ -386,16 +352,10 @@ class ProductController extends Controller
     {
         $targetLanguage = session('admin_product_language', 'pt');
 
-        if ($targetLanguage === 'pt') {
+        if ($targetLanguage === $product->language) {
             return redirect()
                 ->route('admin.products.index')
-                ->with('success', 'You are already in PT language.');
-        }
-
-        if ($product->language !== 'pt') {
-            return redirect()
-                ->route('admin.products.index')
-                ->with('success', 'Only PT product can be duplicated as translation.');
+                ->with('success', 'Product is already in the selected language.');
         }
 
         $translationKey = $product->translation_key ?: $product->product_code;
@@ -414,8 +374,13 @@ class ProductController extends Controller
 
         $newProduct->language = $targetLanguage;
         $newProduct->translation_key = $translationKey;
-        $newProduct->product_code = $product->product_code.'-'.$targetLanguage;
-        $newProduct->product_name = $product->product_name.' ('.strtoupper($targetLanguage).')';
+
+        $cleanCode = preg_replace('/-(pt|ja|en)$/i', '', $product->product_code);
+        $newProduct->product_code = $cleanCode.'-'.$targetLanguage;
+
+        $cleanName = preg_replace('/\s*\((PT|JA|EN)\)$/i', '', $product->product_name);
+        $newProduct->product_name = $cleanName.' ('.strtoupper($targetLanguage).')';
+
         $newProduct->is_active = 0;
         $newProduct->product_recomend = 0;
         $newProduct->product_premium = 0;

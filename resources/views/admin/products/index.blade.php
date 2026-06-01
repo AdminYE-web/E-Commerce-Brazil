@@ -67,6 +67,34 @@
             border: 1px solid #ffe4e6;
             text-transform: uppercase;
         }
+
+        .lang-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 3px 8px;
+            font-size: 11px;
+            font-weight: 700;
+            border-radius: 6px;
+            text-transform: uppercase;
+        }
+
+        .lang-pt {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
+        }
+
+        .lang-jp {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fde68a;
+        }
+
+        .lang-en {
+            background: #e2e8f0;
+            color: #334155;
+            border: 1px solid #cbd5e1;
+        }
     </style>
 @endsection
 @section('content')
@@ -110,9 +138,7 @@
         <table>
             <thead>
                 <tr>
-                    @if ($language === 'pt')
-                        <th>Status Alert</th>
-                    @endif
+                    <th>Status Alert</th>
                     <th>Product</th>
                     <th>Type</th>
                     <th>Category</th>
@@ -127,15 +153,14 @@
             <tbody>
                 @forelse ($products as $product)
                     <tr class="{{ !empty($product->is_missing_translation) ? 'translation-missing-row' : '' }}">
-                        @if ($language === 'pt')
-                            <td>
-                                @if ($product->language === 'pt' && empty($product->has_ja_translation))
-                                    <span class="status-alert-badge">missing jp</span>
-                                @else
-                                    <span style="color: #cbd5e1;">-</span>
-                                @endif
-                            </td>
-                        @endif
+                        <td>
+                            @if (!empty($product->is_missing_translation))
+                                <span class="status-alert-badge">missing
+                                    {{ strtolower($language) === 'ja' ? 'jp' : strtolower($language) }}</span>
+                            @else
+                                <span style="color: #cbd5e1;">-</span>
+                            @endif
+                        </td>
                         <td>
                             <div class="product-cell">
                                 @if ($product->mainImage)
@@ -186,7 +211,11 @@
                             @endif
                         </td>
                         <td>
-                            {{ strtoupper($product->language) }}
+                            <div style="display: flex; gap: 6px; align-items: center;">
+                                @foreach (explode(' ', $product->all_languages) as $lang)
+                                    <span class="lang-badge lang-{{ strtolower($lang) }}">{{ strtoupper($lang) }}</span>
+                                @endforeach
+                            </div>
                         </td>
 
                         <td style="text-align: right;">
@@ -198,8 +227,8 @@
                                         @csrf
 
                                         <button type="submit" class="action-link duplicate"
-                                            onclick="return confirm('Duplicate this PT product for {{ strtoupper($language) }}?')">
-                                            Duplicate
+                                            onclick="return confirm('Duplicate this {{ strtoupper($product->language) }} product for {{ strtoupper($language) }}?')">
+                                            Add language
                                         </button>
                                     </form>
                                 @else
@@ -239,11 +268,11 @@
                         </td>
                     </tr>
                 @empty
-                     <tr>
-                         <td colspan="{{ $language === 'pt' ? 9 : 8 }}" style="text-align: center; padding: 32px;">
-                             No products found.
-                         </td>
-                     </tr>
+                    <tr>
+                        <td colspan="9" style="text-align: center; padding: 32px;">
+                            No products found.
+                        </td>
+                    </tr>
                 @endforelse
             </tbody>
         </table>

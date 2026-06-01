@@ -64,7 +64,7 @@ class BlogController extends Controller
     |--------------------------------------------------------------------------
     */
         if (($article->language ?? 'pt') !== $langKey) {
-            if (!empty($article->translation_key)) {
+            if (! empty($article->translation_key)) {
                 $translatedArticle = Article::where('translation_key', $article->translation_key)
                     ->where('language', $langKey)
                     ->where('is_active', 1)

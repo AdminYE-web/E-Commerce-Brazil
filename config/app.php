@@ -80,7 +80,7 @@ return [
 
     'locale' => env('APP_LOCALE', 'pt'),
 
-    'supported_locales' => ['pt', 'ja',],
+    'supported_locales' => ['pt', 'ja'],
 
     'locale_flags' => [
         'pt' => 'br',
