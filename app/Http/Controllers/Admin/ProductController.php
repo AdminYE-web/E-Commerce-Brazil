@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Illuminate\Support\Str;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Material;
@@ -11,6 +10,7 @@ use App\Models\ProductImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
@@ -22,16 +22,37 @@ class ProductController extends Controller
 
         if ($language === $baseLanguage) {
             $products = Product::with(['category', 'material', 'mainImage'])
-                ->where('language', $baseLanguage)
                 ->when($search, function ($query) use ($search) {
                     $query->where(function ($q) use ($search) {
-                        $q->where('product_name', 'like', '%' . $search . '%')
-                            ->orWhere('product_code', 'like', '%' . $search . '%');
+                        $q->where('product_name', 'like', '%'.$search.'%')
+                            ->orWhere('product_code', 'like', '%'.$search.'%');
                     });
                 })
                 ->orderBy('product_id', 'desc')
                 ->paginate(15)
                 ->withQueryString();
+
+            $translationKeys = $products
+                ->getCollection()
+                ->where('language', 'pt')
+                ->pluck('translation_key')
+                ->filter()
+                ->values();
+
+            $jaTranslations = Product::where('language', 'ja')
+                ->whereIn('translation_key', $translationKeys)
+                ->pluck('translation_key')
+                ->toArray();
+
+            $products->getCollection()->transform(function ($product) use ($jaTranslations) {
+                if ($product->language === 'pt') {
+                    $product->has_ja_translation = in_array($product->translation_key, $jaTranslations);
+                } else {
+                    $product->has_ja_translation = true;
+                }
+
+                return $product;
+            });
 
             return view('admin.products.index', compact('products', 'search', 'language'));
         }
@@ -47,8 +68,8 @@ class ProductController extends Controller
             ->where('language', $baseLanguage)
             ->when($search, function ($query) use ($search) {
                 $query->where(function ($q) use ($search) {
-                    $q->where('product_name', 'like', '%' . $search . '%')
-                        ->orWhere('product_code', 'like', '%' . $search . '%');
+                    $q->where('product_name', 'like', '%'.$search.'%')
+                        ->orWhere('product_code', 'like', '%'.$search.'%');
                 });
             })
             ->orderBy('product_id', 'desc');
@@ -104,7 +125,7 @@ class ProductController extends Controller
             ->orderBy('material_name')
             ->get();
 
-        $translationKey = 'product_' . strtolower(Str::random(12));
+        $translationKey = 'product_'.strtolower(Str::random(12));
 
         return view('admin.products.create', compact(
             'categories',
@@ -113,6 +134,7 @@ class ProductController extends Controller
             'translationKey'
         ));
     }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -157,7 +179,7 @@ class ProductController extends Controller
             'allow_text_print' => $request->has('allow_text_print') ? 1 : 0,
             'allow_font_select' => $request->has('allow_font_select') ? 1 : 0,
             'allow_template_select' => $request->has('allow_template_select') ? 1 : 0,
-            'translation_key' => $request->translation_key ?: 'product_' . strtolower(Str::random(12)),
+            'translation_key' => $request->translation_key ?: 'product_'.strtolower(Str::random(12)),
         ]);
 
         // Main images
@@ -191,7 +213,7 @@ class ProductController extends Controller
                 ]);
             }
         }
-        Cache::forget('home_page_data_' . $language);
+        Cache::forget('home_page_data_'.$language);
         Cache::forget('home_page_data');
 
         return redirect()
@@ -265,7 +287,7 @@ class ProductController extends Controller
             'allow_text_print' => $request->has('allow_text_print') ? 1 : 0,
             'allow_font_select' => $request->has('allow_font_select') ? 1 : 0,
             'allow_template_select' => $request->has('allow_template_select') ? 1 : 0,
-            'translation_key' => $request->translation_key ?: $product->translation_key ?: 'product_' . strtolower(Str::random(12)),
+            'translation_key' => $request->translation_key ?: $product->translation_key ?: 'product_'.strtolower(Str::random(12)),
         ]);
         if ($request->filled('delete_gallery_images')) {
             $galleryImages = ProductImage::where('product_id', $product->product_id)
@@ -328,7 +350,7 @@ class ProductController extends Controller
             }
         }
         $language = $product->language;
-        Cache::forget('home_page_data_' . $language);
+        Cache::forget('home_page_data_'.$language);
         Cache::forget('home_page_data');
 
         return redirect()
@@ -341,7 +363,7 @@ class ProductController extends Controller
         $product->delete();
 
         $language = $product->language;
-        Cache::forget('home_page_data_' . $language);
+        Cache::forget('home_page_data_'.$language);
         Cache::forget('home_page_data');
 
         return redirect()
@@ -359,6 +381,7 @@ class ProductController extends Controller
         return $this->hasOne(ProductImage::class, 'product_id', 'product_id')
             ->where('is_main', 1);
     }
+
     public function duplicateTranslation(Product $product)
     {
         $targetLanguage = session('admin_product_language', 'pt');
@@ -391,8 +414,8 @@ class ProductController extends Controller
 
         $newProduct->language = $targetLanguage;
         $newProduct->translation_key = $translationKey;
-        $newProduct->product_code = $product->product_code . '-' . $targetLanguage;
-        $newProduct->product_name = $product->product_name . ' (' . strtoupper($targetLanguage) . ')';
+        $newProduct->product_code = $product->product_code.'-'.$targetLanguage;
+        $newProduct->product_name = $product->product_name.' ('.strtoupper($targetLanguage).')';
         $newProduct->is_active = 0;
         $newProduct->product_recomend = 0;
         $newProduct->product_premium = 0;
@@ -418,11 +441,11 @@ class ProductController extends Controller
             ]);
         }
 
-        Cache::forget('home_page_data_' . $targetLanguage);
+        Cache::forget('home_page_data_'.$targetLanguage);
         Cache::forget('home_page_data');
 
         return redirect()
             ->route('admin.products.edit', $newProduct->product_id)
-            ->with('success', 'Product duplicated for ' . strtoupper($targetLanguage) . '. Please update the translated content.');
+            ->with('success', 'Product duplicated for '.strtoupper($targetLanguage).'. Please update the translated content.');
     }
 }

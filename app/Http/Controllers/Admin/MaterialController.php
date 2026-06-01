@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Illuminate\Support\Str;
 use App\Http\Controllers\Controller;
 use App\Models\Material;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 
 class MaterialController extends Controller
 {
@@ -21,8 +21,8 @@ class MaterialController extends Controller
                 ->where('language', $baseLanguage)
                 ->when($search, function ($query) use ($search) {
                     $query->where(function ($q) use ($search) {
-                        $q->where('material_name', 'like', '%' . $search . '%')
-                            ->orWhere('material_code', 'like', '%' . $search . '%');
+                        $q->where('material_name', 'like', '%'.$search.'%')
+                            ->orWhere('material_code', 'like', '%'.$search.'%');
                     });
                 })
                 ->orderBy('material_id', 'desc')
@@ -36,8 +36,8 @@ class MaterialController extends Controller
             ->where('language', $baseLanguage)
             ->when($search, function ($query) use ($search) {
                 $query->where(function ($q) use ($search) {
-                    $q->where('material_name', 'like', '%' . $search . '%')
-                        ->orWhere('material_code', 'like', '%' . $search . '%');
+                    $q->where('material_name', 'like', '%'.$search.'%')
+                        ->orWhere('material_code', 'like', '%'.$search.'%');
                 });
             })
             ->orderBy('material_id', 'desc')
@@ -80,10 +80,11 @@ class MaterialController extends Controller
     public function create()
     {
         $language = session('admin_product_language', 'pt');
-        $translationKey = 'mat_' . strtolower(Str::random(12));
+        $translationKey = 'mat_'.strtolower(Str::random(12));
 
         return view('admin.materials.create', compact('language', 'translationKey'));
     }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -96,7 +97,7 @@ class MaterialController extends Controller
 
         Material::create([
             'material_code' => $request->material_code,
-            'translation_key' => $request->translation_key ?: 'mat_' . strtolower(Str::random(12)),
+            'translation_key' => $request->translation_key ?: 'mat_'.strtolower(Str::random(12)),
             'material_name' => $request->material_name,
             'is_active' => $request->has('is_active') ? 1 : 0,
             'language' => session('admin_product_language', 'pt'),
@@ -131,7 +132,7 @@ class MaterialController extends Controller
 
         $material->update([
             'material_code' => $request->material_code,
-            'translation_key' => $request->translation_key ?: $material->translation_key ?: 'mat_' . strtolower(Str::random(12)),
+            'translation_key' => $request->translation_key ?: $material->translation_key ?: 'mat_'.strtolower(Str::random(12)),
             'material_name' => $request->material_name,
             'is_active' => $request->has('is_active') ? 1 : 0,
             'product_type' => $request->product_type,
@@ -162,6 +163,7 @@ class MaterialController extends Controller
             ->route('admin.materials.index')
             ->with('success', 'ลบ Material เรียบร้อยแล้ว');
     }
+
     public function duplicateTranslation(Material $material)
     {
         $targetLanguage = session('admin_product_language', 'pt');
@@ -178,7 +180,7 @@ class MaterialController extends Controller
                 ->with('success', 'Only PT material can be duplicated as translation.');
         }
 
-        $translationKey = $material->translation_key ?: $material->material_code ?: 'mat_' . strtolower(Str::random(12));
+        $translationKey = $material->translation_key ?: $material->material_code ?: 'mat_'.strtolower(Str::random(12));
 
         $existing = Material::where('translation_key', $translationKey)
             ->where('language', $targetLanguage)
@@ -190,7 +192,7 @@ class MaterialController extends Controller
                 ->with('success', 'Translation already exists.');
         }
 
-        if (!$material->translation_key) {
+        if (! $material->translation_key) {
             $material->update([
                 'translation_key' => $translationKey,
             ]);
@@ -202,9 +204,9 @@ class MaterialController extends Controller
         $newMaterial->product_type = $material->product_type;
         $newMaterial->translation_key = $translationKey;
         $newMaterial->material_code = $material->material_code
-            ? $material->material_code . '-' . $targetLanguage
+            ? $material->material_code.'-'.$targetLanguage
             : null;
-        $newMaterial->material_name = $material->material_name . ' (' . strtoupper($targetLanguage) . ')';
+        $newMaterial->material_name = $material->material_name.' ('.strtoupper($targetLanguage).')';
         $newMaterial->is_active = 0;
         $newMaterial->created_at = now();
         $newMaterial->updated_at = now();
@@ -218,6 +220,6 @@ class MaterialController extends Controller
 
         return redirect()
             ->route('admin.materials.edit', $newMaterial->material_id)
-            ->with('success', 'Material duplicated for ' . strtoupper($targetLanguage) . '. Please update the translated content.');
+            ->with('success', 'Material duplicated for '.strtoupper($targetLanguage).'. Please update the translated content.');
     }
 }

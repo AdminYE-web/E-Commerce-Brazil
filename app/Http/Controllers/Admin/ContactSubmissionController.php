@@ -103,7 +103,7 @@ class ContactSubmissionController extends Controller
                 ->subject($request->reply_subject ?: 'Reply to your contact submission');
 
             if ($attachmentPath) {
-                $message->attach(storage_path('app/public/' . $attachmentPath), [
+                $message->attach(storage_path('app/public/'.$attachmentPath), [
                     'as' => $attachmentOriginalName,
                 ]);
             }

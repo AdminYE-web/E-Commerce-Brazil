@@ -23,10 +23,10 @@ class ProductPriceRuleController extends Controller
             })
             ->when($search, function ($query) use ($search) {
                 $query->where(function ($q) use ($search) {
-                    $q->where('rule_name', 'like', '%' . $search . '%')
+                    $q->where('rule_name', 'like', '%'.$search.'%')
                         ->orWhereHas('product', function ($productQuery) use ($search) {
-                            $productQuery->where('product_name', 'like', '%' . $search . '%')
-                                ->orWhere('product_code', 'like', '%' . $search . '%');
+                            $productQuery->where('product_name', 'like', '%'.$search.'%')
+                                ->orWhere('product_code', 'like', '%'.$search.'%');
                         });
                 });
             })

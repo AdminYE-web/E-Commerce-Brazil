@@ -464,13 +464,36 @@
     @php
         $cartItems = collect($cart);
 
+        $priceTaxMode = $priceTaxMode ?? 'exclude_tax';
+        $useTaxIncludedPrice = $priceTaxMode === 'include_tax';
+
+        $taxRate = 0.1;
+
         $totalItems = $cartItems->count();
         $totalQty = $cartItems->sum(fn($item) => (int) ($item['quantity'] ?? 0));
-        $subtotal = $cartItems->sum(fn($item) => (float) ($item['item_total'] ?? 0));
 
-        $shipping = $subtotal > 10000 ? 0 : ($totalItems > 0 ? 800 : 0);
-        $estimatedTax = $totalItems > 0 ? 20 : 0;
-        $grandTotal = $subtotal + $shipping + $estimatedTax;
+        // subtotalGross = ยอดสินค้าตามราคาที่อยู่ใน cart
+        $subtotalGross = $cartItems->sum(fn($item) => (float) ($item['item_total'] ?? 0));
+
+        $shippingGross = $subtotalGross > 10000 ? 0 : ($totalItems > 0 ? 800 : 0);
+
+        if ($useTaxIncludedPrice) {
+            // กรณีราคาที่เก็บมาเป็นราคารวม tax แล้ว
+            $subtotal = $subtotalGross / (1 + $taxRate);
+            $shipping = $shippingGross / (1 + $taxRate);
+
+            $estimatedTax = $subtotalGross + $shippingGross - ($subtotal + $shipping);
+
+            // ยอดจ่ายจริง = gross รวม tax แล้ว
+            $grandTotal = $subtotalGross + $shippingGross;
+        } else {
+            // กรณีราคายังไม่รวม tax
+            $subtotal = $subtotalGross;
+            $shipping = $shippingGross;
+
+            $estimatedTax = ($subtotal + $shipping) * $taxRate;
+            $grandTotal = $subtotal + $shipping + $estimatedTax;
+        }
     @endphp
     <div class="cart-page py-4">
         <div class="container">
@@ -884,6 +907,8 @@
         document.addEventListener('DOMContentLoaded', function() {
             const selectAll = document.getElementById('selectAllCart');
             const itemCheckboxes = document.querySelectorAll('.cart-item-checkbox');
+            const useTaxIncludedPrice = @json($useTaxIncludedPrice ?? false);
+            const taxRate = 0.10;
 
             function formatNumber(value) {
                 return Number(value || 0).toFixed(2);
@@ -904,14 +929,41 @@
                     }
                 });
 
-                const shipping = subtotal > 11000 ? 0 : (selectedItems > 0 ? 800 : 0);
-                const tax = subtotal * 0.10;
-                const grandTotal = subtotal + shipping + tax;
+                const subtotalGross = subtotal;
+                const shippingGross = subtotalGross > 10000 ? 0 : (selectedItems > 0 ? 800 : 0);
+
+                let displaySubtotal = 0;
+                let displayShipping = 0;
+                let tax = 0;
+                let grandTotal = 0;
+
+                if (useTaxIncludedPrice) {
+                    displaySubtotal = subtotalGross / (1 + taxRate);
+                    displayShipping = shippingGross / (1 + taxRate);
+
+                    tax = (subtotalGross + shippingGross) - (displaySubtotal + displayShipping);
+
+                    grandTotal = subtotalGross + shippingGross;
+                } else {
+                    displaySubtotal = subtotalGross;
+                    displayShipping = shippingGross;
+
+                    tax = (displaySubtotal + displayShipping) * taxRate;
+                    grandTotal = displaySubtotal + displayShipping + tax;
+                }
+
+                if (useTaxIncludedPrice) {
+                    tax = 0;
+                    grandTotal = subtotal + shipping;
+                } else {
+                    tax = (subtotal + shipping) * 0.10;
+                    grandTotal = subtotal + shipping + tax;
+                }
 
                 document.getElementById('summaryItems').innerText = selectedItems;
                 document.getElementById('summaryQty').innerText = selectedQty;
-                document.getElementById('summarySubtotal').innerText = formatNumber(subtotal);
-                document.getElementById('summaryShipping').innerText = formatNumber(shipping);
+                document.getElementById('summarySubtotal').innerText = formatNumber(displaySubtotal);
+                document.getElementById('summaryShipping').innerText = formatNumber(displayShipping);
                 document.getElementById('summaryTax').innerText = formatNumber(tax);
                 document.getElementById('summaryGrandTotal').innerText = formatNumber(grandTotal);
             }

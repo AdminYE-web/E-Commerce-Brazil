@@ -47,7 +47,7 @@ class OptionDependencyController extends Controller
 
             $parentOption = $dependency->parentOption;
 
-            if (!$parentOption || !$parentOption->translation_key) {
+            if (! $parentOption || ! $parentOption->translation_key) {
                 return $dependency;
             }
 
@@ -55,7 +55,7 @@ class OptionDependencyController extends Controller
                 ->where('language', $language)
                 ->first();
 
-            if (!$translatedParentOption) {
+            if (! $translatedParentOption) {
                 return $dependency;
             }
 
@@ -65,7 +65,7 @@ class OptionDependencyController extends Controller
             if ($dependency->target_type === 'group') {
                 $targetGroup = $dependency->targetGroup;
 
-                if (!$targetGroup || !$targetGroup->translation_key) {
+                if (! $targetGroup || ! $targetGroup->translation_key) {
                     return $dependency;
                 }
 
@@ -73,7 +73,7 @@ class OptionDependencyController extends Controller
                     ->where('language', $language)
                     ->first();
 
-                if (!$translatedTargetGroup) {
+                if (! $translatedTargetGroup) {
                     return $dependency;
                 }
             }
@@ -81,7 +81,7 @@ class OptionDependencyController extends Controller
             if ($dependency->target_type === 'option') {
                 $targetOption = $dependency->targetOption;
 
-                if (!$targetOption || !$targetOption->translation_key) {
+                if (! $targetOption || ! $targetOption->translation_key) {
                     return $dependency;
                 }
 
@@ -89,7 +89,7 @@ class OptionDependencyController extends Controller
                     ->where('language', $language)
                     ->first();
 
-                if (!$translatedTargetOption) {
+                if (! $translatedTargetOption) {
                     return $dependency;
                 }
             }
@@ -279,13 +279,13 @@ class OptionDependencyController extends Controller
 
         $parentOption = $optionDependency->parentOption;
 
-        if (!$parentOption || $parentOption->language !== 'pt') {
+        if (! $parentOption || $parentOption->language !== 'pt') {
             return redirect()
                 ->route('admin.option-dependencies.index')
                 ->with('success', 'Only PT dependency can be duplicated as translation.');
         }
 
-        if (!$parentOption->translation_key) {
+        if (! $parentOption->translation_key) {
             return redirect()
                 ->route('admin.option-dependencies.index')
                 ->with('success', 'Parent option has no translation key.');
@@ -295,7 +295,7 @@ class OptionDependencyController extends Controller
             ->where('language', $targetLanguage)
             ->first();
 
-        if (!$translatedParentOption) {
+        if (! $translatedParentOption) {
             return redirect()
                 ->route('admin.option-dependencies.index')
                 ->with('success', 'Please duplicate the parent option first.');
@@ -307,7 +307,7 @@ class OptionDependencyController extends Controller
         if ($optionDependency->target_type === 'group') {
             $targetGroup = $optionDependency->targetGroup;
 
-            if (!$targetGroup || !$targetGroup->translation_key) {
+            if (! $targetGroup || ! $targetGroup->translation_key) {
                 return redirect()
                     ->route('admin.option-dependencies.index')
                     ->with('success', 'Target group has no translation key.');
@@ -317,7 +317,7 @@ class OptionDependencyController extends Controller
                 ->where('language', $targetLanguage)
                 ->first();
 
-            if (!$translatedTargetGroup) {
+            if (! $translatedTargetGroup) {
                 return redirect()
                     ->route('admin.option-dependencies.index')
                     ->with('success', 'Please duplicate the target group first.');
@@ -329,7 +329,7 @@ class OptionDependencyController extends Controller
         if ($optionDependency->target_type === 'option') {
             $targetOption = $optionDependency->targetOption;
 
-            if (!$targetOption || !$targetOption->translation_key) {
+            if (! $targetOption || ! $targetOption->translation_key) {
                 return redirect()
                     ->route('admin.option-dependencies.index')
                     ->with('success', 'Target option has no translation key.');
@@ -339,7 +339,7 @@ class OptionDependencyController extends Controller
                 ->where('language', $targetLanguage)
                 ->first();
 
-            if (!$translatedTargetOption) {
+            if (! $translatedTargetOption) {
                 return redirect()
                     ->route('admin.option-dependencies.index')
                     ->with('success', 'Please duplicate the target option first.');
@@ -390,7 +390,7 @@ class OptionDependencyController extends Controller
 
         return redirect()
             ->route('admin.option-dependencies.edit', $newDependency->dependency_id)
-            ->with('success', 'Option dependency duplicated for ' . strtoupper($targetLanguage) . '. Please review and activate it.');
+            ->with('success', 'Option dependency duplicated for '.strtoupper($targetLanguage).'. Please review and activate it.');
     }
 
     public function destroy(OptionDependency $optionDependency)

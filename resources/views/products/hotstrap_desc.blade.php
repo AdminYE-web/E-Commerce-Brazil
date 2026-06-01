@@ -115,6 +115,51 @@
                 padding: 14px 16px;
             }
         }
+
+        .translation-alert-popup {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            background: rgba(15, 23, 42, 0.45);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 18px;
+        }
+
+        .translation-alert-box {
+            width: min(100%, 420px);
+            background: #fff;
+            border-radius: 14px;
+            padding: 26px 24px;
+            text-align: center;
+            box-shadow: 0 20px 55px rgba(0, 0, 0, 0.22);
+        }
+
+        .translation-alert-box h3 {
+            margin: 0 0 10px;
+            font-size: 20px;
+            font-weight: 800;
+            color: #111827;
+        }
+
+        .translation-alert-box p {
+            margin: 0 0 20px;
+            font-size: 14px;
+            line-height: 1.55;
+            color: #4b5563;
+        }
+
+        .translation-alert-btn {
+            border: 0;
+            border-radius: 999px;
+            background: #2563eb;
+            color: #fff;
+            padding: 10px 22px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+        }
     </style>
 @endsection
 @section('content')
@@ -149,6 +194,18 @@
             $accordionItems = $product->detail->accordion_content;
         }
     @endphp
+    @if (session('translation_unavailable'))
+        <div class="translation-alert-popup" id="translationAlertPopup">
+            <div class="translation-alert-box">
+                <h3>Translation unavailable</h3>
+                <p>{{ session('translation_unavailable') }}</p>
+
+                <button type="button" class="translation-alert-btn" id="translationAlertClose">
+                    OK
+                </button>
+            </div>
+        </div>
+    @endif
 
     <section class="hotstrap-desc-page">
 
@@ -183,7 +240,8 @@
                         @forelse($galleryImages as $image)
                             <button type="button" class="hotstrap-thumb {{ $loop->first ? 'active' : '' }}"
                                 data-image="{{ asset('storage/' . $image->image_path) }}">
-                                <img src="{{ asset('storage/' . $image->image_path) }}" alt="{{ $product->product_name }}">
+                                <img src="{{ asset('storage/' . $image->image_path) }}"
+                                    alt="{{ $product->product_name }}">
                             </button>
                         @empty
                             <button type="button" class="hotstrap-thumb active">
@@ -603,6 +661,18 @@
                     answer.style.maxHeight = answer.scrollHeight + 'px';
                 }
             });
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const popup = document.getElementById('translationAlertPopup');
+            const closeBtn = document.getElementById('translationAlertClose');
+
+            if (popup && closeBtn) {
+                closeBtn.addEventListener('click', function() {
+                    popup.remove();
+                });
+            }
         });
     </script>
 @endsection

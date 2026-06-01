@@ -345,3 +345,23 @@
     </div>
 
 @endsection
+
+@section('js')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const priceInput = document.querySelector('input[name="additional_price"]');
+            const priceWithTaxInput = document.querySelector('input[name="additional_price_with_tax"]');
+
+            if (priceInput && priceWithTaxInput) {
+                priceInput.addEventListener('input', function() {
+                    const priceVal = parseFloat(this.value);
+                    if (!isNaN(priceVal)) {
+                        priceWithTaxInput.value = (priceVal * 1.1).toFixed(2);
+                    } else {
+                        priceWithTaxInput.value = '';
+                    }
+                });
+            }
+        });
+    </script>
+@endsection

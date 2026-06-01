@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Illuminate\Support\Str;
 use App\Http\Controllers\Controller;
 use App\Models\OptionGroup;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class OptionGroupController extends Controller
 {
@@ -20,8 +20,8 @@ class OptionGroupController extends Controller
                 ->where('language', $baseLanguage)
                 ->when($search, function ($query) use ($search) {
                     $query->where(function ($q) use ($search) {
-                        $q->where('group_name', 'like', '%' . $search . '%')
-                            ->orWhere('group_code', 'like', '%' . $search . '%');
+                        $q->where('group_name', 'like', '%'.$search.'%')
+                            ->orWhere('group_code', 'like', '%'.$search.'%');
                     });
                 })
                 ->orderBy('sort_order')
@@ -36,8 +36,8 @@ class OptionGroupController extends Controller
             ->where('language', $baseLanguage)
             ->when($search, function ($query) use ($search) {
                 $query->where(function ($q) use ($search) {
-                    $q->where('group_name', 'like', '%' . $search . '%')
-                        ->orWhere('group_code', 'like', '%' . $search . '%');
+                    $q->where('group_name', 'like', '%'.$search.'%')
+                        ->orWhere('group_code', 'like', '%'.$search.'%');
                 });
             })
             ->orderBy('sort_order')
@@ -89,7 +89,7 @@ class OptionGroupController extends Controller
             ->orderBy('group_name')
             ->get();
 
-        $translationKey = 'og_' . strtolower(Str::random(12));
+        $translationKey = 'og_'.strtolower(Str::random(12));
 
         return view('admin.option_groups.create', compact(
             'parentGroups',
@@ -125,7 +125,7 @@ class OptionGroupController extends Controller
             'option_group_main' => $request->has('option_group_main') ? 1 : 0,
             'language' => session('admin_product_language', 'pt'),
             'product_type' => $request->product_type,
-            'translation_key' => $request->translation_key ?: 'og_' . strtolower(Str::random(12)),
+            'translation_key' => $request->translation_key ?: 'og_'.strtolower(Str::random(12)),
         ]);
 
         return redirect()
@@ -149,7 +149,7 @@ class OptionGroupController extends Controller
     public function update(Request $request, OptionGroup $optionGroup)
     {
         $request->validate([
-            'group_code' => 'required|string|max:100|unique:option_groups,group_code,' . $optionGroup->option_group_id . ',option_group_id',
+            'group_code' => 'required|string|max:100|unique:option_groups,group_code,'.$optionGroup->option_group_id.',option_group_id',
             'group_name' => 'required|string|max:255',
             'display_type' => 'required|string|in:button,image_card,color,select_detail,image_card_variant,image_grid_compact,grouped_buttons,previous_order_design',
             'is_required' => 'nullable|boolean',
@@ -188,6 +188,7 @@ class OptionGroupController extends Controller
             ->route('admin.option-groups.index')
             ->with('success', 'ลบกลุ่มตัวเลือกเรียบร้อยแล้ว');
     }
+
     public function duplicateTranslation(OptionGroup $optionGroup)
     {
         $targetLanguage = session('admin_product_language', 'pt');
@@ -220,8 +221,8 @@ class OptionGroupController extends Controller
 
         $newGroup->language = $targetLanguage;
         $newGroup->translation_key = $translationKey;
-        $newGroup->group_code = $optionGroup->group_code . '-' . $targetLanguage;
-        $newGroup->group_name = $optionGroup->group_name . ' (' . strtoupper($targetLanguage) . ')';
+        $newGroup->group_code = $optionGroup->group_code.'-'.$targetLanguage;
+        $newGroup->group_name = $optionGroup->group_name.' ('.strtoupper($targetLanguage).')';
         $newGroup->is_active = 0;
         $newGroup->created_at = now();
         $newGroup->updated_at = now();
@@ -252,6 +253,6 @@ class OptionGroupController extends Controller
 
         return redirect()
             ->route('admin.option-groups.edit', $newGroup->option_group_id)
-            ->with('success', 'Option group duplicated for ' . strtoupper($targetLanguage) . '. Please update the translated content.');
+            ->with('success', 'Option group duplicated for '.strtoupper($targetLanguage).'. Please update the translated content.');
     }
 }

@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Illuminate\Support\Str;
 use App\Http\Controllers\Controller;
 use App\Models\Material;
 use App\Models\MaterialHome;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class MaterialHomeController extends Controller
 {
@@ -64,6 +64,7 @@ class MaterialHomeController extends Controller
 
         return view('admin.material_homes.index', compact('items', 'language'));
     }
+
     public function create()
     {
         $language = session('admin_product_language', 'pt');
@@ -72,7 +73,7 @@ class MaterialHomeController extends Controller
             ->orderBy('material_name')
             ->get();
 
-        $translationKey = 'mh_' . strtolower(Str::random(12));
+        $translationKey = 'mh_'.strtolower(Str::random(12));
 
         return view('admin.material_homes.create', compact(
             'materials',
@@ -80,6 +81,7 @@ class MaterialHomeController extends Controller
             'translationKey'
         ));
     }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -101,7 +103,7 @@ class MaterialHomeController extends Controller
         MaterialHome::create([
             'material_id' => $request->material_id,
             'language' => session('admin_product_language', 'pt'),
-            'translation_key' => $request->translation_key ?: 'mh_' . strtolower(Str::random(12)),
+            'translation_key' => $request->translation_key ?: 'mh_'.strtolower(Str::random(12)),
             'title' => $request->title,
             'description' => $request->description,
             'image_path' => $imagePath,
@@ -168,13 +170,14 @@ class MaterialHomeController extends Controller
             'image_path' => $imagePath,
             'is_active' => $request->has('is_active') ? 1 : 0,
             'sort_order' => $request->sort_order ?? 0,
-            'translation_key' => $request->translation_key ?: $materialHome->translation_key ?: 'mh_' . strtolower(Str::random(12)),
+            'translation_key' => $request->translation_key ?: $materialHome->translation_key ?: 'mh_'.strtolower(Str::random(12)),
         ]);
 
         return redirect()
             ->route('admin.material-homes.index')
             ->with('success', 'Material Home updated successfully.');
     }
+
     public function duplicateTranslation(MaterialHome $materialHome)
     {
         $targetLanguage = session('admin_product_language', 'pt');
@@ -191,7 +194,7 @@ class MaterialHomeController extends Controller
                 ->with('success', 'Only PT material home can be duplicated as translation.');
         }
 
-        $translationKey = $materialHome->translation_key ?: 'mh_' . strtolower(Str::random(12));
+        $translationKey = $materialHome->translation_key ?: 'mh_'.strtolower(Str::random(12));
 
         $existing = MaterialHome::where('translation_key', $translationKey)
             ->where('language', $targetLanguage)
@@ -203,7 +206,7 @@ class MaterialHomeController extends Controller
                 ->with('success', 'Translation already exists.');
         }
 
-        if (!$materialHome->translation_key) {
+        if (! $materialHome->translation_key) {
             $materialHome->update([
                 'translation_key' => $translationKey,
             ]);
@@ -235,7 +238,7 @@ class MaterialHomeController extends Controller
         $newItem->material_id = $targetMaterialId;
         $newItem->language = $targetLanguage;
         $newItem->translation_key = $translationKey;
-        $newItem->title = $materialHome->title . ' (' . strtoupper($targetLanguage) . ')';
+        $newItem->title = $materialHome->title.' ('.strtoupper($targetLanguage).')';
         $newItem->is_active = 0;
         $newItem->created_at = now();
         $newItem->updated_at = now();
@@ -243,7 +246,7 @@ class MaterialHomeController extends Controller
 
         return redirect()
             ->route('admin.material-homes.edit', $newItem->material_home_id)
-            ->with('success', 'Material Home duplicated for ' . strtoupper($targetLanguage) . '. Please update the translated content.');
+            ->with('success', 'Material Home duplicated for '.strtoupper($targetLanguage).'. Please update the translated content.');
     }
 
     public function destroy(MaterialHome $materialHome)

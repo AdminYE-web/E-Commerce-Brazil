@@ -10,7 +10,9 @@ use App\Models\OrderItem;
 use App\Models\OrderItemOption;
 use App\Models\OrderPayment;
 use App\Models\Product;
+use App\Models\SystemSetting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -424,14 +426,36 @@ class OrderController extends Controller
 
         $cartItems = collect($cart);
 
-        $subtotal = $cartItems->sum(fn ($item) => (float) ($item['item_total'] ?? 0));
+        $taxRate = 0.10;
+
+        $subtotalGross = $cartItems->sum(fn ($item) => (float) ($item['item_total'] ?? 0));
         $totalQty = $cartItems->sum(fn ($item) => (int) ($item['quantity'] ?? 0));
         $totalItems = $cartItems->count();
 
-        $shipping = $subtotal > 10000 ? 0 : ($totalItems > 0 ? 800 : 0);
-        $taxRate = 0.10;
-        $tax = $subtotal * $taxRate;
-        $grandTotal = $subtotal + $shipping + $tax;
+        $shippingGross = $subtotalGross > 10000 ? 0 : ($totalItems > 0 ? 800 : 0);
+
+        $priceTaxMode = $this->priceTaxMode();
+        $useTaxIncludedPrice = $this->useTaxIncludedPrice();
+
+        if ($useTaxIncludedPrice) {
+            // ราคาที่อยู่ใน cart เป็นราคารวม tax แล้ว
+            // ดังนั้น subtotal/shipping ที่เอาไปแสดงต้องถอด tax ออก
+            $subtotal = $subtotalGross / (1 + $taxRate);
+            $shipping = $shippingGross / (1 + $taxRate);
+
+            // tax คือส่วนต่างระหว่าง gross กับ net
+            $tax = ($subtotalGross + $shippingGross) - ($subtotal + $shipping);
+
+            // ยอดจ่ายจริง คือ gross ไม่ต้องบวก tax ซ้ำ
+            $grandTotal = $subtotalGross + $shippingGross;
+        } else {
+            // ราคายังไม่รวม tax
+            $subtotal = $subtotalGross;
+            $shipping = $shippingGross;
+
+            $tax = ($subtotal + $shipping) * $taxRate;
+            $grandTotal = $subtotal + $shipping + $tax;
+        }
 
         $customer = session('checkout_customer', []);
         $personal = $customer['personal'] ?? [];
@@ -440,12 +464,12 @@ class OrderController extends Controller
         $billingSame = $customer['billing_same_as_shipping'] ?? true;
 
         /*
-|--------------------------------------------------------------------------
-| Prefill personal info from logged-in user
-|--------------------------------------------------------------------------
-| ถ้า login แล้ว และยังไม่มีข้อมูลใน session checkout_customer
-| ให้ดึงจาก table users มาเติมในหน้า Address
-*/
+    |--------------------------------------------------------------------------
+    | Prefill personal info from logged-in user
+    |--------------------------------------------------------------------------
+    | ถ้า login แล้ว และยังไม่มีข้อมูลใน session checkout_customer
+    | ให้ดึงจาก table users มาเติมในหน้า Address
+    */
         if (auth()->check()) {
             $user = auth()->user();
             $mainContact = $user->mainContact;
@@ -464,12 +488,17 @@ class OrderController extends Controller
             'cart' => $cart,
             'cartItems' => $cartItems,
 
+            // net amount สำหรับแสดง subtotal ก่อน tax
             'subtotal' => $subtotal,
             'totalQty' => $totalQty,
             'totalItems' => $totalItems,
             'shipping' => $shipping,
             'tax' => $tax,
             'grandTotal' => $grandTotal,
+
+            // เก็บ gross ไว้ใช้กรณีอยากแสดง/ debug ภายหลัง
+            'subtotalGross' => $subtotalGross,
+            'shippingGross' => $shippingGross,
 
             'customer' => $customer,
             'personal' => $personal,
@@ -478,6 +507,8 @@ class OrderController extends Controller
             'billingSame' => $billingSame,
 
             'artworks' => $artworks,
+            'priceTaxMode' => $priceTaxMode,
+            'useTaxIncludedPrice' => $useTaxIncludedPrice,
         ], $extra);
     }
 
@@ -514,18 +545,37 @@ class OrderController extends Controller
 
         $cartItems = collect($cart);
 
-        $subtotal = $cartItems->sum(fn ($item) => (float) ($item['item_total'] ?? 0));
+        $taxRate = 0.10;
+
+        $subtotalGross = $cartItems->sum(fn ($item) => (float) ($item['item_total'] ?? 0));
         $totalQty = $cartItems->sum(fn ($item) => (int) ($item['quantity'] ?? 0));
         $totalItems = $cartItems->count();
 
-        $optionTotal = $cartItems->sum(fn ($item) => (float) ($item['option_total'] ?? 0));
+        $optionTotalGross = $cartItems->sum(fn ($item) => (float) ($item['option_total'] ?? 0));
 
-        $shipping = $subtotal > 10000 ? 0 : ($totalItems > 0 ? 800 : 0);
+        $shippingGross = $subtotalGross > 10000 ? 0 : ($totalItems > 0 ? 800 : 0);
 
-        // VAT 10%
-        $vatAmount = $subtotal * 0.10;
+        if ($this->useTaxIncludedPrice()) {
+            // ราคาจาก cart เป็นราคาที่รวม tax แล้ว
+            // จึงถอด tax ออกเพื่อเก็บ subtotal / shipping เป็นก่อน tax
+            $subtotal = $subtotalGross / (1 + $taxRate);
+            $shipping = $shippingGross / (1 + $taxRate);
+            $optionTotal = $optionTotalGross / (1 + $taxRate);
 
-        $grandTotal = $subtotal + $shipping + $vatAmount;
+            // tax คือส่วนต่างของ gross - net
+            $vatAmount = ($subtotalGross + $shippingGross) - ($subtotal + $shipping);
+
+            // ยอดจ่ายจริงคือ gross ไม่บวก tax ซ้ำ
+            $grandTotal = $subtotalGross + $shippingGross;
+        } else {
+            // ราคาจาก cart ยังไม่รวม tax
+            $subtotal = $subtotalGross;
+            $shipping = $shippingGross;
+            $optionTotal = $optionTotalGross;
+
+            $vatAmount = ($subtotal + $shipping) * $taxRate;
+            $grandTotal = $subtotal + $shipping + $vatAmount;
+        }
 
         DB::beginTransaction();
 
@@ -753,7 +803,6 @@ class OrderController extends Controller
                 if ($customerEmail) {
                     Mail::to($customerEmail)->send(new OrderConfirmationMail($order));
                 }
-
             } catch (\Throwable $mailError) {
                 Log::error('Send order confirmation email failed', [
                     'order_id' => $order->order_id ?? null,
@@ -807,5 +856,17 @@ class OrderController extends Controller
         $latestNumber = (int) substr($latestOrder->order_no, -4);
 
         return $prefix.str_pad($latestNumber + 1, 4, '0', STR_PAD_LEFT);
+    }
+
+    private function priceTaxMode(): string
+    {
+        return Cache::remember('system_setting_price_tax_mode', 3600, function () {
+            return SystemSetting::getValue('price_tax_mode', 'exclude_tax');
+        });
+    }
+
+    private function useTaxIncludedPrice(): bool
+    {
+        return $this->priceTaxMode() === 'include_tax';
     }
 }

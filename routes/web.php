@@ -1,8 +1,5 @@
 <?php
 
-
-use App\Http\Controllers\Admin\SystemManagementController;
-use App\Http\Controllers\CancelamentoController;
 use App\Http\Controllers\AccountAddressController;
 use App\Http\Controllers\AccountContactController;
 use App\Http\Controllers\AccountController;
@@ -32,6 +29,7 @@ use App\Http\Controllers\Admin\ProductPriceRuleController;
 use App\Http\Controllers\Admin\ProductPriceTierController;
 use App\Http\Controllers\Admin\ProductTemplateController;
 use App\Http\Controllers\Admin\QuotationController;
+use App\Http\Controllers\Admin\SystemManagementController;
 use App\Http\Controllers\Admin\UserAdminController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
@@ -39,6 +37,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\CancelamentoController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ContactController;
@@ -91,8 +90,8 @@ Route::get('/products/order/{code}', [ProductListController::class, 'order'])
 Route::get('/hotstrap/{product}/detail', [ProductListController::class, 'showHotstrap'])
     ->name('products.hotstrap.show');
 
-Route::get('/hotmobily/{product}/detail', [ProductListController::class, 'showHotmobily'])
-    ->name('products.hotmobily.show');
+// Route::get('/hotmobily/{product}/detail', [ProductListController::class, 'showHotmobily'])
+//     ->name('products.hotmobily.show');
 Route::post('/cart/add', [CartController::class, 'add'])
     ->name('cart.add');
 
@@ -175,9 +174,10 @@ Route::get('/how-to-order', [OrderStepController::class, 'index'])->name('how-to
 Route::get('/payment-options', [PaymentOptionController::class, 'index'])
     ->name('payment.options');
 
-
 Route::get('/cancel-order', [CancelamentoController::class, 'index'])
     ->name('cancelamento.alteracao');
+Route::get('/user-email-change/verify/{token}', [UserAdminController::class, 'verifyEmailChange'])
+    ->name('users.email-change.verify');
 
 Route::middleware('auth')->group(function () {
     Route::get('/account', [AccountController::class, 'index'])
@@ -230,6 +230,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/account/orders', [AccountOrderController::class, 'index'])
         ->name('account.orders.index');
 });
+
 
 Route::prefix('admin-panel')->name('admin.')->group(function () {
     Route::get('/login', [AdminAuthController::class, 'showLoginForm'])
@@ -366,6 +367,8 @@ Route::prefix('admin-panel')->name('admin.')->group(function () {
 
         Route::post('system-management', [SystemManagementController::class, 'update'])
             ->name('system-management.update');
+        Route::post('users/{user}/email-change', [UserAdminController::class, 'sendEmailChangeVerification'])
+            ->name('users.email-change.send');
     });
 });
 

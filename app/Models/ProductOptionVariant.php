@@ -14,6 +14,7 @@ class ProductOptionVariant extends Model
         'color_code',
         'image_path',
         'additional_price',
+        'additional_price_with_tax',
         'sort_order',
         'is_default',
         'is_active',

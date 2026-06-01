@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Illuminate\Support\Str;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class CategoryController extends Controller
 {
@@ -22,8 +22,8 @@ class CategoryController extends Controller
                 ->where('language', $baseLanguage)
                 ->when($search, function ($query) use ($search) {
                     $query->where(function ($q) use ($search) {
-                        $q->where('category_name', 'like', '%' . $search . '%')
-                            ->orWhere('category_code', 'like', '%' . $search . '%');
+                        $q->where('category_name', 'like', '%'.$search.'%')
+                            ->orWhere('category_code', 'like', '%'.$search.'%');
                     });
                 })
                 ->orderBy('sort_order')
@@ -38,8 +38,8 @@ class CategoryController extends Controller
             ->where('language', $baseLanguage)
             ->when($search, function ($query) use ($search) {
                 $query->where(function ($q) use ($search) {
-                    $q->where('category_name', 'like', '%' . $search . '%')
-                        ->orWhere('category_code', 'like', '%' . $search . '%');
+                    $q->where('category_name', 'like', '%'.$search.'%')
+                        ->orWhere('category_code', 'like', '%'.$search.'%');
                 });
             })
             ->orderBy('sort_order')
@@ -83,7 +83,7 @@ class CategoryController extends Controller
     public function create()
     {
         $language = session('admin_product_language', 'pt');
-        $translationKey = 'cat_' . strtolower(Str::random(12));
+        $translationKey = 'cat_'.strtolower(Str::random(12));
 
         return view('admin.categories.create', compact('language', 'translationKey'));
     }
@@ -114,7 +114,7 @@ class CategoryController extends Controller
             'sort_order' => $request->sort_order ?? 0,
             'is_active' => $request->has('is_active') ? 1 : 0,
             'language' => session('admin_product_language', 'pt'),
-            'translation_key' => $request->translation_key ?: 'cat_' . strtolower(Str::random(12)),
+            'translation_key' => $request->translation_key ?: 'cat_'.strtolower(Str::random(12)),
             'product_type' => $request->product_type,
         ]);
 
@@ -163,7 +163,7 @@ class CategoryController extends Controller
             'image_path' => $imagePath,
             'sort_order' => $request->sort_order ?? 0,
             'is_active' => $request->has('is_active') ? 1 : 0,
-            'translation_key' => $request->translation_key ?: $category->translation_key ?: 'cat_' . strtolower(Str::random(12)),
+            'translation_key' => $request->translation_key ?: $category->translation_key ?: 'cat_'.strtolower(Str::random(12)),
         ]);
 
         Cache::forget('product_list_shared_components_pt');
@@ -188,6 +188,7 @@ class CategoryController extends Controller
             ->route('admin.categories.index')
             ->with('success', 'ลบ Category เรียบร้อยแล้ว');
     }
+
     public function duplicateTranslation(Category $category)
     {
         $targetLanguage = session('admin_product_language', 'pt');
@@ -204,7 +205,7 @@ class CategoryController extends Controller
                 ->with('success', 'Only PT category can be duplicated as translation.');
         }
 
-        $translationKey = $category->translation_key ?: $category->category_code ?: 'cat_' . strtolower(Str::random(12));
+        $translationKey = $category->translation_key ?: $category->category_code ?: 'cat_'.strtolower(Str::random(12));
 
         $existing = Category::where('translation_key', $translationKey)
             ->where('language', $targetLanguage)
@@ -216,7 +217,7 @@ class CategoryController extends Controller
                 ->with('success', 'Translation already exists.');
         }
 
-        if (!$category->translation_key) {
+        if (! $category->translation_key) {
             $category->update([
                 'translation_key' => $translationKey,
             ]);
@@ -228,9 +229,9 @@ class CategoryController extends Controller
         $newCategory->translation_key = $translationKey;
         $newCategory->product_type = $category->product_type;
         $newCategory->category_code = $category->category_code
-            ? $category->category_code . '-' . $targetLanguage
+            ? $category->category_code.'-'.$targetLanguage
             : null;
-        $newCategory->category_name = $category->category_name . ' (' . strtoupper($targetLanguage) . ')';
+        $newCategory->category_name = $category->category_name.' ('.strtoupper($targetLanguage).')';
         $newCategory->is_active = 0;
         $newCategory->created_at = now();
         $newCategory->updated_at = now();
@@ -243,6 +244,6 @@ class CategoryController extends Controller
 
         return redirect()
             ->route('admin.categories.edit', $newCategory->category_id)
-            ->with('success', 'Category duplicated for ' . strtoupper($targetLanguage) . '. Please update the translated content.');
+            ->with('success', 'Category duplicated for '.strtoupper($targetLanguage).'. Please update the translated content.');
     }
 }

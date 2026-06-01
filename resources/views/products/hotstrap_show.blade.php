@@ -977,16 +977,16 @@
         }
 
         /* .customize-option-group.has-error h2 {
-                                                                                                                                                    color: #dc2626;
-                                                                                                                                                } */
+                                                                                                                                                            color: #dc2626;
+                                                                                                                                                        } */
 
         /* .customize-option-group.has-error .option-button-item,
-                                                                                                                                                .customize-option-group.has-error .option-image-card,
-                                                                                                                                                .customize-option-group.has-error .option-variant-card,
-                                                                                                                                                .customize-option-group.has-error .option-compact-card,
-                                                                                                                                                .customize-option-group.has-error .option-select-detail {
-                                                                                                                                                    border-color: #dc2626;
-                                                                                                                                                } */
+                                                                                                                                                        .customize-option-group.has-error .option-image-card,
+                                                                                                                                                        .customize-option-group.has-error .option-variant-card,
+                                                                                                                                                        .customize-option-group.has-error .option-compact-card,
+                                                                                                                                                        .customize-option-group.has-error .option-select-detail {
+                                                                                                                                                            border-color: #dc2626;
+                                                                                                                                                        } */
         .previous-order-box {
             max-width: 620px;
         }
@@ -1045,8 +1045,8 @@
         }
 
         /* =========================
-                                                                                                                           STEP FOCUS / OVERLAY MODE
-                                                                                                                        ========================= */
+                                                                                                                                   STEP FOCUS / OVERLAY MODE
+                                                                                                                                ========================= */
 
         .customize-option-group {
             position: relative;
@@ -1369,6 +1369,21 @@
         $defaultQuantity = old('quantity', $editingCartItem['quantity'] ?? 100);
 
         $basePrice = 0;
+        $getOptionPrice = function ($option) use ($useTaxIncludedPrice) {
+            if ($useTaxIncludedPrice) {
+                return $option->additional_price_with_tax ?? ($option->additional_price ?? 0);
+            }
+
+            return $option->additional_price ?? 0;
+        };
+
+        $getVariantPrice = function ($variant) use ($useTaxIncludedPrice) {
+            if ($useTaxIncludedPrice) {
+                return $variant->additional_price_with_tax ?? ($variant->additional_price ?? 0);
+            }
+
+            return $variant->additional_price ?? 0;
+        };
     @endphp
 
 
@@ -1455,7 +1470,7 @@
                                                 <input type="radio" name="options[{{ $option->option_group_id }}]"
                                                     value="{{ $option->option_id }}" data-group-name="{{ $groupName }}"
                                                     class="js-option-input" data-option-name="{{ $option->option_name }}"
-                                                    data-price="{{ $option->additional_price ?? 0 }}"
+                                                    data-price="{{ $getOptionPrice($option) }}"
                                                     data-price-type="{{ $option->price_type }}"
                                                     data-option-id="{{ $option->option_id }}"
                                                     data-qty-rule-type="{{ $option->pivot->qty_rule_type }}"
@@ -1498,7 +1513,7 @@
                                                 <input type="radio" name="options[{{ $option->option_group_id }}]"
                                                     value="{{ $option->option_id }}" data-group-name="{{ $groupName }}"
                                                     class="js-option-input" data-option-name="{{ $option->option_name }}"
-                                                    data-price="{{ $option->additional_price ?? 0 }}"
+                                                    data-price="{{ $getOptionPrice($option) }}"
                                                     data-price-type="{{ $option->price_type }}"
                                                     data-option-id="{{ $option->option_id }}"
                                                     data-qty-rule-type="{{ $option->pivot->qty_rule_type }}"
@@ -1540,7 +1555,7 @@
                                                             <option value="{{ $variant->variant_id }}"
                                                                 data-variant-name="{{ $variant->variant_name }}"
                                                                 data-image="{{ $variant->image_path ? asset('storage/' . $variant->image_path) : $defaultImage }}"
-                                                                data-price="{{ $variant->additional_price ?? 0 }}"
+                                                                data-price="{{ $getVariantPrice($variant) }}"
                                                                 {{ $selectedVariant && (int) $selectedVariant->variant_id === (int) $variant->variant_id ? 'selected' : '' }}>
                                                                 {{ $variant->variant_name }}
                                                             </option>
@@ -1559,7 +1574,7 @@
                                                 <input type="radio" name="options[{{ $option->option_group_id }}]"
                                                     value="{{ $option->option_id }}" data-group-name="{{ $groupName }}"
                                                     class="js-option-input" data-option-name="{{ $option->option_name }}"
-                                                    data-price="{{ $option->additional_price ?? 0 }}"
+                                                    data-price="{{ $getOptionPrice($option) }}"
                                                     data-price-type="{{ $option->price_type }}"
                                                     data-option-id="{{ $option->option_id }}"
                                                     data-qty-rule-type="{{ $option->pivot->qty_rule_type }}"
@@ -1582,9 +1597,13 @@
                                                     {{ $option->option_name }}
                                                 </div>
 
-                                                @if (($option->additional_price ?? 0) > 0)
+                                                @php
+                                                    $displayOptionPrice = $getOptionPrice($option);
+                                                @endphp
+
+                                                @if ($displayOptionPrice > 0)
                                                     <div class="option-compact-price">
-                                                        +¥ {{ number_format($option->additional_price, 2) }}
+                                                        +¥ {{ number_format($displayOptionPrice, 2) }}
                                                     </div>
                                                 @else
                                                     <div class="option-compact-price free">
@@ -1610,7 +1629,7 @@
                                                     value="{{ $option->option_id }}" class="js-option-input"
                                                     data-group-name="{{ $groupName }}"
                                                     data-option-name="{{ $option->option_name }}"
-                                                    data-price="{{ $option->additional_price ?? 0 }}"
+                                                    data-price="{{ $getOptionPrice($option) }}"
                                                     data-price-type="{{ $option->price_type }}"
                                                     data-option-id="{{ $option->option_id }}"
                                                     data-qty-rule-type="{{ $option->pivot->qty_rule_type }}"
@@ -1695,7 +1714,7 @@
                                             value="{{ $selectedOptionId ?? '' }}" data-group-name="{{ $groupName }}"
                                             data-option-id="{{ $selectedOption?->option_id ?? '' }}"
                                             data-option-name="{{ $selectedOption?->option_name ?? '' }}"
-                                            data-price="{{ $selectedOption?->additional_price ?? 0 }}"
+                                            data-price="{{ $selectedOption ? $getOptionPrice($selectedOption) : 0 }}"
                                             data-price-type="{{ $selectedOption?->price_type ?? 'per_order' }}"
                                             data-free-from-qty="{{ $selectedOption?->free_from_qty ?? 0 }}"
                                             data-qty-rule-type="{{ $selectedOption?->pivot->qty_rule_type ?? '' }}"
@@ -1724,7 +1743,7 @@
                                                             class="dropdown-item option-bs-dropdown-item {{ $selectedOptionId && (int) $selectedOptionId === (int) $option->option_id ? 'active' : '' }}"
                                                             data-option-id="{{ $option->option_id }}"
                                                             data-option-name="{{ $option->option_name }}"
-                                                            data-price="{{ $option->additional_price ?? 0 }}"
+                                                            data-price="{{ $getOptionPrice($option) }}"
                                                             data-price-type="{{ $option->price_type }}"
                                                             data-free-from-qty="{{ $option->free_from_qty ?? 0 }}"
                                                             data-image="{{ $imagePath }}"
@@ -1791,7 +1810,7 @@
                                                                 value="{{ $option->option_id }}" class="js-option-input"
                                                                 data-group-name="{{ $childGroupName }}"
                                                                 data-option-name="{{ $option->option_name }}"
-                                                                data-price="{{ $option->additional_price ?? 0 }}"
+                                                                data-price="{{ $getOptionPrice($option) }}"
                                                                 data-price-type="{{ $option->price_type }}"
                                                                 data-option-id="{{ $option->option_id }}"
                                                                 data-qty-rule-type="{{ $option->pivot->qty_rule_type }}"
@@ -1838,7 +1857,7 @@
                                                         class="js-option-input previous-order-radio"
                                                         data-group-name="{{ $groupName }}"
                                                         data-option-name="{{ $option->option_name }}"
-                                                        data-price="{{ $option->additional_price ?? 0 }}"
+                                                        data-price="{{ $getOptionPrice($option) }}"
                                                         data-price-type="{{ $option->price_type }}"
                                                         data-option-id="{{ $option->option_id }}"
                                                         data-qty-rule-type="{{ $option->pivot->qty_rule_type }}"
@@ -1877,7 +1896,7 @@
                                                     value="{{ $option->option_id }}" class="js-option-input"
                                                     data-group-name="{{ $groupName }}"
                                                     data-option-name="{{ $option->option_name }}"
-                                                    data-price="{{ $option->additional_price ?? 0 }}"
+                                                    data-price="{{ $getOptionPrice($option) }}"
                                                     data-price-type="{{ $option->price_type }}"
                                                     data-option-id="{{ $option->option_id }}"
                                                     data-qty-rule-type="{{ $option->pivot->qty_rule_type }}"

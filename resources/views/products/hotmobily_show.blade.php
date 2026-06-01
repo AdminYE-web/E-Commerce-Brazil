@@ -977,16 +977,16 @@
         }
 
         /* .customize-option-group.has-error h2 {
-                                                                                                                                                color: #dc2626;
-                                                                                                                                            } */
+                                                                                                                                                            color: #dc2626;
+                                                                                                                                                        } */
 
         /* .customize-option-group.has-error .option-button-item,
-                                                                                                                                            .customize-option-group.has-error .option-image-card,
-                                                                                                                                            .customize-option-group.has-error .option-variant-card,
-                                                                                                                                            .customize-option-group.has-error .option-compact-card,
-                                                                                                                                            .customize-option-group.has-error .option-select-detail {
-                                                                                                                                                border-color: #dc2626;
-                                                                                                                                            } */
+                                                                                                                                                        .customize-option-group.has-error .option-image-card,
+                                                                                                                                                        .customize-option-group.has-error .option-variant-card,
+                                                                                                                                                        .customize-option-group.has-error .option-compact-card,
+                                                                                                                                                        .customize-option-group.has-error .option-select-detail {
+                                                                                                                                                            border-color: #dc2626;
+                                                                                                                                                        } */
         .previous-order-box {
             max-width: 620px;
         }
@@ -1045,8 +1045,8 @@
         }
 
         /* =========================
-                                                                                                                       STEP FOCUS / OVERLAY MODE
-                                                                                                                    ========================= */
+                                                                                                                                   STEP FOCUS / OVERLAY MODE
+                                                                                                                                ========================= */
 
         .customize-option-group {
             position: relative;
@@ -1345,6 +1345,51 @@
             cursor: not-allowed;
             pointer-events: none;
         }
+
+        .translation-alert-popup {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            background: rgba(15, 23, 42, 0.45);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 18px;
+        }
+
+        .translation-alert-box {
+            width: min(100%, 420px);
+            background: #fff;
+            border-radius: 14px;
+            padding: 26px 24px;
+            text-align: center;
+            box-shadow: 0 20px 55px rgba(0, 0, 0, 0.22);
+        }
+
+        .translation-alert-box h3 {
+            margin: 0 0 10px;
+            font-size: 20px;
+            font-weight: 800;
+            color: #111827;
+        }
+
+        .translation-alert-box p {
+            margin: 0 0 20px;
+            font-size: 14px;
+            line-height: 1.55;
+            color: #4b5563;
+        }
+
+        .translation-alert-btn {
+            border: 0;
+            border-radius: 999px;
+            background: #2563eb;
+            color: #fff;
+            padding: 10px 22px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+        }
     </style>
 @endsection
 
@@ -1369,7 +1414,34 @@
         $defaultQuantity = old('quantity', $editingCartItem['quantity'] ?? 100);
 
         $basePrice = 0;
+        $getOptionPrice = function ($option) use ($useTaxIncludedPrice) {
+            if ($useTaxIncludedPrice) {
+                return $option->additional_price_with_tax ?? ($option->additional_price ?? 0);
+            }
+
+            return $option->additional_price ?? 0;
+        };
+
+        $getVariantPrice = function ($variant) use ($useTaxIncludedPrice) {
+            if ($useTaxIncludedPrice) {
+                return $variant->additional_price_with_tax ?? ($variant->additional_price ?? 0);
+            }
+
+            return $variant->additional_price ?? 0;
+        };
     @endphp
+    @if (session('translation_unavailable'))
+        <div class="translation-alert-popup" id="translationAlertPopup">
+            <div class="translation-alert-box">
+                <h3>Translation unavailable</h3>
+                <p>{{ session('translation_unavailable') }}</p>
+
+                <button type="button" class="translation-alert-btn" id="translationAlertClose">
+                    OK
+                </button>
+            </div>
+        </div>
+    @endif
 
 
     <section class="customize-hero-section">
@@ -1455,7 +1527,7 @@
                                                 <input type="radio" name="options[{{ $option->option_group_id }}]"
                                                     value="{{ $option->option_id }}" data-group-name="{{ $groupName }}"
                                                     class="js-option-input" data-option-name="{{ $option->option_name }}"
-                                                    data-price="{{ $option->additional_price ?? 0 }}"
+                                                    data-price="{{ $getOptionPrice($option) }}"
                                                     data-price-type="{{ $option->price_type }}"
                                                     data-option-id="{{ $option->option_id }}"
                                                     data-qty-rule-type="{{ $option->pivot->qty_rule_type }}"
@@ -1498,7 +1570,7 @@
                                                 <input type="radio" name="options[{{ $option->option_group_id }}]"
                                                     value="{{ $option->option_id }}" data-group-name="{{ $groupName }}"
                                                     class="js-option-input" data-option-name="{{ $option->option_name }}"
-                                                    data-price="{{ $option->additional_price ?? 0 }}"
+                                                    data-price="{{ $getOptionPrice($option) }}"
                                                     data-price-type="{{ $option->price_type }}"
                                                     data-option-id="{{ $option->option_id }}"
                                                     data-qty-rule-type="{{ $option->pivot->qty_rule_type }}"
@@ -1540,7 +1612,7 @@
                                                             <option value="{{ $variant->variant_id }}"
                                                                 data-variant-name="{{ $variant->variant_name }}"
                                                                 data-image="{{ $variant->image_path ? asset('storage/' . $variant->image_path) : $defaultImage }}"
-                                                                data-price="{{ $variant->additional_price ?? 0 }}"
+                                                                data-price="{{ $getVariantPrice($variant) }}"
                                                                 {{ $selectedVariant && (int) $selectedVariant->variant_id === (int) $variant->variant_id ? 'selected' : '' }}>
                                                                 {{ $variant->variant_name }}
                                                             </option>
@@ -1559,7 +1631,7 @@
                                                 <input type="radio" name="options[{{ $option->option_group_id }}]"
                                                     value="{{ $option->option_id }}" data-group-name="{{ $groupName }}"
                                                     class="js-option-input" data-option-name="{{ $option->option_name }}"
-                                                    data-price="{{ $option->additional_price ?? 0 }}"
+                                                    data-price="{{ $getOptionPrice($option) }}"
                                                     data-price-type="{{ $option->price_type }}"
                                                     data-option-id="{{ $option->option_id }}"
                                                     data-qty-rule-type="{{ $option->pivot->qty_rule_type }}"
@@ -1582,9 +1654,13 @@
                                                     {{ $option->option_name }}
                                                 </div>
 
-                                                @if (($option->additional_price ?? 0) > 0)
+                                                @php
+                                                    $displayOptionPrice = $getOptionPrice($option);
+                                                @endphp
+
+                                                @if ($displayOptionPrice > 0)
                                                     <div class="option-compact-price">
-                                                        +¥ {{ number_format($option->additional_price, 2) }}
+                                                        +¥ {{ number_format($displayOptionPrice, 2) }}
                                                     </div>
                                                 @else
                                                     <div class="option-compact-price free">
@@ -1610,7 +1686,7 @@
                                                     value="{{ $option->option_id }}" class="js-option-input"
                                                     data-group-name="{{ $groupName }}"
                                                     data-option-name="{{ $option->option_name }}"
-                                                    data-price="{{ $option->additional_price ?? 0 }}"
+                                                    data-price="{{ $getOptionPrice($option) }}"
                                                     data-price-type="{{ $option->price_type }}"
                                                     data-option-id="{{ $option->option_id }}"
                                                     data-qty-rule-type="{{ $option->pivot->qty_rule_type }}"
@@ -1695,7 +1771,7 @@
                                             value="{{ $selectedOptionId ?? '' }}" data-group-name="{{ $groupName }}"
                                             data-option-id="{{ $selectedOption?->option_id ?? '' }}"
                                             data-option-name="{{ $selectedOption?->option_name ?? '' }}"
-                                            data-price="{{ $selectedOption?->additional_price ?? 0 }}"
+                                            data-price="{{ $selectedOption ? $getOptionPrice($selectedOption) : 0 }}"
                                             data-price-type="{{ $selectedOption?->price_type ?? 'per_order' }}"
                                             data-free-from-qty="{{ $selectedOption?->free_from_qty ?? 0 }}"
                                             data-qty-rule-type="{{ $selectedOption?->pivot->qty_rule_type ?? '' }}"
@@ -1724,7 +1800,7 @@
                                                             class="dropdown-item option-bs-dropdown-item {{ $selectedOptionId && (int) $selectedOptionId === (int) $option->option_id ? 'active' : '' }}"
                                                             data-option-id="{{ $option->option_id }}"
                                                             data-option-name="{{ $option->option_name }}"
-                                                            data-price="{{ $option->additional_price ?? 0 }}"
+                                                            data-price="{{ $getOptionPrice($option) }}"
                                                             data-price-type="{{ $option->price_type }}"
                                                             data-free-from-qty="{{ $option->free_from_qty ?? 0 }}"
                                                             data-image="{{ $imagePath }}"
@@ -1791,7 +1867,7 @@
                                                                 value="{{ $option->option_id }}" class="js-option-input"
                                                                 data-group-name="{{ $childGroupName }}"
                                                                 data-option-name="{{ $option->option_name }}"
-                                                                data-price="{{ $option->additional_price ?? 0 }}"
+                                                                data-price="{{ $getOptionPrice($option) }}"
                                                                 data-price-type="{{ $option->price_type }}"
                                                                 data-option-id="{{ $option->option_id }}"
                                                                 data-qty-rule-type="{{ $option->pivot->qty_rule_type }}"
@@ -1838,7 +1914,7 @@
                                                         class="js-option-input previous-order-radio"
                                                         data-group-name="{{ $groupName }}"
                                                         data-option-name="{{ $option->option_name }}"
-                                                        data-price="{{ $option->additional_price ?? 0 }}"
+                                                        data-price="{{ $getOptionPrice($option) }}"
                                                         data-price-type="{{ $option->price_type }}"
                                                         data-option-id="{{ $option->option_id }}"
                                                         data-qty-rule-type="{{ $option->pivot->qty_rule_type }}"
@@ -1877,7 +1953,7 @@
                                                     value="{{ $option->option_id }}" class="js-option-input"
                                                     data-group-name="{{ $groupName }}"
                                                     data-option-name="{{ $option->option_name }}"
-                                                    data-price="{{ $option->additional_price ?? 0 }}"
+                                                    data-price="{{ $getOptionPrice($option) }}"
                                                     data-price-type="{{ $option->price_type }}"
                                                     data-option-id="{{ $option->option_id }}"
                                                     data-qty-rule-type="{{ $option->pivot->qty_rule_type }}"
@@ -3946,6 +4022,18 @@
             updateVisibleGroupNumbers();
             applyQuantityRuleLock();
             updateSummary();
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const popup = document.getElementById('translationAlertPopup');
+            const closeBtn = document.getElementById('translationAlertClose');
+
+            if (popup && closeBtn) {
+                closeBtn.addEventListener('click', function() {
+                    popup.remove();
+                });
+            }
         });
     </script>
 @endsection

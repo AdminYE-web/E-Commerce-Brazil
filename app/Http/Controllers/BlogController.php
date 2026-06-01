@@ -58,13 +58,13 @@ class BlogController extends Controller
         }
 
         /*
-        |--------------------------------------------------------------------------
-        | ถ้า article ที่เปิดอยู่ไม่ใช่ภาษาปัจจุบัน
-        | ให้หา article ภาษาใหม่จาก translation_key เดียวกัน
-        |--------------------------------------------------------------------------
-        */
+    |--------------------------------------------------------------------------
+    | ถ้า article ที่เปิดอยู่ไม่ใช่ภาษาปัจจุบัน
+    | ให้หา article ภาษาใหม่จาก translation_key เดียวกัน
+    |--------------------------------------------------------------------------
+    */
         if (($article->language ?? 'pt') !== $langKey) {
-            if (! empty($article->translation_key)) {
+            if (!empty($article->translation_key)) {
                 $translatedArticle = Article::where('translation_key', $article->translation_key)
                     ->where('language', $langKey)
                     ->where('is_active', 1)
@@ -77,7 +77,21 @@ class BlogController extends Controller
                 }
             }
 
-            return redirect()->route('blog.index');
+            /*
+        |--------------------------------------------------------------------------
+        | Translation unavailable
+        |--------------------------------------------------------------------------
+        | ถ้าไม่มีบทความภาษาที่เลือก ให้กลับไปภาษาเดิมของ article
+        |--------------------------------------------------------------------------
+        */
+            session(['locale' => $article->language ?? 'pt']);
+            app()->setLocale($article->language ?? 'pt');
+
+            return redirect()
+                ->route('blog.show', [
+                    'article' => $article->article_id,
+                ])
+                ->with('translation_unavailable', 'บทความนี้ยังไม่พร้อมสำหรับภาษาที่เลือก');
         }
 
         return view('blog.show', compact('article', 'langKey'));

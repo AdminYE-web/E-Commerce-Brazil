@@ -247,6 +247,16 @@
             </div>
 
             <div class="form-group">
+                <label>Additional Price With Tax</label>
+                <input type="number"
+                       step="0.01"
+                       name="additional_price_with_tax"
+                       value="{{ old('additional_price_with_tax', $variant->additional_price_with_tax) }}"
+                       min="0"
+                       placeholder="เช่น 220">
+            </div>
+
+            <div class="form-group">
                 <label>Sort Order</label>
                 <input type="number"
                        name="sort_order"
@@ -304,3 +314,24 @@
 </div>
 
 @endsection
+
+@section('js')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const priceInput = document.querySelector('input[name="additional_price"]');
+            const priceWithTaxInput = document.querySelector('input[name="additional_price_with_tax"]');
+
+            if (priceInput && priceWithTaxInput) {
+                priceInput.addEventListener('input', function() {
+                    const priceVal = parseFloat(this.value);
+                    if (!isNaN(priceVal)) {
+                        priceWithTaxInput.value = (priceVal * 1.1).toFixed(2);
+                    } else {
+                        priceWithTaxInput.value = '';
+                    }
+                });
+            }
+        });
+    </script>
+@endsection
+

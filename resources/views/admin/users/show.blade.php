@@ -136,6 +136,39 @@
                 min-width: 0;
             }
         }
+
+        .email-change-box {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .current-email {
+            font-weight: 700;
+            color: var(--fg-dark);
+        }
+
+        .email-change-form {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .email-change-form input {
+            min-width: 280px;
+            height: 38px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0 12px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .error-text {
+            color: #dc2626;
+            font-size: 13px;
+        }
     </style>
 @endsection
 
@@ -168,11 +201,34 @@
             </tr>
             <tr>
                 <th>Email</th>
-                <td>{{ $user->email }}</td>
+                <td>
+                    <div class="email-change-box">
+                        <div class="current-email">
+                            {{ $user->email }}
+                        </div>
+
+                        <form action="{{ route('admin.users.email-change.send', $user->user_id) }}" method="POST"
+                            class="email-change-form">
+                            @csrf
+
+                            <input type="email" name="new_email" value="{{ old('new_email') }}"
+                                placeholder="New email address" required>
+
+                            <button type="submit" class="btn-outline"
+                                onclick="return confirm('Send verification email to this new email address?')">
+                                Send Verify Email
+                            </button>
+                        </form>
+
+                        @error('new_email')
+                            <div class="error-text">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </td>
             </tr>
             <tr>
                 <th>Phone</th>
-                <td>{{ $user->phone ?? optional($user->mainContact)->phone ?? '-' }}</td>
+                <td>{{ $user->phone ?? (optional($user->mainContact)->phone ?? '-') }}</td>
             </tr>
             <tr>
                 <th>Status</th>
@@ -198,7 +254,7 @@
             <tr>
                 <th>Shipping</th>
                 <td>
-                    @if($user->mainShippingAddress)
+                    @if ($user->mainShippingAddress)
                         {{ $user->mainShippingAddress->address ?? '' }}
                         {{ $user->mainShippingAddress->apartment ?? '' }}
                         {{ $user->mainShippingAddress->city ?? '' }}
@@ -213,7 +269,7 @@
             <tr>
                 <th>Billing</th>
                 <td>
-                    @if($user->mainBillingAddress)
+                    @if ($user->mainBillingAddress)
                         {{ $user->mainBillingAddress->address ?? '' }}
                         {{ $user->mainBillingAddress->apartment ?? '' }}
                         {{ $user->mainBillingAddress->city ?? '' }}

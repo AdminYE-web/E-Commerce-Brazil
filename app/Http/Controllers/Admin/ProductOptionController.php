@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Illuminate\Support\Str;
 use App\Http\Controllers\Controller;
 use App\Models\OptionGroup;
 use App\Models\OptionImage;
 use App\Models\ProductOption;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class ProductOptionController extends Controller
 {
@@ -26,11 +26,11 @@ class ProductOptionController extends Controller
                 ->where('language', $baseLanguage)
                 ->when($search, function ($query) use ($search) {
                     $query->where(function ($q) use ($search) {
-                        $q->where('option_name', 'like', '%' . $search . '%')
-                            ->orWhere('option_code', 'like', '%' . $search . '%')
+                        $q->where('option_name', 'like', '%'.$search.'%')
+                            ->orWhere('option_code', 'like', '%'.$search.'%')
                             ->orWhereHas('group', function ($groupQuery) use ($search) {
-                                $groupQuery->where('group_name', 'like', '%' . $search . '%')
-                                    ->orWhere('group_code', 'like', '%' . $search . '%');
+                                $groupQuery->where('group_name', 'like', '%'.$search.'%')
+                                    ->orWhere('group_code', 'like', '%'.$search.'%');
                             });
                     });
                 })
@@ -48,11 +48,11 @@ class ProductOptionController extends Controller
             ->where('language', $baseLanguage)
             ->when($search, function ($query) use ($search) {
                 $query->where(function ($q) use ($search) {
-                    $q->where('option_name', 'like', '%' . $search . '%')
-                        ->orWhere('option_code', 'like', '%' . $search . '%')
+                    $q->where('option_name', 'like', '%'.$search.'%')
+                        ->orWhere('option_code', 'like', '%'.$search.'%')
                         ->orWhereHas('group', function ($groupQuery) use ($search) {
-                            $groupQuery->where('group_name', 'like', '%' . $search . '%')
-                                ->orWhere('group_code', 'like', '%' . $search . '%');
+                            $groupQuery->where('group_name', 'like', '%'.$search.'%')
+                                ->orWhere('group_code', 'like', '%'.$search.'%');
                         });
                 });
             })
@@ -105,7 +105,7 @@ class ProductOptionController extends Controller
             ->orderBy('group_name')
             ->get();
 
-        $translationKey = 'opt_' . strtolower(Str::random(12));
+        $translationKey = 'opt_'.strtolower(Str::random(12));
 
         return view('admin.product_options.create', compact(
             'groups',
@@ -113,6 +113,7 @@ class ProductOptionController extends Controller
             'translationKey'
         ));
     }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -140,7 +141,7 @@ class ProductOptionController extends Controller
             'option_detail' => $request->option_detail,
             'language' => session('admin_product_language', 'pt'),
             'free_from_qty' => $request->free_from_qty,
-            'translation_key' => $request->translation_key ?: 'opt_' . strtolower(Str::random(12)),
+            'translation_key' => $request->translation_key ?: 'opt_'.strtolower(Str::random(12)),
             'additional_price_with_tax' => $request->additional_price_with_tax,
 
         ]);
@@ -223,7 +224,7 @@ class ProductOptionController extends Controller
             'is_active' => $request->has('is_active') ? 1 : 0,
             'option_detail' => $request->option_detail,
             'free_from_qty' => $request->free_from_qty,
-            'translation_key' => $request->translation_key ?: $productOption->translation_key ?: 'opt_' . strtolower(Str::random(12)),
+            'translation_key' => $request->translation_key ?: $productOption->translation_key ?: 'opt_'.strtolower(Str::random(12)),
             'additional_price_with_tax' => $request->additional_price_with_tax,
         ]);
         if ($request->hasFile('images')) {
@@ -247,6 +248,7 @@ class ProductOptionController extends Controller
             ->route('admin.product-options.index')
             ->with('success', 'แก้ไขตัวเลือกสินค้าเรียบร้อยแล้ว');
     }
+
     public function duplicateTranslation(ProductOption $productOption)
     {
         $targetLanguage = session('admin_product_language', 'pt');
@@ -263,7 +265,7 @@ class ProductOptionController extends Controller
                 ->with('success', 'Only PT product option can be duplicated as translation.');
         }
 
-        $translationKey = $productOption->translation_key ?: $productOption->option_code ?: 'opt_' . strtolower(Str::random(12));
+        $translationKey = $productOption->translation_key ?: $productOption->option_code ?: 'opt_'.strtolower(Str::random(12));
 
         $existing = ProductOption::where('translation_key', $translationKey)
             ->where('language', $targetLanguage)
@@ -275,7 +277,7 @@ class ProductOptionController extends Controller
                 ->with('success', 'Translation already exists.');
         }
 
-        if (!$productOption->translation_key) {
+        if (! $productOption->translation_key) {
             $productOption->update([
                 'translation_key' => $translationKey,
             ]);
@@ -309,9 +311,9 @@ class ProductOptionController extends Controller
         $newOption->language = $targetLanguage;
         $newOption->translation_key = $translationKey;
         $newOption->option_code = $productOption->option_code
-            ? $productOption->option_code . '-' . $targetLanguage
+            ? $productOption->option_code.'-'.$targetLanguage
             : null;
-        $newOption->option_name = $productOption->option_name . ' (' . strtoupper($targetLanguage) . ')';
+        $newOption->option_name = $productOption->option_name.' ('.strtoupper($targetLanguage).')';
         $newOption->is_active = 0;
         $newOption->created_at = now();
         $newOption->updated_at = now();
@@ -331,7 +333,7 @@ class ProductOptionController extends Controller
 
         return redirect()
             ->route('admin.product-options.edit', $newOption->option_id)
-            ->with('success', 'Product option duplicated for ' . strtoupper($targetLanguage) . '. Please update the translated content.');
+            ->with('success', 'Product option duplicated for '.strtoupper($targetLanguage).'. Please update the translated content.');
     }
 
     public function destroy(ProductOption $productOption)

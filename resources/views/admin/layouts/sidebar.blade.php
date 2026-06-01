@@ -188,6 +188,18 @@
                 </li> --}}
             </ul>
         </li>
+        <li class="nav-item">
+            <a href="{{ route('admin.orders.index') }}"
+                class="nav-link {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
+                Orders
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('admin.quotations.index') }}"
+                class="nav-link {{ request()->routeIs('admin.quotations.*') ? 'active' : '' }}">
+                Quotations
+            </a>
+        </li>
 
         <li class="nav-item">
             <a href="{{ route('admin.users.index') }}"
@@ -201,18 +213,7 @@
                 Contact List
             </a>
         </li>
-        <li class="nav-item">
-            <a href="{{ route('admin.orders.index') }}"
-                class="nav-link {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
-                Orders
-            </a>
-        </li>
-        <li>
-            <a href="{{ route('admin.quotations.index') }}"
-                class="nav-link {{ request()->routeIs('admin.quotations.*') ? 'active' : '' }}">
-                Quotations
-            </a>
-        </li>
+
         <li>
             <a href="{{ route('admin.faqs.index') }}"
                 class="nav-link {{ request()->routeIs('admin.faqs.*') ? 'active' : '' }}">

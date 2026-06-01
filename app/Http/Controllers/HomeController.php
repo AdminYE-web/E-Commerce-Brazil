@@ -20,7 +20,7 @@ class HomeController extends Controller
         $langKey = $this->getLangKey();
 
         // 3. ทำ cache key แยกตามภาษา
-        $cacheKey = 'home_page_data_' . $langKey;
+        $cacheKey = 'home_page_data_'.$langKey;
 
         // 4. Cache ข้อมูลตามภาษา
         $homeData = Cache::remember($cacheKey, 3600, function () use ($langKey) {

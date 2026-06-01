@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\ProductOption;
 use App\Models\ProductOptionVariant;
+use App\Models\SystemSetting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class CartController extends Controller
 {
@@ -67,8 +69,8 @@ class CartController extends Controller
                     ->first();
             }
 
-            $optionPrice = (float) ($option->additional_price ?? 0);
-            $variantPrice = (float) ($variant->additional_price ?? 0);
+            $optionPrice = $this->optionPrice($option);
+            $variantPrice = $this->variantPrice($variant);
             $previousOrderNos = $request->input('previous_order_no', []);
 
             $selectedOptions[] = [
@@ -251,8 +253,19 @@ class CartController extends Controller
                     continue;
                 }
 
-                $price = (float) ($selectedOption['price'] ?? 0);
-                $variantPrice = (float) ($selectedOption['variant_price'] ?? 0);
+                $option = ProductOption::where('option_id', $optionId)->first();
+
+                $price = $option ? $this->optionPrice($option) : (float) ($selectedOption['price'] ?? 0);
+
+                $variantPrice = 0;
+
+                if (! empty($selectedOption['variant_id'])) {
+                    $variant = ProductOptionVariant::where('variant_id', $selectedOption['variant_id'])->first();
+                    $variantPrice = $this->variantPrice($variant);
+                } else {
+                    $variantPrice = (float) ($selectedOption['variant_price'] ?? 0);
+                }
+
                 $priceType = $selectedOption['price_type'] ?? 'per_order';
 
                 if ($priceType === 'per_item') {
@@ -260,6 +273,24 @@ class CartController extends Controller
                 } else {
                     $optionTotal += $price + $variantPrice;
                 }
+                $cart[$key]['options'] = collect($item['options'] ?? [])->map(function ($selectedOption) {
+                    $optionId = (int) ($selectedOption['option_id'] ?? 0);
+                    $option = ProductOption::where('option_id', $optionId)->first();
+
+                    if ($option) {
+                        $selectedOption['price'] = $this->optionPrice($option);
+                    }
+
+                    if (! empty($selectedOption['variant_id'])) {
+                        $variant = ProductOptionVariant::where('variant_id', $selectedOption['variant_id'])->first();
+
+                        if ($variant) {
+                            $selectedOption['variant_price'] = $this->variantPrice($variant);
+                        }
+                    }
+
+                    return $selectedOption;
+                })->toArray();
             }
 
             $productTotal = $unitPrice * $quantity;
@@ -276,8 +307,10 @@ class CartController extends Controller
         }
 
         session()->put('cart', $cart);
+        $priceTaxMode = $this->priceTaxMode();
+        $useTaxIncludedPrice = $this->useTaxIncludedPrice();
 
-        return view('cart.index', compact('cart'));
+        return view('cart.index', compact('cart', 'priceTaxMode', 'useTaxIncludedPrice'));
     }
 
     public function updateQuantity(Request $request)
@@ -358,15 +391,26 @@ class CartController extends Controller
         */
         $optionTotal = 0;
 
-        foreach (($cartItem['options'] ?? []) as $selectedOption) {
+        foreach (($item['options'] ?? []) as $selectedOption) {
             $optionId = (int) ($selectedOption['option_id'] ?? 0);
 
             if (in_array($optionId, $ruleOptionIds)) {
                 continue;
             }
 
-            $price = (float) ($selectedOption['price'] ?? 0);
-            $variantPrice = (float) ($selectedOption['variant_price'] ?? 0);
+            $option = ProductOption::where('option_id', $optionId)->first();
+
+            $price = $option ? $this->optionPrice($option) : (float) ($selectedOption['price'] ?? 0);
+
+            $variantPrice = 0;
+
+            if (! empty($selectedOption['variant_id'])) {
+                $variant = ProductOptionVariant::where('variant_id', $selectedOption['variant_id'])->first();
+                $variantPrice = $this->variantPrice($variant);
+            } else {
+                $variantPrice = (float) ($selectedOption['variant_price'] ?? 0);
+            }
+
             $priceType = $selectedOption['price_type'] ?? 'per_order';
 
             if ($priceType === 'per_item') {
@@ -374,6 +418,24 @@ class CartController extends Controller
             } else {
                 $optionTotal += $price + $variantPrice;
             }
+            $cart[$key]['options'] = collect($item['options'] ?? [])->map(function ($selectedOption) {
+                $optionId = (int) ($selectedOption['option_id'] ?? 0);
+                $option = ProductOption::where('option_id', $optionId)->first();
+
+                if ($option) {
+                    $selectedOption['price'] = $this->optionPrice($option);
+                }
+
+                if (! empty($selectedOption['variant_id'])) {
+                    $variant = ProductOptionVariant::where('variant_id', $selectedOption['variant_id'])->first();
+
+                    if ($variant) {
+                        $selectedOption['variant_price'] = $this->variantPrice($variant);
+                    }
+                }
+
+                return $selectedOption;
+            })->toArray();
         }
 
         $productTotal = $unitPrice * $quantity;
@@ -477,7 +539,15 @@ class CartController extends Controller
                 ->first();
         }
 
-        return $matchedTier ? (float) $matchedTier->unit_price : 0;
+        if (! $matchedTier) {
+            return 0;
+        }
+
+        if ($this->useTaxIncludedPrice()) {
+            return (float) ($matchedTier->unit_price_with_tax ?? $matchedTier->unit_price ?? 0);
+        }
+
+        return (float) ($matchedTier->unit_price ?? 0);
     }
 
     public function edit($cartItemId)
@@ -551,5 +621,39 @@ class CartController extends Controller
         }
 
         return null;
+    }
+
+    private function priceTaxMode(): string
+    {
+        return Cache::remember('system_setting_price_tax_mode', 3600, function () {
+            return SystemSetting::getValue('price_tax_mode', 'exclude_tax');
+        });
+    }
+
+    private function useTaxIncludedPrice(): bool
+    {
+        return $this->priceTaxMode() === 'include_tax';
+    }
+
+    private function optionPrice(ProductOption $option): float
+    {
+        if ($this->useTaxIncludedPrice()) {
+            return (float) ($option->additional_price_with_tax ?? $option->additional_price ?? 0);
+        }
+
+        return (float) ($option->additional_price ?? 0);
+    }
+
+    private function variantPrice($variant): float
+    {
+        if (! $variant) {
+            return 0;
+        }
+
+        if ($this->useTaxIncludedPrice()) {
+            return (float) ($variant->additional_price_with_tax ?? $variant->additional_price ?? 0);
+        }
+
+        return (float) ($variant->additional_price ?? 0);
     }
 }

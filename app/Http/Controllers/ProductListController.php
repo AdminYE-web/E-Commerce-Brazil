@@ -9,6 +9,7 @@ use App\Models\OptionDependency;
 use App\Models\Product;
 use App\Models\ProductListBanner;
 use App\Models\ProductOptionGroupOrder;
+use App\Models\SystemSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
@@ -20,14 +21,14 @@ class ProductListController extends Controller
         $materialIds = $request->input('materials', []);
         $productType = (int) $request->input('product_type', 1);
 
-        if (!in_array($productType, [1, 2], true)) {
+        if (! in_array($productType, [1, 2], true)) {
             $productType = 1;
         }
 
         $langKey = $this->getLangKey();
 
         $sharedData = Cache::remember(
-            'product_list_shared_components_' . $langKey . '_type_' . $productType,
+            'product_list_shared_components_'.$langKey.'_type_'.$productType,
             86400,
             function () use ($langKey, $productType) {
                 return [
@@ -105,6 +106,12 @@ class ProductListController extends Controller
     {
         $langKey = $this->getLangKey();
 
+        $priceTaxMode = Cache::remember('system_setting_price_tax_mode', 3600, function () {
+            return SystemSetting::getValue('price_tax_mode', 'exclude_tax');
+        });
+
+        $useTaxIncludedPrice = $priceTaxMode === 'include_tax';
+
         /*
     |--------------------------------------------------------------------------
     | Redirect to translated product if current product language is different
@@ -127,7 +134,12 @@ class ProductListController extends Controller
         }
 
         if ($product->language !== $langKey) {
-            abort(404);
+            session(['locale' => $product->language]);
+            app()->setLocale($product->language);
+
+            return redirect()
+                ->route('products.hotstrap.show', $product->product_id)
+                ->with('translation_unavailable', 'สินค้าตัวนี้ยังไม่พร้อมสำหรับภาษาที่เลือก');
         }
 
         $product->load([
@@ -195,7 +207,7 @@ class ProductListController extends Controller
             ->values();
 
         $priceRules = $product->priceRules
-            ->map(function ($rule) use ($langKey) {
+            ->map(function ($rule) use ($langKey, $useTaxIncludedPrice) {
                 return [
                     'rule_id' => (int) $rule->rule_id,
                     'rule_name' => $rule->rule_name,
@@ -204,140 +216,16 @@ class ProductListController extends Controller
                             return $option->language === $langKey;
                         })
                         ->pluck('option_id')
-                        ->map(fn($id) => (int) $id)
+                        ->map(fn ($id) => (int) $id)
                         ->values(),
                     'tiers' => $rule->tiers
-                        ->map(function ($tier) {
+                        ->map(function ($tier) use ($useTaxIncludedPrice) {
                             return [
                                 'min_qty' => (int) $tier->min_qty,
                                 'max_qty' => $tier->max_qty ? (int) $tier->max_qty : null,
-                                'unit_price' => (float) $tier->unit_price,
-                            ];
-                        })
-                        ->values(),
-                ];
-            })
-            ->values();
-
-        return view('products.hotstrap_show', compact(
-            'product',
-            'optionGroups',
-            'dependencies',
-            'priceRules'
-        ));
-    }
-
-    public function showHotmobily(Product $product)
-    {
-        $langKey = $this->getLangKey();
-
-        /*
-    |--------------------------------------------------------------------------
-    | Redirect to translated product if current product language is different
-    |--------------------------------------------------------------------------
-    */
-        if ($product->language !== $langKey && ! empty($product->translation_key)) {
-            $translatedProduct = Product::where('translation_key', $product->translation_key)
-                ->where('language', $langKey)
-                ->where('is_active', 1)
-                ->where('product_type', 2)
-                ->first();
-
-            if ($translatedProduct) {
-                return redirect()->route('products.hotmobily.show', $translatedProduct->product_id);
-            }
-        }
-
-        if ((int) $product->product_type !== 2) {
-            abort(404);
-        }
-
-        if ($product->language !== $langKey) {
-            abort(404);
-        }
-
-        $product->load([
-            'mainImage',
-            'images',
-            'galleryImages',
-            'detail',
-            'category',
-            'material',
-
-            'priceRules.options',
-            'priceRules.tiers',
-
-            'assignedOptions.group.parent',
-            'assignedOptions.mainImage',
-            'assignedOptions.variants',
-        ]);
-
-        $groupOrders = ProductOptionGroupOrder::where('product_id', $product->product_id)
-            ->pluck('sort_order', 'option_group_id');
-
-        $optionGroups = $product->assignedOptions
-            ->where('pivot.is_active', 1)
-            ->filter(function ($option) use ($langKey) {
-                return $option->language === $langKey
-                    && $option->group
-                    && $option->group->language === $langKey;
-            })
-            ->sortBy(function ($option) use ($groupOrders) {
-                $group = $option->group;
-                $parent = $group?->parent;
-
-                $displayGroup = $parent ?: $group;
-                $displayGroupId = $displayGroup?->option_group_id;
-
-                return [
-                    $groupOrders[$displayGroupId] ?? 999,
-                    $parent->sort_order ?? $group->sort_order ?? 999,
-                    $group->sort_order ?? 999,
-                    $option->pivot->sort_order ?? 0,
-                ];
-            })
-            ->groupBy(function ($option) {
-                $group = $option->group;
-                $displayGroup = $group?->parent ?: $group;
-
-                return $displayGroup?->option_group_id ?? 0;
-            });
-
-        $dependencies = OptionDependency::where('is_active', 1)
-            ->whereHas('parentOption', function ($query) use ($langKey) {
-                $query->where('language', $langKey);
-            })
-            ->orderBy('sort_order')
-            ->get()
-            ->map(function ($dependency) {
-                return [
-                    'parent_option_id' => (int) $dependency->parent_option_id,
-                    'target_type' => $dependency->target_type,
-                    'action_type' => $dependency->action_type ?? 'show',
-                    'target_group_id' => $dependency->target_group_id ? (int) $dependency->target_group_id : null,
-                    'target_option_id' => $dependency->target_option_id ? (int) $dependency->target_option_id : null,
-                ];
-            })
-            ->values();
-
-        $priceRules = $product->priceRules
-            ->map(function ($rule) use ($langKey) {
-                return [
-                    'rule_id' => (int) $rule->rule_id,
-                    'rule_name' => $rule->rule_name,
-                    'option_ids' => $rule->options
-                        ->filter(function ($option) use ($langKey) {
-                            return $option->language === $langKey;
-                        })
-                        ->pluck('option_id')
-                        ->map(fn($id) => (int) $id)
-                        ->values(),
-                    'tiers' => $rule->tiers
-                        ->map(function ($tier) {
-                            return [
-                                'min_qty' => (int) $tier->min_qty,
-                                'max_qty' => $tier->max_qty ? (int) $tier->max_qty : null,
-                                'unit_price' => (float) $tier->unit_price,
+                                'unit_price' => $useTaxIncludedPrice
+                                    ? (float) ($tier->unit_price_with_tax ?? $tier->unit_price ?? 0)
+                                    : (float) ($tier->unit_price ?? 0),
                             ];
                         })
                         ->values(),
@@ -349,7 +237,157 @@ class ProductListController extends Controller
             'product',
             'optionGroups',
             'dependencies',
-            'priceRules'
+            'priceRules',
+            'priceTaxMode',
+            'useTaxIncludedPrice'
+        ));
+    }
+
+    public function showHotmobily(Product $product)
+    {
+        $langKey = $this->getLangKey();
+
+        $priceTaxMode = Cache::remember('system_setting_price_tax_mode', 3600, function () {
+            return SystemSetting::getValue('price_tax_mode', 'exclude_tax');
+        });
+
+        $useTaxIncludedPrice = $priceTaxMode === 'include_tax';
+
+        /*
+|--------------------------------------------------------------------------
+| Check product type first
+|--------------------------------------------------------------------------
+*/
+        if ((int) $product->product_type !== 2) {
+            abort(404);
+        }
+
+        /*
+|--------------------------------------------------------------------------
+| Redirect to translated product if current language is different
+|--------------------------------------------------------------------------
+| ถ้าเปลี่ยนภาษาแล้วสินค้ามีตัวแปล ให้พาไปตัวแปล
+| ถ้าไม่มี ให้ set locale กลับเป็นภาษาของสินค้าปัจจุบัน แล้ว redirect กลับหน้าเดิม
+|--------------------------------------------------------------------------
+*/
+        if ($product->language !== $langKey) {
+            if (! empty($product->translation_key)) {
+                $translatedProduct = Product::where('translation_key', $product->translation_key)
+                    ->where('language', $langKey)
+                    ->where('is_active', 1)
+                    ->where('product_type', 2)
+                    ->first();
+
+                if ($translatedProduct) {
+                    return redirect()->route('products.hotmobily.show', $translatedProduct->product_id);
+                }
+            }
+
+            session(['locale' => $product->language]);
+            app()->setLocale($product->language);
+
+            return redirect()
+                ->route('products.hotmobily.show', $product->product_id)
+                ->with('translation_unavailable', 'สินค้าตัวนี้ยังไม่พร้อมสำหรับภาษาที่เลือก');
+        }
+        $product->load([
+            'mainImage',
+            'images',
+            'galleryImages',
+            'detail',
+            'category',
+            'material',
+
+            'priceRules.options',
+            'priceRules.tiers',
+
+            'assignedOptions.group.parent',
+            'assignedOptions.mainImage',
+            'assignedOptions.variants',
+        ]);
+
+        $groupOrders = ProductOptionGroupOrder::where('product_id', $product->product_id)
+            ->pluck('sort_order', 'option_group_id');
+
+        $optionGroups = $product->assignedOptions
+            ->where('pivot.is_active', 1)
+            ->filter(function ($option) use ($langKey) {
+                return $option->language === $langKey
+                    && $option->group
+                    && $option->group->language === $langKey;
+            })
+            ->sortBy(function ($option) use ($groupOrders) {
+                $group = $option->group;
+                $parent = $group?->parent;
+
+                $displayGroup = $parent ?: $group;
+                $displayGroupId = $displayGroup?->option_group_id;
+
+                return [
+                    $groupOrders[$displayGroupId] ?? 999,
+                    $parent->sort_order ?? $group->sort_order ?? 999,
+                    $group->sort_order ?? 999,
+                    $option->pivot->sort_order ?? 0,
+                ];
+            })
+            ->groupBy(function ($option) {
+                $group = $option->group;
+                $displayGroup = $group?->parent ?: $group;
+
+                return $displayGroup?->option_group_id ?? 0;
+            });
+
+        $dependencies = OptionDependency::where('is_active', 1)
+            ->whereHas('parentOption', function ($query) use ($langKey) {
+                $query->where('language', $langKey);
+            })
+            ->orderBy('sort_order')
+            ->get()
+            ->map(function ($dependency) {
+                return [
+                    'parent_option_id' => (int) $dependency->parent_option_id,
+                    'target_type' => $dependency->target_type,
+                    'action_type' => $dependency->action_type ?? 'show',
+                    'target_group_id' => $dependency->target_group_id ? (int) $dependency->target_group_id : null,
+                    'target_option_id' => $dependency->target_option_id ? (int) $dependency->target_option_id : null,
+                ];
+            })
+            ->values();
+
+        $priceRules = $product->priceRules
+            ->map(function ($rule) use ($langKey, $useTaxIncludedPrice) {
+                return [
+                    'rule_id' => (int) $rule->rule_id,
+                    'rule_name' => $rule->rule_name,
+                    'option_ids' => $rule->options
+                        ->filter(function ($option) use ($langKey) {
+                            return $option->language === $langKey;
+                        })
+                        ->pluck('option_id')
+                        ->map(fn ($id) => (int) $id)
+                        ->values(),
+                    'tiers' => $rule->tiers
+                        ->map(function ($tier) use ($useTaxIncludedPrice) {
+                            return [
+                                'min_qty' => (int) $tier->min_qty,
+                                'max_qty' => $tier->max_qty ? (int) $tier->max_qty : null,
+                                'unit_price' => $useTaxIncludedPrice
+                                    ? (float) ($tier->unit_price_with_tax ?? $tier->unit_price ?? 0)
+                                    : (float) ($tier->unit_price ?? 0),
+                            ];
+                        })
+                        ->values(),
+                ];
+            })
+            ->values();
+
+        return view('products.hotmobily_show', compact(
+            'product',
+            'optionGroups',
+            'dependencies',
+            'priceRules',
+            'priceTaxMode',
+            'useTaxIncludedPrice'
         ));
     }
 
@@ -393,6 +431,22 @@ class ProductListController extends Controller
                 }
             }
 
+            /*
+        |--------------------------------------------------------------------------
+        | 3. Translation unavailable
+        |--------------------------------------------------------------------------
+        | กลับไปภาษาของสินค้าตัวเดิม และอยู่หน้าเดิม
+        |--------------------------------------------------------------------------
+        */
+            if ($currentProduct && $currentProduct->language) {
+                session(['locale' => $currentProduct->language]);
+                app()->setLocale($currentProduct->language);
+
+                return redirect()
+                    ->route('products.description', $currentProduct->product_code)
+                    ->with('translation_unavailable', 'This product is not available in the selected language yet.');
+            }
+
             abort(404);
         }
 
@@ -431,6 +485,12 @@ class ProductListController extends Controller
     {
         $langKey = $this->getLangKey();
 
+        $priceTaxMode = Cache::remember('system_setting_price_tax_mode', 3600, function () {
+            return SystemSetting::getValue('price_tax_mode', 'exclude_tax');
+        });
+
+        $useTaxIncludedPrice = $priceTaxMode === 'include_tax';
+
         /*
     |--------------------------------------------------------------------------
     | 1. Find product by current language and product_code
@@ -461,17 +521,26 @@ class ProductListController extends Controller
         if (! $product) {
             $currentProduct = Product::where('product_code', $code)->first();
 
-            if ($currentProduct && $currentProduct->translation_key) {
-                $translatedProduct = Product::where('translation_key', $currentProduct->translation_key)
-                    ->where('language', $langKey)
-                    ->where('is_active', 1)
-                    ->first();
+            if ($currentProduct) {
+                if (! empty($currentProduct->translation_key)) {
+                    $translatedProduct = Product::where('translation_key', $currentProduct->translation_key)
+                        ->where('language', $langKey)
+                        ->where('is_active', 1)
+                        ->first();
 
-                if ($translatedProduct) {
-                    return redirect()->route('products.order', [
-                        'code' => $translatedProduct->product_code,
-                    ]);
+                    if ($translatedProduct) {
+                        return redirect()->route('products.order', [
+                            'code' => $translatedProduct->product_code,
+                        ]);
+                    }
                 }
+
+                session(['locale' => $currentProduct->language]);
+                app()->setLocale($currentProduct->language);
+
+                return redirect()
+                    ->route('products.order', ['code' => $currentProduct->product_code])
+                    ->with('translation_unavailable', 'สินค้าตัวนี้ยังไม่พร้อมสำหรับภาษาที่เลือก');
             }
 
             abort(404);
@@ -526,7 +595,7 @@ class ProductListController extends Controller
             ->values();
 
         $priceRules = $product->priceRules
-            ->map(function ($rule) use ($langKey) {
+            ->map(function ($rule) use ($langKey, $useTaxIncludedPrice) {
                 return [
                     'rule_id' => (int) $rule->rule_id,
                     'rule_name' => $rule->rule_name,
@@ -535,14 +604,16 @@ class ProductListController extends Controller
                             return $option->language === $langKey;
                         })
                         ->pluck('option_id')
-                        ->map(fn($id) => (int) $id)
+                        ->map(fn ($id) => (int) $id)
                         ->values(),
                     'tiers' => $rule->tiers
-                        ->map(function ($tier) {
+                        ->map(function ($tier) use ($useTaxIncludedPrice) {
                             return [
                                 'min_qty' => (int) $tier->min_qty,
                                 'max_qty' => $tier->max_qty ? (int) $tier->max_qty : null,
-                                'unit_price' => (float) $tier->unit_price,
+                                'unit_price' => $useTaxIncludedPrice
+                                    ? (float) ($tier->unit_price_with_tax ?? $tier->unit_price ?? 0)
+                                    : (float) ($tier->unit_price ?? 0),
                             ];
                         })
                         ->values(),
@@ -560,7 +631,9 @@ class ProductListController extends Controller
             'product',
             'optionGroups',
             'dependencies',
-            'priceRules'
+            'priceRules',
+            'priceTaxMode',
+            'useTaxIncludedPrice'
         ));
     }
 }

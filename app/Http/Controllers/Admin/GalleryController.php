@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-
-use Illuminate\Support\Str;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Gallery;
@@ -11,6 +9,7 @@ use App\Models\GalleryImage;
 use App\Models\Material;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class GalleryController extends Controller
 {
@@ -25,13 +24,13 @@ class GalleryController extends Controller
                 ->where('language', $baseLanguage)
                 ->when($search, function ($query) use ($search) {
                     $query->where(function ($q) use ($search) {
-                        $q->where('title', 'like', '%' . $search . '%')
-                            ->orWhere('purpose', 'like', '%' . $search . '%')
+                        $q->where('title', 'like', '%'.$search.'%')
+                            ->orWhere('purpose', 'like', '%'.$search.'%')
                             ->orWhereHas('category', function ($categoryQuery) use ($search) {
-                                $categoryQuery->where('category_name', 'like', '%' . $search . '%');
+                                $categoryQuery->where('category_name', 'like', '%'.$search.'%');
                             })
                             ->orWhereHas('material', function ($materialQuery) use ($search) {
-                                $materialQuery->where('material_name', 'like', '%' . $search . '%');
+                                $materialQuery->where('material_name', 'like', '%'.$search.'%');
                             });
                     });
                 })
@@ -47,13 +46,13 @@ class GalleryController extends Controller
             ->where('language', $baseLanguage)
             ->when($search, function ($query) use ($search) {
                 $query->where(function ($q) use ($search) {
-                    $q->where('title', 'like', '%' . $search . '%')
-                        ->orWhere('purpose', 'like', '%' . $search . '%')
+                    $q->where('title', 'like', '%'.$search.'%')
+                        ->orWhere('purpose', 'like', '%'.$search.'%')
                         ->orWhereHas('category', function ($categoryQuery) use ($search) {
-                            $categoryQuery->where('category_name', 'like', '%' . $search . '%');
+                            $categoryQuery->where('category_name', 'like', '%'.$search.'%');
                         })
                         ->orWhereHas('material', function ($materialQuery) use ($search) {
-                            $materialQuery->where('material_name', 'like', '%' . $search . '%');
+                            $materialQuery->where('material_name', 'like', '%'.$search.'%');
                         });
                 });
             })
@@ -109,7 +108,7 @@ class GalleryController extends Controller
             ->orderBy('material_name')
             ->get();
 
-        $translationKey = 'gal_' . strtolower(Str::random(12));
+        $translationKey = 'gal_'.strtolower(Str::random(12));
 
         return view('admin.galleries.create', compact(
             'categories',
@@ -118,6 +117,7 @@ class GalleryController extends Controller
             'translationKey'
         ));
     }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -146,7 +146,7 @@ class GalleryController extends Controller
             'category_id' => $request->category_id,
             'material_id' => $request->material_id,
             'language' => session('admin_product_language', 'pt'),
-            'translation_key' => $request->translation_key ?: 'gal_' . strtolower(Str::random(12)),
+            'translation_key' => $request->translation_key ?: 'gal_'.strtolower(Str::random(12)),
             'purpose' => $request->purpose,
             'gallery_date' => $request->gallery_date,
             'cover_image' => $coverImagePath,
@@ -239,7 +239,7 @@ class GalleryController extends Controller
             'title' => $request->title,
             'category_id' => $request->category_id,
             'material_id' => $request->material_id,
-            'translation_key' => $request->translation_key ?: $gallery->translation_key ?: 'gal_' . strtolower(Str::random(12)),
+            'translation_key' => $request->translation_key ?: $gallery->translation_key ?: 'gal_'.strtolower(Str::random(12)),
             'purpose' => $request->purpose,
             'gallery_date' => $request->gallery_date,
             'cover_image' => $coverImagePath,
@@ -298,7 +298,7 @@ class GalleryController extends Controller
                 ->with('success', 'Only PT gallery can be duplicated as translation.');
         }
 
-        $translationKey = $gallery->translation_key ?: 'gal_' . strtolower(Str::random(12));
+        $translationKey = $gallery->translation_key ?: 'gal_'.strtolower(Str::random(12));
 
         $existing = Gallery::where('translation_key', $translationKey)
             ->where('language', $targetLanguage)
@@ -310,7 +310,7 @@ class GalleryController extends Controller
                 ->with('success', 'Translation already exists.');
         }
 
-        if (!$gallery->translation_key) {
+        if (! $gallery->translation_key) {
             $gallery->update([
                 'translation_key' => $translationKey,
             ]);
@@ -357,7 +357,7 @@ class GalleryController extends Controller
         $newGallery->material_id = $targetMaterialId;
         $newGallery->language = $targetLanguage;
         $newGallery->translation_key = $translationKey;
-        $newGallery->title = $gallery->title . ' (' . strtoupper($targetLanguage) . ')';
+        $newGallery->title = $gallery->title.' ('.strtoupper($targetLanguage).')';
         $newGallery->is_active = 0;
         $newGallery->created_at = now();
         $newGallery->updated_at = now();
@@ -374,7 +374,7 @@ class GalleryController extends Controller
 
         return redirect()
             ->route('admin.galleries.edit', $newGallery->gallery_id)
-            ->with('success', 'Gallery duplicated for ' . strtoupper($targetLanguage) . '. Please update the translated content.');
+            ->with('success', 'Gallery duplicated for '.strtoupper($targetLanguage).'. Please update the translated content.');
     }
 
     public function destroy(Gallery $gallery)

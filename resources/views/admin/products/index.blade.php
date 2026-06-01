@@ -54,6 +54,19 @@
         .action-link.duplicate {
             color: #2563eb;
         }
+
+        .status-alert-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            font-size: 11px;
+            font-weight: 600;
+            border-radius: 6px;
+            background: #fff1f2;
+            color: #e11d48;
+            border: 1px solid #ffe4e6;
+            text-transform: uppercase;
+        }
     </style>
 @endsection
 @section('content')
@@ -80,7 +93,7 @@
                     Search
                 </button>
 
-                @if(request('search'))
+                @if (request('search'))
                     <a href="{{ route('admin.products.index') }}" class="product-reset-btn">
                         Reset
                     </a>
@@ -97,6 +110,9 @@
         <table>
             <thead>
                 <tr>
+                    @if ($language === 'pt')
+                        <th>Status Alert</th>
+                    @endif
                     <th>Product</th>
                     <th>Type</th>
                     <th>Category</th>
@@ -111,6 +127,15 @@
             <tbody>
                 @forelse ($products as $product)
                     <tr class="{{ !empty($product->is_missing_translation) ? 'translation-missing-row' : '' }}">
+                        @if ($language === 'pt')
+                            <td>
+                                @if ($product->language === 'pt' && empty($product->has_ja_translation))
+                                    <span class="status-alert-badge">missing jp</span>
+                                @else
+                                    <span style="color: #cbd5e1;">-</span>
+                                @endif
+                            </td>
+                        @endif
                         <td>
                             <div class="product-cell">
                                 @if ($product->mainImage)
@@ -167,7 +192,8 @@
                         <td style="text-align: right;">
                             <div class="action-btns" style="justify-content: flex-end;">
                                 @if (!empty($product->is_missing_translation))
-                                    <form action="{{ route('admin.products.duplicate-translation', $product->product_id) }}"
+                                    <form
+                                        action="{{ route('admin.products.duplicate-translation', $product->product_id) }}"
                                         method="POST" style="display:inline;">
                                         @csrf
 
@@ -181,7 +207,8 @@
                                         Edit
                                     </a>
 
-                                    <a href="{{ route('admin.products.options.edit', $product->product_id) }}" class="action-link">
+                                    <a href="{{ route('admin.products.options.edit', $product->product_id) }}"
+                                        class="action-link">
                                         Options
                                     </a>
 
@@ -197,8 +224,8 @@
                                         </a>
                                     @endif
 
-                                    <form action="{{ route('admin.products.destroy', $product->product_id) }}" method="POST"
-                                        style="display:inline;">
+                                    <form action="{{ route('admin.products.destroy', $product->product_id) }}"
+                                        method="POST" style="display:inline;">
                                         @csrf
                                         @method('DELETE')
 
@@ -212,11 +239,11 @@
                         </td>
                     </tr>
                 @empty
-                    <tr>
-                        <td colspan="7" style="text-align: center; padding: 32px;">
-                            No products found.
-                        </td>
-                    </tr>
+                     <tr>
+                         <td colspan="{{ $language === 'pt' ? 9 : 8 }}" style="text-align: center; padding: 32px;">
+                             No products found.
+                         </td>
+                     </tr>
                 @endforelse
             </tbody>
         </table>

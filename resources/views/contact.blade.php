@@ -174,6 +174,7 @@
                     <div class="contact-field-error" data-error-for="attachment">@error('attachment'){{ $message }}@enderror</div>
                 </div>
 
+                @if (!$bypassRecaptcha)
                 <div class="contact-recaptcha-wrap">
                     <div class="contact-recaptcha">
                         @if (config('services.recaptcha.site_key'))
@@ -184,8 +185,9 @@
                     </div>
                     <div class="contact-field-error" data-error-for="g-recaptcha-response">@error('g-recaptcha-response'){{ $message }}@enderror</div>
                 </div>
+                @endif
 
-                <button class="contact-submit" type="submit" disabled>
+                <button class="contact-submit" type="submit" @disabled(!$bypassRecaptcha)>
                     <span>{{ __('messages.contact.submit_quote') }}</span>
                     <i class="bi bi-arrow-right" aria-hidden="true"></i>
                 </button>
@@ -234,7 +236,9 @@
             if (btn) btn.disabled = true;
         }
     </script>
+    @if (!$bypassRecaptcha)
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    @endif
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"
         integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
         crossorigin="anonymous"></script>

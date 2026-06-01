@@ -947,6 +947,27 @@ const displayRadio = row.querySelector('input[name="display_tier_index"]');
             });
         });
 
+        // Auto-calculate unit price with 10% tax
+        const tierWrapper = document.getElementById('tier-wrapper');
+        if (tierWrapper) {
+            tierWrapper.addEventListener('input', function(e) {
+                if (e.target && e.target.name && e.target.name.includes('[unit_price]') && !e.target.name.includes('[unit_price_with_tax]')) {
+                    const row = e.target.closest('.price-tier-row');
+                    if (row) {
+                        const priceWithTaxInput = row.querySelector('input[name*="[unit_price_with_tax]"]');
+                        if (priceWithTaxInput) {
+                            const priceVal = parseFloat(e.target.value);
+                            if (!isNaN(priceVal)) {
+                                priceWithTaxInput.value = (priceVal * 1.1).toFixed(2);
+                            } else {
+                                priceWithTaxInput.value = '';
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
         ensureOneDisplayTier();
     </script>
 @endsection

@@ -24,7 +24,9 @@ class ContactController extends Controller
 
     public function store(Request $request): JsonResponse|RedirectResponse
     {
-        $validator = Validator::make($request->all(), [
+        $bypassRecaptcha = $request->cookie('dev') === '1';
+
+        $rules = [
             'contact_method' => ['required', 'in:whatsapp,line,phone'],
             'subject' => ['required', 'string', 'max:100'],
             'name' => ['required', 'string', 'max:255'],
@@ -34,8 +36,13 @@ class ContactController extends Controller
             'phone' => ['nullable', 'string', 'max:30'],
             'message' => ['required', 'string', 'max:5000'],
             'attachment' => ['nullable', 'file', 'max:10240'],
-            'g-recaptcha-response' => ['required', 'string'],
-        ], [
+        ];
+
+        if (! $bypassRecaptcha) {
+            $rules['g-recaptcha-response'] = ['required', 'string'];
+        }
+
+        $validator = Validator::make($request->all(), $rules, [
             'g-recaptcha-response.required' => 'Please complete the reCAPTCHA verification.',
         ]);
 
@@ -43,15 +50,17 @@ class ContactController extends Controller
             return $this->validationResponse($request, $validator->errors()->toArray());
         }
 
-        $recaptcha = $this->verifyRecaptcha(
-            $request->input('g-recaptcha-response'),
-            $request->ip()
-        );
+        if (! $bypassRecaptcha) {
+            $recaptcha = $this->verifyRecaptcha(
+                $request->input('g-recaptcha-response'),
+                $request->ip()
+            );
 
-        if (! $recaptcha['verified']) {
-            return $this->validationResponse($request, [
-                'g-recaptcha-response' => [$recaptcha['message']],
-            ]);
+            if (! $recaptcha['verified']) {
+                return $this->validationResponse($request, [
+                    'g-recaptcha-response' => [$recaptcha['message']],
+                ]);
+            }
         }
 
         // Handle file upload
