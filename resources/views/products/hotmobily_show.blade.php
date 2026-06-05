@@ -977,16 +977,16 @@
         }
 
         /* .customize-option-group.has-error h2 {
-                                                                                                                                                            color: #dc2626;
-                                                                                                                                                        } */
+                                                                                                                                                                        color: #dc2626;
+                                                                                                                                                                    } */
 
         /* .customize-option-group.has-error .option-button-item,
-                                                                                                                                                        .customize-option-group.has-error .option-image-card,
-                                                                                                                                                        .customize-option-group.has-error .option-variant-card,
-                                                                                                                                                        .customize-option-group.has-error .option-compact-card,
-                                                                                                                                                        .customize-option-group.has-error .option-select-detail {
-                                                                                                                                                            border-color: #dc2626;
-                                                                                                                                                        } */
+                                                                                                                                                                    .customize-option-group.has-error .option-image-card,
+                                                                                                                                                                    .customize-option-group.has-error .option-variant-card,
+                                                                                                                                                                    .customize-option-group.has-error .option-compact-card,
+                                                                                                                                                                    .customize-option-group.has-error .option-select-detail {
+                                                                                                                                                                        border-color: #dc2626;
+                                                                                                                                                                    } */
         .previous-order-box {
             max-width: 620px;
         }
@@ -1045,8 +1045,8 @@
         }
 
         /* =========================
-                                                                                                                                   STEP FOCUS / OVERLAY MODE
-                                                                                                                                ========================= */
+                                                                                                                                               STEP FOCUS / OVERLAY MODE
+                                                                                                                                            ========================= */
 
         .customize-option-group {
             position: relative;
@@ -1345,51 +1345,6 @@
             cursor: not-allowed;
             pointer-events: none;
         }
-
-        .translation-alert-popup {
-            position: fixed;
-            inset: 0;
-            z-index: 99999;
-            background: rgba(15, 23, 42, 0.45);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 18px;
-        }
-
-        .translation-alert-box {
-            width: min(100%, 420px);
-            background: #fff;
-            border-radius: 14px;
-            padding: 26px 24px;
-            text-align: center;
-            box-shadow: 0 20px 55px rgba(0, 0, 0, 0.22);
-        }
-
-        .translation-alert-box h3 {
-            margin: 0 0 10px;
-            font-size: 20px;
-            font-weight: 800;
-            color: #111827;
-        }
-
-        .translation-alert-box p {
-            margin: 0 0 20px;
-            font-size: 14px;
-            line-height: 1.55;
-            color: #4b5563;
-        }
-
-        .translation-alert-btn {
-            border: 0;
-            border-radius: 999px;
-            background: #2563eb;
-            color: #fff;
-            padding: 10px 22px;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-        }
     </style>
 @endsection
 
@@ -1430,18 +1385,6 @@
             return $variant->additional_price ?? 0;
         };
     @endphp
-    @if (session('translation_unavailable'))
-        <div class="translation-alert-popup" id="translationAlertPopup">
-            <div class="translation-alert-box">
-                <h3>Translation unavailable</h3>
-                <p>{{ session('translation_unavailable') }}</p>
-
-                <button type="button" class="translation-alert-btn" id="translationAlertClose">
-                    OK
-                </button>
-            </div>
-        </div>
-    @endif
 
 
     <section class="customize-hero-section">
@@ -2618,6 +2561,7 @@
                 updateOptionDependencies();
                 applyQuantityRuleLock();
                 updateSummary();
+                hiddenInput.dispatchEvent(new Event('change'));
             }
         }
 
@@ -3938,9 +3882,59 @@
                 });
             });
 
-            document.querySelectorAll(
-                '#customize-form .js-option-input, .custom-color-input, .previous-order-input'
-            ).forEach(function(input) {
+            function isGroupReadyToAutoNext(groupEl) {
+                if (!groupEl) {
+                    return false;
+                }
+
+                /*
+                |--------------------------------------------------------------------------
+                | Case 1: grouped_buttons
+                |--------------------------------------------------------------------------
+                | ถ้าใน 1 customize-option-group มีหลาย grouped-button-set
+                | ต้องเลือกให้ครบทุก child group ก่อน ถึงจะ auto next
+                |--------------------------------------------------------------------------
+                */
+                const childSets = groupEl.querySelectorAll('.grouped-button-set');
+
+                if (childSets.length) {
+                    for (const childSet of childSets) {
+                        if (childSet.style.display === 'none') {
+                            continue;
+                        }
+
+                        const checkedInput = childSet.querySelector('.js-option-input:checked:not(:disabled)');
+
+                        if (!checkedInput) {
+                            return false;
+                        }
+                    }
+
+                    return true;
+                }
+
+                /*
+                |--------------------------------------------------------------------------
+                | Case 2: normal group
+                |--------------------------------------------------------------------------
+                | กลุ่มทั่วไป เลือก option แล้วไปต่อได้เลย
+                |--------------------------------------------------------------------------
+                */
+                const selectedInput = groupEl.querySelector('.js-option-input:checked:not(:disabled)');
+
+                if (selectedInput) {
+                    return true;
+                }
+
+                const hiddenSelectInput = groupEl.querySelector('.option-select-detail-hidden');
+
+                if (hiddenSelectInput && hiddenSelectInput.value && !hiddenSelectInput.disabled) {
+                    return true;
+                }
+
+                return false;
+            }
+            document.querySelectorAll('#customize-form .js-option-input').forEach(function(input) {
                 input.addEventListener('change', function() {
                     const groupEl = this.closest('.customize-option-group');
 
@@ -3949,6 +3943,12 @@
                     }
 
                     applyQuantityRuleLock();
+
+                    if (isGroupReadyToAutoNext(groupEl)) {
+                        setTimeout(function() {
+                            goToNextGroup();
+                        }, 250);
+                    }
                 });
 
                 input.addEventListener('focus', function() {
@@ -4022,18 +4022,6 @@
             updateVisibleGroupNumbers();
             applyQuantityRuleLock();
             updateSummary();
-        });
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const popup = document.getElementById('translationAlertPopup');
-            const closeBtn = document.getElementById('translationAlertClose');
-
-            if (popup && closeBtn) {
-                closeBtn.addEventListener('click', function() {
-                    popup.remove();
-                });
-            }
         });
     </script>
 @endsection
