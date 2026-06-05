@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Indigo Admin')</title>
+    <title>@yield('title', 'Admin')</title>
 
     <link rel="stylesheet" href="{{ asset('admin/css/admin.css') }}">
 </head>
+
 <body>
-@yield('css')
+    @yield('css')
     @include('admin.layouts.sidebar')
 
     <main class="main-content">
@@ -18,6 +20,7 @@
             @yield('content')
         </div>
     </main>
-@yield('js')
+    @yield('js')
 </body>
+
 </html>
