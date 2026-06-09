@@ -622,7 +622,8 @@
                         <div class="price-tier-row">
                             <div class="tier-input-group">
                                 <input type="number" name="tiers[{{ $index }}][min_qty]"
-                                    value="{{ $tier['min_qty'] ?? '' }}" class="tier-input" min="1">
+                                    value="{{ $tier['min_qty'] ?? '' }}" class="tier-input" min="1"
+                                    data-tier-field="min_qty">
                                 <span class="tier-suffix"></span>
 
                                 <input type="hidden" name="tiers[{{ $index }}][max_qty]"
@@ -632,12 +633,14 @@
                             <div class="tier-input-group">
                                 <span class="tier-prefix">¥</span>
                                 <input type="number" step="0.01" name="tiers[{{ $index }}][unit_price]"
-                                    value="{{ $tier['unit_price'] ?? '' }}" class="tier-input" min="0">
+                                    value="{{ $tier['unit_price'] ?? '' }}" class="tier-input" min="0"
+                                    data-tier-field="unit_price">
                             </div>
                             <div class="tier-input-group">
                                 <span class="tier-prefix">¥</span>
                                 <input type="number" step="0.01" name="tiers[{{ $index }}][unit_price_with_tax]"
-                                    value="{{ $tier['unit_price_with_tax'] ?? '' }}" class="tier-input" min="0">
+                                    value="{{ $tier['unit_price_with_tax'] ?? '' }}" class="tier-input" min="0"
+                                    data-tier-field="unit_price_with_tax">
                             </div>
                             <div class="tier-display">
                                 <input type="radio" name="display_tier_index" value="{{ $index }}"
@@ -738,68 +741,136 @@
             }
         }
 
-        document.getElementById('add-tier').addEventListener('click', function() {
+        function addTier(focusField = 'min_qty') {
             const wrapper = document.getElementById('tier-wrapper');
 
+            const currentIndex = tierIndex;
+
             const html = `
-                <div class="price-tier-row">
-                    <div class="tier-input-group">
-                        <input
-                            type="number"
-                            name="tiers[${tierIndex}][min_qty]"
-                            class="tier-input"
-                            min="1"
-                        >
-                        <span class="tier-suffix"></span>
+        <div class="price-tier-row">
+            <div class="tier-input-group">
+                <input
+                    type="number"
+                    name="tiers[${currentIndex}][min_qty]"
+                    class="tier-input"
+                    min="1"
+                    data-tier-field="min_qty"
+                >
+                <span class="tier-suffix"></span>
 
-                        <input
-                            type="hidden"
-                            name="tiers[${tierIndex}][max_qty]"
-                            value=""
-                        >
-                    </div>
+                <input
+                    type="hidden"
+                    name="tiers[${currentIndex}][max_qty]"
+                    value=""
+                >
+            </div>
 
-                    <div class="tier-input-group">
-                        <span class="tier-prefix">¥</span>
-                        <input
-                            type="number"
-                            step="0.01"
-                            name="tiers[${tierIndex}][unit_price]"
-                            class="tier-input"
-                            min="0"
-                        >
-                    </div>
-                    <div class="tier-input-group">
-    <span class="tier-prefix">¥</span>
-    <input
-        type="number"
-        step="0.01"
-        name="tiers[${tierIndex}][unit_price_with_tax]"
-        class="tier-input"
-        min="0"
-    >
-</div>
+            <div class="tier-input-group">
+                <span class="tier-prefix">¥</span>
+                <input
+                    type="number"
+                    step="0.01"
+                    name="tiers[${currentIndex}][unit_price]"
+                    class="tier-input"
+                    min="0"
+                    data-tier-field="unit_price"
+                >
+            </div>
 
-                    <div class="tier-display">
-                        <input
-                            type="radio"
-                            name="display_tier_index"
-                            value="${tierIndex}"
-                        >
-                    </div>
+            <div class="tier-input-group">
+                <span class="tier-prefix">¥</span>
+                <input
+                    type="number"
+                    step="0.01"
+                    name="tiers[${currentIndex}][unit_price_with_tax]"
+                    class="tier-input"
+                    min="0"
+                    data-tier-field="unit_price_with_tax"
+                >
+            </div>
 
-                    <div class="tier-action">
-                        <button type="button" class="remove-tier">
-                            Remove
-                        </button>
-                    </div>
-                </div>
-            `;
+            <div class="tier-display">
+                <input
+                    type="radio"
+                    name="display_tier_index"
+                    value="${currentIndex}"
+                >
+            </div>
+
+            <div class="tier-action">
+                <button type="button" class="remove-tier">
+                    Remove
+                </button>
+            </div>
+        </div>
+    `;
 
             wrapper.insertAdjacentHTML('beforeend', html);
             tierIndex++;
 
             ensureOneDisplayTier();
+
+            const newRow = wrapper.querySelector('.price-tier-row:last-child');
+
+            if (newRow) {
+                const focusInput = newRow.querySelector(`[data-tier-field="${focusField}"]`);
+
+                if (focusInput) {
+                    setTimeout(function() {
+                        focusInput.focus();
+                    }, 50);
+                }
+            }
+        }
+
+        document.getElementById('add-tier').addEventListener('click', function() {
+            addTier('min_qty');
+        });
+        document.getElementById('tier-wrapper').addEventListener('keydown', function(e) {
+            if (e.key !== 'Enter') {
+                return;
+            }
+
+            const input = e.target;
+
+            if (!input.classList.contains('tier-input')) {
+                return;
+            }
+
+            e.preventDefault();
+
+            const currentRow = input.closest('.price-tier-row');
+            const field = input.dataset.tierField || 'min_qty';
+
+            if (!currentRow) {
+                return;
+            }
+
+            const nextRow = currentRow.nextElementSibling;
+
+            /*
+            |--------------------------------------------------------------------------
+            | ถ้ามี tier ถัดไปอยู่แล้ว
+            | ให้ focus ช่องประเภทเดียวกันของ row ถัดไป
+            |--------------------------------------------------------------------------
+            */
+            if (nextRow && nextRow.classList.contains('price-tier-row')) {
+                const nextInput = nextRow.querySelector(`[data-tier-field="${field}"]`);
+
+                if (nextInput) {
+                    nextInput.focus();
+                }
+
+                return;
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | ถ้ายังไม่มี tier ถัดไป
+            | ให้ add tier ใหม่ แล้ว focus ช่องประเภทเดียวกัน
+            |--------------------------------------------------------------------------
+            */
+            addTier(field);
         });
 
         document.addEventListener('click', function(e) {
@@ -947,7 +1018,8 @@
         const tierWrapper = document.getElementById('tier-wrapper');
         if (tierWrapper) {
             tierWrapper.addEventListener('input', function(e) {
-                if (e.target && e.target.name && e.target.name.includes('[unit_price]') && !e.target.name.includes('[unit_price_with_tax]')) {
+                if (e.target && e.target.name && e.target.name.includes('[unit_price]') && !e.target.name.includes(
+                        '[unit_price_with_tax]')) {
                     const row = e.target.closest('.price-tier-row');
                     if (row) {
                         const priceWithTaxInput = row.querySelector('input[name*="[unit_price_with_tax]"]');
