@@ -977,16 +977,16 @@
         }
 
         /* .customize-option-group.has-error h2 {
-                                                                                                                                                                        color: #dc2626;
-                                                                                                                                                                    } */
+                                                                                                                                                                            color: #dc2626;
+                                                                                                                                                                        } */
 
         /* .customize-option-group.has-error .option-button-item,
-                                                                                                                                                                    .customize-option-group.has-error .option-image-card,
-                                                                                                                                                                    .customize-option-group.has-error .option-variant-card,
-                                                                                                                                                                    .customize-option-group.has-error .option-compact-card,
-                                                                                                                                                                    .customize-option-group.has-error .option-select-detail {
-                                                                                                                                                                        border-color: #dc2626;
-                                                                                                                                                                    } */
+                                                                                                                                                                        .customize-option-group.has-error .option-image-card,
+                                                                                                                                                                        .customize-option-group.has-error .option-variant-card,
+                                                                                                                                                                        .customize-option-group.has-error .option-compact-card,
+                                                                                                                                                                        .customize-option-group.has-error .option-select-detail {
+                                                                                                                                                                            border-color: #dc2626;
+                                                                                                                                                                        } */
         .previous-order-box {
             max-width: 620px;
         }
@@ -1045,8 +1045,8 @@
         }
 
         /* =========================
-                                                                                                                                               STEP FOCUS / OVERLAY MODE
-                                                                                                                                            ========================= */
+                                                                                                                                                   STEP FOCUS / OVERLAY MODE
+                                                                                                                                                ========================= */
 
         .customize-option-group {
             position: relative;
@@ -3631,6 +3631,34 @@
 
             document.querySelectorAll('.previous-order-input').forEach(function(input) {
                 input.addEventListener('input', updateSummary);
+
+                input.addEventListener('change', function() {
+                    const groupEl = this.closest('.customize-option-group');
+
+                    if (groupEl) {
+                        setActiveGroup(groupEl, false);
+                    }
+
+                    updateSummary();
+                    applyQuantityRuleLock();
+
+                    if (this.value.trim()) {
+                        setTimeout(function() {
+                            goToNextGroup();
+                        }, 250);
+                    }
+                });
+
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+
+                        if (this.value.trim()) {
+                            updateSummary();
+                            goToNextGroup();
+                        }
+                    }
+                });
             });
 
             /*
@@ -3885,6 +3913,31 @@
             function isGroupReadyToAutoNext(groupEl) {
                 if (!groupEl) {
                     return false;
+                }
+
+                /*
+                |--------------------------------------------------------------------------
+                | Case 0: Previous order design
+                |--------------------------------------------------------------------------
+                | ถ้าเลือก Yes / Sim แล้วมีช่อง Previous Order No.
+                | ต้องกรอกเลขก่อน ถึงจะไป step ต่อไปได้
+                |--------------------------------------------------------------------------
+                */
+                const previousOrderChecked = groupEl.querySelector('.previous-order-radio:checked');
+
+                if (previousOrderChecked) {
+                    const isYes = previousOrderChecked.dataset.isYes === '1';
+
+                    if (isYes) {
+                        const previousInput = groupEl.querySelector('.previous-order-input');
+
+                        if (!previousInput || !previousInput.value.trim()) {
+                            previousInput?.focus();
+                            return false;
+                        }
+                    }
+
+                    return true;
                 }
 
                 /*
