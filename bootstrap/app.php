@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\AdminAuth;
 use App\Http\Middleware\SetLocale;
+use App\Http\Middleware\SuperAdminOnly;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -22,6 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
         $middleware->alias([
             'admin.auth' => AdminAuth::class,
+            'super.admin' => SuperAdminOnly::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

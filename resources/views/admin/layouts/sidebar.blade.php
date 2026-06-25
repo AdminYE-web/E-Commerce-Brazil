@@ -7,6 +7,10 @@
     {{-- <a href="{{ route('admin.products.create') }}" class="add-btn">
         + Add New Product
     </a> --}}
+    @php
+    $adminUser = auth('admin')->user();
+    $isNormalAdmin = $adminUser && $adminUser->role === 'admin';
+@endphp
 
     <ul class="nav-list">
         {{-- <li class="nav-item">
@@ -163,31 +167,28 @@
                 </li> --}}
             </ul>
         </li>
-        @php
-            $systemMenuActive = request()->routeIs('admin.system-management.*');
-        @endphp
-        <li class="nav-item has-dropdown {{ $systemMenuActive ? 'open' : '' }}">
-            <button type="button" class="nav-link dropdown-toggle {{ $systemMenuActive ? 'active' : '' }}"
-                onclick="this.closest('.has-dropdown').classList.toggle('open')">
-                <span>System</span>
-                <span class="dropdown-arrow">▾</span>
-            </button>
+      @if(!$isNormalAdmin)
+    @php
+        $systemMenuActive = request()->routeIs('admin.system-management.*');
+    @endphp
 
-            <ul class="sub-nav">
-                <li>
-                    <a href="{{ route('admin.system-management.index') }}"
-                        class="sub-nav-link {{ request()->routeIs('admin.system-management.*') ? 'active' : '' }}">
-                        System Management
-                    </a>
-                </li>
-                {{-- <li>
-                    <a href="{{ route('admin.article-banners.index') }}"
-                        class="sub-nav-link {{ request()->routeIs('admin.article-banners.*') ? 'active' : '' }}">
-                        Article Banners
-                    </a>
-                </li> --}}
-            </ul>
-        </li>
+    <li class="nav-item has-dropdown {{ $systemMenuActive ? 'open' : '' }}">
+        <button type="button" class="nav-link dropdown-toggle {{ $systemMenuActive ? 'active' : '' }}"
+            onclick="this.closest('.has-dropdown').classList.toggle('open')">
+            <span>System</span>
+            <span class="dropdown-arrow">▾</span>
+        </button>
+
+        <ul class="sub-nav">
+            <li>
+                <a href="{{ route('admin.system-management.index') }}"
+                    class="sub-nav-link {{ request()->routeIs('admin.system-management.*') ? 'active' : '' }}">
+                    System Management
+                </a>
+            </li>
+        </ul>
+    </li>
+@endif
         <li class="nav-item">
             <a href="{{ route('admin.orders.index') }}"
                 class="nav-link {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
@@ -201,12 +202,14 @@
             </a>
         </li>
 
-        <li class="nav-item">
-            <a href="{{ route('admin.users.index') }}"
-                class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
-                Users
-            </a>
-        </li>
+      @if(!$isNormalAdmin)
+    <li class="nav-item">
+        <a href="{{ route('admin.users.index') }}"
+            class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
+            Users
+        </a>
+    </li>
+@endif
         <li class="nav-item">
             <a href="{{ route('admin.contact-submissions.index') }}"
                 class="nav-link {{ request()->routeIs('admin.contact-submissions.*') ? 'active' : '' }}">
