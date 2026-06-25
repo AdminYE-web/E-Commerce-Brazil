@@ -236,8 +236,9 @@
                 <div class="form-group">
                     <label>Product Code</label>
                     <input type="text" name="product_code" value="{{ old('product_code') }}">
+                    <small>This section will be displayed as the product URL.</small>
                 </div>
-                <div class="form-group">
+                <div class="form-group" style="display: none">
                     <label>Translation Key</label>
                     <input type="text" name="translation_key" value="{{ old('translation_key', $translationKey ?? '') }}"
                         placeholder="เช่น product_xxxxxxxx">
@@ -258,7 +259,8 @@
                     <select name="category_id">
                         <option value="">-- Select Category --</option>
                         @foreach ($categories as $category)
-                            <option value="{{ $category->category_id }}" {{ old('category_id') == $category->category_id ? 'selected' : '' }}>
+                            <option value="{{ $category->category_id }}"
+                                {{ old('category_id') == $category->category_id ? 'selected' : '' }}>
                                 {{ $category->category_name }}
                             </option>
                         @endforeach
@@ -270,7 +272,8 @@
                     <select name="material_id">
                         <option value="">-- Select Material --</option>
                         @foreach ($materials as $material)
-                            <option value="{{ $material->material_id }}" {{ old('material_id') == $material->material_id ? 'selected' : '' }}>
+                            <option value="{{ $material->material_id }}"
+                                {{ old('material_id') == $material->material_id ? 'selected' : '' }}>
                                 {{ $material->material_name }}
                             </option>
                         @endforeach
@@ -291,51 +294,79 @@
             <div class="section-title">Artwork / Template Setting</div>
 
             <div class="checkbox-grid">
-                <label>
-                    <input type="checkbox" name="is_antivirus_included" value="1" {{ old('is_antivirus_included') ? 'checked' : '' }}>
-                    Antivirus Included
+                 <label>
+                    <input type="checkbox" name="product_recomend" value="1"
+                        {{ old('product_recomend') ? 'checked' : '' }}>
+                    Product Recommend
                 </label>
+                <label>
+    <input type="checkbox" name="product_recomend_menu" value="1"
+        {{ old('product_recomend_menu') ? 'checked' : '' }}>
+    Product Recommend Menu
+</label>
+                {{-- <label>
+                    <input type="checkbox" name="is_antivirus_included" value="1"
+                        {{ old('is_antivirus_included') ? 'checked' : '' }}>
+                    Antivirus Included
+                </label> --}}
 
                 <label>
-                    <input type="checkbox" name="can_upload_artwork" value="1" {{ old('can_upload_artwork') ? 'checked' : '' }}>
+                    <input type="checkbox" name="can_upload_artwork" value="1"
+                        {{ old('can_upload_artwork') ? 'checked' : '' }}>
                     Allow Upload Artwork
                 </label>
 
                 <label>
-                    <input type="checkbox" name="artwork_required" value="1" {{ old('artwork_required') ? 'checked' : '' }}>
+                    <input type="checkbox" name="artwork_required" value="1"
+                        {{ old('artwork_required') ? 'checked' : '' }}>
                     Artwork Required
                 </label>
 
                 <label>
-                    <input type="checkbox" name="allow_text_print" value="1" {{ old('allow_text_print') ? 'checked' : '' }}>
+                    <input type="checkbox" name="allow_text_print" value="1"
+                        {{ old('allow_text_print') ? 'checked' : '' }}>
                     Allow Text Printing
                 </label>
 
                 <label>
-                    <input type="checkbox" name="allow_font_select" value="1" {{ old('allow_font_select') ? 'checked' : '' }}>
+                    <input type="checkbox" name="allow_font_select" value="1"
+                        {{ old('allow_font_select') ? 'checked' : '' }}>
                     Allow Font Selection
                 </label>
 
                 <label>
-                    <input type="checkbox" name="allow_template_select" value="1" {{ old('allow_template_select') ? 'checked' : '' }}>
+                    <input type="checkbox" name="allow_template_select" value="1"
+                        {{ old('allow_template_select') ? 'checked' : '' }}>
                     Allow Template Selection
                 </label>
 
-                <label>
+                {{-- <label>
                     <input type="checkbox" name="is_active" value="1" {{ old('is_active', 1) ? 'checked' : '' }}>
                     Active
-                </label>
+                </label> --}}
 
-                <label>
-                    <input type="checkbox" name="product_recomend" value="1" {{ old('product_recomend') ? 'checked' : '' }}>
-                    Product Recommend
-                </label>
+               
 
-                <label>
-                    <input type="checkbox" name="product_premium" value="1" {{ old('product_premium') ? 'checked' : '' }}>
+                {{-- <label>
+                    <input type="checkbox" name="product_premium" value="1"
+                        {{ old('product_premium') ? 'checked' : '' }}>
                     Product Premium
-                </label>
+                </label> --}}
             </div>
+            <br>
+            <div class="form-group" style="max-width: 20%">
+    <label>Status</label>
+
+    <select name="is_active">
+        <option value="1" {{ old('is_active', 3) == 1 ? 'selected' : '' }}>
+            Public
+        </option>
+
+        <option value="3" {{ old('is_active', 3) == 3 ? 'selected' : '' }}>
+            Draft
+        </option>
+    </select>
+</div>
 
             <div class="form-actions">
                 <a href="{{ route('admin.products.index') }}" class="btn-outline">

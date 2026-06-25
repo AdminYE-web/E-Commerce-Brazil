@@ -15,67 +15,104 @@ use Illuminate\Support\Str;
 class ProductController extends Controller
 {
     public function index(Request $request)
-    {
-        $search = $request->input('search');
-        $language = session('admin_product_language', 'pt');
+{
+    $search = $request->input('search');
+    $language = session('admin_product_language', 'pt');
 
-        $productsQuery = Product::with(['category', 'material', 'mainImage'])
-            ->where(function ($query) use ($language) {
-                $query->where('language', $language)
-                    ->orWhere(function ($q) use ($language) {
-                        $q->where('language', '!=', $language)
-                            ->whereNotExists(function ($subQuery) use ($language) {
-                                $subQuery->selectRaw(1)
-                                    ->from('products as p2')
-                                    ->whereColumn('p2.translation_key', 'products.translation_key')
-                                    ->where('p2.language', $language);
-                            });
-                    });
-            })
-            ->when($search, function ($query) use ($search) {
-                $query->where(function ($q) use ($search) {
-                    $q->where('product_name', 'like', '%'.$search.'%')
-                        ->orWhere('product_code', 'like', '%'.$search.'%');
+    $type = $request->input('type');
+    $categoryId = $request->input('category_id');
+    $materialId = $request->input('material_id');
+    $status = $request->input('status');
+
+    $productsQuery = Product::with(['category', 'material', 'mainImage'])
+        ->where(function ($query) use ($language) {
+            $query->where('language', $language)
+                ->orWhere(function ($q) use ($language) {
+                    $q->where('language', '!=', $language)
+                        ->whereNotExists(function ($subQuery) use ($language) {
+                            $subQuery->selectRaw(1)
+                                ->from('products as p2')
+                                ->whereColumn('p2.translation_key', 'products.translation_key')
+                                ->where('p2.language', $language);
+                        });
                 });
-            })
-            ->orderBy('product_id', 'desc');
-
-        $products = $productsQuery
-            ->paginate(15)
-            ->withQueryString();
-
-        $translationKeys = $products->pluck('translation_key')->filter()->unique();
-
-        $allLanguages = Product::whereIn('translation_key', $translationKeys)
-            ->select('translation_key', 'language')
-            ->get()
-            ->groupBy('translation_key')
-            ->map(function ($items) {
-                return $items->pluck('language')
-                    ->map(function ($lang) {
-                        return $lang === 'ja' ? 'jp' : $lang;
-                    })
-                    ->unique()
-                    ->sortBy(function ($lang) {
-                        $order = ['pt' => 1, 'jp' => 2, 'en' => 3];
-
-                        return $order[$lang] ?? 99;
-                    })
-                    ->implode(' ');
+        })
+        ->when($search, function ($query) use ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('product_name', 'like', '%'.$search.'%')
+                    ->orWhere('product_code', 'like', '%'.$search.'%');
             });
+        })
+        ->when($type !== null && $type !== '', function ($query) use ($type) {
+            $query->where('product_type', $type);
+        })
+        ->when($categoryId, function ($query) use ($categoryId) {
+            $query->where('category_id', $categoryId);
+        })
+        ->when($materialId, function ($query) use ($materialId) {
+            $query->where('material_id', $materialId);
+        })
+        ->when($status !== null && $status !== '', function ($query) use ($status) {
+            $query->where('is_active', $status);
+        })
+        ->orderBy('product_id', 'desc');
 
-        $products->getCollection()->transform(function ($product) use ($language, $allLanguages) {
-            $product->is_missing_translation = $product->language !== $language;
+    $products = $productsQuery
+        ->paginate(15)
+        ->withQueryString();
 
-            $product->all_languages = $product->translation_key && isset($allLanguages[$product->translation_key])
-                ? $allLanguages[$product->translation_key]
-                : ($product->language === 'ja' ? 'jp' : $product->language);
+    $translationKeys = $products->pluck('translation_key')->filter()->unique();
 
-            return $product;
+    $allLanguages = Product::whereIn('translation_key', $translationKeys)
+        ->select('translation_key', 'language')
+        ->get()
+        ->groupBy('translation_key')
+        ->map(function ($items) {
+            return $items->pluck('language')
+                ->map(function ($lang) {
+                    return $lang === 'ja' ? 'jp' : $lang;
+                })
+                ->unique()
+                ->sortBy(function ($lang) {
+                    $order = ['pt' => 1, 'jp' => 2, 'en' => 3];
+
+                    return $order[$lang] ?? 99;
+                })
+                ->implode(' ');
         });
 
-        return view('admin.products.index', compact('products', 'search', 'language'));
-    }
+    $products->getCollection()->transform(function ($product) use ($language, $allLanguages) {
+        $product->is_missing_translation = $product->language !== $language;
+
+        $product->all_languages = $product->translation_key && isset($allLanguages[$product->translation_key])
+            ? $allLanguages[$product->translation_key]
+            : ($product->language === 'ja' ? 'jp' : $product->language);
+
+        return $product;
+    });
+
+    $categories = Category::where('is_active', 1)
+        ->where('language', $language)
+        ->orderBy('category_name')
+        ->get();
+
+    $materials = Material::where('is_active', 1)
+        ->where('language', $language)
+        ->orderBy('material_name')
+        ->get();
+
+    return view('admin.products.index', compact(
+        'products',
+        'search',
+        'language',
+        'categories',
+        'materials',
+        'type',
+        'categoryId',
+        'materialId',
+        'status'
+    ));
+}
 
     public function create()
     {
@@ -111,8 +148,9 @@ class ProductController extends Controller
             'product_name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'is_antivirus_included' => 'nullable|boolean',
-            'is_active' => 'nullable|boolean',
+            'is_active' => 'required|integer|in:1,3',
             'product_recomend' => 'nullable|boolean',
+            'product_recomend_menu' => 'nullable|boolean',
             'product_premium' => 'nullable|boolean',
 
             'images.*' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
@@ -124,6 +162,7 @@ class ProductController extends Controller
             'allow_font_select' => 'nullable|boolean',
             'allow_template_select' => 'nullable|boolean',
             'translation_key' => 'nullable|string|max:255',
+            
         ]);
         $language = session('admin_product_language', 'pt');
 
@@ -135,8 +174,9 @@ class ProductController extends Controller
             'description' => $request->description,
             'language' => $language,
             'is_antivirus_included' => $request->has('is_antivirus_included') ? 1 : 0,
-            'is_active' => $request->has('is_active') ? 1 : 0,
+            'is_active' => (int) $request->is_active,
             'product_recomend' => $request->has('product_recomend') ? 1 : 0,
+            'product_recomend_menu' => $request->has('product_recomend_menu') ? 1 : 0,
             'product_premium' => $request->has('product_premium') ? 1 : 0,
             'product_type' => $request->product_type,
             'can_upload_artwork' => $request->has('can_upload_artwork') ? 1 : 0,
@@ -218,8 +258,9 @@ class ProductController extends Controller
             'gallery_images.*' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'description' => 'nullable|string',
             'is_antivirus_included' => 'nullable|boolean',
-            'is_active' => 'nullable|boolean',
+           'is_active' => 'required|integer|in:1,3',
             'product_recomend' => 'nullable|boolean',
+            'product_recomend_menu' => 'nullable|boolean',
             'product_premium' => 'nullable|boolean',
 
             'images.*' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
@@ -244,8 +285,9 @@ class ProductController extends Controller
             'product_name' => $request->product_name,
             'description' => $request->description,
             'is_antivirus_included' => $request->has('is_antivirus_included') ? 1 : 0,
-            'is_active' => $request->has('is_active') ? 1 : 0,
+            'is_active' => (int) $request->is_active,
             'product_recomend' => $request->has('product_recomend') ? 1 : 0,
+            'product_recomend_menu' => $request->has('product_recomend_menu') ? 1 : 0,
             'product_premium' => $request->has('product_premium') ? 1 : 0,
             'can_upload_artwork' => $request->has('can_upload_artwork') ? 1 : 0,
             'artwork_required' => $request->has('artwork_required') ? 1 : 0,
@@ -324,18 +366,21 @@ class ProductController extends Controller
             ->with('success', 'Product updated successfully.');
     }
 
-    public function destroy(Product $product)
-    {
-        $product->delete();
+   public function destroy(Product $product)
+{
+    $product->update([
+        'is_active' => 0,
+    ]);
 
-        $language = $product->language;
-        Cache::forget('home_page_data_'.$language);
-        Cache::forget('home_page_data');
+    $language = $product->language;
 
-        return redirect()
-            ->route('admin.products.index')
-            ->with('success', 'Product deleted successfully.');
-    }
+    Cache::forget('home_page_data_'.$language);
+    Cache::forget('home_page_data');
+
+    return redirect()
+        ->route('admin.products.index')
+        ->with('success', 'Product has been moved to inactive.');
+}
 
     public function images()
     {
@@ -381,7 +426,7 @@ class ProductController extends Controller
         $cleanName = preg_replace('/\s*\((PT|JA|EN)\)$/i', '', $product->product_name);
         $newProduct->product_name = $cleanName.' ('.strtoupper($targetLanguage).')';
 
-        $newProduct->is_active = 0;
+        $newProduct->is_active = 3;
         $newProduct->product_recomend = 0;
         $newProduct->product_premium = 0;
         $newProduct->created_at = now();
@@ -413,4 +458,38 @@ class ProductController extends Controller
             ->route('admin.products.edit', $newProduct->product_id)
             ->with('success', 'Product duplicated for '.strtoupper($targetLanguage).'. Please update the translated content.');
     }
+
+    public function preview(Product $product)
+{
+    if (!in_array((int) $product->is_active, [1, 3], true)) {
+        abort(404);
+    }
+
+    $product->load([
+        'mainImage',
+        'images',
+        'galleryImages',
+        'detail',
+        'category',
+        'material',
+    ]);
+
+    $relatedProducts = collect();
+    $productFaqs = collect();
+
+    if ((int) $product->product_type === 2) {
+        return view('products.hotmobily_desc', compact(
+            'product',
+            'relatedProducts',
+            'productFaqs'
+        ));
+    }
+
+    return view('products.hotstrap_desc', compact(
+        'product',
+        'relatedProducts',
+        'productFaqs'
+    ));
+}
+
 }

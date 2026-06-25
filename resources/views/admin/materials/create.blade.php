@@ -195,6 +195,10 @@
                     <input type="text" name="material_code" value="{{ old('material_code') }}">
                 </div>
                 <div class="form-group">
+                    <label>Material Name</label>
+                    <input type="text" name="material_name" value="{{ old('material_name') }}">
+                </div>
+                <div class="form-group">
                     <label>Product Type</label>
                     <select name="product_type" required>
                         <option value="1" {{ old('product_type', 1) == 1 ? 'selected' : '' }}>
@@ -205,17 +209,14 @@
                         </option>
                     </select>
                 </div>
-                <div class="form-group">
+                <div class="form-group" style="display: none">
                     <label>Translation Key</label>
                     <input type="text" name="translation_key" value="{{ old('translation_key', $translationKey ?? '') }}"
                         placeholder="เช่น mat_xxxxxxxx">
                     <small>ใช้สำหรับผูก material เดียวกันข้ามภาษา</small>
                 </div>
 
-                <div class="form-group">
-                    <label>Material Name</label>
-                    <input type="text" name="material_name" value="{{ old('material_name') }}">
-                </div>
+                
             </div>
 
             <div class="section-title">Status</div>

@@ -3,7 +3,9 @@
 @section('title', 'Orders | Indigo Admin')
 
 @section('css')
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <style>
+    
     .alert-success {
         margin-bottom: 18px;
         padding: 12px 16px;
@@ -138,6 +140,38 @@
             width: 100%;
         }
     }
+    .date-range-filter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.date-range-filter input {
+    min-width: 145px;
+    flex: unset;
+}
+
+.date-range-filter span {
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+@media (max-width: 900px) {
+    .date-range-filter {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .date-range-filter input {
+        width: 100%;
+    }
+
+    .date-range-filter span {
+        text-align: center;
+    }
+}
 </style>
 @endsection
 
@@ -175,6 +209,27 @@
                 </option>
             @endforeach
         </select>
+        <div class="date-range-filter">
+    <input
+        type="text"
+        name="date_from"
+        class="js-date-picker"
+        value="{{ request('date_from') }}"
+        placeholder="dd/mm/yyyy"
+        autocomplete="off"
+    >
+
+    <span>to</span>
+
+    <input
+        type="text"
+        name="date_to"
+        class="js-date-picker"
+        value="{{ request('date_to') }}"
+        placeholder="dd/mm/yyyy"
+        autocomplete="off"
+    >
+</div>
 
         <select name="payment_status">
             <option value="">All Payment Status</option>
@@ -279,4 +334,18 @@
     </div>
 </div>
 
+@endsection
+
+@section('js')
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    <script>
+        flatpickr('.js-date-picker', {
+            dateFormat: 'Y-m-d',
+            altInput: true,
+            altFormat: 'd/m/Y',
+            allowInput: true,
+            locale: 'en'
+        });
+    </script>
 @endsection

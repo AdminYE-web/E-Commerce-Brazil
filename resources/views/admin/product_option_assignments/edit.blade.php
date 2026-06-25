@@ -111,15 +111,24 @@
             }
         }
 
-        .form-actions {
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            gap: 12px;
-            margin-top: 28px;
-            padding-top: 20px;
-            border-top: 1px solid var(--border);
-        }
+       .form-actions {
+    position: sticky;
+    bottom: 0;
+    z-index: 100;
+
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+
+    margin: 28px -24px -24px;
+    padding: 14px 24px;
+
+    background: rgba(255, 255, 255, 0.96);
+    /* backdrop-filter: blur(8px);
+    border-top: 1px solid var(--border);
+    box-shadow: 0 -8px 20px rgba(15, 23, 42, 0.08); */
+}
 
         .btn-outline,
         .btn-primary {
@@ -605,15 +614,15 @@
 
     </div>
 
-    <div class="form-actions">
-        <a href="{{ route('admin.products.index') }}" class="btn-outline">
-            Cancel
-        </a>
+      <div class="form-actions">
+                <a href="{{ route('admin.products.index') }}" class="btn-outline">
+                    Cancel
+                </a>
 
-        <button type="submit" class="btn-primary">
-            Save Options
-        </button>
-    </div>
+                <button type="submit" class="btn-primary">
+                    Save Options
+                </button>
+            </div>
     </form>
     </div>
 

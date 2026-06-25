@@ -95,6 +95,218 @@
             color: #334155;
             border: 1px solid #cbd5e1;
         }
+
+        .product-search-form {
+            padding: 0 24px 18px;
+        }
+
+        .product-search-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .product-search-input {
+            width: 360px;
+            max-width: 100%;
+            height: 38px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0 12px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .product-filter-select {
+            min-width: 150px;
+            height: 38px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0 10px;
+            background: #fff;
+            color: var(--fg);
+            font-size: 14px;
+            outline: none;
+        }
+
+        .product-search-btn,
+        .product-reset-btn {
+            height: 38px;
+            border-radius: 8px;
+            padding: 0 16px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+
+        .product-search-btn {
+            border: 1px solid var(--accent);
+            background: var(--accent);
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .product-reset-btn {
+            border: 1px solid var(--border);
+            background: #fff;
+            color: var(--fg);
+        }
+
+        .product-search-btn:hover {
+            background: var(--accent-hover);
+        }
+
+        .product-reset-btn:hover {
+            background: var(--bg);
+        }
+
+        @media (max-width: 900px) {
+
+            .product-search-input,
+            .product-filter-select {
+                width: 100%;
+                min-width: 100%;
+            }
+
+            .product-search-btn,
+            .product-reset-btn {
+                width: 100%;
+            }
+        }
+
+        .action-btns {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: nowrap;
+        }
+
+        .action-link {
+            background: none;
+            border: 0;
+            padding: 0;
+            color: #4f46e5;
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .action-link:hover {
+            text-decoration: underline;
+        }
+
+        .action-link.delete,
+        .action-menu .delete {
+            color: red;
+        }
+
+        .action-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .more-btn {
+            color: #4f46e5;
+        }
+
+        .action-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 22px;
+            min-width: 150px;
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+            z-index: 20;
+            padding: 6px 0;
+            text-align: left;
+        }
+
+        .action-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .action-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 24px;
+            min-width: 150px;
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+            z-index: 999;
+            padding: 6px 0;
+            text-align: left;
+        }
+
+        .action-dropdown.open .action-menu {
+            display: block;
+        }
+
+        .action-menu a,
+        .action-menu button {
+            display: block;
+            width: 100%;
+            padding: 8px 12px;
+            font-size: 13px;
+            color: #374151;
+            background: none;
+            border: 0;
+            text-align: left;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .action-menu a:hover,
+        .action-menu button:hover {
+            background: #f3f4f6;
+        }
+
+        .action-menu .delete {
+            color: red;
+        }
+
+        .action-menu a,
+        .action-menu button {
+            display: block;
+            width: 100%;
+            padding: 8px 12px;
+            font-size: 13px;
+            color: #374151;
+            background: none;
+            border: 0;
+            text-align: left;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .action-menu a:hover,
+        .action-menu button:hover {
+            background: #f3f4f6;
+        }
+        .table-card {
+    overflow: visible;
+}
+
+table,
+tbody,
+tr,
+td {
+    overflow: visible;
+}
+
+td {
+    position: relative;
+}
     </style>
 @endsection
 @section('content')
@@ -117,11 +329,57 @@
                 <input type="text" name="search" value="{{ request('search') }}" class="product-search-input"
                     placeholder="Search by product name or product code...">
 
+                <select name="type" class="product-filter-select">
+                    <option value="">All Types</option>
+                    <option value="1" {{ request('type') == '1' ? 'selected' : '' }}>
+                        Hotstrap
+                    </option>
+                    <option value="2" {{ request('type') == '2' ? 'selected' : '' }}>
+                        Hotmobily
+                    </option>
+                </select>
+
+                <select name="category_id" class="product-filter-select">
+                    <option value="">All Categories</option>
+                    @foreach ($categories as $category)
+                        <option value="{{ $category->category_id }}"
+                            {{ request('category_id') == $category->category_id ? 'selected' : '' }}>
+                            {{ $category->category_name }}
+                        </option>
+                    @endforeach
+                </select>
+
+                <select name="material_id" class="product-filter-select">
+                    <option value="">All Materials</option>
+                    @foreach ($materials as $material)
+                        <option value="{{ $material->material_id }}"
+                            {{ request('material_id') == $material->material_id ? 'selected' : '' }}>
+                            {{ $material->material_name }}
+                        </option>
+                    @endforeach
+                </select>
+
+                <select name="status" class="product-filter-select">
+                    <option value="">All Status</option>
+
+                    <option value="1" {{ request('status') === '1' ? 'selected' : '' }}>
+                        Public
+                    </option>
+
+                    <option value="3" {{ request('status') === '3' ? 'selected' : '' }}>
+                        Draft
+                    </option>
+
+                    <option value="0" {{ request('status') === '0' ? 'selected' : '' }}>
+                        Inactive
+                    </option>
+                </select>
+
                 <button type="submit" class="product-search-btn">
                     Search
                 </button>
 
-                @if (request('search'))
+                @if (request()->hasAny(['search', 'type', 'category_id', 'material_id', 'status']))
                     <a href="{{ route('admin.products.index') }}" class="product-reset-btn">
                         Reset
                     </a>
@@ -143,7 +401,7 @@
                     <th>Type</th>
                     <th>Category</th>
                     <th>Material</th>
-                    <th>Antivirus</th>
+
                     <th>Status</th>
                     <th>Lang</th>
                     <th style="text-align: right;">Manage</th>
@@ -164,8 +422,8 @@
                         <td>
                             <div class="product-cell">
                                 @if ($product->mainImage)
-                                    <img src="{{ asset('storage/' . $product->mainImage->image_path) }}" class="product-img"
-                                        alt="{{ $product->product_name }}">
+                                    <img src="{{ asset('storage/' . $product->mainImage->image_path) }}"
+                                        class="product-img" alt="{{ $product->product_name }}">
                                 @else
                                     <div class="product-img"></div>
                                 @endif
@@ -199,13 +457,13 @@
                             {{ $product->material->material_name ?? '-' }}
                         </td>
 
-                        <td>
-                            {{ $product->is_antivirus_included ? 'Yes' : 'No' }}
-                        </td>
+
 
                         <td>
-                            @if ($product->is_active)
-                                <span class="status-pill status-active">Active</span>
+                            @if ((int) $product->is_active === 1)
+                                <span class="status-pill status-active">Public</span>
+                            @elseif ((int) $product->is_active === 3)
+                                <span class="status-pill status-inactive">Draft</span>
                             @else
                                 <span class="status-pill status-inactive">Inactive</span>
                             @endif
@@ -232,13 +490,35 @@
                                         </button>
                                     </form>
                                 @else
-                                    <a href="{{ route('admin.products.edit', $product->product_id) }}" class="action-link">
-                                        Edit
-                                    </a>
+                                   
+                                    {{-- Preview Dropdown --}}
+                                    <div class="action-dropdown">
+                                        <button type="button" class="action-link dropdown-btn">
+                                            Preview ▾
+                                        </button>
 
-                                    <a href="{{ route('admin.products.options.edit', $product->product_id) }}"
-                                        class="action-link">
-                                        Options
+                                        <div class="action-menu">
+                                            <a href="{{ route('admin.products.preview', $product->product_id) }}"
+                                                target="_blank">
+                                                Product Preview
+                                            </a>
+
+                                            <a href="{{ route('admin.products.preview-order', $product->product_id) }}"
+                                                target="_blank">
+                                                Order Preview
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                    {{-- More Dropdown --}}
+                                    <div class="action-dropdown">
+                                        <button type="button" class="action-link dropdown-btn">
+                                            More ▾
+                                        </button>
+
+                                        <div class="action-menu">
+                                             <a href="{{ route('admin.products.edit', $product->product_id) }}" class="action-link">
+                                        Edit
                                     </a>
 
                                     @if ($product->detail)
@@ -253,16 +533,22 @@
                                         </a>
                                     @endif
 
-                                    <form action="{{ route('admin.products.destroy', $product->product_id) }}"
-                                        method="POST" style="display:inline;">
-                                        @csrf
-                                        @method('DELETE')
+                                            <a href="{{ route('admin.products.options.edit', $product->product_id) }}">
+                                                Options
+                                            </a>
 
-                                        <button type="submit" class="action-link delete"
-                                            onclick="return confirm('Delete this product?')">
-                                            Delete
-                                        </button>
-                                    </form>
+                                            <form action="{{ route('admin.products.destroy', $product->product_id) }}"
+                                                method="POST">
+                                                @csrf
+                                                @method('DELETE')
+
+                                                <button type="submit" class="delete"
+                                                    onclick="return confirm('Delete this product?')">
+                                                    Delete
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
                                 @endif
                             </div>
                         </td>
@@ -281,5 +567,30 @@
             {{ $products->links() }}
         </div>
     </div>
+    <script>
+        document.addEventListener('click', function(e) {
+            const dropdownBtn = e.target.closest('.dropdown-btn');
 
+            if (dropdownBtn) {
+                e.preventDefault();
+
+                const dropdown = dropdownBtn.closest('.action-dropdown');
+
+                document.querySelectorAll('.action-dropdown.open').forEach(function(item) {
+                    if (item !== dropdown) {
+                        item.classList.remove('open');
+                    }
+                });
+
+                dropdown.classList.toggle('open');
+                return;
+            }
+
+            if (!e.target.closest('.action-dropdown')) {
+                document.querySelectorAll('.action-dropdown.open').forEach(function(item) {
+                    item.classList.remove('open');
+                });
+            }
+        });
+    </script>
 @endsection

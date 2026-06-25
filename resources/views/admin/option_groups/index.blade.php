@@ -270,6 +270,30 @@
         .action-link.duplicate {
             color: #2563eb;
         }
+        .option-group-filter-select {
+    min-width: 150px;
+    height: 38px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0 10px;
+    background: #fff;
+    color: var(--fg);
+    font-size: 14px;
+    outline: none;
+}
+
+@media (max-width: 900px) {
+    .option-group-search-input,
+    .option-group-filter-select {
+        width: 100%;
+        min-width: 100%;
+    }
+
+    .option-group-search-btn,
+    .option-group-reset-btn {
+        width: 100%;
+    }
+}
     </style>
 @endsection
 @section('content')
@@ -289,22 +313,37 @@
                 </a>
             </div>
         </div>
-        <form method="GET" action="{{ route('admin.option-groups.index') }}" class="option-group-search-form">
-            <div class="option-group-search-row">
-                <input type="text" name="search" value="{{ request('search') }}" class="option-group-search-input"
-                    placeholder="Search by group name or group code...">
+       <form method="GET" action="{{ route('admin.option-groups.index') }}" class="option-group-search-form">
+    <div class="option-group-search-row">
+        <input type="text"
+               name="search"
+               value="{{ request('search') }}"
+               class="option-group-search-input"
+               placeholder="Search by group name or group code...">
 
-                <button type="submit" class="option-group-search-btn">
-                    Search
-                </button>
+        <select name="type" class="option-group-filter-select">
+            <option value="">All Types</option>
 
-                @if(request('search'))
-                    <a href="{{ route('admin.option-groups.index') }}" class="option-group-reset-btn">
-                        Reset
-                    </a>
-                @endif
-            </div>
-        </form>
+            <option value="1" {{ request('type') == '1' ? 'selected' : '' }}>
+                Hotstrap
+            </option>
+
+            <option value="2" {{ request('type') == '2' ? 'selected' : '' }}>
+                Hotmobily
+            </option>
+        </select>
+
+        <button type="submit" class="option-group-search-btn">
+            Search
+        </button>
+
+        @if(request()->hasAny(['search', 'type']))
+            <a href="{{ route('admin.option-groups.index') }}" class="option-group-reset-btn">
+                Reset
+            </a>
+        @endif
+    </div>
+</form>
 
         @if (session('success'))
             <div class="alert-success">

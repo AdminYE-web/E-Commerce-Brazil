@@ -222,7 +222,7 @@
                     <label>Group Code</label>
                     <input type="text" name="group_code" value="{{ old('group_code') }}" placeholder="เช่น pouch_type">
                 </div>
-                <div class="form-group">
+                <div class="form-group" style="display: none">
                     <label>Translation Key</label>
                     <input type="text" name="translation_key" value="{{ old('translation_key', $translationKey ?? '') }}"
                         placeholder="เช่น og_xxxxxxxx">
@@ -293,7 +293,7 @@
                 <div class="form-group full">
                     <label>Help Text</label>
                     <textarea name="help_text" rows="4"
-                        placeholder="ข้อความที่จะแสดงเมื่อกดปุ่ม info">{{ old('help_text') }}</textarea>
+                        placeholder="The message to be displayed when the info button is pressed.">{{ old('help_text') }}</textarea>
                 </div>
             </div>
 
@@ -303,7 +303,7 @@
                 <label>
                     <input type="checkbox" name="option_group_main" value="1" {{ old('option_group_main') ? 'checked' : '' }}>
                     Main Price Group
-                    <small>ใช้เป็นเงื่อนไขหลักใน Product Price Rules</small>
+                    <small>Used as a primary condition in Product Price Rules.</small>
                 </label>
 
                 <label>

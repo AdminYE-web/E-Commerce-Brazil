@@ -3,7 +3,30 @@
 @section('title', 'Edit Option Dependency | Indigo Admin')
 
 @section('css')
+ <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <style>
+        .select2-container {
+    width: 100% !important;
+    font-size: 14px;
+}
+
+.select2-container--default .select2-selection--single {
+    height: 42px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: var(--fg);
+    line-height: 42px;
+    padding-left: 12px;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 42px;
+}
         .form-card {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -189,7 +212,7 @@
             <div class="form-grid">
                 <div class="form-group full">
                     <label>Trigger Option</label>
-                    <select name="parent_option_id" required>
+                   <select name="parent_option_id" id="parent_option_id" class="searchable-select" required>
                         <option value="">-- Select Trigger Option --</option>
                         <optgroup label="Hotstrap (Type 1)">
                             @foreach ($options->filter(fn($o) => optional($o->group)->product_type == 1) as $option)
@@ -225,14 +248,14 @@
                     </select>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group" style="display: none">
                     <label>Sort Order</label>
                     <input type="number" name="sort_order" value="{{ old('sort_order', $dependency->sort_order) }}">
                 </div>
 
                 <div class="form-group full" id="target_option_box">
                     <label>Target Option</label>
-                    <select name="target_option_id">
+                   <select name="target_option_id" id="target_option_id" class="searchable-select">
                         <option value="">-- Select Target Option --</option>
                         <optgroup label="Hotstrap (Type 1)">
                             @foreach ($options->filter(fn($o) => optional($o->group)->product_type == 1) as $option)
@@ -274,7 +297,7 @@
 
                 <div class="form-group full" id="target_group_box" style="display:none;">
                     <label>Target Group</label>
-                    <select name="target_group_id">
+                    <select name="target_group_id" id="target_group_id" class="searchable-select">
                         <option value="">-- Select Target Group --</option>
                         <optgroup label="Hotstrap (Type 1)">
                             @foreach ($groups->where('product_type', 1) as $group)
@@ -321,6 +344,11 @@
 @endsection
 
 @section('js')
+    {{-- ถ้า admin.layouts.app มี jQuery อยู่แล้ว ให้ลบบรรทัดนี้ออก --}}
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
     <script>
         function toggleTargetType() {
             const type = document.getElementById('target_type').value;
@@ -336,7 +364,27 @@
             }
         }
 
-        document.getElementById('target_type').addEventListener('change', toggleTargetType);
-        toggleTargetType();
+        document.addEventListener('DOMContentLoaded', function() {
+            $('#parent_option_id').select2({
+                placeholder: '-- Select Trigger Option --',
+                allowClear: true,
+                width: '100%'
+            });
+
+            $('#target_option_id').select2({
+                placeholder: '-- Select Target Option --',
+                allowClear: true,
+                width: '100%'
+            });
+
+            $('#target_group_id').select2({
+                placeholder: '-- Select Target Group --',
+                allowClear: true,
+                width: '100%'
+            });
+
+            document.getElementById('target_type').addEventListener('change', toggleTargetType);
+            toggleTargetType();
+        });
     </script>
 @endsection

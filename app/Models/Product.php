@@ -27,6 +27,7 @@ class Product extends Model
         'allow_text_print',
         'allow_font_select',
         'allow_template_select',
+        'product_recomend_menu',
     ];
 
     public function priceTiers()

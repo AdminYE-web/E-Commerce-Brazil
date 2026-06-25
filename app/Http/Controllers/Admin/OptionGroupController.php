@@ -12,12 +12,16 @@ class OptionGroupController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
+        $type = $request->input('type');
         $language = session('admin_product_language', 'pt');
         $baseLanguage = 'pt';
 
         if ($language === $baseLanguage) {
             $groups = OptionGroup::with('parent')
                 ->where('language', $baseLanguage)
+                 ->when($type !== null && $type !== '', function ($query) use ($type) {
+        $query->where('product_type', $type);
+    })
                 ->when($search, function ($query) use ($search) {
                     $query->where(function ($q) use ($search) {
                         $q->where('group_name', 'like', '%'.$search.'%')
@@ -29,11 +33,14 @@ class OptionGroupController extends Controller
                 ->paginate(15)
                 ->withQueryString();
 
-            return view('admin.option_groups.index', compact('groups', 'search', 'language'));
+            return view('admin.option_groups.index', compact('groups', 'search', 'language', 'type'));
         }
 
         $baseGroups = OptionGroup::with('parent')
             ->where('language', $baseLanguage)
+             ->when($type !== null && $type !== '', function ($query) use ($type) {
+        $query->where('product_type', $type);
+    })
             ->when($search, function ($query) use ($search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('group_name', 'like', '%'.$search.'%')
@@ -75,7 +82,7 @@ class OptionGroupController extends Controller
 
         $groups = $baseGroups;
 
-        return view('admin.option_groups.index', compact('groups', 'search', 'language'));
+        return view('admin.option_groups.index', compact('groups', 'search', 'language', 'type'));
     }
 
     public function create()
@@ -177,7 +184,7 @@ class OptionGroupController extends Controller
 
         return redirect()
             ->route('admin.option-groups.index')
-            ->with('success', 'แก้ไขกลุ่มตัวเลือกเรียบร้อยแล้ว');
+            ->with('success', 'updated');
     }
 
     public function destroy(OptionGroup $optionGroup)
@@ -186,7 +193,7 @@ class OptionGroupController extends Controller
 
         return redirect()
             ->route('admin.option-groups.index')
-            ->with('success', 'ลบกลุ่มตัวเลือกเรียบร้อยแล้ว');
+            ->with('success', 'deleted');
     }
 
     public function duplicateTranslation(OptionGroup $optionGroup)

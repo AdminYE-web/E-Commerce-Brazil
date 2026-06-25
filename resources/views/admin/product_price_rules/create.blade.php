@@ -563,11 +563,11 @@
                         <option value="">-- Select Product --</option>
 
                         @foreach ($products as $product)
-                            <option value="{{ $product->product_id }}"
-                                {{ old('product_id') == $product->product_id ? 'selected' : '' }}>
-                                {{ $product->product_name }}
-                            </option>
-                        @endforeach
+    <option value="{{ $product->product_id }}"
+        {{ old('product_id', $selectedProductId ?? '') == $product->product_id ? 'selected' : '' }}>
+        {{ $product->product_name }}
+    </option>
+@endforeach
                     </select>
                 </div>
 
@@ -577,7 +577,7 @@
                         placeholder="เช่น 20mm + One Side">
                 </div>
 
-                <div class="form-group">
+                <div class="form-group" style="display: none">
                     <label>Sort Order</label>
                     <input type="number" name="sort_order" value="{{ old('sort_order', 0) }}">
                 </div>

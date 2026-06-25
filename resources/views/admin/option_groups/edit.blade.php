@@ -226,7 +226,7 @@
                     <label>Group Code</label>
                     <input type="text" name="group_code" value="{{ old('group_code', $optionGroup->group_code) }}">
                 </div>
-                <div class="form-group">
+                <div class="form-group" style="display: none">
     <label>Translation Key</label>
     <input type="text"
         name="translation_key"
@@ -299,7 +299,7 @@
                     </select>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group" style="display: none">
                     <label>Sort Order</label>
                     <input type="number" name="sort_order" value="{{ old('sort_order', $optionGroup->sort_order) }}"
                         min="0">
@@ -307,7 +307,7 @@
 
                 <div class="form-group full">
                     <label>Help Text</label>
-                    <textarea name="help_text" rows="4" placeholder="ข้อความที่จะแสดงเมื่อกดปุ่ม info">{{ old('help_text', $optionGroup->help_text) }}</textarea>
+                    <textarea name="help_text" rows="4" placeholder="The message to be displayed when the info button is pressed.">{{ old('help_text', $optionGroup->help_text) }}</textarea>
                 </div>
             </div>
 
@@ -318,7 +318,7 @@
                     <input type="checkbox" name="option_group_main" value="1"
                         {{ old('option_group_main', $optionGroup->option_group_main) ? 'checked' : '' }}>
                     Main Price Group
-                    <small>ใช้เป็นเงื่อนไขหลักใน Product Price Rules</small>
+                    <small>Used as a primary condition in Product Price Rules.</small>
                 </label>
 
                 <label>

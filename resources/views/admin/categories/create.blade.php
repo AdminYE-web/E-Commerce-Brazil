@@ -161,6 +161,19 @@
                 flex-direction: column;
             }
         }
+        .form-group input[type="file"] {
+    width: 100%;
+    height: 42px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    background: #fff;
+    color: var(--fg);
+    outline: none;
+    line-height: 28px;
+}
     </style>
 @endsection
 
@@ -209,7 +222,7 @@
                         </option>
                     </select>
                 </div>
-                <div class="form-group">
+                <div class="form-group " style="display: none">
                     <label>Translation Key</label>
                     <input type="text" name="translation_key" value="{{ old('translation_key', $translationKey ?? '') }}"
                         placeholder="เช่น cat_xxxxxxxx">
@@ -229,6 +242,7 @@
                 <div class="form-group">
                     <label>Category Image</label>
                     <input type="file" name="image_path" accept="image/*">
+                    <small>Recommended mobile size:  88x88.</small>
                 </div>
             </div>
 

@@ -91,9 +91,21 @@ class BlogController extends Controller
                 ->route('blog.show', [
                     'article' => $article->article_id,
                 ])
-                ->with('translation_unavailable', 'บทความนี้ยังไม่พร้อมสำหรับภาษาที่เลือก');
+                ->with('translation_unavailable', __('blog.show.error_tran'));
         }
 
         return view('blog.show', compact('article', 'langKey'));
     }
+    public function preview(Article $article)
+{
+    $langKey = $article->language ?? $this->getLangKey();
+
+    app()->setLocale($langKey);
+
+    return view('blog.show', [
+        'article' => $article,
+        'langKey' => $langKey,
+        'isPreview' => true,
+    ]);
+}
 }

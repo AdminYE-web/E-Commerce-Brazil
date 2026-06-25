@@ -4,71 +4,69 @@
 
 
 @section('css')
-<style>
+    <style>
+        .container-banner {
+            width: 90%;
+            margin: 0 auto;
+        }
 
-.container-banner{
-    width: 90%;
-    margin: 0 auto;
-}
-.home-banner-section .carousel-item img {
+        .home-banner-section .carousel-item img {
 
-    object-fit: cover;
-}
+            object-fit: cover;
+        }
 
-.home-banner-section .carousel-control-prev,
-.home-banner-section .carousel-control-next {
-    width: 44px;
-    height: 44px;
-    top: 50%;
-    bottom: auto;
-    transform: translateY(-50%);
-    border-radius: 50%;
-    background: rgba(0, 0, 0, 0.38);
-    opacity: 1;
-    transition: background-color 0.2s ease, transform 0.2s ease;
-}
+        .home-banner-section .carousel-control-prev,
+        .home-banner-section .carousel-control-next {
+            width: 44px;
+            height: 44px;
+            top: 50%;
+            bottom: auto;
+            transform: translateY(-50%);
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.38);
+            opacity: 1;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
 
-.home-banner-section .carousel-control-prev {
-    left: 18px;
-}
+        .home-banner-section .carousel-control-prev {
+            left: 18px;
+        }
 
-.home-banner-section .carousel-control-next {
-    right: 18px;
-}
+        .home-banner-section .carousel-control-next {
+            right: 18px;
+        }
 
-.home-banner-section .carousel-control-prev:hover,
-.home-banner-section .carousel-control-next:hover {
-    background: rgba(0, 0, 0, 0.56);
-    transform: translateY(-50%) scale(1.04);
-}
+        .home-banner-section .carousel-control-prev:hover,
+        .home-banner-section .carousel-control-next:hover {
+            background: rgba(0, 0, 0, 0.56);
+            transform: translateY(-50%) scale(1.04);
+        }
 
-.home-banner-section .carousel-control-prev-icon,
-.home-banner-section .carousel-control-next-icon {
-    width: 18px;
-    height: 18px;
-    filter: brightness(0) invert(1);
-}
+        .home-banner-section .carousel-control-prev-icon,
+        .home-banner-section .carousel-control-next-icon {
+            width: 18px;
+            height: 18px;
+            filter: brightness(0) invert(1);
+        }
 
-@media (max-width: 768px) {
-    .home-banner-section .carousel-item img {
-     
-    }
+        @media (max-width: 768px) {
+            .home-banner-section .carousel-item img {}
 
-    .home-banner-section .carousel-control-prev,
-    .home-banner-section .carousel-control-next {
-        width: 38px;
-        height: 38px;
-    }
+            .home-banner-section .carousel-control-prev,
+            .home-banner-section .carousel-control-next {
+                width: 38px;
+                height: 38px;
+            }
 
-    .home-banner-section .carousel-control-prev {
-        left: 10px;
-    }
+            .home-banner-section .carousel-control-prev {
+                left: 10px;
+            }
 
-    .home-banner-section .carousel-control-next {
-        right: 10px;
-    }
-}
-</style>
+            .home-banner-section .carousel-control-next {
+                right: 10px;
+            }
+        }
+    </style>
 @endsection
 @section('content')
     {{-- <section class="hero-banner">
@@ -169,85 +167,77 @@
             </div>
         </div>
     </section> --}}
-   @if($homeBanners->count())
-<section class="home-banner-section">
-    <div class="container-fluid p-0 ">
+    @if ($homeBanners->count())
+        <section class="home-banner-section">
+            <div class="container-fluid p-0 ">
 
-        <div id="homeBannerCarousel" class="carousel slide" data-bs-ride="carousel">
+                <div id="homeBannerCarousel" class="carousel slide" data-bs-ride="carousel">
 
-            @if($homeBanners->count() > 1)
-                <div class="carousel-indicators">
-                    @foreach($homeBanners as $index => $banner)
-                        <button 
-                            type="button" 
-                            data-bs-target="#homeBannerCarousel" 
-                            data-bs-slide-to="{{ $index }}" 
-                            class="{{ $index === 0 ? 'active' : '' }}"
-                            aria-current="{{ $index === 0 ? 'true' : 'false' }}"
-                            aria-label="Slide {{ $index + 1 }}"
-                        ></button>
-                    @endforeach
-                </div>
-            @endif
+                    @if ($homeBanners->count() > 1)
+                        <div class="carousel-indicators">
+                            @foreach ($homeBanners as $index => $banner)
+                                <button type="button" data-bs-target="#homeBannerCarousel"
+                                    data-bs-slide-to="{{ $index }}" class="{{ $index === 0 ? 'active' : '' }}"
+                                    aria-current="{{ $index === 0 ? 'true' : 'false' }}"
+                                    aria-label="Slide {{ $index + 1 }}"></button>
+                            @endforeach
+                        </div>
+                    @endif
 
-            <div class="carousel-inner rounded-4 overflow-hidden">
+                    <div class="carousel-inner rounded-4 overflow-hidden">
 
-                @foreach($homeBanners as $index => $banner)
-                    <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
+                        @foreach ($homeBanners as $index => $banner)
+                            <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
 
-                        @php
-                            $pcImage = $banner->image_pc 
-                                ? asset('storage/' . $banner->image_pc) 
-                                : asset('images/no-image.png');
+                                @php
+                                    $pcImage = $banner->image_pc
+                                        ? asset('storage/' . $banner->image_pc)
+                                        : asset('images/no-image.png');
 
-                            $mobileImage = $banner->image_mobile 
-                                ? asset('storage/' . $banner->image_mobile) 
-                                : $pcImage;
-                        @endphp
+                                    $mobileImage = $banner->image_mobile
+                                        ? asset('storage/' . $banner->image_mobile)
+                                        : $pcImage;
+                                @endphp
 
-                        @if($banner->link_url)
-                            <a href="{{ $banner->link_url }}">
-                        @endif
+                                @if ($banner->link_url)
+                                    <a href="{{ $banner->link_url }}">
+                                @endif
 
-                            <picture>
-                                {{-- มือถือ + iPad ใช้รูป mobile --}}
-                                <source 
-                                    media="(max-width: 1024px)" 
-                                    srcset="{{ $mobileImage }}"
-                                >
+                                <picture>
+                                    {{-- มือถือ + iPad ใช้รูป mobile --}}
+                                    <source media="(max-width: 1024px)" srcset="{{ $mobileImage }}">
 
-                                {{-- Desktop ใช้รูป PC --}}
-                                <img 
-                                    src="{{ $pcImage }}" 
-                                    class="d-block w-100 home-banner-img" 
-                                    alt="{{ $banner->title ?? 'Home Banner' }}"
-                                >
-                            </picture>
+                                    {{-- Desktop ใช้รูป PC --}}
+                                    <img src="{{ $pcImage }}" class="d-block w-100 home-banner-img"
+                                        alt="{{ $banner->title ?? 'Home Banner' }}">
+                                </picture>
 
-                        @if($banner->link_url)
-                            </a>
-                        @endif
+                                @if ($banner->link_url)
+                                    </a>
+                                @endif
+
+                            </div>
+                        @endforeach
 
                     </div>
-                @endforeach
+
+                    @if ($homeBanners->count() > 1)
+                        <button class="carousel-control-prev" type="button" data-bs-target="#homeBannerCarousel"
+                            data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon"></span>
+                        </button>
+
+                        <button class="carousel-control-next" type="button" data-bs-target="#homeBannerCarousel"
+                            data-bs-slide="next">
+                            <span class="carousel-control-next-icon"></span>
+                        </button>
+                    @endif
+
+                </div>
 
             </div>
-
-            @if($homeBanners->count() > 1)
-                <button class="carousel-control-prev" type="button" data-bs-target="#homeBannerCarousel" data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon"></span>
-                </button>
-
-                <button class="carousel-control-next" type="button" data-bs-target="#homeBannerCarousel" data-bs-slide="next">
-                    <span class="carousel-control-next-icon"></span>
-                </button>
-            @endif
-
-        </div>
-
-    </div>
-</section>
-@endif
+        </section>
+    @endif
     <section class="feature-bar">
         <div class="container-fluid">
             <div class="feature-bar-inner">
@@ -544,21 +534,22 @@
             </div>
 
             <div class="materials-grid">
-@foreach($materialHomes as $item)
-                <div class="material-card">
-                    <div class="material-image">
-                        <a href="{{ route('products.index', ['materials' => [$item->material_id]]) }}"><img src="{{ asset('storage/' . $item->image_path) }}" alt="{{ $item->title }}"></a>
-                        
+                @foreach ($materialHomes as $item)
+                    <div class="material-card">
+                        <div class="material-image">
+                            <a href="{{ route('products.index', ['materials' => [$item->material_id]]) }}"><img
+                                    src="{{ asset('storage/' . $item->image_path) }}" alt="{{ $item->title }}"></a>
+
+                        </div>
+                        <div class="material-content">
+                            <h3>{{ $item->title }}</h3>
+                            <p>
+                                {{ $item->description }}
+                            </p>
+                        </div>
                     </div>
-                    <div class="material-content">
-                        <h3>{{ $item->title }}</h3>
-                        <p>
-                            {{ $item->description }}
-                        </p>
-                    </div>
-                </div>
-@endforeach
-                
+                @endforeach
+
 
                 <div class="material-card material-card-wide">
                     <div class="material-image">
@@ -698,7 +689,8 @@
                                             <img src="{{ asset('storage/' . $article->cover_image) }}"
                                                 alt="{{ $article->title }}">
                                         @else
-                                            <img src="{{ asset('assets/images/home/blog-1.png') }}" alt="{{ $article->title }}">
+                                            <img src="{{ asset('assets/images/home/blog-1.png') }}"
+                                                alt="{{ $article->title }}">
                                         @endif
                                     </a>
 
@@ -709,7 +701,8 @@
                                         </p>
 
                                         <div class="blog-meta">
-                                            <span class="blog-tag {{ $loop->even ? 'blog-tag-yellow' : 'blog-tag-blue' }}">
+                                            <span
+                                                class="blog-tag {{ $loop->even ? 'blog-tag-yellow' : 'blog-tag-blue' }}">
                                                 {{ $article->category ?? __('messages.home.blog_tag_brindes') }}
                                             </span>
                                             <span class="blog-date">
@@ -734,7 +727,8 @@
                                         </p>
 
                                         <div class="blog-meta">
-                                            <span class="blog-tag blog-tag-blue">{{ __('messages.home.blog_tag_brindes') }}</span>
+                                            <span
+                                                class="blog-tag blog-tag-blue">{{ __('messages.home.blog_tag_brindes') }}</span>
                                             <span class="blog-date">24/04/2026</span>
                                         </div>
                                     </div>
@@ -749,7 +743,8 @@
             </div>
 
             <div class="blog-button-wrap">
-                <a href="{{ route('blog.index') }}" class="blog-more-btn">{{ __('messages.home.blog_explore_more') }}</a>
+                <a href="{{ route('blog.index') }}"
+                    class="blog-more-btn">{{ __('messages.home.blog_explore_more') }}</a>
             </div>
         </div>
     </section>

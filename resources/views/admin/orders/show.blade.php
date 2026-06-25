@@ -393,10 +393,12 @@
         <div class="table-header">
             <div>
                 <div class="table-title">Order Detail</div>
-                <div class="showing-text">
-                    Order No:
-                    <strong>{{ $order->order_no }}</strong>
-                </div>
+               <div class="showing-text">
+    Order No:
+    <strong>{{ $order->order_no }}</strong>
+
+   
+</div>
             </div>
 
             <div class="document-actions">
@@ -419,6 +421,24 @@
                 {{ session('success') }}
             </div>
         @endif
+
+        <div class="section-title">Order Information</div>
+
+<table class="info-table">
+    <tr>
+        <th>Order No</th>
+        <td>{{ $order->order_no }}</td>
+    </tr>
+
+    <tr>
+        <th>Order Date</th>
+        <td>
+            {{ $order->created_at ? $order->created_at->format('d/m/Y H:i') : '-' }}
+        </td>
+    </tr>
+
+   
+</table>
 
         <div class="section-title">Order Status</div>
 

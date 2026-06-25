@@ -410,6 +410,7 @@ class ProductListController extends Controller
         ])
             ->where('language', $langKey)
             ->where('product_code', $code)
+            ->where('is_active', 1)
             ->first();
 
         /*
@@ -511,6 +512,7 @@ class ProductListController extends Controller
         ])
             ->where('language', $langKey)
             ->where('product_code', $code)
+            ->where('is_active', 1)
             ->first();
 
         /*
@@ -636,4 +638,130 @@ class ProductListController extends Controller
             'useTaxIncludedPrice'
         ));
     }
+    public function previewOrder(Product $product)
+{
+    /*
+    |--------------------------------------------------------------------------
+    | Admin preview only: allow Public and Draft
+    |--------------------------------------------------------------------------
+    */
+    if (!in_array((int) $product->is_active, [1, 3], true)) {
+        abort(404);
+    }
+
+    $langKey = $product->language ?? $this->getLangKey();
+
+    $priceTaxMode = Cache::remember('system_setting_price_tax_mode', 3600, function () {
+        return SystemSetting::getValue('price_tax_mode', 'exclude_tax');
+    });
+
+    $useTaxIncludedPrice = $priceTaxMode === 'include_tax';
+
+    $product->load([
+        'mainImage',
+        'images',
+        'galleryImages',
+        'detail',
+        'category',
+        'material',
+        'priceRules.options',
+        'priceRules.tiers',
+        'assignedOptions.group.parent',
+        'assignedOptions.mainImage',
+        'assignedOptions.variants',
+    ]);
+
+    $groupOrders = ProductOptionGroupOrder::where('product_id', $product->product_id)
+        ->pluck('sort_order', 'option_group_id');
+
+    $optionGroups = $product->assignedOptions
+        ->where('pivot.is_active', 1)
+        ->filter(function ($option) use ($langKey) {
+            return $option->language === $langKey
+                && $option->group
+                && $option->group->language === $langKey;
+        })
+        ->sortBy(function ($option) use ($groupOrders) {
+            $group = $option->group;
+            $parent = $group?->parent;
+
+            $displayGroup = $parent ?: $group;
+            $displayGroupId = $displayGroup?->option_group_id;
+
+            return [
+                $groupOrders[$displayGroupId] ?? 999,
+                $parent->sort_order ?? $group->sort_order ?? 999,
+                $group->sort_order ?? 999,
+                $option->pivot->sort_order ?? 0,
+            ];
+        })
+        ->groupBy(function ($option) {
+            $group = $option->group;
+            $displayGroup = $group?->parent ?: $group;
+
+            return $displayGroup?->option_group_id ?? 0;
+        });
+
+    $dependencies = OptionDependency::where('is_active', 1)
+        ->whereHas('parentOption', function ($query) use ($langKey) {
+            $query->where('language', $langKey);
+        })
+        ->orderBy('sort_order')
+        ->get()
+        ->map(function ($dependency) {
+            return [
+                'parent_option_id' => (int) $dependency->parent_option_id,
+                'target_type' => $dependency->target_type,
+                'action_type' => $dependency->action_type ?? 'show',
+                'target_group_id' => $dependency->target_group_id ? (int) $dependency->target_group_id : null,
+                'target_option_id' => $dependency->target_option_id ? (int) $dependency->target_option_id : null,
+            ];
+        })
+        ->values();
+
+    $priceRules = $product->priceRules
+        ->map(function ($rule) use ($langKey, $useTaxIncludedPrice) {
+            return [
+                'rule_id' => (int) $rule->rule_id,
+                'rule_name' => $rule->rule_name,
+                'option_ids' => $rule->options
+                    ->filter(function ($option) use ($langKey) {
+                        return $option->language === $langKey;
+                    })
+                    ->pluck('option_id')
+                    ->map(fn ($id) => (int) $id)
+                    ->values(),
+                'tiers' => $rule->tiers
+                    ->map(function ($tier) use ($useTaxIncludedPrice) {
+                        return [
+                            'min_qty' => (int) $tier->min_qty,
+                            'max_qty' => $tier->max_qty ? (int) $tier->max_qty : null,
+                            'unit_price' => $useTaxIncludedPrice
+                                ? (float) ($tier->unit_price_with_tax ?? $tier->unit_price ?? 0)
+                                : (float) ($tier->unit_price ?? 0),
+                        ];
+                    })
+                    ->values(),
+            ];
+        })
+        ->values();
+
+    $isAdminPreview = true;
+
+    $views = 'products.hotstrap_show';
+
+    if ((int) $product->product_type === PRODUCT_HOTMOBILY) {
+        $views = 'products.hotmobily_show';
+    }
+
+    return view($views, compact(
+        'product',
+        'optionGroups',
+        'dependencies',
+        'priceRules',
+        'priceTaxMode',
+        'useTaxIncludedPrice',
+        'isAdminPreview'
+    ));
+}
 }

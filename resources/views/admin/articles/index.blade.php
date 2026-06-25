@@ -3,6 +3,7 @@
 @section('title', 'Articles | Indigo Admin')
 
 @section('css')
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
         .article-index-card {
             max-width: 1280px;
@@ -362,6 +363,73 @@
         .article-action-link.duplicate {
             color: #2563eb;
         }
+        .article-filter-bar {
+    flex-wrap: wrap;
+}
+
+.article-filter-bar select {
+    height: 42px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0 14px;
+    background: #fff;
+    font-size: 14px;
+    outline: none;
+}
+
+.article-filter-bar select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.article-filter-bar .filter-search {
+    width: 260px;
+}
+
+.article-filter-bar .filter-select {
+    width: 170px;
+}
+
+.article-filter-bar .filter-date {
+    width: 150px;
+}
+
+.article-date-range {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.article-date-range span {
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.article-status.is-draft {
+    background: #fffbeb;
+    color: #92400e;
+}
+
+@media (max-width: 900px) {
+    .article-filter-bar .filter-search,
+    .article-filter-bar .filter-select,
+    .article-filter-bar .filter-date,
+    .article-filter-bar .btn-search,
+    .article-filter-bar .btn-reset {
+        width: 100%;
+    }
+
+    .article-date-range {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .article-date-range span {
+        text-align: center;
+    }
+}
     </style>
 @endsection
 
@@ -389,16 +457,60 @@
         @endif
 
         <form method="GET" action="{{ route('admin.articles.index') }}" class="article-filter-bar">
-            <input type="text" name="search" value="{{ request('search') }}" placeholder="Search title or category...">
+    <input
+        type="text"
+        name="search"
+        class="filter-search"
+        value="{{ request('search') }}"
+        placeholder="Search title or category..."
+    >
 
-            <button type="submit" class="btn-search">
-                Search
-            </button>
+    <select name="category" class="filter-select">
+        <option value="">All Categories</option>
 
-            <a href="{{ route('admin.articles.index') }}" class="btn-reset">
-                Reset
-            </a>
-        </form>
+        @foreach($categories as $cat)
+            <option value="{{ $cat }}" {{ request('category') == $cat ? 'selected' : '' }}>
+                {{ $cat }}
+            </option>
+        @endforeach
+    </select>
+
+    <div class="article-date-range">
+    <input
+        type="text"
+        name="date_from"
+        class="filter-date js-date-picker"
+        value="{{ request('date_from') }}"
+        placeholder="dd/mm/yyyy"
+        autocomplete="off"
+    >
+
+    <span>to</span>
+
+    <input
+        type="text"
+        name="date_to"
+        class="filter-date js-date-picker"
+        value="{{ request('date_to') }}"
+        placeholder="dd/mm/yyyy"
+        autocomplete="off"
+    >
+</div>
+
+    <select name="status" class="filter-select">
+        <option value="">All Status</option>
+        <option value="1" {{ request('status') === '1' ? 'selected' : '' }}>Public</option>
+        <option value="3" {{ request('status') === '3' ? 'selected' : '' }}>Draft</option>
+    </select>
+
+    <button type="submit" class="btn-search">
+        Search
+    </button>
+
+    <a href="{{ route('admin.articles.index') }}" class="btn-reset">
+        Reset
+    </a>
+</form>
 
         <div class="article-table-wrap">
             <table class="article-table">
@@ -438,11 +550,13 @@
                             </td>
 
                             <td>
-                                @if($article->is_active)
-                                    <span class="article-status is-active">Active</span>
-                                @else
-                                    <span class="article-status is-inactive">Inactive</span>
-                                @endif
+                              @if((int) $article->is_active === 1)
+    <span class="article-status is-active">Public</span>
+@elseif((int) $article->is_active === 3)
+    <span class="article-status is-draft">Draft</span>
+@else
+    <span class="article-status is-inactive">Inactive</span>
+@endif
                             </td>
 
                             <td>
@@ -458,7 +572,17 @@
                                                 Duplicate
                                             </button>
                                         </form>
+                                            <a href="{{ route('admin.articles.preview', $article->article_id) }}"
+            class="article-action-link"
+            target="_blank">
+            Preview
+        </a>
                                     @else
+                                     <a href="{{ route('admin.articles.preview', $article->article_id) }}"
+            class="article-action-link"
+            target="_blank">
+            Preview
+        </a>
                                         <a href="{{ route('admin.articles.edit', $article->article_id) }}"
                                             class="article-action-link">
                                             Edit
@@ -494,4 +618,18 @@
 
     </div>
 
+@endsection
+
+@section('js')
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    <script>
+        flatpickr('.js-date-picker', {
+            dateFormat: 'Y-m-d',
+            altInput: true,
+            altFormat: 'd/m/Y',
+            allowInput: true,
+            locale: 'en'
+        });
+    </script>
 @endsection

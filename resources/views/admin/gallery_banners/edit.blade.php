@@ -199,12 +199,7 @@
                 <input type="number" name="sort_order" value="{{ old('sort_order', $galleryBanner->sort_order) }}">
             </div>
 
-            <div class="form-group">
-                <label class="checkbox-box">
-                    <input type="checkbox" name="is_active" value="1" {{ old('is_active', $galleryBanner->is_active) ? 'checked' : '' }}>
-                    Active
-                </label>
-            </div>
+          
         </div>
 
         <div class="image-panel">
@@ -244,6 +239,12 @@
             <label>Change Mobile Image</label>
             <input type="file" name="image_mobile" accept="image/*">
         </div>
+          
+                <label class="checkbox-box">
+                    <input type="checkbox" name="is_active" value="1" {{ old('is_active', $galleryBanner->is_active) ? 'checked' : '' }}>
+                    Active
+                </label>
+            
 
         <div class="form-actions">
             <a href="{{ route('admin.gallery-banners.index') }}" class="btn-outline">Cancel</a>

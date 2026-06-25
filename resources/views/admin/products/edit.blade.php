@@ -230,8 +230,9 @@
             <div class="form-group">
                 <label>Product Code</label>
                 <input type="text" name="product_code" value="{{ old('product_code', $product->product_code) }}">
+                <small>This section will be displayed as the product URL.</small>
             </div>
-            <div class="form-group">
+            <div class="form-group" style="display: none">
     <label>Translation Key</label>
     <input
         type="text"
@@ -346,16 +347,33 @@
         <div class="section-title">Artwork / Template Setting</div>
 
         <div class="checkbox-grid">
-            <label><input type="checkbox" name="is_antivirus_included" value="1" {{ old('is_antivirus_included', $product->is_antivirus_included) ? 'checked' : '' }}> Antivirus Included</label>
+             <label><input type="checkbox" name="product_recomend" value="1" {{ old('product_recomend', $product->product_recomend) ? 'checked' : '' }}> Product Recommend</label>
+             <label>
+    <input type="checkbox" name="product_recomend_menu" value="1"
+        {{ old('product_recomend_menu', $product->product_recomend_menu ?? 0) ? 'checked' : '' }}>
+    Product Recommend Menu
+</label>
+            {{-- <label><input type="checkbox" name="is_antivirus_included" value="1" {{ old('is_antivirus_included', $product->is_antivirus_included) ? 'checked' : '' }}> Antivirus Included</label> --}}
             <label><input type="checkbox" name="can_upload_artwork" value="1" {{ old('can_upload_artwork', $product->can_upload_artwork ?? 0) ? 'checked' : '' }}> Allow Upload Artwork</label>
             <label><input type="checkbox" name="artwork_required" value="1" {{ old('artwork_required', $product->artwork_required ?? 0) ? 'checked' : '' }}> Artwork Required</label>
             <label><input type="checkbox" name="allow_text_print" value="1" {{ old('allow_text_print', $product->allow_text_print ?? 0) ? 'checked' : '' }}> Allow Text Printing</label>
             <label><input type="checkbox" name="allow_font_select" value="1" {{ old('allow_font_select', $product->allow_font_select ?? 0) ? 'checked' : '' }}> Allow Font Selection</label>
             <label><input type="checkbox" name="allow_template_select" value="1" {{ old('allow_template_select', $product->allow_template_select ?? 0) ? 'checked' : '' }}> Allow Template Selection</label>
-            <label><input type="checkbox" name="is_active" value="1" {{ old('is_active', $product->is_active) ? 'checked' : '' }}> Active</label>
-            <label><input type="checkbox" name="product_recomend" value="1" {{ old('product_recomend', $product->product_recomend) ? 'checked' : '' }}> Product Recommend</label>
-            <label><input type="checkbox" name="product_premium" value="1" {{ old('product_premium', $product->product_premium) ? 'checked' : '' }}> Product Premium</label>
+            {{-- <label><input type="checkbox" name="product_premium" value="1" {{ old('product_premium', $product->product_premium) ? 'checked' : '' }}> Product Premium</label> --}}
         </div>
+        <div class="form-group" style="max-width: 20%">
+    <label>Status</label>
+
+    <select name="is_active">
+        <option value="1" {{ old('is_active', $product->is_active) == 1 ? 'selected' : '' }}>
+            Public
+        </option>
+
+        <option value="3" {{ old('is_active', $product->is_active) == 3 ? 'selected' : '' }}>
+            Draft
+        </option>
+    </select>
+</div>
 
         {{-- <div class="section-title">Detail Images</div>
 

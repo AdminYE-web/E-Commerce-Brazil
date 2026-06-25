@@ -195,6 +195,68 @@
         .pagination .page-item:last-child {
             display: none;
         }
+        .selected-product-bar {
+    margin: 0 24px 18px;
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: #f8fafc;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.selected-product-info strong {
+    display: block;
+    color: var(--fg-dark);
+    font-size: 15px;
+    margin-bottom: 4px;
+}
+
+.selected-product-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.back-products-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+    min-width: auto;
+    height: 36px;
+    padding: 0 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: #fff;
+    color: var(--fg);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.back-products-btn:hover {
+    background: var(--bg);
+}
+
+@media (max-width: 700px) {
+    .selected-product-bar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .selected-product-actions {
+        width: 100%;
+    }
+
+    .back-products-btn {
+        width: 100%;
+    }
+}
     </style>
 @endsection
 @section('content')
@@ -218,118 +280,252 @@
                 </a>
             </div>
         </div>
-        <form method="GET" action="{{ route('admin.product-price-rules.index') }}" class="rule-search-form">
-            <div class="rule-search-row">
-                <input type="text" name="search" value="{{ request('search') }}" class="rule-search-input"
-                    placeholder="Search by rule name, product name or product code...">
+       <form method="GET" action="{{ route('admin.product-price-rules.index') }}" class="rule-search-form">
+    <div class="rule-search-row">
+        @if ($selectedProduct)
+            <input type="hidden" name="product_id" value="{{ $selectedProduct->product_id }}">
 
-                <button type="submit" class="rule-search-btn">
-                    Search
-                </button>
+            <input type="text"
+                   name="search"
+                   value="{{ request('search') }}"
+                   class="rule-search-input"
+                   placeholder="Search rules for this product...">
+        @else
+            <input type="text"
+                   name="search"
+                   value="{{ request('search') }}"
+                   class="rule-search-input"
+                   placeholder="Search by product name or product code...">
+        @endif
 
-                @if (request('search'))
-                    <a href="{{ route('admin.product-price-rules.index') }}" class="rule-reset-btn">
-                        Reset
-                    </a>
-                @endif
-            </div>
-        </form>
+        <button type="submit" class="rule-search-btn">
+            Search
+        </button>
 
+        @if (request('search'))
+            @if ($selectedProduct)
+                <a href="{{ route('admin.product-price-rules.index', ['product_id' => $selectedProduct->product_id]) }}"
+                   class="rule-reset-btn">
+                    Reset
+                </a>
+            @else
+                <a href="{{ route('admin.product-price-rules.index') }}"
+                   class="rule-reset-btn">
+                    Reset
+                </a>
+            @endif
+        @endif
+    </div>
+</form>
         @if (session('success'))
             <div class="alert-success">
                 {{ session('success') }}
             </div>
         @endif
 
-        <table>
-            <thead>
+      @if (!$selectedProduct)
+    <table>
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Type</th>
+                <th>Category</th>
+                <th>Material</th>
+                <th>Price Rules</th>
+                <th style="text-align: right;">Manage</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @forelse ($products as $product)
                 <tr>
-                    <th>Rule</th>
-                    <th>Product</th>
-                    <th>Required Options</th>
+                    <td>
+                        <div class="product-details">
+                            <span class="product-name">
+                                {{ $product->product_name }}
+                            </span>
+                            <span class="product-sku">
+                                ID: {{ $product->product_id }} | Code: {{ $product->product_code }}
+                            </span>
+                        </div>
+                    </td>
 
-                    <th>Status</th>
-                    <th style="text-align: right;">Manage</th>
+                    <td>
+                        @if ($product->product_type == 1)
+                            Hotstrap
+                        @elseif ($product->product_type == 2)
+                            Hotmobily
+                        @else
+                            -
+                        @endif
+                    </td>
+
+                    <td>
+                        {{ $product->category->category_name ?? '-' }}
+                    </td>
+
+                    <td>
+                        {{ $product->material->material_name ?? '-' }}
+                    </td>
+
+                    <td>
+                        <span class="mini-badge">
+                            {{ $product->price_rules_count }} rules
+                        </span>
+                    </td>
+
+                    <td style="text-align: right;">
+                        <div class="action-btns" style="justify-content: flex-end;">
+                            <a href="{{ route('admin.product-price-rules.index', ['product_id' => $product->product_id]) }}"
+                               class="action-link">
+                                View Rules
+                            </a>
+
+                            <a href="{{ route('admin.product-price-rules.create', ['product_id' => $product->product_id]) }}"
+                               class="action-link">
+                                + Add Rule
+                            </a>
+                        </div>
+                    </td>
                 </tr>
-            </thead>
+            @empty
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 32px;">
+                        No products found.
+                    </td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
 
-            <tbody>
-                @forelse ($rules as $rule)
-                    <tr>
-                        <td>
-                            <div class="product-details">
-                                <span class="product-name">
-                                    {{ $rule->rule_name ?? '-' }}
-                                </span>
-                                <span class="product-sku">
-                                    ID: {{ $rule->rule_id }}
-                                </span>
-                            </div>
-                        </td>
-
-                        <td>
-                            {{ $rule->product->product_name ?? '-' }}
-                        </td>
-
-                        <td>
-                            @forelse ($rule->options as $option)
-                                <div class="mini-badge">
-                                    {{ $option->group->group_name ?? '-' }}
-                                    /
-                                    <strong>{{ $option->option_name }}</strong>
-                                </div>
-                            @empty
-                                <span class="muted-text">No options</span>
-                            @endforelse
-                        </td>
-
-
-
-                        <td>
-                            @if ($rule->is_active)
-                                <span class="status-pill status-active">Active</span>
-                            @else
-                                <span class="status-pill status-inactive">Inactive</span>
-                            @endif
-                        </td>
-
-                        <td style="text-align: right;">
-                            <div class="action-btns" style="justify-content: flex-end;">
-                                <a href="{{ route('admin.product-price-rules.show', $rule->rule_id) }}"
-                                    class="action-link">
-                                    Detail
-                                </a>
-                                <a href="{{ route('admin.product-price-rules.edit', $rule->rule_id) }}"
-                                    class="action-link">
-                                    Edit
-                                </a>
-
-                                <form action="{{ route('admin.product-price-rules.destroy', $rule->rule_id) }}"
-                                    method="POST" style="display:inline;">
-                                    @csrf
-                                    @method('DELETE')
-
-                                    <button type="submit" class="action-link delete"
-                                        onclick="return confirm('Delete this rule?')">
-                                        Delete
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="6" style="text-align: center; padding: 32px;">
-                            No price rules found.
-                        </td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-
-        <div class="pagination-container">
-            {{ $rules->links('pagination::bootstrap-5') }}
+    <div class="pagination-container">
+        {{ $products->links('pagination::bootstrap-5') }}
+    </div>
+@else
+  <div class="selected-product-bar">
+    <div class="selected-product-info">
+        <strong>{{ $selectedProduct->product_name }}</strong>
+        <div class="muted-text">
+            ID: {{ $selectedProduct->product_id }} | Code: {{ $selectedProduct->product_code }}
         </div>
+    </div>
+
+    <div class="selected-product-actions">
+        <a href="{{ route('admin.product-price-rules.index') }}" class="back-products-btn">
+            ← Back to Products
+        </a>
+
+        <a href="{{ route('admin.product-price-rules.create', ['product_id' => $selectedProduct->product_id]) }}"
+           class="btn-primary">
+            + Add Rule
+        </a>
+    </div>
+</div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Rule</th>
+                <th>Required Options</th>
+                <th>Tiers</th>
+                <th>Status</th>
+                <th style="text-align: right;">Manage</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @forelse ($rules as $rule)
+                <tr>
+                    <td>
+                        <div class="product-details">
+                            <span class="product-name">
+                                {{ $rule->rule_name ?? '-' }}
+                            </span>
+                            <span class="product-sku">
+                                ID: {{ $rule->rule_id }}
+                            </span>
+                        </div>
+                    </td>
+
+                    <td>
+                        @forelse ($rule->options as $option)
+                            <div class="mini-badge">
+                                {{ $option->group->group_name ?? '-' }}
+                                /
+                                <strong>{{ $option->option_name }}</strong>
+                            </div>
+                        @empty
+                            <span class="muted-text">No options</span>
+                        @endforelse
+                    </td>
+
+                    <td>
+                        @forelse ($rule->tiers as $tier)
+                            <div class="tier-line">
+                                {{ $tier->min_qty }}
+                                @if ($tier->max_qty)
+                                    - {{ $tier->max_qty }}
+                                @else
+                                    +
+                                @endif
+                                pcs : ¥{{ number_format($tier->unit_price, 2) }}
+                            </div>
+                        @empty
+                            <span class="muted-text">No tiers</span>
+                        @endforelse
+                    </td>
+
+                    <td>
+                        @if ($rule->is_active)
+                            <span class="status-pill status-active">Active</span>
+                        @else
+                            <span class="status-pill status-inactive">Inactive</span>
+                        @endif
+                    </td>
+
+                    <td style="text-align: right;">
+                        <div class="action-btns" style="justify-content: flex-end;">
+                            <a href="{{ route('admin.product-price-rules.show', $rule->rule_id) }}"
+                               class="action-link">
+                                Detail
+                            </a>
+
+                            <a href="{{ route('admin.product-price-rules.edit', $rule->rule_id) }}"
+                               class="action-link">
+                                Edit
+                            </a>
+
+                            <form action="{{ route('admin.product-price-rules.destroy', $rule->rule_id) }}"
+                                  method="POST"
+                                  style="display:inline;">
+                                @csrf
+                                @method('DELETE')
+
+                                <button type="submit"
+                                        class="action-link delete"
+                                        onclick="return confirm('Delete this rule?')">
+                                    Delete
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 32px;">
+                        No price rules found for this product.
+                    </td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
+@endif
+
+      @if ($selectedProduct && $rules)
+    <div class="pagination-container">
+        {{ $rules->links('pagination::bootstrap-5') }}
+    </div>
+@endif
     </div>
 
 @endsection

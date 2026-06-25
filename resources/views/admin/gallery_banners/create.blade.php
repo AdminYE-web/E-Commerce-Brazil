@@ -163,13 +163,14 @@
                 <input type="number" name="sort_order" value="{{ old('sort_order', 0) }}">
             </div>
 
-            <div class="form-group">
+          
+        </div>
+        
                 <label class="checkbox-box">
                     <input type="checkbox" name="is_active" value="1" {{ old('is_active', 1) ? 'checked' : '' }}>
                     Active
                 </label>
-            </div>
-        </div>
+          
 
         <div class="form-actions">
             <a href="{{ route('admin.gallery-banners.index') }}" class="btn-outline">Cancel</a>

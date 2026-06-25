@@ -14,13 +14,42 @@ use Illuminate\Support\Facades\DB;
 
 class QuotationController extends Controller
 {
-    public function index()
-    {
-        $quotations = Quotation::orderBy('quotation_id', 'desc')
-            ->paginate(20);
+  public function index(Request $request)
+{
+    $search = $request->input('search');
+    $status = $request->input('status');
+    $dateFrom = $request->input('date_from');
+    $dateTo = $request->input('date_to');
 
-        return view('admin.quotations.index', compact('quotations'));
-    }
+    $quotations = Quotation::query()
+        ->when($search, function ($query) use ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('quotation_no', 'like', "%{$search}%")
+                    ->orWhere('customer_name', 'like', "%{$search}%")
+                    ->orWhere('customer_email', 'like', "%{$search}%");
+            });
+        })
+        ->when($status, function ($query) use ($status) {
+            $query->where('status', $status);
+        })
+        ->when($dateFrom, function ($query) use ($dateFrom) {
+            $query->whereDate('quotation_date', '>=', $dateFrom);
+        })
+        ->when($dateTo, function ($query) use ($dateTo) {
+            $query->whereDate('quotation_date', '<=', $dateTo);
+        })
+        ->orderBy('quotation_id', 'desc')
+        ->paginate(20)
+        ->withQueryString();
+
+    return view('admin.quotations.index', compact(
+        'quotations',
+        'search',
+        'status',
+        'dateFrom',
+        'dateTo'
+    ));
+}
 
     public function create()
     {

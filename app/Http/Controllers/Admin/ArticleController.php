@@ -11,82 +11,141 @@ use Illuminate\Support\Str;
 
 class ArticleController extends Controller
 {
-    public function index(Request $request)
-    {
-        $search = $request->input('search');
-        $category = $request->input('category');
-        $language = session('admin_product_language', 'pt');
-        $baseLanguage = 'pt';
+   public function index(Request $request)
+{
+    $search = $request->input('search');
+    $category = $request->input('category');
+    $dateFrom = $request->input('date_from');
+    $dateTo = $request->input('date_to');
+    $status = $request->input('status');
 
-        if ($language === $baseLanguage) {
-            $articles = Article::query()
-                ->where('language', $baseLanguage)
-                ->when($search, function ($query) use ($search) {
-                    $query->where(function ($q) use ($search) {
-                        $q->where('title', 'like', '%'.$search.'%')
-                            ->orWhere('category', 'like', '%'.$search.'%');
-                    });
-                })
-                ->when($category, function ($query) use ($category) {
-                    $query->where('category', $category);
-                })
-                ->orderBy('article_date', 'desc')
-                ->orderBy('article_id', 'desc')
-                ->paginate(15)
-                ->withQueryString();
+    $language = session('admin_product_language', 'pt');
+    $baseLanguage = 'pt';
 
-            return view('admin.articles.index', compact('articles', 'search', 'category', 'language'));
-        }
+    $categories = Article::query()
+        ->where('language', $baseLanguage)
+        ->whereNotNull('category')
+        ->where('category', '<>', '')
+        ->select('category')
+        ->distinct()
+        ->orderBy('category')
+        ->pluck('category');
 
-        $baseArticles = Article::query()
-            ->where('language', $baseLanguage)
+    $applyBaseFilters = function ($query, bool $includeStatus = true) use (
+        $search,
+        $category,
+        $dateFrom,
+        $dateTo,
+        $status
+    ) {
+        $query
             ->when($search, function ($query) use ($search) {
                 $query->where(function ($q) use ($search) {
-                    $q->where('title', 'like', '%'.$search.'%')
-                        ->orWhere('category', 'like', '%'.$search.'%');
+                    $q->where('title', 'like', '%' . $search . '%')
+                        ->orWhere('category', 'like', '%' . $search . '%');
                 });
             })
             ->when($category, function ($query) use ($category) {
                 $query->where('category', $category);
             })
+            ->when($dateFrom, function ($query) use ($dateFrom) {
+                $query->whereDate('article_date', '>=', $dateFrom);
+            })
+            ->when($dateTo, function ($query) use ($dateTo) {
+                $query->whereDate('article_date', '<=', $dateTo);
+            });
+
+        if ($includeStatus && $status !== null && $status !== '') {
+            $query->where('is_active', (int) $status);
+        }
+    };
+
+    if ($language === $baseLanguage) {
+        $query = Article::query()
+            ->where('language', $baseLanguage);
+
+        $applyBaseFilters($query, true);
+
+        $articles = $query
             ->orderBy('article_date', 'desc')
             ->orderBy('article_id', 'desc')
             ->paginate(15)
             ->withQueryString();
 
-        $translationKeys = $baseArticles
-            ->getCollection()
-            ->pluck('translation_key')
-            ->filter()
-            ->values();
-
-        $translatedArticles = Article::query()
-            ->where('language', $language)
-            ->whereIn('translation_key', $translationKeys)
-            ->get()
-            ->keyBy('translation_key');
-
-        $baseArticles->getCollection()->transform(function ($baseArticle) use ($translatedArticles) {
-            $translatedArticle = $translatedArticles->get($baseArticle->translation_key);
-
-            if ($translatedArticle) {
-                $translatedArticle->is_missing_translation = false;
-                $translatedArticle->base_article_id = $baseArticle->article_id;
-
-                return $translatedArticle;
-            }
-
-            $baseArticle->is_missing_translation = true;
-            $baseArticle->base_article_id = $baseArticle->article_id;
-
-            return $baseArticle;
-        });
-
-        $articles = $baseArticles;
-
-        return view('admin.articles.index', compact('articles', 'search', 'category', 'language'));
+        return view('admin.articles.index', compact(
+            'articles',
+            'search',
+            'category',
+            'dateFrom',
+            'dateTo',
+            'status',
+            'language',
+            'categories'
+        ));
     }
 
+    $baseQuery = Article::query()
+        ->where('language', $baseLanguage);
+
+    $applyBaseFilters($baseQuery, false);
+
+    if ($status !== null && $status !== '') {
+        $translationKeysByStatus = Article::query()
+            ->where('language', $language)
+            ->where('is_active', (int) $status)
+            ->whereNotNull('translation_key')
+            ->pluck('translation_key');
+
+        $baseQuery->whereIn('translation_key', $translationKeysByStatus);
+    }
+
+    $baseArticles = $baseQuery
+        ->orderBy('article_date', 'desc')
+        ->orderBy('article_id', 'desc')
+        ->paginate(15)
+        ->withQueryString();
+
+    $translationKeys = $baseArticles
+        ->getCollection()
+        ->pluck('translation_key')
+        ->filter()
+        ->values();
+
+    $translatedArticles = Article::query()
+        ->where('language', $language)
+        ->whereIn('translation_key', $translationKeys)
+        ->get()
+        ->keyBy('translation_key');
+
+    $baseArticles->getCollection()->transform(function ($baseArticle) use ($translatedArticles) {
+        $translatedArticle = $translatedArticles->get($baseArticle->translation_key);
+
+        if ($translatedArticle) {
+            $translatedArticle->is_missing_translation = false;
+            $translatedArticle->base_article_id = $baseArticle->article_id;
+
+            return $translatedArticle;
+        }
+
+        $baseArticle->is_missing_translation = true;
+        $baseArticle->base_article_id = $baseArticle->article_id;
+
+        return $baseArticle;
+    });
+
+    $articles = $baseArticles;
+
+    return view('admin.articles.index', compact(
+        'articles',
+        'search',
+        'category',
+        'dateFrom',
+        'dateTo',
+        'status',
+        'language',
+        'categories'
+    ));
+}
     public function create()
     {
         $language = session('admin_product_language', 'pt');
@@ -103,7 +162,7 @@ class ArticleController extends Controller
             'article_date' => ['nullable', 'date'],
             'detail' => ['nullable', 'string'],
             'cover_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
-            'is_active' => ['nullable', 'boolean'],
+            'is_active' => ['required', 'integer', 'in:1,3'],
             'description' => ['nullable', 'string'],
             'language' => ['nullable', 'string', 'max:20'],
             'translation_key' => ['nullable', 'string', 'max:255'],
@@ -124,7 +183,7 @@ class ArticleController extends Controller
             'article_date' => $request->article_date,
             'detail' => $request->detail,
             'cover_image' => $coverPath,
-            'is_active' => $request->has('is_active') ? 1 : 0,
+           'is_active' => (int) $request->input('is_active', 1),
             'description' => $request->description,
             'language' => $language,
             'translation_key' => $request->translation_key ?: 'art_'.strtolower(Str::random(12)),
@@ -150,7 +209,7 @@ class ArticleController extends Controller
             'article_date' => ['nullable', 'date'],
             'detail' => ['nullable', 'string'],
             'cover_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
-            'is_active' => ['nullable', 'boolean'],
+            'is_active' => ['required', 'integer', 'in:1,3'],
             'description' => ['nullable', 'string'],
             'translation_key' => ['nullable', 'string', 'max:255'],
         ]);
@@ -171,7 +230,7 @@ class ArticleController extends Controller
             'article_date' => $request->article_date,
             'detail' => $request->detail,
             'cover_image' => $coverPath,
-            'is_active' => $request->has('is_active') ? 1 : 0,
+           'is_active' => (int) $request->input('is_active', 1),
             'description' => $request->description,
             'translation_key' => $request->translation_key ?: $article->translation_key ?: 'art_'.strtolower(Str::random(12)),
         ]);
@@ -222,7 +281,7 @@ class ArticleController extends Controller
         $newArticle->language = $targetLanguage;
         $newArticle->translation_key = $translationKey;
         $newArticle->title = $article->title.' ('.strtoupper($targetLanguage).')';
-        $newArticle->is_active = 0;
+       $newArticle->is_active = 3;
         $newArticle->created_at = now();
         $newArticle->updated_at = now();
         $newArticle->save();

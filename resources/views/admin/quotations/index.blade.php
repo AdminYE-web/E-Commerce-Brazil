@@ -2,6 +2,7 @@
 
 @section('title', 'Quotations | Indigo Admin')
 @section('css')
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
         .quotation-status-select {
             min-width: 120px;
@@ -76,6 +77,90 @@
     transform: translateY(-1px);
     opacity: .9;
 }
+.quotation-filter-form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 18px 0 20px;
+    padding: 16px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+}
+
+.quotation-filter-form input,
+.quotation-filter-form select {
+    height: 40px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0 12px;
+    background: #fff;
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+}
+
+.quotation-filter-form input {
+    min-width: 320px;
+    flex: 1;
+}
+
+.quotation-filter-form select {
+    min-width: 160px;
+}
+
+.quotation-filter-form input:focus,
+.quotation-filter-form select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+@media (max-width: 900px) {
+    .quotation-filter-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .quotation-filter-form input,
+    .quotation-filter-form select,
+    .quotation-filter-form .btn-primary,
+    .quotation-filter-form .btn-outline {
+        width: 100%;
+    }
+}
+.date-range-filter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.date-range-filter input {
+    min-width: 145px;
+    flex: unset;
+}
+
+.date-range-filter span {
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+@media (max-width: 900px) {
+    .date-range-filter {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .date-range-filter input {
+        width: 100%;
+    }
+
+    .date-range-filter span {
+        text-align: center;
+    }
+}
     </style>
 @endsection
 @section('content')
@@ -95,6 +180,55 @@
         @if (session('success'))
             <div class="alert-success">{{ session('success') }}</div>
         @endif
+
+        <form method="GET" action="{{ route('admin.quotations.index') }}" class="quotation-filter-form">
+    <input
+        type="text"
+        name="search"
+        value="{{ request('search') }}"
+        placeholder="Search quotation no, customer, email..."
+    >
+
+    <div class="date-range-filter">
+        <input
+            type="text"
+            name="date_from"
+            class="js-date-picker"
+            value="{{ request('date_from') }}"
+            placeholder="dd/mm/yyyy"
+            autocomplete="off"
+        >
+
+        <span>to</span>
+
+        <input
+            type="text"
+            name="date_to"
+            class="js-date-picker"
+            value="{{ request('date_to') }}"
+            placeholder="dd/mm/yyyy"
+            autocomplete="off"
+        >
+    </div>
+
+    <select name="status">
+        <option value="">All Status</option>
+        <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>
+            Active
+        </option>
+        <option value="not_active" {{ request('status') === 'not_active' ? 'selected' : '' }}>
+            Not Active
+        </option>
+    </select>
+
+    <button type="submit" class="btn-primary">
+        Search
+    </button>
+
+    <a href="{{ route('admin.quotations.index') }}" class="btn-outline">
+        Reset
+    </a>
+</form>
 
         <table>
             <thead>
@@ -207,6 +341,64 @@
                         .finally(function() {
                             selectEl.classList.remove('is-saving');
                         });
+                });
+            });
+        });
+    </script>
+     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    <script>
+        flatpickr('.js-date-picker', {
+            dateFormat: 'Y-m-d',
+            altInput: true,
+            altFormat: 'd/m/Y',
+            allowInput: true,
+            locale: 'en'
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.quotation-status-select').forEach(function(select) {
+                select.addEventListener('change', function() {
+                    const updateUrl = this.dataset.updateUrl;
+                    const status = this.value;
+                    const selectEl = this;
+
+                    selectEl.classList.add('is-saving');
+
+                    fetch(updateUrl, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            status: status,
+                        }),
+                    })
+                    .then(function(response) {
+                        if (!response.ok) {
+                            throw new Error('Unable to update status.');
+                        }
+
+                        return response.json();
+                    })
+                    .then(function() {
+                        selectEl.classList.remove('active', 'not_active');
+
+                        if (status === 'active') {
+                            selectEl.classList.add('active');
+                        } else {
+                            selectEl.classList.add('not_active');
+                        }
+                    })
+                    .catch(function(error) {
+                        console.error(error);
+                        alert('Unable to update quotation status.');
+                    })
+                    .finally(function() {
+                        selectEl.classList.remove('is-saving');
+                    });
                 });
             });
         });

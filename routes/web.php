@@ -179,6 +179,8 @@ Route::get('/cancel-order', [CancelamentoController::class, 'index'])
 Route::get('/user-email-change/verify/{token}', [UserAdminController::class, 'verifyEmailChange'])
     ->name('users.email-change.verify');
 
+    
+
 Route::middleware('auth')->group(function () {
     Route::get('/account', [AccountController::class, 'index'])
         ->name('account.index');
@@ -368,6 +370,13 @@ Route::prefix('admin-panel')->name('admin.')->group(function () {
             ->name('system-management.update');
         Route::post('users/{user}/email-change', [UserAdminController::class, 'sendEmailChangeVerification'])
             ->name('users.email-change.send');
+
+            Route::get('/products/{product}/preview', [ProductController::class, 'preview'])
+    ->name('products.preview');
+    Route::get('products/{product}/preview-order', [ProductListController::class, 'previewOrder'])
+    ->name('products.preview-order');
+    Route::get('/articles/{article}/preview', [BlogController::class, 'preview'])
+    ->name('articles.preview');
     });
 });
 

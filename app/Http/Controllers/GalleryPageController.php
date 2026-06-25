@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 
 class GalleryPageController extends Controller
 {
-    public function index(Request $request)
+     public function index(Request $request)
     {
         $categoryId = $request->input('category_id');
         $materialId = $request->input('material_id');
@@ -38,7 +38,7 @@ class GalleryPageController extends Controller
             ->orderBy('purpose')
             ->pluck('purpose');
 
-        $galleries = Gallery::with(['category', 'material'])
+        $galleriesQuery = Gallery::with(['category', 'material', 'images'])
             ->where('language', $langKey)
             ->where('is_active', 1)
             ->when($categoryId, function ($query) use ($categoryId) {
@@ -51,20 +51,37 @@ class GalleryPageController extends Controller
                 $query->where('purpose', $purpose);
             });
 
+        if ($sort === 'oldest') {
+            $galleriesQuery->orderBy('gallery_date', 'asc')
+                ->orderBy('gallery_id', 'asc');
+        } else {
+            $galleriesQuery->orderBy('gallery_date', 'desc')
+                ->orderBy('gallery_id', 'desc');
+        }
+
+        $galleries = $galleriesQuery->paginate(12)->withQueryString();
+
+        /*
+        |--------------------------------------------------------------------------
+        | AJAX Response
+        |--------------------------------------------------------------------------
+        | ถ้าเป็น AJAX ให้ส่งกลับเฉพาะ HTML ของ gallery list + pagination
+        */
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('gallery._results', compact('galleries'))->render(),
+            ]);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Normal Page Load
+        |--------------------------------------------------------------------------
+        */
         $galleryBanners = GalleryBanner::where('is_active', 1)
             ->orderBy('sort_order')
             ->orderBy('gallery_banner_id', 'desc')
             ->get();
-
-        if ($sort === 'oldest') {
-            $galleries->orderBy('gallery_date', 'asc')
-                ->orderBy('gallery_id', 'asc');
-        } else {
-            $galleries->orderBy('gallery_date', 'desc')
-                ->orderBy('gallery_id', 'desc');
-        }
-
-        $galleries = $galleries->paginate(12)->withQueryString();
 
         return view('gallery.index', compact(
             'galleries',

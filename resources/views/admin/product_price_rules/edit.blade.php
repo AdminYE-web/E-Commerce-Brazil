@@ -522,7 +522,7 @@
                         placeholder="เช่น 20mm + One Side">
                 </div>
 
-                <div class="form-group">
+                <div class="form-group" style="display: none">
                     <label>Sort Order</label>
                     <input type="number" name="sort_order" value="{{ old('sort_order', $rule->sort_order) }}">
                 </div>

@@ -9,95 +9,179 @@
             /* padding: 36px 0 70px; */
         }
 
-        .gallery-filter-wrap {
-            position: sticky;
-            top: 89px;
-            z-index: 50;
-            isolation: isolate;
+       :root {
+    --header-height: 89px;
+}
 
-            background: #f4f4f4;
-            border-radius: 9px;
-            padding: 19px 30px;
-            margin-bottom: 30px;
+/* ตัวหลอกพื้นที่ ตอน filter กลายเป็น fixed */
+.gallery-filter-placeholder {
+    display: none;
+}
 
-            transition: border-radius 0.35s ease, box-shadow 0.35s ease;
-        }
+/* Filter wrapper ปกติ */
+.gallery-filter-wrap {
+    position: relative;
+    z-index: 900;
 
-        .gallery-filter-wrap::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: 50%;
-            width: 100vw;
-            transform: translateX(-50%) scaleX(0);
-            transform-origin: center;
-            background: #f4f4f4;
-            z-index: -1;
-            opacity: 0;
-            transition: transform 0.45s ease, opacity 0.25s ease;
-        }
+    background: #f4f4f4;
+    border-radius: 9px;
+    padding: 19px 30px;
+    margin-bottom: 30px;
 
-        .gallery-filter-wrap.is-sticky-full {
-            border-radius: 0;
-            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.04);
-        }
+    transition: border-radius 0.35s ease, box-shadow 0.35s ease;
+}
 
-        .gallery-filter-wrap.is-sticky-full::before {
-            transform: translateX(-50%) scaleX(1);
-            opacity: 1;
-        }
+/* ตอน filter ติดใต้ header */
+.gallery-filter-wrap.is-fixed-filter {
+    position: fixed;
+    top: var(--header-height);
+    left: var(--filter-left);
+    width: var(--filter-width);
+    z-index: 999;
 
-        .gallery-filter-form {
-            position: relative;
-            z-index: 1;
-        }
+    border-radius: 0;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.04);
+    margin-bottom: 0;
+}
 
-        .gallery-filter-form {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr) auto;
-            gap: 24px;
-            align-items: center;
-        }
+/* background เต็มจอ ตอน fixed */
+.gallery-filter-wrap::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 100vw;
+    transform: translateX(-50%) scaleX(0);
+    transform-origin: center;
+    background: #f4f4f4;
+    z-index: -1;
+    opacity: 0;
+    transition: transform 0.45s ease, opacity 0.25s ease;
+}
 
-        .gallery-filter-select {
-            width: 100%;
-            height: 51px;
-            border: 0;
-            border-radius: 9px;
-            background-color: #fff;
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23111111' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 18px center;
-            background-size: 15px;
-            padding: 0 40px 0 18px;
-            font-size: 15px;
-            color: #111;
-            outline: none;
-            appearance: none;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            cursor: pointer;
-        }
+.gallery-filter-wrap.is-fixed-filter::before {
+    transform: translateX(-50%) scaleX(1);
+    opacity: 1;
+}
 
-        .gallery-filter-select.placeholder-active {
-            color: #999;
-        }
+/* Form */
+.gallery-filter-form {
+    position: relative;
+    z-index: 1;
 
-        .gallery-filter-select.placeholder-active option {
-            color: #111;
-        }
+    display: grid;
+    grid-template-columns: repeat(4, 1fr) auto;
+    gap: 24px;
+    align-items: center;
+}
 
-        .clear-filter-link {
-            color: #1b93e8;
-            text-decoration: none;
-            font-size: 15px;
-            font-weight: 700;
-            white-space: nowrap;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
+/* Select */
+.gallery-filter-select {
+    width: 100%;
+    height: 51px;
+    border: 0;
+    border-radius: 9px;
+    background-color: #fff;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23111111' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 18px center;
+    background-size: 15px;
+    padding: 0 40px 0 18px;
+    font-size: 15px;
+    color: #111;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
+}
+
+.gallery-filter-select.placeholder-active {
+    color: #999;
+}
+
+.gallery-filter-select.placeholder-active option {
+    color: #111;
+}
+
+/* Clear filter */
+.clear-filter-link {
+    color: #1b93e8;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 700;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Tablet */
+@media (max-width: 1100px) {
+    .gallery-filter-form {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .gallery-filter-wrap {
+        position: relative;
+        top: auto;
+        left: auto;
+        width: auto;
+        z-index: auto;
+
+        padding: 18px 18px 22px;
+        border-radius: 18px;
+        box-shadow: none;
+        background: #f4f4f4;
+    }
+
+    .gallery-filter-wrap.is-fixed-filter {
+        position: relative;
+        top: auto;
+        left: auto;
+        width: auto;
+        border-radius: 18px;
+        box-shadow: none;
+    }
+
+    .gallery-filter-wrap::before {
+        display: none;
+    }
+
+    .gallery-filter-form {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        align-items: center;
+    }
+
+    .gallery-filter-select {
+        border-radius: 12px;
+        height: 48px;
+    }
+
+    .gallery-filter-form select[name="category_id"],
+    .gallery-filter-form select[name="material_id"],
+    .gallery-filter-form select[name="purpose"] {
+        grid-column: span 2;
+    }
+
+    .gallery-filter-form select[name="sort"] {
+        grid-column: 1 / 2;
+        max-width: 100%;
+    }
+
+    .clear-filter-link {
+        grid-column: 2 / 3;
+        justify-self: center;
+        margin-left: auto;
+        margin-right: auto;
+        font-size: 15px;
+    }
+}
 
         .gallery-grid {
             display: grid;
@@ -510,11 +594,14 @@
             display: block;
         }
 
-        .gallery-filter-wrap {
-            position: sticky;
-            top: 89px;
-            z-index: 50;
-        }
+        #galleryResults {
+    transition: opacity 0.2s ease;
+}
+
+#galleryResults.is-loading {
+    opacity: 0.45;
+    pointer-events: none;
+}
     </style>
 @endsection
 
@@ -616,49 +703,11 @@
                 </form>
             </div>
 
-            <div class="gallery-grid">
-                @forelse($galleries as $gallery)
-                    <div class="gallery-card js-gallery-open" data-gallery-id="{{ $gallery->gallery_id }}"
-                        data-title="{{ $gallery->title }}" data-category="{{ $gallery->category->category_name ?? '-' }}"
-                        data-material="{{ $gallery->material->material_name ?? '-' }}"
-                        data-purpose="{{ $gallery->purpose ?? '-' }}"
-                        data-date="{{ $gallery->gallery_date ? $gallery->gallery_date->format('d/m/Y') : '-' }}"
-                        data-product-link="{{ $gallery->product_link ?: '#' }}"
-                        data-cover="{{ $gallery->cover_image ? asset('storage/' . $gallery->cover_image) : asset('assets/images/no-image.png') }}"
-                        data-images='@json($gallery->images->map(fn($img) => asset('storage/' . $img->image_path))->filter()->values())'>
-                        <div class="gallery-image-box">
-                            @if ($gallery->cover_image)
-                                <img src="{{ asset('storage/' . $gallery->cover_image) }}" alt="{{ $gallery->title }}">
-                            @else
-                                <img src="{{ asset('assets/images/no-image.png') }}" alt="{{ $gallery->title }}">
-                            @endif
+            <div id="galleryResults">
+    @include('gallery._results', ['galleries' => $galleries])
+</div>
 
-                            <div class="gallery-hover-overlay">
-                                <div class="gallery-hover-content">
-                                    <i class="bi bi-search"></i>
-                                    <span>{{ __('gallery.gallery.view_details') }}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="gallery-info">
-                            <div class="gallery-title">{{ $gallery->title }}</div>
-                            <div class="gallery-date">
-                                {{ __('gallery.gallery.created') }}
-                                {{ $gallery->gallery_date ? $gallery->gallery_date->format('d/m/Y') : '-' }}
-                            </div>
-                        </div>
-                    </div>
-                @empty
-                    <div class="gallery-empty">
-                        No galleries found.
-                    </div>
-                @endforelse
-            </div>
-
-            <div class="gallery-pagination">
-                {{ $galleries->links() }}
-            </div>
+         
 
         </div>
     </section>
@@ -726,17 +775,115 @@
 @endsection
 
 @section('js')
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.getElementById('galleryFilterForm');
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('galleryFilterForm');
+        const resultsWrap = document.getElementById('galleryResults');
+        const clearBtn = document.querySelector('.clear-filter-link');
 
-            document.querySelectorAll('.js-auto-submit').forEach(function(select) {
-                select.addEventListener('change', function() {
-                    form.submit();
-                });
+        if (!form || !resultsWrap) return;
+
+        function buildUrlFromForm() {
+            const formData = new FormData(form);
+            const params = new URLSearchParams();
+
+            formData.forEach(function(value, key) {
+                if (value !== '') {
+                    params.append(key, value);
+                }
+            });
+
+            const queryString = params.toString();
+            const baseUrl = form.getAttribute('action');
+
+            return queryString ? baseUrl + '?' + queryString : baseUrl;
+        }
+
+        function updatePlaceholderColor() {
+            document.querySelectorAll('.gallery-filter-select').forEach(function(select) {
+                if (select.value === '') {
+                    select.classList.add('placeholder-active');
+                } else {
+                    select.classList.remove('placeholder-active');
+                }
+            });
+        }
+
+        function loadGallery(url, pushState = true) {
+            resultsWrap.classList.add('is-loading');
+
+            fetch(url, {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(function(response) {
+                if (!response.ok) {
+                    throw new Error('Ajax request failed');
+                }
+
+                return response.json();
+            })
+            .then(function(data) {
+                resultsWrap.innerHTML = data.html;
+
+                if (pushState) {
+                    window.history.pushState({}, '', url);
+                }
+
+                updatePlaceholderColor();
+            })
+            .catch(function(error) {
+                console.error(error);
+            })
+            .finally(function() {
+                resultsWrap.classList.remove('is-loading');
+            });
+        }
+
+        document.querySelectorAll('.js-auto-submit').forEach(function(select) {
+            select.addEventListener('change', function() {
+                const url = buildUrlFromForm();
+                loadGallery(url);
             });
         });
-    </script>
+
+        if (clearBtn) {
+            clearBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                form.querySelectorAll('select').forEach(function(select) {
+                    if (select.name === 'sort') {
+                        select.value = 'newest';
+                    } else {
+                        select.value = '';
+                    }
+                });
+
+                const url = form.getAttribute('action');
+                loadGallery(url);
+            });
+        }
+
+        document.addEventListener('click', function(e) {
+            const paginationLink = e.target.closest('.gallery-pagination a');
+
+            if (!paginationLink) return;
+
+            e.preventDefault();
+
+            loadGallery(paginationLink.href);
+        });
+
+        window.addEventListener('popstate', function() {
+            loadGallery(window.location.href, false);
+        });
+
+        updatePlaceholderColor();
+    });
+</script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const modal = document.getElementById('galleryModal');
@@ -839,11 +986,13 @@
                 document.body.style.overflow = '';
             }
 
-            document.querySelectorAll('.js-gallery-open').forEach(function(card) {
-                card.addEventListener('click', function() {
-                    openModal(card);
-                });
-            });
+           document.addEventListener('click', function(e) {
+    const card = e.target.closest('.js-gallery-open');
+
+    if (!card) return;
+
+    openModal(card);
+});
 
             closeBtn.addEventListener('click', closeModal);
 
@@ -892,43 +1041,109 @@
             });
         });
     </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const filterWrap = document.querySelector('.gallery-filter-wrap');
+   <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const filterWrap = document.querySelector('.gallery-filter-wrap');
 
-            if (!filterWrap) return;
+        if (!filterWrap) return;
 
-            function isMobile() {
-                return window.innerWidth <= 768;
+        const placeholder = document.createElement('div');
+        placeholder.className = 'gallery-filter-placeholder';
+        filterWrap.parentNode.insertBefore(placeholder, filterWrap);
+
+        let filterStartTop = 0;
+
+        function isMobile() {
+            return window.innerWidth <= 768;
+        }
+
+        function getHeaderHeight() {
+            const header = document.querySelector('header');
+
+            if (!header) {
+                return 89;
             }
 
-            function getHeaderHeight() {
-                const header = document.querySelector('header');
-                return header ? header.offsetHeight : 89;
-            }
+            return header.offsetHeight;
+        }
 
-            function toggleStickyFull() {
-                if (isMobile()) {
-                    filterWrap.classList.remove('is-sticky-full');
-                    return;
-                }
+        function updateSizes() {
+            const headerHeight = getHeaderHeight();
 
-                const headerHeight = getHeaderHeight();
+            document.documentElement.style.setProperty(
+                '--header-height',
+                headerHeight + 'px'
+            );
+
+            if (!filterWrap.classList.contains('is-fixed-filter')) {
                 const rect = filterWrap.getBoundingClientRect();
 
-                if (rect.top <= headerHeight + 1) {
-                    filterWrap.classList.add('is-sticky-full');
-                } else {
-                    filterWrap.classList.remove('is-sticky-full');
-                }
+                filterStartTop = window.scrollY + rect.top;
+
+                document.documentElement.style.setProperty(
+                    '--filter-left',
+                    rect.left + 'px'
+                );
+
+                document.documentElement.style.setProperty(
+                    '--filter-width',
+                    rect.width + 'px'
+                );
+            } else {
+                const placeholderRect = placeholder.getBoundingClientRect();
+
+                document.documentElement.style.setProperty(
+                    '--filter-left',
+                    placeholderRect.left + 'px'
+                );
+
+                document.documentElement.style.setProperty(
+                    '--filter-width',
+                    placeholderRect.width + 'px'
+                );
             }
 
-            toggleStickyFull();
+            return headerHeight;
+        }
 
-            window.addEventListener('scroll', toggleStickyFull, {
-                passive: true
-            });
-            window.addEventListener('resize', toggleStickyFull);
+        function toggleFixedFilter() {
+            const headerHeight = updateSizes();
+
+            if (isMobile()) {
+                filterWrap.classList.remove('is-fixed-filter');
+                placeholder.style.display = 'none';
+                placeholder.style.height = '0px';
+                return;
+            }
+
+            if (window.scrollY >= filterStartTop - headerHeight) {
+                placeholder.style.display = 'block';
+                placeholder.style.height = filterWrap.offsetHeight + 'px';
+
+                filterWrap.classList.add('is-fixed-filter');
+            } else {
+                filterWrap.classList.remove('is-fixed-filter');
+
+                placeholder.style.display = 'none';
+                placeholder.style.height = '0px';
+            }
+        }
+
+        updateSizes();
+        toggleFixedFilter();
+
+        window.addEventListener('scroll', toggleFixedFilter, {
+            passive: true
         });
-    </script>
+
+        window.addEventListener('resize', function() {
+            filterWrap.classList.remove('is-fixed-filter');
+            placeholder.style.display = 'none';
+            placeholder.style.height = '0px';
+
+            updateSizes();
+            toggleFixedFilter();
+        });
+    });
+</script>
 @endsection

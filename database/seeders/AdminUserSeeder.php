@@ -16,6 +16,17 @@ class AdminUserSeeder extends Seeder
                 'name' => 'Admin',
                 'password' => Hash::make('12345678'),
                 'is_active' => 1,
+                'role' => 'super_admin', // ถ้ามี field role
+            ]
+        );
+
+        AdminUser::updateOrCreate(
+            ['email' => 'admin@email.com'],
+            [
+                'name' => 'Admin User',
+                'password' => Hash::make('12345678'),
+                'is_active' => 1,
+                'role' => 'admin',
             ]
         );
     }

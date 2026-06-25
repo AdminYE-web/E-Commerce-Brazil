@@ -215,6 +215,38 @@
             font-weight: 700;
             cursor: pointer;
         }
+        .translation-alert-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.translation-alert-btn {
+    border: 0;
+    border-radius: 999px;
+    background: #2563eb;
+    color: #fff;
+    padding: 10px 22px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.translation-alert-btn.secondary {
+    background: #f3f4f6;
+    color: #111827;
+    border: 1px solid #d1d5db;
+}
+
+.translation-alert-btn:hover {
+    opacity: .9;
+}
     </style>
 @endsection
 
@@ -222,12 +254,18 @@
     @if (session('translation_unavailable'))
         <div class="translation-alert-popup" id="translationAlertPopup">
             <div class="translation-alert-box">
-                <h3>Translation unavailable</h3>
+                <h3>{{ __('blog.show.untran') }}</h3>
                 <p>{{ session('translation_unavailable') }}</p>
 
-                <button type="button" class="translation-alert-btn" id="translationAlertClose">
-                    OK
-                </button>
+                <div class="translation-alert-actions">
+    <button type="button" class="translation-alert-btn" id="translationAlertClose">
+        {{ __('blog.show.read') }}
+    </button>
+
+    <a href="{{ route('home') }}" class="translation-alert-btn secondary">
+        {{ __('blog.show.backhome') }}
+    </a>
+</div>
             </div>
         </div>
     @endif

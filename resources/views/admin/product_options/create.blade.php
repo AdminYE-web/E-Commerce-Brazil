@@ -3,6 +3,32 @@
 @section('title', 'Add Product Option | Indigo Admin')
 
 @section('css')
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<style>
+    .select2-container {
+        width: 100% !important;
+        font-size: 14px;
+    }
+
+    .select2-container--default .select2-selection--single {
+        height: 42px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        color: var(--fg);
+        line-height: 42px;
+        padding-left: 12px;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 42px;
+    }
+</style>
     <style>
         .form-card {
             background: var(--surface);
@@ -183,6 +209,7 @@
                 flex-direction: column;
             }
         }
+        
     </style>
 @endsection
 
@@ -219,25 +246,27 @@
                 <div class="form-group">
                     <label>Option Group</label>
 
-                    <select name="option_group_id">
-                        <option value="">-- Select Group --</option>
+                   <select name="option_group_id" id="option_group_id" class="searchable-select">
+    <option value="">-- Select Group --</option>
 
-                        <optgroup label="Hotstrap (Type 1)">
-                            @foreach ($groups->where('product_type', 1) as $group)
-                                <option value="{{ $group->option_group_id }}" {{ old('option_group_id') == $group->option_group_id ? 'selected' : '' }}>
-                                    {{ $group->group_name }} ({{ $group->group_code }})
-                                </option>
-                            @endforeach
-                        </optgroup>
+    <optgroup label="Hotstrap (Type 1)">
+        @foreach ($groups->where('product_type', 1) as $group)
+            <option value="{{ $group->option_group_id }}"
+                {{ old('option_group_id') == $group->option_group_id ? 'selected' : '' }}>
+                {{ $group->group_name }} ({{ $group->group_code }})
+            </option>
+        @endforeach
+    </optgroup>
 
-                        <optgroup label="Hotmobily (Type 2)">
-                            @foreach ($groups->where('product_type', 2) as $group)
-                                <option value="{{ $group->option_group_id }}" {{ old('option_group_id') == $group->option_group_id ? 'selected' : '' }}>
-                                    {{ $group->group_name }} ({{ $group->group_code }})
-                                </option>
-                            @endforeach
-                        </optgroup>
-                    </select>
+    <optgroup label="Hotmobily (Type 2)">
+        @foreach ($groups->where('product_type', 2) as $group)
+            <option value="{{ $group->option_group_id }}"
+                {{ old('option_group_id') == $group->option_group_id ? 'selected' : '' }}>
+                {{ $group->group_name }} ({{ $group->group_code }})
+            </option>
+        @endforeach
+    </optgroup>
+</select>
                 </div>
 
                 <div class="form-group">
@@ -246,7 +275,7 @@
                     <input type="text" name="option_code" value="{{ old('option_code') }}"
                         placeholder="เช่น HARD, SOFT, WHITE_BACK">
                 </div>
-                <div class="form-group">
+                <div class="form-group" style="display: none">
                     <label>Translation Key</label>
                     <input type="text" name="translation_key" value="{{ old('translation_key', $translationKey ?? '') }}"
                         placeholder="เช่น opt_xxxxxxxx">
@@ -256,7 +285,7 @@
                 <div class="form-group">
                     <label>Option Name</label>
 
-                    <input type="text" name="option_name" value="{{ old('option_name') }}" placeholder="เช่น แบบแข็ง">
+                    <input type="text" name="option_name" value="{{ old('option_name') }}" placeholder="For example, a rigid type.">
                 </div>
 
                 <div class="form-group">
@@ -277,8 +306,7 @@
                         placeholder="เช่น 100">
 
                     <small style="display:block; margin-top:6px; color:#6b7280;">
-                        ถ้าใส่ 100 หมายถึง เมื่อจำนวนสินค้าตั้งแต่ 100 ชิ้นขึ้นไป ค่า Additional Price ของ option
-                        นี้จะเป็นฟรี
+                        Entering 100 means that for orders of 100 units or more, the Additional Price for this option will be free.
                     </small>
                 </div>
 
@@ -362,6 +390,32 @@
                     }
                 });
             }
+        });
+    </script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const priceInput = document.querySelector('input[name="additional_price"]');
+            const priceWithTaxInput = document.querySelector('input[name="additional_price_with_tax"]');
+
+            if (priceInput && priceWithTaxInput) {
+                priceInput.addEventListener('input', function() {
+                    const priceVal = parseFloat(this.value);
+                    if (!isNaN(priceVal)) {
+                        priceWithTaxInput.value = (priceVal * 1.1).toFixed(2);
+                    } else {
+                        priceWithTaxInput.value = '';
+                    }
+                });
+            }
+
+            $('#option_group_id').select2({
+                placeholder: '-- Select Group --',
+                allowClear: true,
+                width: '100%'
+            });
         });
     </script>
 @endsection
