@@ -246,4 +246,28 @@ class CategoryController extends Controller
             ->route('admin.categories.edit', $newCategory->category_id)
             ->with('success', 'Category duplicated for '.strtoupper($targetLanguage).'. Please update the translated content.');
     }
+    public function updateSort(Request $request)
+{
+    $request->validate([
+        'orders' => 'required|array',
+        'orders.*.id' => 'required|integer|exists:categories,category_id',
+        'orders.*.sort_order' => 'required|integer|min:0',
+    ]);
+
+    foreach ($request->orders as $item) {
+        Category::where('category_id', $item['id'])
+            ->update([
+                'sort_order' => $item['sort_order'],
+            ]);
+    }
+
+    Cache::forget('product_list_shared_components_pt');
+    Cache::forget('product_list_shared_components_ja');
+    Cache::forget('product_list_shared_components_en');
+    Cache::forget('product_list_shared_components');
+
+    return response()->json([
+        'success' => true,
+    ]);
+}
 }

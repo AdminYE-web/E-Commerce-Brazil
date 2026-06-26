@@ -253,6 +253,7 @@
             <div class="form-group">
                 <label>Change Desktop Banner Image</label>
                 <input type="file" name="image_path" accept="image/*">
+                <small>Recommended desktop size:  1920x480.</small>
             </div>
 
             <div class="form-group">
@@ -270,6 +271,8 @@
             <div class="form-group">
                 <label>Change Mobile Banner Image</label>
                 <input type="file" name="image_mobile" accept="image/*">
+                 <small>Recommended mobile size:  750x400.</small>
+                <small>Recommended for mobile screens. If empty, desktop image will be used.</small>
             </div>
         </div>
 

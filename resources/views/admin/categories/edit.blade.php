@@ -251,11 +251,11 @@
                     <input type="text" name="category_name" value="{{ old('category_name', $category->category_name) }}">
                 </div>
 
-                <div class="form-group">
+                {{-- <div class="form-group">
                     <label>Sort Order</label>
                     <input type="number" name="sort_order" value="{{ old('sort_order', $category->sort_order) }}"
                         min="0">
-                </div>
+                </div> --}}
             </div>
 
             <div class="section-title">Category Image</div>

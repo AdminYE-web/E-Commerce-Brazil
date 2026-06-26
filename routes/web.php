@@ -179,7 +179,7 @@ Route::get('/cancel-order', [CancelamentoController::class, 'index'])
 Route::get('/user-email-change/verify/{token}', [UserAdminController::class, 'verifyEmailChange'])
     ->name('users.email-change.verify');
 
-    
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/account', [AccountController::class, 'index'])
@@ -290,7 +290,7 @@ Route::prefix('admin-panel')->name('admin.')->group(function () {
         Route::resource('product-artwork-templates', ProductArtworkTemplateController::class);
         Route::resource('material-homes', MaterialHomeController::class);
         Route::resource('home-banners', HomeBannerController::class);
-        
+
         // Route::resource('users', UserAdminController::class)->only(['index', 'show']);
         Route::resource('contact-submissions', ContactSubmissionController::class)->only(['index', 'show']);
         Route::get('orders', [OrderAdminController::class, 'index'])
@@ -372,24 +372,26 @@ Route::prefix('admin-panel')->name('admin.')->group(function () {
         // Route::post('users/{user}/email-change', [UserAdminController::class, 'sendEmailChangeVerification'])
         //     ->name('users.email-change.send');
 
-            Route::get('/products/{product}/preview', [ProductController::class, 'preview'])
-    ->name('products.preview');
-    Route::get('products/{product}/preview-order', [ProductListController::class, 'previewOrder'])
-    ->name('products.preview-order');
-    Route::get('/articles/{article}/preview', [BlogController::class, 'preview'])
-    ->name('articles.preview');
-    Route::middleware('super.admin')->group(function () {
-    Route::resource('users', UserAdminController::class)->only(['index', 'show']);
+        Route::get('/products/{product}/preview', [ProductController::class, 'preview'])
+            ->name('products.preview');
+        Route::get('products/{product}/preview-order', [ProductListController::class, 'previewOrder'])
+            ->name('products.preview-order');
+        Route::get('/articles/{article}/preview', [BlogController::class, 'preview'])
+            ->name('articles.preview');
+            Route::post('/categories/sort', [CategoryController::class, 'updateSort'])
+    ->name('categories.sort');
+        Route::middleware('super.admin')->group(function () {
+            Route::resource('users', UserAdminController::class)->only(['index', 'show']);
 
-    Route::post('users/{user}/email-change', [UserAdminController::class, 'sendEmailChangeVerification'])
-        ->name('users.email-change.send');
+            Route::post('users/{user}/email-change', [UserAdminController::class, 'sendEmailChangeVerification'])
+                ->name('users.email-change.send');
 
-    Route::get('system-management', [SystemManagementController::class, 'index'])
-        ->name('system-management.index');
+            Route::get('system-management', [SystemManagementController::class, 'index'])
+                ->name('system-management.index');
 
-    Route::post('system-management', [SystemManagementController::class, 'update'])
-        ->name('system-management.update');
-});
+            Route::post('system-management', [SystemManagementController::class, 'update'])
+                ->name('system-management.update');
+        });
     });
 });
 

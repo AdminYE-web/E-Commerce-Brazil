@@ -313,6 +313,7 @@
         <div class="form-group">
             <label>Add New Product Images</label>
             <input type="file" name="images[]" multiple accept="image/*">
+            <small>Recommended  size:  300x300.</small>
         </div>
 
        <div class="image-panel">
@@ -341,7 +342,8 @@
         <div class="form-group">
             <label>Add Gallery Images</label>
             <input type="file" name="gallery_images[]" multiple accept="image/*">
-            <small>สามารถอัปโหลดได้หลายรูป เพื่อใช้แสดงเป็น gallery ใต้รูปหลัก</small>
+            <small>You can upload multiple photos to display as a gallery below the main photo.</small>
+            <small>Recommended  size:  521x274.</small>
         </div>
 
         <div class="section-title">Artwork / Template Setting</div>

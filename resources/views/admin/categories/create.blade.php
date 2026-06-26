@@ -234,10 +234,10 @@
                     <input type="text" name="category_name" value="{{ old('category_name') }}">
                 </div>
 
-                <div class="form-group">
+                {{-- <div class="form-group">
                     <label>Sort Order</label>
                     <input type="number" name="sort_order" value="{{ old('sort_order', 0) }}" min="0">
-                </div>
+                </div> --}}
 
                 <div class="form-group">
                     <label>Category Image</label>

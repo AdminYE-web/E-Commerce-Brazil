@@ -222,11 +222,13 @@
                 <div class="form-group">
                     <label>Product Main Images</label>
                     <input type="file" name="images[]" multiple accept="image/*">
+                    <small>Recommended  size:  300x300.</small>
                 </div>
 
                 <div class="form-group">
                     <label>Product Gallery Images</label>
                     <input type="file" name="gallery_images[]" multiple accept="image/*">
+                     <small>Recommended  size:  521x274.</small>
                 </div>
             </div>
 

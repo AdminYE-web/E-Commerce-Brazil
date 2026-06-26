@@ -116,6 +116,34 @@
         .action-link.duplicate {
             color: #2563eb;
         }
+
+        .drag-handle {
+            width: 34px;
+            height: 34px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            color: var(--muted);
+            cursor: grab;
+            user-select: none;
+            font-size: 16px;
+        }
+
+        .drag-handle:active {
+            cursor: grabbing;
+        }
+
+        .sortable-ghost {
+            opacity: 0.4;
+            background: #f1f5f9;
+        }
+
+        .sortable-chosen {
+            background: #f8fafc;
+        }
     </style>
 @endsection
 
@@ -146,6 +174,7 @@
         <table>
             <thead>
                 <tr>
+                    <th style="width: 50px;"></th>
                     <th>Category</th>
                     <th>Code</th>
                     <th>Sort</th>
@@ -154,9 +183,13 @@
                 </tr>
             </thead>
 
-            <tbody>
+            <tbody id="category-sortable-body">
                 @forelse ($categories as $category)
-                    <tr class="{{ !empty($category->is_missing_translation) ? 'translation-missing-row' : '' }}">
+                    <tr data-id="{{ $category->base_category_id ?? $category->category_id }}"
+                        class="{{ !empty($category->is_missing_translation) ? 'translation-missing-row' : '' }}">
+                        <td>
+    <span class="drag-handle">☰</span>
+</td>
                         <td>
                             <div class="product-cell">
                                 @if ($category->image_path)
@@ -196,7 +229,8 @@
                         <td style="text-align: right;">
                             <div class="action-btns" style="justify-content: flex-end;">
                                 @if (!empty($category->is_missing_translation))
-                                    <form action="{{ route('admin.categories.duplicate-translation', $category->category_id) }}"
+                                    <form
+                                        action="{{ route('admin.categories.duplicate-translation', $category->category_id) }}"
                                         method="POST" style="display:inline;">
                                         @csrf
 
@@ -206,12 +240,13 @@
                                         </button>
                                     </form>
                                 @else
-                                    <a href="{{ route('admin.categories.edit', $category->category_id) }}" class="action-link">
+                                    <a href="{{ route('admin.categories.edit', $category->category_id) }}"
+                                        class="action-link">
                                         Edit
                                     </a>
 
-                                    <form action="{{ route('admin.categories.destroy', $category->category_id) }}" method="POST"
-                                        style="display:inline;">
+                                    <form action="{{ route('admin.categories.destroy', $category->category_id) }}"
+                                        method="POST" style="display:inline;">
                                         @csrf
                                         @method('DELETE')
 
@@ -226,7 +261,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" style="text-align: center; padding: 32px;">
+                       <td colspan="6" style="text-align: center; padding: 32px;">
                             No categories found.
                         </td>
                     </tr>
@@ -239,4 +274,73 @@
         </div>
     </div>
 
+@endsection
+
+@section('js')
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const tbody = document.getElementById('category-sortable-body');
+
+            if (!tbody) {
+                return;
+            }
+
+            const baseSort = {{ ($categories->currentPage() - 1) * $categories->perPage() }};
+
+            new Sortable(tbody, {
+                animation: 150,
+                handle: '.drag-handle',
+                ghostClass: 'sortable-ghost',
+                chosenClass: 'sortable-chosen',
+
+                onEnd: function () {
+                    saveCategorySort();
+                }
+            });
+
+            function saveCategorySort() {
+                const rows = Array.from(tbody.querySelectorAll('tr[data-id]'));
+
+                const orders = rows.map(function (row, index) {
+                    return {
+                        id: row.dataset.id,
+                        sort_order: baseSort + index + 1
+                    };
+                });
+
+                rows.forEach(function (row, index) {
+                    const badge = row.querySelector('.sort-badge');
+
+                    if (badge) {
+                        badge.textContent = baseSort + index + 1;
+                    }
+                });
+
+                fetch("{{ route('admin.categories.sort') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                    },
+                    body: JSON.stringify({
+                        orders: orders
+                    })
+                })
+                .then(async function (response) {
+                    if (!response.ok) {
+                        throw new Error(await response.text());
+                    }
+
+                    return response.json();
+                })
+                .catch(function (error) {
+                    console.error(error);
+                    alert('บันทึกลำดับไม่สำเร็จ กรุณารีเฟรชแล้วลองใหม่');
+                });
+            }
+        });
+    </script>
 @endsection
