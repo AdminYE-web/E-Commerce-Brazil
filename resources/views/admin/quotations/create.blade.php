@@ -284,6 +284,17 @@
                 <label>Note</label>
                 <textarea name="note" rows="3">{{ old('note') }}</textarea>
             </div>
+            <div class="quotation-form-group quotation-form-full">
+    <label>Discount Amount</label>
+    <input 
+        type="number" 
+        name="discount_amount" 
+        value="{{ old('discount_amount', 0) }}" 
+        min="0" 
+        step="0.01"
+        class="quotation-discount-input"
+    >
+</div>
         </div>
 
         <hr>
@@ -301,12 +312,13 @@
                 Save Quotation
             </button>
         </div>
-        <div class="quotation-grand-summary">
-            <div>Subtotal: ¥<span id="quotationSubtotal">0.00</span></div>
-            <div>Shipping: <span id="quotationShipping">¥800.00</span></div>
-            <div>VAT 10%: ¥<span id="quotationVat">0.00</span></div>
-            <div><strong>Grand Total: ¥<span id="quotationGrandTotal">0.00</span></strong></div>
-        </div>
+       <div class="quotation-grand-summary">
+    <div>Subtotal: ¥<span id="quotationSubtotal">0.00</span></div>
+    <div>Discount: -¥<span id="quotationDiscount">0.00</span></div>
+    <div>Shipping: <span id="quotationShipping">¥800.00</span></div>
+    <div>VAT 10%: ¥<span id="quotationVat">0.00</span></div>
+    <div><strong>Grand Total: ¥<span id="quotationGrandTotal">0.00</span></strong></div>
+</div>
     </div>
 
 </form>
@@ -357,6 +369,13 @@
         const wrapper = document.getElementById('quotation-items');
         const template = document.getElementById('quotation-item-template').innerHTML;
         const addBtn = document.getElementById('add-item-btn');
+        const discountInput = document.querySelector('input[name="discount_amount"]');
+
+if (discountInput) {
+    discountInput.addEventListener('input', function() {
+        calculateQuotationSummary();
+    });
+}
 
         addBtn.addEventListener('click', function() {
             addItem();
@@ -551,25 +570,39 @@
         calculateQuotationSummary();
     });
 
-    function calculateQuotationSummary() {
-        let subtotal = 0;
+   function calculateQuotationSummary() {
+    let subtotal = 0;
 
-        document.querySelectorAll('.quotation-item-total').forEach(function(el) {
-            subtotal += parseFloat(el.textContent || 0);
-        });
+    document.querySelectorAll('.quotation-item-total').forEach(function(el) {
+        subtotal += parseFloat(el.textContent || 0);
+    });
 
-        const discountInput = document.querySelector('input[name="discount_amount"]');
-        const discount = discountInput ? parseFloat(discountInput.value || 0) : 0;
+    const discountInput = document.querySelector('input[name="discount_amount"]');
+    let discount = discountInput ? parseFloat(discountInput.value || 0) : 0;
 
-        const afterDiscount = Math.max(subtotal - discount, 0);
-        const shipping = afterDiscount >= 11000 ? 0 : 800;
-        const vat = (afterDiscount + shipping) * 0.10;
-        const grandTotal = afterDiscount + shipping + vat;
-
-        document.getElementById('quotationSubtotal').textContent = subtotal.toFixed(2);
-        document.getElementById('quotationShipping').textContent = shipping > 0 ? '¥' + shipping.toFixed(2) : 'Free';
-        document.getElementById('quotationVat').textContent = vat.toFixed(2);
-        document.getElementById('quotationGrandTotal').textContent = grandTotal.toFixed(2);
+    if (discount < 0) {
+        discount = 0;
     }
+
+    if (discount > subtotal) {
+        discount = subtotal;
+    }
+
+    const afterDiscount = Math.max(subtotal - discount, 0);
+    const shipping = afterDiscount >= 11000 ? 0 : 800;
+    const vat = (afterDiscount + shipping) * 0.10;
+    const grandTotal = afterDiscount + shipping + vat;
+
+    document.getElementById('quotationSubtotal').textContent = subtotal.toFixed(2);
+
+    const discountEl = document.getElementById('quotationDiscount');
+    if (discountEl) {
+        discountEl.textContent = discount.toFixed(2);
+    }
+
+    document.getElementById('quotationShipping').textContent = shipping > 0 ? '¥' + shipping.toFixed(2) : 'Free';
+    document.getElementById('quotationVat').textContent = vat.toFixed(2);
+    document.getElementById('quotationGrandTotal').textContent = grandTotal.toFixed(2);
+}
 </script>
 @endsection

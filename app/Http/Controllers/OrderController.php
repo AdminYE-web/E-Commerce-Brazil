@@ -593,6 +593,8 @@ class OrderController extends Controller
                 'grand_total' => $grandTotal,
 
                 'status' => 'pending',
+'order_status' => 'order_pending',
+'payment_status' => 'pending',
             ]);
 
             /*

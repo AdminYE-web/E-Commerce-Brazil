@@ -83,6 +83,7 @@ class QuotationController extends Controller
             'items.*.product_id' => ['required', 'exists:products,product_id'],
             'items.*.quantity' => ['required', 'integer', 'min:1'],
             'items.*.options' => ['nullable', 'array'],
+            'discount_amount' => ['nullable', 'numeric', 'min:0'],
         ]);
 
         $language = session('admin_product_language', 'pt');
@@ -403,6 +404,7 @@ class QuotationController extends Controller
             'customer_email' => ['nullable', 'email', 'max:255'],
             'customer_address' => ['nullable', 'string'],
             'note' => ['nullable', 'string'],
+            'discount_amount' => ['nullable', 'numeric', 'min:0'],
 
             'items' => ['required', 'array', 'min:1'],
             'items.*.product_id' => ['required', 'exists:products,product_id'],

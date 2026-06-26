@@ -47,13 +47,29 @@ class OrderAdminController extends Controller
         });
     }
 
-    if ($request->filled('date_from')) {
-        $query->whereDate('created_at', '>=', $request->date_from);
-    }
+if ($request->filled('order_date_from')) {
+    $query->whereDate('created_at', '>=', $request->order_date_from);
+}
 
-    if ($request->filled('date_to')) {
-        $query->whereDate('created_at', '<=', $request->date_to);
-    }
+if ($request->filled('order_date_to')) {
+    $query->whereDate('created_at', '<=', $request->order_date_to);
+}
+
+if ($request->filled('payment_date_from')) {
+    $query->whereDate('payment_date', '>=', $request->payment_date_from);
+}
+
+if ($request->filled('payment_date_to')) {
+    $query->whereDate('payment_date', '<=', $request->payment_date_to);
+}
+
+if ($request->filled('shipping_date_from')) {
+    $query->whereDate('shipping_date', '>=', $request->shipping_date_from);
+}
+
+if ($request->filled('shipping_date_to')) {
+    $query->whereDate('shipping_date', '<=', $request->shipping_date_to);
+}
 
     $orders = $query->paginate(20)->withQueryString();
 
@@ -95,21 +111,45 @@ class OrderAdminController extends Controller
     }
 
     public function updateStatus(Request $request, Order $order)
-    {
-        $request->validate([
-            'status' => 'required|in:order_pending,design_in_progress,production,delivery,delivered,completed,cancelled',
-            'payment_status' => 'nullable|in:pending,paid,failed,cancelled,refunded',
-        ]);
+{
+    $request->validate([
+        'status' => 'required|in:order_pending,design_in_progress,production,delivery,delivered,completed,cancelled',
+        'payment_status' => 'nullable|in:pending,paid,failed,cancelled,refunded',
+    ]);
 
-        $order->update([
-            'order_status' => $request->status,
-            'payment_status' => $request->payment_status ?? $order->payment_status,
-        ]);
+    $paymentStatus = $request->payment_status ?? $order->payment_status;
 
-        return redirect()
-            ->route('admin.orders.show', $order->order_id)
-            ->with('success', 'Order status updated successfully.');
+    $data = [
+        'order_status' => $request->status,
+        'payment_status' => $paymentStatus,
+    ];
+
+    if ($request->status === 'delivery' && is_null($order->shipping_date)) {
+        $data['shipping_date'] = now();
     }
+
+    if ($paymentStatus === 'paid' && is_null($order->payment_date)) {
+        $data['payment_date'] = now();
+    }
+
+    $order->update($data);
+
+    if ($order->payment) {
+        $paymentData = [
+            'payment_status' => $paymentStatus,
+        ];
+
+        if ($paymentStatus === 'paid' && is_null($order->payment->paid_at)) {
+            $paymentData['paid_at'] = now();
+        }
+
+        $order->payment->update($paymentData);
+    }
+
+    return redirect()
+        ->route('admin.orders.show', $order->order_id)
+        ->with('success', 'Order status updated successfully.');
+}
 
     private function loadOrderDocumentRelations(Order $order): void
     {

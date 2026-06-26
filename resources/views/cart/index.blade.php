@@ -168,7 +168,7 @@
         }
 
         .cart-checkout-btn {
-            border-radius: 999px;
+            /* border-radius: 999px; */
             padding: 12px;
             font-weight: 700;
             background-color: #0F65BE;

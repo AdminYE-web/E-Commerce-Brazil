@@ -22,6 +22,7 @@ class Quotation extends Model
         'grand_total',
         'status',
         'language',
+        
     ];
 
     public function items()

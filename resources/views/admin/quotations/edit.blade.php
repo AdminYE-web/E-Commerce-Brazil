@@ -229,6 +229,22 @@
             align-items: stretch;
         }
     }
+    .quotation-grand-summary {
+    margin-top: 22px;
+    padding: 16px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: #f8fafc;
+    text-align: right;
+    line-height: 1.9;
+    font-size: 15px;
+    color: var(--fg-dark);
+}
+
+.quotation-grand-summary strong {
+    font-size: 18px;
+    color: #0b2d68;
+}
 </style>
 @endsection
 
@@ -295,6 +311,17 @@
                 <label>Note</label>
                 <textarea name="note" rows="3">{{ old('note', $quotation->note) }}</textarea>
             </div>
+            <div class="quotation-form-group quotation-form-full">
+    <label>Discount Amount</label>
+    <input 
+        type="number"
+        name="discount_amount"
+        value="{{ old('discount_amount', $quotation->discount_amount ?? 0) }}"
+        min="0"
+        step="0.01"
+        class="quotation-discount-input"
+    >
+</div>
         </div>
 
         <h3 class="quotation-section-title">Products</h3>
@@ -304,6 +331,13 @@
         <button type="button" class="btn-outline" id="add-item-btn">
             + Add Product
         </button>
+        <div class="quotation-grand-summary">
+    <div>Subtotal: ¥<span id="quotationSubtotal">0.00</span></div>
+    <div>Discount: -¥<span id="quotationDiscount">0.00</span></div>
+    <div>Shipping: <span id="quotationShipping">¥800.00</span></div>
+    <div>VAT 10%: ¥<span id="quotationVat">0.00</span></div>
+    <div><strong>Grand Total: ¥<span id="quotationGrandTotal">0.00</span></strong></div>
+</div>
 
         <div class="quotation-actions">
             <button type="submit" class="quotation-save-btn">
@@ -363,6 +397,14 @@ document.addEventListener('DOMContentLoaded', function () {
     const template = document.getElementById('quotation-item-template').innerHTML;
     const addBtn = document.getElementById('add-item-btn');
 
+    const discountInput = document.querySelector('input[name="discount_amount"]');
+
+if (discountInput) {
+    discountInput.addEventListener('input', function () {
+        calculateQuotationSummary();
+    });
+}
+
     addBtn.addEventListener('click', function () {
         addItem();
     });
@@ -409,16 +451,18 @@ document.addEventListener('DOMContentLoaded', function () {
             updateGroupSelectedBadge(e.target.closest('.quotation-option-group'));
         }
 
-        if (e.target.classList.contains('quotation-option-input') || e.target.classList.contains('quotation-qty')) {
-            calculateItemTotal(e.target.closest('.quotation-item-box'));
-        }
+       if (e.target.classList.contains('quotation-option-input') || e.target.classList.contains('quotation-qty')) {
+    calculateItemTotal(e.target.closest('.quotation-item-box'));
+    calculateQuotationSummary();
+}
     });
 
     wrapper.addEventListener('click', function (e) {
-        if (e.target.classList.contains('remove-item-btn')) {
-            e.target.closest('.quotation-item-box').remove();
-            return;
-        }
+      if (e.target.classList.contains('remove-item-btn')) {
+    e.target.closest('.quotation-item-box').remove();
+    calculateQuotationSummary();
+    return;
+}
 
         const header = e.target.closest('.quotation-option-group-header');
         if (header) {
@@ -434,10 +478,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
         optionsArea.innerHTML = '';
 
-        if (!productId) {
-            calculateItemTotal(itemBox);
-            return;
-        }
+      if (!productId) {
+    calculateItemTotal(itemBox);
+    calculateQuotationSummary();
+    return;
+}
 
         fetch(`{{ route('admin.quotations.productOptions', ':productId') }}`.replace(':productId', productId))
             .then(response => response.json())
@@ -499,7 +544,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 itemBox.dataset.priceRules = JSON.stringify(data.price_rules || []);
 
-                calculateItemTotal(itemBox);
+               calculateItemTotal(itemBox);
+calculateQuotationSummary();
             })
             .catch(error => {
                 console.error(error);
@@ -570,14 +616,45 @@ document.addEventListener('DOMContentLoaded', function () {
 
         return sorted.length ? parseFloat(sorted[0].unit_price) : 0;
     }
+    function calculateQuotationSummary() {
+    let subtotal = 0;
 
-    if (existingItems.length > 0) {
-        existingItems.forEach(function (item) {
-            addItem(item);
-        });
-    } else {
-        addItem();
+    document.querySelectorAll('.quotation-item-total').forEach(function (el) {
+        subtotal += parseFloat(el.textContent || 0);
+    });
+
+    const discountInput = document.querySelector('input[name="discount_amount"]');
+    let discount = discountInput ? parseFloat(discountInput.value || 0) : 0;
+
+    if (isNaN(discount) || discount < 0) {
+        discount = 0;
     }
+
+    if (discount > subtotal) {
+        discount = subtotal;
+    }
+
+    const afterDiscount = Math.max(subtotal - discount, 0);
+    const shipping = afterDiscount >= 11000 ? 0 : 800;
+    const vat = (afterDiscount + shipping) * 0.10;
+    const grandTotal = afterDiscount + shipping + vat;
+
+    document.getElementById('quotationSubtotal').textContent = subtotal.toFixed(2);
+    document.getElementById('quotationDiscount').textContent = discount.toFixed(2);
+    document.getElementById('quotationShipping').textContent = shipping > 0 ? '¥' + shipping.toFixed(2) : 'Free';
+    document.getElementById('quotationVat').textContent = vat.toFixed(2);
+    document.getElementById('quotationGrandTotal').textContent = grandTotal.toFixed(2);
+}
+
+  if (existingItems.length > 0) {
+    existingItems.forEach(function (item) {
+        addItem(item);
+    });
+} else {
+    addItem();
+}
+
+calculateQuotationSummary();
 });
 </script>
 @endsection
