@@ -34,4 +34,31 @@ class ProductDetailLocalizationTest extends TestCase
             $this->assertTrue(Lang::has('product.product_detail.add_to_cart'));
         }
     }
+
+    public function test_hotstrap_select_detail_dropdown_starts_empty(): void
+    {
+        $contents = file_get_contents(resource_path('views/products/hotstrap_show.blade.php'));
+
+        $this->assertStringContainsString(
+            "{{ \$selectedOption?->option_name ?? 'Please select' }}",
+            $contents
+        );
+        $this->assertStringContainsString("label.textContent = 'Please select';", $contents);
+        $this->assertStringNotContainsString(
+            '$selectedOption = $selectedOption ?? $defaultOption;',
+            $contents
+        );
+        $this->assertStringNotContainsString('selectFirstAvailableBootstrapItem(wrap);', $contents);
+    }
+
+    public function test_hotstrap_checked_radio_click_can_advance_to_next_step(): void
+    {
+        $contents = file_get_contents(resource_path('views/products/hotstrap_show.blade.php'));
+
+        $this->assertStringContainsString('function advanceReadyGroupFromInput(input)', $contents);
+        $this->assertStringContainsString("input.addEventListener('click', function()", $contents);
+        $this->assertStringContainsString("this.dataset.changedSinceClick = '0';", $contents);
+        $this->assertStringContainsString("this.dataset.changedSinceClick === '1'", $contents);
+        $this->assertStringContainsString('advanceReadyGroupFromInput(this);', $contents);
+    }
 }

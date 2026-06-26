@@ -1691,6 +1691,10 @@
                                                     (int) $option->option_id;
                                         });
 
+                                        $defaultOption = $options->firstWhere('pivot.is_default', 1);
+
+                                        $selectedOption = $selectedOption ?? $defaultOption;
+
                                         $selectedOptionId = $selectedOption?->option_id;
 
                                         $defaultImage =
@@ -1722,7 +1726,7 @@
                                             <button class="btn dropdown-toggle option-bs-dropdown-btn" type="button"
                                                 data-bs-toggle="dropdown" aria-expanded="false">
                                                 <span class="option-bs-dropdown-label">
-                                                    {{ $selectedOption?->option_name ?? 'Please select' }}
+                                                    {{ $selectedOption?->option_name ?? 'Select your option' }}
                                                 </span>
                                             </button>
 
@@ -2504,7 +2508,7 @@
             }
 
             if (label) {
-                label.textContent = 'Please select';
+                label.textContent = '-- Select --';
             }
 
             wrap.querySelectorAll('.option-bs-dropdown-item').forEach(function(item) {
@@ -3154,7 +3158,7 @@
                     selectedItem.classList.contains('disabled');
 
                 if (selectedIsInvalid) {
-                    clearBootstrapDropdown(wrap);
+                    selectFirstAvailableBootstrapItem(wrap);
                 }
             });
         }
@@ -3983,41 +3987,21 @@
 
                 return false;
             }
-            function advanceReadyGroupFromInput(input) {
-                const groupEl = input.closest('.customize-option-group');
-
-                if (groupEl) {
-                    setActiveGroup(groupEl, false);
-                }
-
-                applyQuantityRuleLock();
-
-                if (isGroupReadyToAutoNext(groupEl)) {
-                    setTimeout(function() {
-                        goToNextGroup();
-                    }, 250);
-                }
-            }
-
             document.querySelectorAll('#customize-form .js-option-input').forEach(function(input) {
-                input.addEventListener('click', function() {
-                    this.dataset.changedSinceClick = '0';
-
-                    setTimeout(() => {
-                        if (this.dataset.changedSinceClick === '1') {
-                            this.dataset.changedSinceClick = '0';
-                            return;
-                        }
-
-                        if (this.checked) {
-                            advanceReadyGroupFromInput(this);
-                        }
-                    }, 0);
-                });
-
                 input.addEventListener('change', function() {
-                    this.dataset.changedSinceClick = '1';
-                    advanceReadyGroupFromInput(this);
+                    const groupEl = this.closest('.customize-option-group');
+
+                    if (groupEl) {
+                        setActiveGroup(groupEl, false);
+                    }
+
+                    applyQuantityRuleLock();
+
+                    if (isGroupReadyToAutoNext(groupEl)) {
+                        setTimeout(function() {
+                            goToNextGroup();
+                        }, 250);
+                    }
                 });
 
                 input.addEventListener('focus', function() {
