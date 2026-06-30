@@ -76,7 +76,7 @@
 
 <div class="admin-header">
     <h1>Admin Dashboard</h1>
-    <p>จัดการข้อมูลสินค้า ตัวเลือก ราคา และหน้าบ้าน</p>
+    <p>Manage product information, options, prices, and the home page.</p>
 </div>
 
 {{-- <div class="admin-menu-grid">

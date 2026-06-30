@@ -216,7 +216,7 @@
                 <label>Gallery Title</label>
                 <input type="text" name="title" value="{{ old('title', $gallery->title) }}">
             </div>
-            <div class="form-group">
+            <div class="form-group" style="display: none">
     <label>Translation Key</label>
     <input type="text"
         name="translation_key"

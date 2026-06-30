@@ -7,7 +7,7 @@
                 <div class="error-text">{{ $message }}</div>
             @enderror
         </div>
-        <div class="article-form-group">
+        <div class="article-form-group" style="display: none">
             <label>Translation Key</label>
             <input type="text" name="translation_key"
                 value="{{ old('translation_key', $article->translation_key ?? ($translationKey ?? '')) }}"

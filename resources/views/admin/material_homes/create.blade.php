@@ -203,7 +203,7 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="form-group">
+                <div class="form-group" style="display: none">
                     <label>Translation Key</label>
                     <input type="text" name="translation_key" value="{{ old('translation_key', $translationKey ?? '') }}"
                         placeholder="เช่น mh_xxxxxxxx">

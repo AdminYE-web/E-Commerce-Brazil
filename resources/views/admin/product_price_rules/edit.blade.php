@@ -535,7 +535,7 @@
             @endphp
 
             <p class="muted-text" style="margin-bottom: 12px;">
-                เลือก option ที่ลูกค้าต้องเลือกให้ครบ ถึงจะใช้เรทราคานี้
+                Select all the options that the customer must choose in order to use this price rate.
             </p>
 
             <div class="required-option-simple-box" id="required-options-box">

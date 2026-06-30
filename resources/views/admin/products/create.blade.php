@@ -222,13 +222,13 @@
                 <div class="form-group">
                     <label>Product Main Images</label>
                     <input type="file" name="images[]" multiple accept="image/*">
-                    <small>Recommended  size:  300x300.</small>
+                    <small>Recommended size: 300x300.</small>
                 </div>
 
                 <div class="form-group">
                     <label>Product Gallery Images</label>
                     <input type="file" name="gallery_images[]" multiple accept="image/*">
-                     <small>Recommended  size:  521x274.</small>
+                    <small>Recommended size: 521x274.</small>
                 </div>
             </div>
 
@@ -296,16 +296,16 @@
             <div class="section-title">Artwork / Template Setting</div>
 
             <div class="checkbox-grid">
-                 <label>
+                {{-- <label>
                     <input type="checkbox" name="product_recomend" value="1"
                         {{ old('product_recomend') ? 'checked' : '' }}>
                     Product Recommend
                 </label>
                 <label>
-    <input type="checkbox" name="product_recomend_menu" value="1"
-        {{ old('product_recomend_menu') ? 'checked' : '' }}>
-    Product Recommend Menu
-</label>
+                    <input type="checkbox" name="product_recomend_menu" value="1"
+                        {{ old('product_recomend_menu') ? 'checked' : '' }}>
+                    Product Recommend Menu
+                </label> --}}
                 {{-- <label>
                     <input type="checkbox" name="is_antivirus_included" value="1"
                         {{ old('is_antivirus_included') ? 'checked' : '' }}>
@@ -347,7 +347,7 @@
                     Active
                 </label> --}}
 
-               
+
 
                 {{-- <label>
                     <input type="checkbox" name="product_premium" value="1"
@@ -357,18 +357,18 @@
             </div>
             <br>
             <div class="form-group" style="max-width: 20%">
-    <label>Status</label>
+                <label>Status</label>
 
-    <select name="is_active">
-        <option value="1" {{ old('is_active', 3) == 1 ? 'selected' : '' }}>
-            Public
-        </option>
+                <select name="is_active">
+                    <option value="1" {{ old('is_active', 3) == 1 ? 'selected' : '' }}>
+                        Public
+                    </option>
 
-        <option value="3" {{ old('is_active', 3) == 3 ? 'selected' : '' }}>
-            Draft
-        </option>
-    </select>
-</div>
+                    <option value="3" {{ old('is_active', 3) == 3 ? 'selected' : '' }}>
+                        Draft
+                    </option>
+                </select>
+            </div>
 
             <div class="form-actions">
                 <a href="{{ route('admin.products.index') }}" class="btn-outline">

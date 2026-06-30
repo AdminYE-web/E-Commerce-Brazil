@@ -574,7 +574,7 @@
                 <div class="form-group">
                     <label>Rule Name</label>
                     <input type="text" name="rule_name" value="{{ old('rule_name') }}"
-                        placeholder="เช่น 20mm + One Side">
+                        placeholder="For example, 20mm + One Side">
                 </div>
 
                 <div class="form-group" style="display: none">
@@ -586,7 +586,7 @@
             <div class="section-title">Required Options</div>
 
             <p class="muted-text" style="margin-bottom: 12px;">
-                เลือก option ที่ลูกค้าต้องเลือกให้ครบ ถึงจะใช้เรทราคานี้
+                Select all the options that the customer must choose in order to use this price rate.
             </p>
 
             <div class="required-option-simple-box" id="required-options-box">

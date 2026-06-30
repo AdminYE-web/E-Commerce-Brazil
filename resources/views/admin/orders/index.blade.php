@@ -460,6 +460,18 @@
         @endforeach
     </select>
 
+    <select name="product_type">
+    <option value="">All Product Type</option>
+
+    <option value="1" {{ request('product_type') == '1' ? 'selected' : '' }}>
+        Hotstrap
+    </option>
+
+    <option value="2" {{ request('product_type') == '2' ? 'selected' : '' }}>
+        Hotmobily
+    </option>
+</select>
+
     <button type="submit" class="btn-primary">
         Search
     </button>

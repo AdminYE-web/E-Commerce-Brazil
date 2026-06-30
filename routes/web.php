@@ -53,6 +53,7 @@ use App\Http\Controllers\OrderTrackingController;
 use App\Http\Controllers\PaymentOptionController;
 use App\Http\Controllers\ProductListController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\Admin\MenuProductController;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -380,6 +381,18 @@ Route::prefix('admin-panel')->name('admin.')->group(function () {
             ->name('articles.preview');
             Route::post('/categories/sort', [CategoryController::class, 'updateSort'])
     ->name('categories.sort');
+    Route::get('menu-products', [MenuProductController::class, 'index'])
+    ->name('menu-products.index');
+
+Route::post('menu-products/add', [MenuProductController::class, 'add'])
+    ->name('menu-products.add');
+
+Route::post('menu-products/{product}/remove', [MenuProductController::class, 'remove'])
+    ->name('menu-products.remove');
+
+
+
+
         Route::middleware('super.admin')->group(function () {
             Route::resource('users', UserAdminController::class)->only(['index', 'show']);
 

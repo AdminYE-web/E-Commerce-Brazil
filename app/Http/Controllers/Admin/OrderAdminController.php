@@ -11,8 +11,8 @@ class OrderAdminController extends Controller
 {
     public function index(Request $request)
 {
-    $query = Order::with(['customer', 'payment'])
-        ->orderBy('order_id', 'desc');
+   $query = Order::with(['customer', 'payment', 'items.product'])
+    ->orderBy('order_id', 'desc');
 
     if ($request->filled('search')) {
         $search = $request->search;
@@ -46,6 +46,11 @@ class OrderAdminController extends Controller
             $paymentQuery->where('payment_status', $request->payment_status);
         });
     }
+    if ($request->filled('product_type')) {
+    $query->whereHas('items.product', function ($productQuery) use ($request) {
+        $productQuery->where('product_type', $request->product_type);
+    });
+}
 
 if ($request->filled('order_date_from')) {
     $query->whereDate('created_at', '>=', $request->order_date_from);
