@@ -55,7 +55,9 @@ class HomeBannerController extends Controller
             'sort_order' => $request->sort_order ?? 0,
         ]);
 
-        Cache::forget('home_page_data');
+        foreach (['en', 'ja', 'pt'] as $lang) {
+    Cache::forget('home_page_data_'.$lang);
+}
 
         return redirect()
             ->route('admin.home-banners.index')
@@ -128,7 +130,9 @@ class HomeBannerController extends Controller
             'sort_order' => $request->sort_order ?? 0,
         ]);
 
-        Cache::forget('home_page_data');
+        foreach (['en', 'ja', 'pt'] as $lang) {
+    Cache::forget('home_page_data_'.$lang);
+}
 
         return redirect()
             ->route('admin.home-banners.index')
@@ -137,7 +141,9 @@ class HomeBannerController extends Controller
 
     public function destroy(HomeBanner $homeBanner)
     {
-        Cache::forget('home_page_data');
+        foreach (['en', 'ja', 'pt'] as $lang) {
+    Cache::forget('home_page_data_'.$lang);
+}
 
         if ($homeBanner->image_pc && Storage::disk('public')->exists($homeBanner->image_pc)) {
             Storage::disk('public')->delete($homeBanner->image_pc);
