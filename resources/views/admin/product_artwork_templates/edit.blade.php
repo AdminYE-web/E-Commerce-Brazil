@@ -267,6 +267,7 @@
             <div class="form-group">
                 <label>Change Image</label>
                 <input type="file" name="image_path" accept="image/*">
+                <small>recommend the size 200x200.</small>
             </div>
         </div>
 

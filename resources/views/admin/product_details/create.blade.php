@@ -243,12 +243,14 @@
                 <div class="form-group">
                     <label>Specification Image</label>
                     <input type="file" name="specification_image" accept="image/*">
+                    <small>recommend the size 440x440.</small>
                 </div>
 
                 <!-- เพิ่มช่องอัปโหลด Sample Image ตรงนี้ -->
                 <div class="form-group">
                     <label>Sample Image</label>
                     <input type="file" name="sample_image" accept="image/*">
+                    <small>recommend the size 1296x330.</small>
                 </div>
 
 

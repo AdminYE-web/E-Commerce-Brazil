@@ -301,6 +301,7 @@
 
                     <label>Change Specification Image</label>
                     <input type="file" name="specification_image" accept="image/*">
+                    <small>recommend the size 440x440.</small>
                 </div>
 
                 <div class="form-group">
@@ -318,6 +319,7 @@
 
                     <label>Change Sample Image</label>
                     <input type="file" name="sample_image" accept="image/*">
+                    <small>recommend the size 1296x330.</small>
                 </div>
             </div>
 

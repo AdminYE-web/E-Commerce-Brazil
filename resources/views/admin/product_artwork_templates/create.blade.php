@@ -275,6 +275,7 @@
                                 name="templates[{{ $index }}][image_path]"
                                 accept="image/*"
                             >
+                            <small>recommend the size 200x200.</small>
                         </div>
 
                         <div class="form-group">

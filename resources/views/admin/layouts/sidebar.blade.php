@@ -88,7 +88,7 @@
         
  <li class="nav-item">
             <a href="{{ route('admin.menu-products.index') }}"
-                class="nav-link {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
+                class="nav-link {{ request()->routeIs('admin.menu-products.*') ? 'active' : '' }}">
                 Menu Bar & <br>
                  Recommended Products
             </a>
