@@ -251,11 +251,11 @@
 @endsection
 
 @section('content')
-    @if (session('translation_unavailable'))
+   @if (session('translation_unavailable') || !empty($translationUnavailable))
         <div class="translation-alert-popup" id="translationAlertPopup">
             <div class="translation-alert-box">
                 <h3>{{ __('blog.show.untran') }}</h3>
-                <p>{{ session('translation_unavailable') }}</p>
+                <p>{{ session('translation_unavailable') ?? $translationUnavailable }}</p>
 
                 <div class="translation-alert-actions">
     <button type="button" class="translation-alert-btn" id="translationAlertClose">

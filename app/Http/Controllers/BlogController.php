@@ -49,53 +49,55 @@ class BlogController extends Controller
         ));
     }
 
-    public function show(Article $article)
-    {
-        $langKey = $this->getLangKey();
+public function show(Article $article)
+{
+    $langKey = $this->getLangKey();
 
-        if ((int) $article->is_active !== 1) {
-            abort(404);
-        }
+    if ((int) $article->is_active !== 1) {
+        abort(404);
+    }
 
-        /*
+    $translationUnavailable = null;
+
+    /*
     |--------------------------------------------------------------------------
     | ถ้า article ที่เปิดอยู่ไม่ใช่ภาษาปัจจุบัน
     | ให้หา article ภาษาใหม่จาก translation_key เดียวกัน
     |--------------------------------------------------------------------------
     */
-        if (($article->language ?? 'pt') !== $langKey) {
-            if (! empty($article->translation_key)) {
-                $translatedArticle = Article::where('translation_key', $article->translation_key)
-                    ->where('language', $langKey)
-                    ->where('is_active', 1)
-                    ->first();
+    if (($article->language ?? 'pt') !== $langKey) {
+        if (! empty($article->translation_key)) {
+            $translatedArticle = Article::where('translation_key', $article->translation_key)
+                ->where('language', $langKey)
+                ->where('is_active', 1)
+                ->first();
 
-                if ($translatedArticle) {
-                    return redirect()->route('blog.show', [
-                        'article' => $translatedArticle->article_id,
-                    ]);
-                }
+            if ($translatedArticle) {
+                return redirect()->route('blog.show', [
+                    'article' => $translatedArticle->article_id,
+                ]);
             }
+        }
 
-            /*
+        /*
         |--------------------------------------------------------------------------
         | Translation unavailable
         |--------------------------------------------------------------------------
-        | ถ้าไม่มีบทความภาษาที่เลือก ให้กลับไปภาษาเดิมของ article
+        | ไม่มีบทความภาษาที่เลือก:
+        | - ไม่เปลี่ยน session กลับ
+        | - ให้ใช้ภาษาที่ user เลือกตามปกติ
+        | - แสดง article เดิม
         |--------------------------------------------------------------------------
         */
-            session(['locale' => $article->language ?? 'pt']);
-            app()->setLocale($article->language ?? 'pt');
-
-            return redirect()
-                ->route('blog.show', [
-                    'article' => $article->article_id,
-                ])
-                ->with('translation_unavailable', __('blog.show.error_tran'));
-        }
-
-        return view('blog.show', compact('article', 'langKey'));
+        $translationUnavailable = __('blog.show.error_tran');
     }
+
+    return view('blog.show', compact(
+        'article',
+        'langKey',
+        'translationUnavailable'
+    ));
+}
     public function preview(Article $article)
 {
     $langKey = $article->language ?? $this->getLangKey();

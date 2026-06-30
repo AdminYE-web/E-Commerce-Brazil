@@ -453,11 +453,11 @@
                                     <button type="button" class="option-group-toggle">+</button>
                                     <button type="button" class="btn-outline btn-select-all"
                                         style="min-height: 28px; padding: 4px 10px; font-size: 12px; border-radius: 6px;">
-                                        {{ __('messages.admin.select_all') }}
+                                        select all
                                     </button>
                                     <button type="button" class="btn-outline btn-deselect-all"
                                         style="min-height: 28px; padding: 4px 10px; font-size: 12px; border-radius: 6px;">
-                                        {{ __('messages.admin.deselect_all') }}
+                                        deselect all
                                     </button>
                                 </div>
                             </div>

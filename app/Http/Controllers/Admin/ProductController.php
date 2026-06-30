@@ -476,19 +476,22 @@ class ProductController extends Controller
 
     $relatedProducts = collect();
     $productFaqs = collect();
+    $isPreview = true;
 
     if ((int) $product->product_type === 2) {
         return view('products.hotmobily_desc', compact(
             'product',
             'relatedProducts',
-            'productFaqs'
+            'productFaqs',
+            'isPreview'
         ));
     }
 
     return view('products.hotstrap_desc', compact(
         'product',
         'relatedProducts',
-        'productFaqs'
+        'productFaqs',
+        'isPreview'
     ));
 }
 

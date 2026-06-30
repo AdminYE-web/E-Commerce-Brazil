@@ -252,31 +252,31 @@
                     <label>Display Type</label>
                     <select name="display_type">
                         <option value="button" {{ old('display_type', 'button') == 'button' ? 'selected' : '' }}>
-                            button - ปุ่มข้อความ
+                            button
                         </option>
 
                         <option value="image_card" {{ old('display_type') == 'image_card' ? 'selected' : '' }}>
-                            image_card - การ์ดรูปภาพ
+                            image_card
                         </option>
 
                         <option value="color" {{ old('display_type') == 'color' ? 'selected' : '' }}>
-                            color - วงกลมสี
+                            color 
                         </option>
 
                         <option value="select_detail" {{ old('display_type') == 'select_detail' ? 'selected' : '' }}>
-                            select_detail - Dropdown พร้อมรูปและรายละเอียด
+                            select_detail
                         </option>
 
                         <option value="image_card_variant" {{ old('display_type') == 'image_card_variant' ? 'selected' : '' }}>
-                            image_card_variant - การ์ดรูปภาพพร้อมเลือกสี
+                            image_card_variant
                         </option>
 
                         <option value="image_grid_compact" {{ old('display_type') == 'image_grid_compact' ? 'selected' : '' }}>
-                            image_grid_compact - การ์ดรูปภาพเล็กหลายคอลัมน์
+                            image_grid_compact
                         </option>
 
                         <option value="grouped_buttons" {{ old('display_type') == 'grouped_buttons' ? 'selected' : '' }}>
-                            grouped_buttons - หัวข้อหลักพร้อมคำถามย่อยหลายชุด
+                            grouped_buttons
                         </option>
 
                         <option value="previous_order_design" {{ old('display_type') == 'previous_order_design' ? 'selected' : '' }}>
@@ -285,7 +285,7 @@
                     </select>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group" style="display: none">
                     <label>Sort Order</label>
                     <input type="number" name="sort_order" value="{{ old('sort_order', 0) }}" min="0">
                 </div>

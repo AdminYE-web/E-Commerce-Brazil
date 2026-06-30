@@ -13,6 +13,7 @@ return [
     ],
     'product_description' => [
         'go_order' => 'Personalizar agora',
+         'download_template' => 'Baixe o modelo de design',
     ],
     'product_detail' => [
         'summary_product' => 'Resumo do produto',
@@ -25,6 +26,7 @@ return [
         'prev_step' => '  ← VOLTAR ',
         'update_cart' => 'ATUALIZAR CARRINHO',
         'add_to_cart' => 'ADICIONAR AO CARRINHO',
+        'prev_order' => 'Pedido anterior nº.',
     ],
     'cart' => [
         'select_all' => 'Selecionar tudo',

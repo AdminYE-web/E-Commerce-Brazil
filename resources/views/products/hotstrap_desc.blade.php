@@ -160,9 +160,61 @@
             font-weight: 700;
             cursor: pointer;
         }
+        .preview-watermark {
+    position: fixed;
+    inset: 0;
+    z-index: 99998;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.preview-watermark::before {
+    content: "PREVIEW";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-28deg);
+    font-size: clamp(72px, 14vw, 180px);
+    font-weight: 900;
+    letter-spacing: 10px;
+    color: rgba(220, 38, 38, 0.12);
+    white-space: nowrap;
+    text-transform: uppercase;
+}
+.preview-watermark-close-btn {
+    position: fixed;
+    top: 90px;
+    right: 24px;
+    z-index: 100000;
+    border: 0;
+    border-radius: 999px;
+    background: #111827;
+    color: #fff;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .18);
+}
+
+.preview-watermark-close-btn:hover {
+    background: #000;
+}
+
+.preview-watermark-hidden {
+    display: none !important;
+}
     </style>
 @endsection
 @section('content')
+
+  @if ($isPreview ?? false)
+    <div id="previewWatermark" class="preview-watermark"></div>
+
+    <button type="button" id="previewWatermarkClose" class="preview-watermark-close-btn">
+        Hide Preview
+    </button>
+@endif
 
     @php
         $mainImage = $product->mainImage;
@@ -268,7 +320,7 @@
                         <img src="{{ asset('assets/images/icon/Vector (5).png') }}" alt="">
                     </a>
                     <a href="{{ $templateRoute }}" class="hotstrap-customize-btn mt-4">
-                        <span>Download Design Template</span>
+                        <span>{{ __('product.product_description.download_template') }}</span>
                         <i class="bi bi-download"></i>
                     </a>
                 </div>
@@ -675,4 +727,24 @@
             }
         });
     </script>
+    @if ($isPreview ?? false)
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const watermark = document.getElementById('previewWatermark');
+            const closeBtn = document.getElementById('previewWatermarkClose');
+
+            if (!closeBtn) {
+                return;
+            }
+
+            closeBtn.addEventListener('click', function () {
+                if (watermark) {
+                    watermark.classList.add('preview-watermark-hidden');
+                }
+
+                closeBtn.classList.add('preview-watermark-hidden');
+            });
+        });
+    </script>
+@endif
 @endsection

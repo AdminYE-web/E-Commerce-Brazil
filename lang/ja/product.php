@@ -13,6 +13,7 @@ return [
     ],
     'product_description' => [
         'go_order' => '今すぐカスタマイズ',
+         'download_template' => 'デザインテンプレートをダウンロード',
 
     ],
     'product_detail' => [
@@ -26,6 +27,7 @@ return [
         'prev_step' => '  ← 戻る ',
         'update_cart' => 'カートを更新',
         'add_to_cart' => 'カートに追加',
+        'prev_order' => '前回の注文番号',
     ],
     'cart' => [
         'select_all' => 'すべて選択',

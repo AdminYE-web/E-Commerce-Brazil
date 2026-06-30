@@ -1345,10 +1345,82 @@
             cursor: not-allowed;
             pointer-events: none;
         }
+        .admin-preview-watermark {
+    position: fixed;
+    inset: 0;
+    z-index: 99998;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.admin-preview-watermark::before {
+    content: "PREVIEW";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-28deg);
+    font-size: clamp(72px, 14vw, 180px);
+    font-weight: 900;
+    letter-spacing: 10px;
+    color: rgba(220, 38, 38, 0.12);
+    white-space: nowrap;
+    text-transform: uppercase;
+}
+
+.admin-preview-badge {
+    position: fixed;
+    top: 90px;
+    right: 24px;
+    z-index: 99999;
+    background: rgba(220, 38, 38, 0.95);
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: .5px;
+    pointer-events: none;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .18);
+}
+.admin-preview-close-btn {
+    position: fixed;
+    top: 132px;
+    right: 24px;
+    z-index: 100000;
+    border: 0;
+    border-radius: 999px;
+    background: #111827;
+    color: #fff;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .18);
+}
+
+.admin-preview-close-btn:hover {
+    background: #000;
+}
+
+.admin-preview-hidden {
+    display: none !important;
+}
     </style>
 @endsection
 
 @section('content')
+
+@if ($isAdminPreview ?? false)
+    <div id="adminPreviewWatermark" class="admin-preview-watermark"></div>
+
+    <div id="adminPreviewBadge" class="admin-preview-badge">
+        ADMIN PREVIEW
+    </div>
+
+    <button type="button" id="adminPreviewClose" class="admin-preview-close-btn">
+        Hide Preview Mark
+    </button>
+@endif
     @php
         $editingCartItemId = session('editing_cart_item_id');
         $editingCartItem = session('editing_cart_item');
@@ -1691,10 +1763,6 @@
                                                     (int) $option->option_id;
                                         });
 
-                                        $defaultOption = $options->firstWhere('pivot.is_default', 1);
-
-                                        $selectedOption = $selectedOption ?? $defaultOption;
-
                                         $selectedOptionId = $selectedOption?->option_id;
 
                                         $defaultImage =
@@ -1726,7 +1794,7 @@
                                             <button class="btn dropdown-toggle option-bs-dropdown-btn" type="button"
                                                 data-bs-toggle="dropdown" aria-expanded="false">
                                                 <span class="option-bs-dropdown-label">
-                                                    {{ $selectedOption?->option_name ?? 'Select your option' }}
+                                                    {{ $selectedOption?->option_name ?? 'Please select' }}
                                                 </span>
                                             </button>
 
@@ -1876,7 +1944,7 @@
                                         <div class="previous-order-input-box {{ $yesOption && (int) $selectedOptionId === (int) $yesOption->option_id ? 'is-open' : '' }}"
                                             data-previous-order-box="{{ $firstOption->option_group_id }}">
                                             <label>
-                                                Previous Order No.
+                                                {{ __('product.product_detail.prev_order') }}
                                                 @if ($isRequired)
                                                     <span class="required">*</span>
                                                 @endif
@@ -2508,7 +2576,7 @@
             }
 
             if (label) {
-                label.textContent = '-- Select --';
+                label.textContent = 'Please select';
             }
 
             wrap.querySelectorAll('.option-bs-dropdown-item').forEach(function(item) {
@@ -3158,7 +3226,7 @@
                     selectedItem.classList.contains('disabled');
 
                 if (selectedIsInvalid) {
-                    selectFirstAvailableBootstrapItem(wrap);
+                    clearBootstrapDropdown(wrap);
                 }
             });
         }
@@ -3987,21 +4055,41 @@
 
                 return false;
             }
+            function advanceReadyGroupFromInput(input) {
+                const groupEl = input.closest('.customize-option-group');
+
+                if (groupEl) {
+                    setActiveGroup(groupEl, false);
+                }
+
+                applyQuantityRuleLock();
+
+                if (isGroupReadyToAutoNext(groupEl)) {
+                    setTimeout(function() {
+                        goToNextGroup();
+                    }, 250);
+                }
+            }
+
             document.querySelectorAll('#customize-form .js-option-input').forEach(function(input) {
+                input.addEventListener('click', function() {
+                    this.dataset.changedSinceClick = '0';
+
+                    setTimeout(() => {
+                        if (this.dataset.changedSinceClick === '1') {
+                            this.dataset.changedSinceClick = '0';
+                            return;
+                        }
+
+                        if (this.checked) {
+                            advanceReadyGroupFromInput(this);
+                        }
+                    }, 0);
+                });
+
                 input.addEventListener('change', function() {
-                    const groupEl = this.closest('.customize-option-group');
-
-                    if (groupEl) {
-                        setActiveGroup(groupEl, false);
-                    }
-
-                    applyQuantityRuleLock();
-
-                    if (isGroupReadyToAutoNext(groupEl)) {
-                        setTimeout(function() {
-                            goToNextGroup();
-                        }, 250);
-                    }
+                    this.dataset.changedSinceClick = '1';
+                    advanceReadyGroupFromInput(this);
                 });
 
                 input.addEventListener('focus', function() {
@@ -4076,5 +4164,31 @@
             applyQuantityRuleLock();
             updateSummary();
         });
+        
     </script>
+    @if ($isAdminPreview ?? false)
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const watermark = document.getElementById('adminPreviewWatermark');
+            const badge = document.getElementById('adminPreviewBadge');
+            const closeBtn = document.getElementById('adminPreviewClose');
+
+            if (!closeBtn) {
+                return;
+            }
+
+            closeBtn.addEventListener('click', function () {
+                if (watermark) {
+                    watermark.classList.add('admin-preview-hidden');
+                }
+
+                if (badge) {
+                    badge.classList.add('admin-preview-hidden');
+                }
+
+                closeBtn.classList.add('admin-preview-hidden');
+            });
+        });
+    </script>
+@endif
 @endsection

@@ -360,7 +360,7 @@
     <input type="text"
         name="translation_key"
         value="{{ old('translation_key', $option->translation_key ?? '') }}"
-        placeholder="เช่น opt_xxxxxxxx">
+        placeholder=" opt_xxxxxxxx">
     <small>ใช้สำหรับผูก option เดียวกันข้ามภาษา</small>
 </div>
 
@@ -378,13 +378,13 @@
         name="additional_price_with_tax"
         value="{{ old('additional_price_with_tax', $option->additional_price_with_tax ?? '') }}"
         min="0"
-        placeholder="เช่น 220">
+        placeholder=" 220">
 </div>
                 <div class="form-group">
                     <label>Free From Quantity</label>
 
                     <input type="number" name="free_from_qty" value="{{ old('free_from_qty', $option->free_from_qty) }}"
-                        min="1" placeholder="เช่น 100">
+                        min="1" placeholder=" 100">
 
                     <small style="display:block; margin-top:6px; color:#6b7280;">
                       Entering 100 means that for orders of 100 units or more, the Additional Price for this option will be free.
@@ -412,7 +412,7 @@
 
                     <div class="color-picker-group">
                         <input type="text" name="color_code" id="color_code_input"
-                            value="{{ old('color_code', $option->color_code) }}" placeholder="เช่น #ff0000">
+                            value="{{ old('color_code', $option->color_code) }}" placeholder=" #ff0000">
 
                         <input type="color" value="{{ old('color_code', $option->color_code ?: '#000000') }}"
                             onchange="document.getElementById('color_code_input').value = this.value">
@@ -423,7 +423,7 @@
                     <label>Option Detail</label>
 
                     <textarea name="option_detail" rows="8"
-                        placeholder="เช่น&#10;Model: ID-6_N&#10;Type: Soft Card Holder&#10;Card Size: 91 mm (H) x 55 mm (W)">{{ old('option_detail', $option->option_detail) }}</textarea>
+                        placeholder="&#10;Model: ID-6_N&#10;Type: Soft Card Holder&#10;Card Size: 91 mm (H) x 55 mm (W)">{{ old('option_detail', $option->option_detail) }}</textarea>
                 </div>
             </div>
 

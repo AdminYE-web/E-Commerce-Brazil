@@ -117,7 +117,7 @@
 .checkout-next-btn {
     width: 100%;
     height: 36px;
-    border-radius: 999px;
+    border-radius: 7px;
     display: flex;
     align-items: center;
     justify-content: center;

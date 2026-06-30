@@ -291,7 +291,7 @@
         .checkout-back-btn {
             width: 100%;
             height: 42px;
-            border-radius: 999px;
+            border-radius: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -967,7 +967,7 @@
                                     @endif
                                 @else
                                     <div class="no-upload-needed">
-                                        This product does not require artwork upload.
+                                       
                                     </div>
                                 @endif
                             </div>

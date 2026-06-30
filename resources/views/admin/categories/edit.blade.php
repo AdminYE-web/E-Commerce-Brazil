@@ -277,6 +277,7 @@
                 <div class="form-group">
                     <label>Change Category Image</label>
                     <input type="file" name="image_path" accept="image/*">
+                    <small>Recommended mobile size:  88x88.</small>
                 </div>
             </div>
 
