@@ -130,6 +130,7 @@
     .article-actions {
         display: flex;
         align-items: center;
+         justify-content: flex-end;
         gap: 12px;
         margin-top: 24px;
         padding-top: 20px;
