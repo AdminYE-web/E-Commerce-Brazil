@@ -40,7 +40,7 @@ class ProductListController extends Controller
                     'categories' => Category::where('is_active', 1)
                         ->where('language', $langKey)
                         ->where('product_type', $productType)
-                        ->orderBy('category_id', 'desc')
+                        ->orderBy('category_name', 'asc')
                         ->get(),
 
                     'materials' => Material::where('is_active', 1)
