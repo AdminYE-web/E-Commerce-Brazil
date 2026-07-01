@@ -47,7 +47,7 @@ class AppServiceProvider extends ServiceProvider
                 ->limit(12)
                 ->get();
 
-            // fallback ถ้าภาษาปัจจุบันไม่มีสินค้า
+            // fallback ถ้าภาษาปัจจุบันไม่มีสินค้า (ไม่ใช้ fallback)
             // if ($megaType1Products->isEmpty() && $langKey !== $fallbackLang) {
             //     $megaType1Products = Product::query()
             //         ->where('product_type', 1)
