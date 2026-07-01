@@ -445,6 +445,10 @@ Route::get('/email/verify/success', function () {
     return view('auth.verify-success');
 })->name('verification.success');
 
+Route::get('/demo', function(){
+    return 1;
+});
+
 Route::get('/email/verify/{id}/{hash}', function (Request $request, $id, $hash) {
     /*
     |--------------------------------------------------------------------------
