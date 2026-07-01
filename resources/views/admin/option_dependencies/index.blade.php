@@ -173,19 +173,6 @@
     cursor: not-allowed;
     opacity: 0.6;
 }
-.pagination-container {
-    padding: 18px 24px 24px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 16px;
-    flex-wrap: wrap;
-}
-
-.pagination-info {
-    color: var(--muted);
-    font-size: 14px;
-}
     </style>
 @endsection
 
@@ -317,14 +304,9 @@
             </tbody>
         </table>
 
-     <div class="pagination-container">
-    <div class="pagination-info">
-        Showing {{ $dependencies->firstItem() }} to {{ $dependencies->lastItem() }}
-        of {{ $dependencies->total() }} results
-    </div>
-
-    {{ $dependencies->onEachSide(1)->links('pagination::bootstrap-5') }}
-</div>
+        <div class="pagination-container">
+            {{ $dependencies->links() }}
+        </div>
     </div>
 
 @endsection
