@@ -123,97 +123,37 @@
     justify-content: flex-end;
 }
 
-.pagination {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    flex-wrap: wrap;
-}
-
-.pagination li {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-.page-link {
-    min-width: 36px;
-    height: 36px;
-    padding: 0 12px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    background: #fff;
-    color: var(--fg);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    font-weight: 600;
-    text-decoration: none;
-}
-
-.page-link:hover {
-    background: var(--bg);
-    color: var(--accent);
-    border-color: var(--accent);
-}
-
-.page-item.active .page-link {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: #fff;
-}
-
-.page-item.disabled .page-link {
-    color: var(--muted);
-    background: #f8fafc;
-    cursor: not-allowed;
-    opacity: 0.6;
-}
 .pagination-container {
-    padding: 18px 24px 24px;
-    display: flex;
-    justify-content: flex-end;
+    padding: 16px 24px;
+    border-top: 1px solid var(--border);
 }
 
 .pagination {
     display: flex;
     align-items: center;
     gap: 6px;
-    list-style: none;
     margin: 0;
     padding: 0;
+    list-style: none;
 }
 
-.pagination li {
+.page-item {
     list-style: none;
-    margin: 0;
-    padding: 0;
 }
 
 .page-link {
-    min-width: 36px;
-    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 34px;
+    height: 34px;
     padding: 0 12px;
     border: 1px solid var(--border);
     border-radius: 8px;
     background: #fff;
     color: var(--fg);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    font-weight: 600;
     text-decoration: none;
-}
-
-.page-link:hover {
-    background: var(--bg);
-    color: var(--accent);
-    border-color: var(--accent);
+    font-size: 14px;
 }
 
 .page-item.active .page-link {
@@ -223,10 +163,20 @@
 }
 
 .page-item.disabled .page-link {
-    color: var(--muted);
-    background: #f8fafc;
-    cursor: not-allowed;
-    opacity: 0.6;
+    opacity: .45;
+    pointer-events: none;
+}
+
+.pagination-container nav > div:first-child {
+    display: none !important;
+}
+
+.pagination-container nav > div:last-child {
+    display: block !important;
+}
+
+.pagination-container .pagination {
+    margin-top: 8px;
 }
     </style>
 @endsection
@@ -359,9 +309,9 @@
             </tbody>
         </table>
 
-        <div class="pagination-container">
-              {{ $dependencies->onEachSide(1)->links('pagination::bootstrap-5') }}
-        </div>
+       <div class="pagination-container">
+    {{ $dependencies->links() }}
+</div>
     </div>
 
 @endsection
