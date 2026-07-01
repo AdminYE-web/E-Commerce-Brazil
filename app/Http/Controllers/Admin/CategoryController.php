@@ -154,10 +154,7 @@ class CategoryController extends Controller
             'product_type' => $request->product_type,
         ]);
 
-        Cache::forget('product_list_shared_components_pt');
-        Cache::forget('product_list_shared_components_ja');
-        Cache::forget('product_list_shared_components_en');
-        Cache::forget('product_list_shared_components');
+        $this->clearProductListSharedCache();
 
         return redirect()
             ->route('admin.categories.index')
@@ -202,10 +199,7 @@ class CategoryController extends Controller
             'translation_key' => $request->translation_key ?: $category->translation_key ?: 'cat_'.strtolower(Str::random(12)),
         ]);
 
-        Cache::forget('product_list_shared_components_pt');
-        Cache::forget('product_list_shared_components_ja');
-        Cache::forget('product_list_shared_components_en');
-        Cache::forget('product_list_shared_components');
+      $this->clearProductListSharedCache();
 
         return redirect()
             ->route('admin.categories.index')
@@ -273,10 +267,7 @@ class CategoryController extends Controller
         $newCategory->updated_at = now();
         $newCategory->save();
 
-        Cache::forget('product_list_shared_components_pt');
-        Cache::forget('product_list_shared_components_ja');
-        Cache::forget('product_list_shared_components_en');
-        Cache::forget('product_list_shared_components');
+       $this->clearProductListSharedCache();
 
         return redirect()
             ->route('admin.categories.edit', $newCategory->category_id)
@@ -297,13 +288,17 @@ class CategoryController extends Controller
             ]);
     }
 
-    Cache::forget('product_list_shared_components_pt');
-    Cache::forget('product_list_shared_components_ja');
-    Cache::forget('product_list_shared_components_en');
-    Cache::forget('product_list_shared_components');
-
+  $this->clearProductListSharedCache();
     return response()->json([
         'success' => true,
     ]);
+}
+private function clearProductListSharedCache(): void
+{
+    foreach (['pt', 'ja', 'en'] as $lang) {
+        foreach ([1, 2] as $type) {
+            Cache::forget("product_list_shared_components_{$lang}_type_{$type}");
+        }
+    }
 }
 }
