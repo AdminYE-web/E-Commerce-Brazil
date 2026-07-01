@@ -403,30 +403,42 @@
     </section>
 @endif
 
-    @if (!empty($accordionItems))
-        <section class="hotstrap-accordion-section">
-            <div class="hotstrap-accordion-wrap">
-                @foreach ($accordionItems as $index => $item)
-                    <div class="custom-accordion-item">
-                        <button type="button" class="custom-accordion-header"
-                            data-target="accordion-body-{{ $index }}">
-                            <span class="custom-accordion-title">
-                                {{ $item['title'] ?? '' }}
-                            </span>
+    @php
+    $visibleAccordionItems = collect($accordionItems ?? [])
+        ->filter(function ($item) {
+            $title = trim($item['title'] ?? '');
+            $content = trim(strip_tags($item['content'] ?? ''));
 
-                            <span class="custom-accordion-icon">+</span>
-                        </button>
+            return $title !== '' || $content !== '';
+        });
+@endphp
 
+@if ($visibleAccordionItems->isNotEmpty())
+    <section class="hotstrap-accordion-section">
+        <div class="hotstrap-accordion-wrap">
+            @foreach ($visibleAccordionItems as $index => $item)
+                <div class="custom-accordion-item">
+                    <button type="button" class="custom-accordion-header"
+                        data-target="accordion-body-{{ $index }}">
+                        <span class="custom-accordion-title">
+                            {{ $item['title'] ?? '' }}
+                        </span>
+
+                        <span class="custom-accordion-icon">+</span>
+                    </button>
+
+                    @if (!empty($item['content']))
                         <div class="custom-accordion-body" id="accordion-body-{{ $index }}">
                             <div class="custom-accordion-inner">
-                                {!! $item['content'] ?? '' !!}
+                                {!! $item['content'] !!}
                             </div>
                         </div>
-                    </div>
-                @endforeach
-            </div>
-        </section>
-    @endif
+                    @endif
+                </div>
+            @endforeach
+        </div>
+    </section>
+@endif
     @if (isset($productFaqs) && $productFaqs->count())
         <section class="product-faq-section">
             <div class="product-faq-wrap">
