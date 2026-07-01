@@ -120,7 +120,7 @@
         .pagination-container {
     padding: 18px 24px 24px;
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-start;
 }
 
 .pagination-container {
