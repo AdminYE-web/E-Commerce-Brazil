@@ -297,40 +297,30 @@
 
             </div>
 
-         @php
-    $visibleDetailItems = collect($detailItems ?? [])
-        ->filter(function ($item) {
-            return !empty($item['title'])
-                || !empty($item['headline'])
-                || !empty($item['desc'])
-                || !empty($item['icon_image']);
-        });
-@endphp
+            @if (!empty($detailItems))
+                <div class="hotstrap-feature-grid">
+                    @foreach ($detailItems as $item)
+                        <div class="hotstrap-feature-card">
+                            <div class="feature-icon">
+                                @if (!empty($item['icon_image']))
+                                    <img src="{{ asset('storage/' . $item['icon_image']) }}"
+                                        alt="{{ $item['headline'] ?? '' }}">
+                                @else
+                                    ✦
+                                @endif
+                            </div>
 
-@if ($visibleDetailItems->isNotEmpty())
-    <div class="hotstrap-feature-grid">
-        @foreach ($visibleDetailItems as $item)
-            <div class="hotstrap-feature-card">
-                <div class="feature-icon">
-                    @if (!empty($item['icon_image']))
-                        <img src="{{ asset('storage/' . $item['icon_image']) }}"
-                            alt="{{ $item['title'] ?? $item['headline'] ?? '' }}">
-                    @else
-                        ✦
-                    @endif
+                            <h3>
+                                {{ $item['headline'] ?? '' }}
+                            </h3>
+
+                            <p>
+                                {{ $item['desc'] ?? '' }}
+                            </p>
+                        </div>
+                    @endforeach
                 </div>
-
-                @if (!empty($item['title']) || !empty($item['headline']))
-                    <h3>{{ $item['title'] ?? $item['headline'] }}</h3>
-                @endif
-
-                @if (!empty($item['desc']))
-                    <p>{{ $item['desc'] }}</p>
-                @endif
-            </div>
-        @endforeach
-    </div>
-@endif
+            @endif
 
         </div>
 
