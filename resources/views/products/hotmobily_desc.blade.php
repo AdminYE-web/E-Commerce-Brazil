@@ -300,7 +300,8 @@
          @php
     $visibleDetailItems = collect($detailItems ?? [])
         ->filter(function ($item) {
-            return !empty($item['headline'])
+            return !empty($item['title'])
+                || !empty($item['headline'])
                 || !empty($item['desc'])
                 || !empty($item['icon_image']);
         });
@@ -310,15 +311,17 @@
     <div class="hotstrap-feature-grid">
         @foreach ($visibleDetailItems as $item)
             <div class="hotstrap-feature-card">
-                @if (!empty($item['icon_image']))
-                    <div class="feature-icon">
+                <div class="feature-icon">
+                    @if (!empty($item['icon_image']))
                         <img src="{{ asset('storage/' . $item['icon_image']) }}"
-                            alt="{{ $item['headline'] ?? '' }}">
-                    </div>
-                @endif
+                            alt="{{ $item['title'] ?? $item['headline'] ?? '' }}">
+                    @else
+                        ✦
+                    @endif
+                </div>
 
-                @if (!empty($item['headline']))
-                    <h3>{{ $item['headline'] }}</h3>
+                @if (!empty($item['title']) || !empty($item['headline']))
+                    <h3>{{ $item['title'] ?? $item['headline'] }}</h3>
                 @endif
 
                 @if (!empty($item['desc']))
