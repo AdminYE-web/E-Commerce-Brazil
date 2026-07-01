@@ -12,30 +12,26 @@ use Illuminate\Support\Str;
 class CategoryController extends Controller
 {
     public function index(Request $request)
-    {
-        $search = $request->input('search');
-        $language = session('admin_product_language', 'pt');
-        $baseLanguage = 'pt';
+{
+    $search = $request->input('search');
+    $language = session('admin_product_language', 'pt');
+    $baseLanguage = 'pt';
 
-        if ($language === $baseLanguage) {
-            $categories = Category::query()
-                ->where('language', $baseLanguage)
-                ->when($search, function ($query) use ($search) {
-                    $query->where(function ($q) use ($search) {
-                        $q->where('category_name', 'like', '%'.$search.'%')
-                            ->orWhere('category_code', 'like', '%'.$search.'%');
-                    });
-                })
-                ->orderBy('sort_order')
-                ->orderBy('category_id', 'desc')
-                ->paginate(15)
-                ->withQueryString();
+    $typeTabs = [
+        1 => 'Hotstrap',
+        2 => 'Hotmobily',
+    ];
 
-            return view('admin.categories.index', compact('categories', 'search', 'language'));
-        }
+    $productType = (int) $request->input('product_type', 1);
 
-        $baseCategories = Category::query()
+    if (!array_key_exists($productType, $typeTabs)) {
+        $productType = 1;
+    }
+
+    if ($language === $baseLanguage) {
+        $categories = Category::query()
             ->where('language', $baseLanguage)
+            ->where('product_type', $productType)
             ->when($search, function ($query) use ($search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('category_name', 'like', '%'.$search.'%')
@@ -47,46 +43,86 @@ class CategoryController extends Controller
             ->paginate(15)
             ->withQueryString();
 
-        $translationKeys = $baseCategories
-            ->getCollection()
-            ->pluck('translation_key')
-            ->filter()
-            ->values();
-
-        $translatedCategories = Category::query()
-            ->where('language', $language)
-            ->whereIn('translation_key', $translationKeys)
-            ->get()
-            ->keyBy('translation_key');
-
-        $baseCategories->getCollection()->transform(function ($baseCategory) use ($translatedCategories) {
-            $translatedCategory = $translatedCategories->get($baseCategory->translation_key);
-
-            if ($translatedCategory) {
-                $translatedCategory->is_missing_translation = false;
-                $translatedCategory->base_category_id = $baseCategory->category_id;
-
-                return $translatedCategory;
-            }
-
-            $baseCategory->is_missing_translation = true;
-            $baseCategory->base_category_id = $baseCategory->category_id;
-
-            return $baseCategory;
-        });
-
-        $categories = $baseCategories;
-
-        return view('admin.categories.index', compact('categories', 'search', 'language'));
+        return view('admin.categories.index', compact(
+            'categories',
+            'search',
+            'language',
+            'productType',
+            'typeTabs'
+        ));
     }
 
-    public function create()
-    {
-        $language = session('admin_product_language', 'pt');
-        $translationKey = 'cat_'.strtolower(Str::random(12));
+    $baseCategories = Category::query()
+        ->where('language', $baseLanguage)
+        ->where('product_type', $productType)
+        ->when($search, function ($query) use ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('category_name', 'like', '%'.$search.'%')
+                    ->orWhere('category_code', 'like', '%'.$search.'%');
+            });
+        })
+        ->orderBy('sort_order')
+        ->orderBy('category_id', 'desc')
+        ->paginate(15)
+        ->withQueryString();
 
-        return view('admin.categories.create', compact('language', 'translationKey'));
+    $translationKeys = $baseCategories
+        ->getCollection()
+        ->pluck('translation_key')
+        ->filter()
+        ->values();
+
+    $translatedCategories = Category::query()
+        ->where('language', $language)
+        ->where('product_type', $productType)
+        ->whereIn('translation_key', $translationKeys)
+        ->get()
+        ->keyBy('translation_key');
+
+    $baseCategories->getCollection()->transform(function ($baseCategory) use ($translatedCategories) {
+        $translatedCategory = $translatedCategories->get($baseCategory->translation_key);
+
+        if ($translatedCategory) {
+            $translatedCategory->is_missing_translation = false;
+            $translatedCategory->base_category_id = $baseCategory->category_id;
+
+            return $translatedCategory;
+        }
+
+        $baseCategory->is_missing_translation = true;
+        $baseCategory->base_category_id = $baseCategory->category_id;
+
+        return $baseCategory;
+    });
+
+    $categories = $baseCategories;
+
+    return view('admin.categories.index', compact(
+        'categories',
+        'search',
+        'language',
+        'productType',
+        'typeTabs'
+    ));
+}
+
+   public function create(Request $request)
+{
+    $language = session('admin_product_language', 'pt');
+    $translationKey = 'cat_'.strtolower(Str::random(12));
+
+    $productType = (int) $request->input('product_type', 1);
+
+    if (!in_array($productType, [1, 2], true)) {
+        $productType = 1;
     }
+
+    return view('admin.categories.create', compact(
+        'language',
+        'translationKey',
+        'productType'
+    ));
+}
 
     public function store(Request $request)
     {

@@ -114,29 +114,36 @@ class ProductController extends Controller
     ));
 }
 
-    public function create()
-    {
-        $language = session('admin_product_language', 'pt');
+   public function create(Request $request)
+{
+    $language = session('admin_product_language', 'pt');
 
-        $categories = Category::where('is_active', 1)
-            ->where('language', $language)
-            ->orderBy('category_name')
-            ->get();
+    $productType = (int) $request->input('product_type', 1);
 
-        $materials = Material::where('is_active', 1)
-            ->where('language', $language)
-            ->orderBy('material_name')
-            ->get();
-
-        $translationKey = 'product_'.strtolower(Str::random(12));
-
-        return view('admin.products.create', compact(
-            'categories',
-            'materials',
-            'language',
-            'translationKey'
-        ));
+    if (!in_array($productType, [1, 2], true)) {
+        $productType = 1;
     }
+
+    $categories = Category::where('is_active', 1)
+        ->where('language', $language)
+        ->orderBy('category_name')
+        ->get();
+
+    $materials = Material::where('is_active', 1)
+        ->where('language', $language)
+        ->orderBy('material_name')
+        ->get();
+
+    $translationKey = 'product_'.strtolower(Str::random(12));
+
+    return view('admin.products.create', compact(
+        'categories',
+        'materials',
+        'language',
+        'translationKey',
+        'productType'
+    ));
+}
 
     public function store(Request $request)
     {

@@ -169,9 +169,9 @@
                 <p>Create new material code, name and active status.</p>
             </div>
 
-            <a href="{{ route('admin.materials.index') }}" class="btn-outline">
-                Back
-            </a>
+            <a href="{{ route('admin.materials.index', ['product_type' => $productType ?? 1]) }}" class="btn-outline">
+    Back
+</a>
         </div>
 
         @if($errors->any())
@@ -198,17 +198,17 @@
                     <label>Material Name</label>
                     <input type="text" name="material_name" value="{{ old('material_name') }}">
                 </div>
-                <div class="form-group">
-                    <label>Product Type</label>
-                    <select name="product_type" required>
-                        <option value="1" {{ old('product_type', 1) == 1 ? 'selected' : '' }}>
-                            Hotstrap
-                        </option>
-                        <option value="2" {{ old('product_type') == 2 ? 'selected' : '' }}>
-                            Hotmobily
-                        </option>
-                    </select>
-                </div>
+             <div class="form-group">
+    <label>Product Type</label>
+    <select name="product_type" required>
+        <option value="1" {{ old('product_type', $productType ?? 1) == 1 ? 'selected' : '' }}>
+            Hotstrap
+        </option>
+        <option value="2" {{ old('product_type', $productType ?? 1) == 2 ? 'selected' : '' }}>
+            Hotmobily
+        </option>
+    </select>
+</div>
                 <div class="form-group" style="display: none">
                     <label>Translation Key</label>
                     <input type="text" name="translation_key" value="{{ old('translation_key', $translationKey ?? '') }}"
@@ -229,9 +229,9 @@
             </div>
 
             <div class="form-actions">
-                <a href="{{ route('admin.materials.index') }}" class="btn-outline">
-                    Cancel
-                </a>
+               <a href="{{ route('admin.materials.index', ['product_type' => $productType ?? 1]) }}" class="btn-outline">
+    Cancel
+</a>
 
                 <button type="submit" class="btn-primary">
                     Save Material

@@ -186,9 +186,9 @@
                 <p>Create product category, upload image, set sort order and status.</p>
             </div>
 
-            <a href="{{ route('admin.categories.index') }}" class="btn-outline">
-                Back
-            </a>
+           <a href="{{ route('admin.categories.index', ['product_type' => $productType ?? 1]) }}" class="btn-outline">
+    Back
+</a>
         </div>
 
         @if($errors->any())
@@ -212,16 +212,16 @@
                     <input type="text" name="category_code" value="{{ old('category_code') }}">
                 </div>
                 <div class="form-group">
-                    <label>Product Type</label>
-                    <select name="product_type" required>
-                        <option value="1" {{ old('product_type', 1) == 1 ? 'selected' : '' }}>
-                            Hotstrap
-                        </option>
-                        <option value="2" {{ old('product_type') == 2 ? 'selected' : '' }}>
-                            Hotmobily
-                        </option>
-                    </select>
-                </div>
+    <label>Product Type</label>
+    <select name="product_type" required>
+        <option value="1" {{ old('product_type', $productType ?? 1) == 1 ? 'selected' : '' }}>
+            Hotstrap
+        </option>
+        <option value="2" {{ old('product_type', $productType ?? 1) == 2 ? 'selected' : '' }}>
+            Hotmobily
+        </option>
+    </select>
+</div>
                 <div class="form-group " style="display: none">
                     <label>Translation Key</label>
                     <input type="text" name="translation_key" value="{{ old('translation_key', $translationKey ?? '') }}"
@@ -256,9 +256,9 @@
             </div>
 
             <div class="form-actions">
-                <a href="{{ route('admin.categories.index') }}" class="btn-outline">
-                    Cancel
-                </a>
+                <a href="{{ route('admin.categories.index', ['product_type' => $productType ?? 1]) }}" class="btn-outline">
+    Cancel
+</a>
 
                 <button type="submit" class="btn-primary">
                     Save Category

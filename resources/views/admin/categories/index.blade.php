@@ -144,6 +144,38 @@
         .sortable-chosen {
             background: #f8fafc;
         }
+        .type-tabs {
+    display: flex;
+    gap: 8px;
+    margin: 0 24px 18px;
+    flex-wrap: wrap;
+}
+
+.type-tab {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+    padding: 8px 16px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: #fff;
+    color: var(--fg);
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.type-tab:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.type-tab.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+}
     </style>
 @endsection
 
@@ -159,9 +191,9 @@
             </div>
 
             <div class="table-actions">
-                <a href="{{ route('admin.categories.create') }}" class="btn-primary">
-                    + Add Category
-                </a>
+              <a href="{{ route('admin.categories.create', ['product_type' => $productType]) }}" class="btn-primary">
+    + Add Category
+</a>
             </div>
         </div>
 
@@ -170,6 +202,14 @@
                 {{ session('success') }}
             </div>
         @endif
+        <div class="type-tabs">
+    @foreach ($typeTabs as $typeValue => $typeLabel)
+        <a href="{{ route('admin.categories.index', array_merge(request()->except('page'), ['product_type' => $typeValue])) }}"
+            class="type-tab {{ (int) $productType === (int) $typeValue ? 'active' : '' }}">
+            {{ $typeLabel }}
+        </a>
+    @endforeach
+</div>
 
         <table>
             <thead>

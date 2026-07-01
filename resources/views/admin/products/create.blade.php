@@ -250,36 +250,42 @@
 
                 <div class="form-group">
                     <label>Product Type</label>
-                    <select name="product_type">
-                        <option value="1" {{ old('product_type', 1) == 1 ? 'selected' : '' }}>hotstrap</option>
-                        <option value="2" {{ old('product_type') == 2 ? 'selected' : '' }}>hotmobily</option>
-                    </select>
+                   <select name="product_type" id="product_type">
+    <option value="1" {{ old('product_type', $productType ?? 1) == 1 ? 'selected' : '' }}>
+        hotstrap
+    </option>
+    <option value="2" {{ old('product_type', $productType ?? 1) == 2 ? 'selected' : '' }}>
+        hotmobily
+    </option>
+</select>
                 </div>
 
                 <div class="form-group">
                     <label>Category</label>
-                    <select name="category_id">
-                        <option value="">-- Select Category --</option>
-                        @foreach ($categories as $category)
-                            <option value="{{ $category->category_id }}"
-                                {{ old('category_id') == $category->category_id ? 'selected' : '' }}>
-                                {{ $category->category_name }}
-                            </option>
-                        @endforeach
-                    </select>
+                    <select name="category_id" id="category_id">
+    <option value="">-- Select Category --</option>
+    @foreach ($categories as $category)
+        <option value="{{ $category->category_id }}"
+            data-product-type="{{ $category->product_type }}"
+            {{ old('category_id') == $category->category_id ? 'selected' : '' }}>
+            {{ $category->category_name }}
+        </option>
+    @endforeach
+</select>
                 </div>
 
                 <div class="form-group">
                     <label>Material</label>
-                    <select name="material_id">
-                        <option value="">-- Select Material --</option>
-                        @foreach ($materials as $material)
-                            <option value="{{ $material->material_id }}"
-                                {{ old('material_id') == $material->material_id ? 'selected' : '' }}>
-                                {{ $material->material_name }}
-                            </option>
-                        @endforeach
-                    </select>
+                   <select name="material_id" id="material_id">
+    <option value="">-- Select Material --</option>
+    @foreach ($materials as $material)
+        <option value="{{ $material->material_id }}"
+            data-product-type="{{ $material->product_type }}"
+            {{ old('material_id') == $material->material_id ? 'selected' : '' }}>
+            {{ $material->material_name }}
+        </option>
+    @endforeach
+</select>
                 </div>
 
                 <div class="form-group full">
@@ -382,4 +388,54 @@
         </form>
     </div>
 
+@endsection
+@section('js')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const productTypeSelect = document.getElementById('product_type');
+            const categorySelect = document.getElementById('category_id');
+            const materialSelect = document.getElementById('material_id');
+
+            if (!productTypeSelect || !categorySelect || !materialSelect) {
+                return;
+            }
+
+            function filterSelectByProductType(selectElement) {
+                const selectedType = String(productTypeSelect.value);
+
+                Array.from(selectElement.options).forEach(function (option) {
+                    if (!option.value) {
+                        option.hidden = false;
+                        option.disabled = false;
+                        return;
+                    }
+
+                    const optionType = String(option.dataset.productType);
+                    const isSameType = optionType === selectedType;
+
+                    option.hidden = !isSameType;
+                    option.disabled = !isSameType;
+                });
+
+                const selectedOption = selectElement.options[selectElement.selectedIndex];
+
+                if (
+                    selectedOption &&
+                    selectedOption.value &&
+                    String(selectedOption.dataset.productType) !== selectedType
+                ) {
+                    selectElement.value = '';
+                }
+            }
+
+            function filterCategoryAndMaterial() {
+                filterSelectByProductType(categorySelect);
+                filterSelectByProductType(materialSelect);
+            }
+
+            productTypeSelect.addEventListener('change', filterCategoryAndMaterial);
+
+            filterCategoryAndMaterial();
+        });
+    </script>
 @endsection

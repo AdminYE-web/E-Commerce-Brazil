@@ -11,29 +11,26 @@ use Illuminate\Support\Str;
 class MaterialController extends Controller
 {
     public function index(Request $request)
-    {
-        $search = $request->input('search');
-        $language = session('admin_product_language', 'pt');
-        $baseLanguage = 'pt';
+{
+    $search = $request->input('search');
+    $language = session('admin_product_language', 'pt');
+    $baseLanguage = 'pt';
 
-        if ($language === $baseLanguage) {
-            $materials = Material::query()
-                ->where('language', $baseLanguage)
-                ->when($search, function ($query) use ($search) {
-                    $query->where(function ($q) use ($search) {
-                        $q->where('material_name', 'like', '%'.$search.'%')
-                            ->orWhere('material_code', 'like', '%'.$search.'%');
-                    });
-                })
-                ->orderBy('material_id', 'desc')
-                ->paginate(15)
-                ->withQueryString();
+    $typeTabs = [
+        1 => 'Hotstrap',
+        2 => 'Hotmobily',
+    ];
 
-            return view('admin.materials.index', compact('materials', 'search', 'language'));
-        }
+    $productType = (int) $request->input('product_type', 1);
 
-        $baseMaterials = Material::query()
+    if (!array_key_exists($productType, $typeTabs)) {
+        $productType = 1;
+    }
+
+    if ($language === $baseLanguage) {
+        $materials = Material::query()
             ->where('language', $baseLanguage)
+            ->where('product_type', $productType)
             ->when($search, function ($query) use ($search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('material_name', 'like', '%'.$search.'%')
@@ -44,46 +41,85 @@ class MaterialController extends Controller
             ->paginate(15)
             ->withQueryString();
 
-        $translationKeys = $baseMaterials
-            ->getCollection()
-            ->pluck('translation_key')
-            ->filter()
-            ->values();
-
-        $translatedMaterials = Material::query()
-            ->where('language', $language)
-            ->whereIn('translation_key', $translationKeys)
-            ->get()
-            ->keyBy('translation_key');
-
-        $baseMaterials->getCollection()->transform(function ($baseMaterial) use ($translatedMaterials) {
-            $translatedMaterial = $translatedMaterials->get($baseMaterial->translation_key);
-
-            if ($translatedMaterial) {
-                $translatedMaterial->is_missing_translation = false;
-                $translatedMaterial->base_material_id = $baseMaterial->material_id;
-
-                return $translatedMaterial;
-            }
-
-            $baseMaterial->is_missing_translation = true;
-            $baseMaterial->base_material_id = $baseMaterial->material_id;
-
-            return $baseMaterial;
-        });
-
-        $materials = $baseMaterials;
-
-        return view('admin.materials.index', compact('materials', 'search', 'language'));
+        return view('admin.materials.index', compact(
+            'materials',
+            'search',
+            'language',
+            'productType',
+            'typeTabs'
+        ));
     }
 
-    public function create()
-    {
-        $language = session('admin_product_language', 'pt');
-        $translationKey = 'mat_'.strtolower(Str::random(12));
+    $baseMaterials = Material::query()
+        ->where('language', $baseLanguage)
+        ->where('product_type', $productType)
+        ->when($search, function ($query) use ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('material_name', 'like', '%'.$search.'%')
+                    ->orWhere('material_code', 'like', '%'.$search.'%');
+            });
+        })
+        ->orderBy('material_id', 'desc')
+        ->paginate(15)
+        ->withQueryString();
 
-        return view('admin.materials.create', compact('language', 'translationKey'));
+    $translationKeys = $baseMaterials
+        ->getCollection()
+        ->pluck('translation_key')
+        ->filter()
+        ->values();
+
+    $translatedMaterials = Material::query()
+        ->where('language', $language)
+        ->where('product_type', $productType)
+        ->whereIn('translation_key', $translationKeys)
+        ->get()
+        ->keyBy('translation_key');
+
+    $baseMaterials->getCollection()->transform(function ($baseMaterial) use ($translatedMaterials) {
+        $translatedMaterial = $translatedMaterials->get($baseMaterial->translation_key);
+
+        if ($translatedMaterial) {
+            $translatedMaterial->is_missing_translation = false;
+            $translatedMaterial->base_material_id = $baseMaterial->material_id;
+
+            return $translatedMaterial;
+        }
+
+        $baseMaterial->is_missing_translation = true;
+        $baseMaterial->base_material_id = $baseMaterial->material_id;
+
+        return $baseMaterial;
+    });
+
+    $materials = $baseMaterials;
+
+    return view('admin.materials.index', compact(
+        'materials',
+        'search',
+        'language',
+        'productType',
+        'typeTabs'
+    ));
+}
+
+  public function create(Request $request)
+{
+    $language = session('admin_product_language', 'pt');
+    $translationKey = 'mat_'.strtolower(Str::random(12));
+
+    $productType = (int) $request->input('product_type', 1);
+
+    if (!in_array($productType, [1, 2], true)) {
+        $productType = 1;
     }
+
+    return view('admin.materials.create', compact(
+        'language',
+        'translationKey',
+        'productType'
+    ));
+}
 
     public function store(Request $request)
     {
@@ -110,9 +146,9 @@ class MaterialController extends Controller
         Cache::forget('product_list_shared_components_en');
         Cache::forget('product_list_shared_components');
 
-        return redirect()
-            ->route('admin.materials.index')
-            ->with('success', 'เพิ่ม Material เรียบร้อยแล้ว');
+      return redirect()
+    ->route('admin.materials.index', ['product_type' => $request->product_type])
+    ->with('success', 'เพิ่ม Material เรียบร้อยแล้ว');
     }
 
     public function edit(Material $material)
@@ -145,8 +181,8 @@ class MaterialController extends Controller
         Cache::forget('product_list_shared_components');
 
         return redirect()
-            ->route('admin.materials.index')
-            ->with('success', 'แก้ไข Material เรียบร้อยแล้ว');
+    ->route('admin.materials.index', ['product_type' => $request->product_type])
+    ->with('success', 'แก้ไข Material เรียบร้อยแล้ว');
     }
 
     public function destroy(Material $material)
