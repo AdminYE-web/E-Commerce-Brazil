@@ -48,27 +48,27 @@ class AppServiceProvider extends ServiceProvider
                 ->get();
 
             // fallback ถ้าภาษาปัจจุบันไม่มีสินค้า
-            if ($megaType1Products->isEmpty() && $langKey !== $fallbackLang) {
-                $megaType1Products = Product::query()
-                    ->where('product_type', 1)
-                    ->where('language', $fallbackLang)
-                    ->where('product_recomend_menu','1')
-                    ->where('is_active', 1)
-                    ->orderBy('product_name')
-                    ->limit(12)
-                    ->get();
-            }
+            // if ($megaType1Products->isEmpty() && $langKey !== $fallbackLang) {
+            //     $megaType1Products = Product::query()
+            //         ->where('product_type', 1)
+            //         ->where('language', $fallbackLang)
+            //         ->where('product_recomend_menu','1')
+            //         ->where('is_active', 1)
+            //         ->orderBy('product_name')
+            //         ->limit(12)
+            //         ->get();
+            // }
 
-            if ($megaType2Products->isEmpty() && $langKey !== $fallbackLang) {
-                $megaType2Products = Product::query()
-                    ->where('product_type', 2)
-                    ->where('language', $fallbackLang)
-                    ->where('product_recomend_menu','1')
-                    ->where('is_active', 1)
-                    ->orderBy('product_name')
-                    ->limit(12)
-                    ->get();
-            }
+            // if ($megaType2Products->isEmpty() && $langKey !== $fallbackLang) {
+            //     $megaType2Products = Product::query()
+            //         ->where('product_type', 2)
+            //         ->where('language', $fallbackLang)
+            //         ->where('product_recomend_menu','1')
+            //         ->where('is_active', 1)
+            //         ->orderBy('product_name')
+            //         ->limit(12)
+            //         ->get();
+            // }
             $megaRecommendType1Products = Product::query()
                 ->with(['mainImage', 'detail'])
                 ->where('product_type', 1)
