@@ -244,6 +244,7 @@
                 <div class="form-group">
                     <label>Image</label>
                     <input type="file" name="image" accept="image/*">
+                    <small>Recommended size:  316x224.</small>
                 </div>
             </div>
 
