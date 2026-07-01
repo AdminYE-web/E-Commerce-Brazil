@@ -8,6 +8,7 @@ use App\Models\MaterialHome;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Cache;
 
 class MaterialHomeController extends Controller
 {
@@ -86,6 +87,7 @@ class MaterialHomeController extends Controller
     {
         $request->validate([
             'material_id' => 'nullable|exists:materials,material_id',
+            'product_type' => 'required|in:1,2',
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,webp,gif|max:4096',
@@ -102,6 +104,7 @@ class MaterialHomeController extends Controller
 
         MaterialHome::create([
             'material_id' => $request->material_id,
+              'product_type' => $request->product_type,
             'language' => session('admin_product_language', 'pt'),
             'translation_key' => $request->translation_key ?: 'mh_'.strtolower(Str::random(12)),
             'title' => $request->title,
@@ -110,6 +113,8 @@ class MaterialHomeController extends Controller
             'is_active' => $request->has('is_active') ? 1 : 0,
             'sort_order' => $request->sort_order ?? 0,
         ]);
+
+        $this->clearHomeCache();
 
         return redirect()
             ->route('admin.material-homes.index')
@@ -135,6 +140,7 @@ class MaterialHomeController extends Controller
     {
         $request->validate([
             'material_id' => 'nullable|exists:materials,material_id',
+            'product_type' => 'required|in:1,2',
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,webp,gif|max:4096',
@@ -165,6 +171,7 @@ class MaterialHomeController extends Controller
 
         $materialHome->update([
             'material_id' => $request->material_id,
+            'product_type' => $request->product_type,
             'title' => $request->title,
             'description' => $request->description,
             'image_path' => $imagePath,
@@ -172,6 +179,8 @@ class MaterialHomeController extends Controller
             'sort_order' => $request->sort_order ?? 0,
             'translation_key' => $request->translation_key ?: $materialHome->translation_key ?: 'mh_'.strtolower(Str::random(12)),
         ]);
+
+        $this->clearHomeCache();
 
         return redirect()
             ->route('admin.material-homes.index')
@@ -226,6 +235,7 @@ class MaterialHomeController extends Controller
 
             $translatedMaterial = Material::where('translation_key', $materialTranslationKey)
                 ->where('language', $targetLanguage)
+                   ->where('product_type', $materialHome->product_type)
                 ->first();
 
             if ($translatedMaterial) {
@@ -238,11 +248,14 @@ class MaterialHomeController extends Controller
         $newItem->material_id = $targetMaterialId;
         $newItem->language = $targetLanguage;
         $newItem->translation_key = $translationKey;
+        $newItem->product_type = $materialHome->product_type;
         $newItem->title = $materialHome->title.' ('.strtoupper($targetLanguage).')';
         $newItem->is_active = 0;
         $newItem->created_at = now();
         $newItem->updated_at = now();
         $newItem->save();
+
+        $this->clearHomeCache();
 
         return redirect()
             ->route('admin.material-homes.edit', $newItem->material_home_id)
@@ -261,4 +274,10 @@ class MaterialHomeController extends Controller
             ->route('admin.material-homes.index')
             ->with('success', 'Material Home deleted successfully.');
     }
+    private function clearHomeCache(): void
+{
+    foreach (['pt', 'en', 'ja'] as $lang) {
+        Cache::forget('home_page_data_'.$lang);
+    }
+}
 }

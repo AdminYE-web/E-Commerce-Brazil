@@ -10,6 +10,7 @@ class MaterialHome extends Model
 
     protected $fillable = [
         'material_id',
+         'product_type',
         'title',
         'description',
         'image_path',

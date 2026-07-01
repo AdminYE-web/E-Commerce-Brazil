@@ -176,20 +176,36 @@
 
         <div class="section-title">Material Home Information</div>
 
-        <div class="form-grid">
-            <div class="form-group">
-                <label>Material</label>
-                <select name="material_id">
-                    <option value="">-- Select Material --</option>
+       <div class="form-grid">
 
-                    @foreach($materials as $material)
-                        <option value="{{ $material->material_id }}"
-                            {{ old('material_id', $materialHome->material_id) == $material->material_id ? 'selected' : '' }}>
-                            {{ $material->material_name }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
+    <div class="form-group">
+        <label>Product Type</label>
+        <select name="product_type" id="product_type">
+            <option value="1" {{ old('product_type', $materialHome->product_type ?? 1) == 1 ? 'selected' : '' }}>
+                Hotstrap
+            </option>
+            <option value="2" {{ old('product_type', $materialHome->product_type ?? 1) == 2 ? 'selected' : '' }}>
+                Hotmobily
+            </option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Material</label>
+        <select name="material_id" id="material_id">
+            <option value="">-- Select Material --</option>
+
+            @foreach($materials as $material)
+                <option
+                    value="{{ $material->material_id }}"
+                    data-product-type="{{ $material->product_type }}"
+                    {{ old('material_id', $materialHome->material_id) == $material->material_id ? 'selected' : '' }}
+                >
+                    {{ $material->material_name }}
+                </option>
+            @endforeach
+        </select>
+    </div>
             <div class="form-group" style="display: none">
     <label>Translation Key</label>
     <input type="text"
@@ -264,5 +280,44 @@
         </div>
     </form>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const productTypeSelect = document.getElementById('product_type');
+        const materialSelect = document.getElementById('material_id');
 
+        if (!productTypeSelect || !materialSelect) {
+            return;
+        }
+
+        function filterMaterials() {
+            const selectedType = productTypeSelect.value;
+            const currentMaterial = materialSelect.value;
+
+            let hasSelectedVisible = false;
+
+            Array.from(materialSelect.options).forEach(option => {
+                if (!option.value) {
+                    option.hidden = false;
+                    return;
+                }
+
+                const isSameType = option.dataset.productType === selectedType;
+
+                option.hidden = !isSameType;
+
+                if (option.value === currentMaterial && isSameType) {
+                    hasSelectedVisible = true;
+                }
+            });
+
+            if (!hasSelectedVisible) {
+                materialSelect.value = '';
+            }
+        }
+
+        productTypeSelect.addEventListener('change', filterMaterials);
+
+        filterMaterials();
+    });
+</script>
 @endsection

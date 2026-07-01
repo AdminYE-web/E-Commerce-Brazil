@@ -537,7 +537,10 @@
                 @foreach ($materialHomes as $item)
                     <div class="material-card">
                         <div class="material-image">
-                            <a href="{{ route('products.index', ['materials' => [$item->material_id]]) }}"><img
+                            <a href="{{ route('products.index', [
+    'product_type' => $item->product_type,
+    'materials' => [$item->material_id],
+]) }}"><img
                                     src="{{ asset('storage/' . $item->image_path) }}" alt="{{ $item->title }}"></a>
 
                         </div>
