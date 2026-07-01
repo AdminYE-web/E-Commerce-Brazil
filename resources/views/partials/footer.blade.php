@@ -84,8 +84,8 @@
                             <li><a
                                     href="{{ route('design-template.index') }}">{{ __('messages.footer.how_to_design') }}</a>
                             </li>
-                            <li><a href="#">{{ __('messages.footer.payment_guide') }}</a></li>
-                            <li><a href="#">{{ __('messages.footer.refund_guide') }}</a></li>
+                            <li><a href="{{ route('payment.options') }}">{{ __('messages.footer.payment_guide') }}</a></li>
+                            <li><a href="{{ route('cancelamento.alteracao') }}">{{ __('messages.footer.refund_guide') }}</a></li>
                         </ul>
                     </div>
 
