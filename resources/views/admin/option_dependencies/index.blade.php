@@ -173,6 +173,61 @@
     cursor: not-allowed;
     opacity: 0.6;
 }
+.pagination-container {
+    padding: 18px 24px 24px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.pagination {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.pagination li {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.page-link {
+    min-width: 36px;
+    height: 36px;
+    padding: 0 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--fg);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.page-link:hover {
+    background: var(--bg);
+    color: var(--accent);
+    border-color: var(--accent);
+}
+
+.page-item.active .page-link {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+}
+
+.page-item.disabled .page-link {
+    color: var(--muted);
+    background: #f8fafc;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
     </style>
 @endsection
 
@@ -305,7 +360,7 @@
         </table>
 
         <div class="pagination-container">
-            {{ $dependencies->links() }}
+              {{ $dependencies->onEachSide(1)->links('pagination::bootstrap-5') }}
         </div>
     </div>
 
