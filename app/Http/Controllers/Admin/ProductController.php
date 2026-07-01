@@ -235,23 +235,28 @@ class ProductController extends Controller
     }
 
     public function edit(Product $product)
-    {
-        $product->load(['images', 'galleryImages']);
+{
+    $product->load(['images', 'galleryImages']);
 
-        $language = $product->language ?? session('admin_product_language', 'pt');
+    $language = $product->language ?? session('admin_product_language', 'pt');
 
-        $categories = Category::where('is_active', 1)
-            ->where('language', $language)
-            ->orderBy('category_name')
-            ->get();
+    $categories = Category::where('is_active', 1)
+        ->where('language', $language)
+        ->orderBy('category_name')
+        ->get();
 
-        $materials = Material::where('is_active', 1)
-            ->where('language', $language)
-            ->orderBy('material_name')
-            ->get();
+    $materials = Material::where('is_active', 1)
+        ->where('language', $language)
+        ->orderBy('material_name')
+        ->get();
 
-        return view('admin.products.edit', compact('product', 'categories', 'materials', 'language'));
-    }
+    return view('admin.products.edit', compact(
+        'product',
+        'categories',
+        'materials',
+        'language'
+    ));
+}
 
     public function update(Request $request, Product $product)
     {
