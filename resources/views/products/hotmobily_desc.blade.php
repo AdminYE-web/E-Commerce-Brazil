@@ -335,18 +335,28 @@
         </div>
 
     </section>
+@php
+    $visibleSpecItems = collect($specItems ?? [])
+        ->filter(function ($item) {
+            return !empty($item['title'])
+                || !empty($item['desc'])
+                || !empty($item['link_url'])
+                || !empty($item['icon_image']);
+        });
 
-    @if ($product->detail && ($product->detail->specification_image || !empty($specItems)))
-        <section class="hotstrap-spec-section">
-            <div class="hotstrap-spec-grid">
+    $hasSpecImage = $product->detail && !empty($product->detail->specification_image);
+@endphp
 
+@if ($product->detail && ($hasSpecImage || $visibleSpecItems->isNotEmpty()))
+    <section class="hotstrap-spec-section">
+        <div class="hotstrap-spec-grid">
 
-
+            @if ($visibleSpecItems->isNotEmpty())
                 <div class="hotstrap-spec-content">
                     <h2>{{ __('product_desc.product_desc.product_details') }}</h2>
 
                     <div class="hotstrap-spec-card">
-                        @foreach ($specItems as $item)
+                        @foreach ($visibleSpecItems as $item)
                             <div class="hotstrap-spec-row">
                                 <div class="hotstrap-spec-icon">
                                     @if (!empty($item['icon_image']))
@@ -358,34 +368,40 @@
                                 </div>
 
                                 <div>
-                                    <h3>{{ $item['title'] ?? '' }}</h3>
-                                    <p>
-                                        {{ $item['desc'] ?? '' }}
+                                    @if (!empty($item['title']))
+                                        <h3>{{ $item['title'] }}</h3>
+                                    @endif
 
-                                        @if (!empty($item['link_url']))
-                                            <a href="{{ $item['link_url'] }}"
-                                                target="{{ str_starts_with($item['link_url'], 'http') ? '_blank' : '_self' }}"
-                                                rel="noopener">
-                                                {{ $item['link_text'] ?? 'View more' }}
-                                            </a>
-                                        @endif
-                                    </p>
+                                    @if (!empty($item['desc']) || !empty($item['link_url']))
+                                        <p>
+                                            {{ $item['desc'] ?? '' }}
+
+                                            @if (!empty($item['link_url']))
+                                                <a href="{{ $item['link_url'] }}"
+                                                    target="{{ str_starts_with($item['link_url'], 'http') ? '_blank' : '_self' }}"
+                                                    rel="noopener">
+                                                    {{ $item['link_text'] ?? 'View more' }}
+                                                </a>
+                                            @endif
+                                        </p>
+                                    @endif
                                 </div>
                             </div>
                         @endforeach
                     </div>
                 </div>
+            @endif
+
+            @if ($hasSpecImage)
                 <div class="hotstrap-spec-image">
-                    @if ($product->detail->specification_image)
-                        <img src="{{ asset('storage/' . $product->detail->specification_image) }}"
-                            alt="{{ $product->product_name }}">
-                    @endif
+                    <img src="{{ asset('storage/' . $product->detail->specification_image) }}"
+                        alt="{{ $product->product_name }}">
                 </div>
+            @endif
 
-            </div>
-        </section>
-
-    @endif
+        </div>
+    </section>
+@endif
 
     @if (!empty($accordionItems))
         <section class="hotstrap-accordion-section">
