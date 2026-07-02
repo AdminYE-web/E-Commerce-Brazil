@@ -86,6 +86,19 @@ class ProductOptionAssignmentController extends Controller
 
     public function update(Request $request, Product $product)
     {
+        $validated = $request->validate([
+    'options' => 'nullable|array',
+    'options.*.option_id' => 'required|exists:product_options,option_id',
+    'options.*.sort_order' => 'nullable|integer|min:0',
+    'options.*.is_default' => 'nullable|boolean',
+    'options.*.is_active' => 'nullable|boolean',
+    'options.*.qty_rule_type' => 'nullable|in:min,max,exact,range',
+    'options.*.min_qty' => 'nullable|integer|min:1',
+    'options.*.max_qty' => 'nullable|integer|min:1',
+    'options.*.exact_qty' => 'nullable|integer|min:1',
+]);
+
+dd('validate passed', $validated);
         
         $request->validate([
             'options' => 'nullable|array',
@@ -98,6 +111,8 @@ class ProductOptionAssignmentController extends Controller
             'options.*.max_qty' => 'nullable|integer|min:1',
             'options.*.exact_qty' => 'nullable|integer|min:1',
         ]);
+
+    
 
         $syncData = [];
 
