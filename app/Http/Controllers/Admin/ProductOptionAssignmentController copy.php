@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\OptionGroup;
 use App\Models\Product;
-use App\Models\ProductOption;
 use App\Models\ProductOptionGroupOrder;
 use Illuminate\Http\Request;
 
@@ -25,10 +24,10 @@ class ProductOptionAssignmentController extends Controller
         }])
             ->where('language', $language)
             ->where(function ($query) use ($productType) {
-                $query->where('product_type', $productType)
-                    ->orWhereNull('product_type')
-                    ->orWhere('product_type', 0);
-            })
+    $query->where('product_type', $productType)
+        ->orWhereNull('product_type')
+        ->orWhere('product_type', 0);
+})
             ->where('is_active', 1)
             ->get();
 
@@ -91,7 +90,8 @@ class ProductOptionAssignmentController extends Controller
 
     public function update(Request $request, Product $product)
     {
-
+        
+        
         $request->validate([
             'options' => 'nullable|array',
             'options.*.option_id' => 'required|exists:product_options,option_id',
@@ -103,6 +103,8 @@ class ProductOptionAssignmentController extends Controller
             'options.*.max_qty' => 'nullable|integer|min:1',
             'options.*.exact_qty' => 'nullable|integer|min:1',
         ]);
+
+    
 
         $syncData = [];
 
@@ -144,43 +146,12 @@ class ProductOptionAssignmentController extends Controller
             ];
         }
 
-        $editableOptionIds = $this->editableOptionIdsFor($product)->all();
-        $editableOptionIdLookup = array_flip($editableOptionIds);
-        $syncData = array_intersect_key($syncData, $editableOptionIdLookup);
-
-        $product->assignedOptions()->syncWithoutDetaching($syncData);
-
-        $selectedOptionIds = array_map('intval', array_keys($syncData));
-        $optionIdsToDetach = array_values(array_diff($editableOptionIds, $selectedOptionIds));
-
-        if (! empty($optionIdsToDetach)) {
-            $product->assignedOptions()->detach($optionIdsToDetach);
-        }
+        $product->assignedOptions()->sync($syncData);
+        
 
         return redirect()
             ->route('admin.products.index')
             ->with('success', 'Product options updated successfully.');
-    }
-
-    private function editableOptionIdsFor(Product $product)
-    {
-        $language = $product->language ?? session('admin_product_language', 'pt');
-        $productType = (int) $product->product_type;
-
-        return ProductOption::query()
-            ->where('product_options.language', $language)
-            ->where('product_options.is_active', 1)
-            ->whereHas('group', function ($query) use ($language, $productType) {
-                $query->where('language', $language)
-                    ->where(function ($query) use ($productType) {
-                        $query->where('product_type', $productType)
-                            ->orWhereNull('product_type')
-                            ->orWhere('product_type', 0);
-                    })
-                    ->where('is_active', 1);
-            })
-            ->pluck('option_id')
-            ->map(fn ($id) => (int) $id);
     }
 
     public function updateGroupSort(Request $request, Product $product)
