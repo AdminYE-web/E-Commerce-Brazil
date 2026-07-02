@@ -1694,57 +1694,76 @@
                                         </div>
                                     @endif
                                 @elseif($displayType === 'color')
-                                    <div class="option-color-list">
-                                        @foreach ($options as $option)
-                                            <label class="option-color-item" title="{{ $option->option_name }}">
-                                                <input type="radio" name="options[{{ $option->option_group_id }}]"
-                                                    value="{{ $option->option_id }}" class="js-option-input"
-                                                    data-group-name="{{ $groupName }}"
-                                                    data-option-name="{{ $option->option_name }}"
-                                                    data-price="{{ $getOptionPrice($option) }}"
-                                                    data-price-type="{{ $option->price_type }}"
-                                                    data-option-id="{{ $option->option_id }}"
-                                                    data-qty-rule-type="{{ $option->pivot->qty_rule_type }}"
-                                                    data-min-qty="{{ $option->pivot->min_qty }}"
-                                                    data-max-qty="{{ $option->pivot->max_qty }}"
-                                                    data-exact-qty="{{ $option->pivot->exact_qty }}"
-                                                    data-free-from-qty="{{ $option->free_from_qty }}"
-                                                    {{ old("options.{$option->option_group_id}", $editingOptions[$option->option_group_id] ?? null) == $option->option_id || (!$editingCartItem && $option->pivot->is_default) ? 'checked' : '' }}>
+    @php
+        $colorGroupId = $firstOption->option_group_id;
 
-                                                <span class="color-circle"
-                                                    style="background: {{ $option->color_code ?: '#ffffff' }};"></span>
-                                            </label>
-                                        @endforeach
+        $selectedColorOptionIds = old(
+            "options.{$colorGroupId}",
+            $editingOptions[$colorGroupId] ?? []
+        );
 
-                                        <button type="button" class="add-color-btn"
-                                            data-group-id="{{ $firstOption->option_group_id }}"
-                                            data-group-name="{{ $groupName }}">
-                                            +
-                                        </button>
-                                    </div>
+        if (!is_array($selectedColorOptionIds)) {
+            $selectedColorOptionIds = [$selectedColorOptionIds];
+        }
 
-                                    <div class="custom-color-box"
-                                        id="custom-color-box-{{ $firstOption->option_group_id }}" style="display:none;">
-                                        <label class="custom-color-label">
-                                            Special Cord Colors
-                                            @if ($isRequired)
-                                                <span class="required">*</span>
-                                            @endif
-                                            <span class="info-icon">ⓘ</span>
-                                        </label>
+        $selectedColorOptionIds = collect($selectedColorOptionIds)
+            ->map(fn ($id) => (int) $id)
+            ->toArray();
+    @endphp
 
-                                        <div class="custom-color-input-row">
-                                            <input type="text"
-                                                name="custom_colors[{{ $firstOption->option_group_id }}]"
-                                                class="custom-color-input js-custom-color-input"
-                                                data-group-name="Special Cord Colors"
-                                                placeholder="Please specify Pantone color.">
+    <div class="option-color-list">
+        @foreach ($options as $option)
+            <label class="option-color-item" title="{{ $option->option_name }}">
+                <input type="checkbox"
+                    name="options[{{ $option->option_group_id }}][]"
+                    value="{{ $option->option_id }}"
+                    class="js-option-input js-color-option-input"
+                    data-group-name="{{ $groupName }}"
+                    data-option-name="{{ $option->option_name }}"
+                    data-price="{{ $getOptionPrice($option) }}"
+                    data-price-type="{{ $option->price_type }}"
+                    data-option-id="{{ $option->option_id }}"
+                    data-qty-rule-type="{{ $option->pivot->qty_rule_type }}"
+                    data-min-qty="{{ $option->pivot->min_qty }}"
+                    data-max-qty="{{ $option->pivot->max_qty }}"
+                    data-exact-qty="{{ $option->pivot->exact_qty }}"
+                    data-free-from-qty="{{ $option->free_from_qty }}"
+                    {{ in_array((int) $option->option_id, $selectedColorOptionIds, true) || (!$editingCartItem && $option->pivot->is_default) ? 'checked' : '' }}>
 
-                                            <button type="button" class="custom-color-add-btn">
-                                                Add
-                                            </button>
-                                        </div>
-                                    </div>
+                <span class="color-circle"
+                    style="background: {{ $option->color_code ?: '#ffffff' }};"></span>
+            </label>
+        @endforeach
+
+        <button type="button" class="add-color-btn"
+            data-group-id="{{ $firstOption->option_group_id }}"
+            data-group-name="{{ $groupName }}">
+            +
+        </button>
+    </div>
+
+    <div class="custom-color-box"
+        id="custom-color-box-{{ $firstOption->option_group_id }}" style="display:none;">
+        <label class="custom-color-label">
+            Special Cord Colors
+            @if ($isRequired)
+                <span class="required">*</span>
+            @endif
+            <span class="info-icon">ⓘ</span>
+        </label>
+
+        <div class="custom-color-input-row">
+            <input type="text"
+                name="custom_colors[{{ $firstOption->option_group_id }}]"
+                class="custom-color-input js-custom-color-input"
+                data-group-name="Special Cord Colors"
+                placeholder="Please specify Pantone color.">
+
+            <button type="button" class="custom-color-add-btn">
+                Add
+            </button>
+        </div>
+    </div>
                                 @elseif($displayType === 'select_detail')
                                     @php
                                         /*
@@ -2095,7 +2114,7 @@
         function getSelectedOptionIdsForPrice() {
             const selected = [];
 
-            document.querySelectorAll('#customize-form input[type="radio"]:checked').forEach(function(input) {
+            document.querySelectorAll('#customize-form input.js-option-input[type="radio"]:checked, #customize-form input.js-option-input[type="checkbox"]:checked').forEach(function(input) {
                 if (input.disabled) {
                     return;
                 }
@@ -2166,7 +2185,7 @@
         function getSelectedQuantityRuleItems() {
             const selectedItems = [];
 
-            document.querySelectorAll('#customize-form input[type="radio"]:checked').forEach(function(input) {
+            document.querySelectorAll('#customize-form input.js-option-input[type="radio"]:checked, #customize-form input.js-option-input[type="checkbox"]:checked').forEach(function(input) {
                 if (input.disabled) {
                     return;
                 }
@@ -2649,6 +2668,45 @@
             }
         }
 
+        function isPantoneDicOption(optionName) {
+    const name = String(optionName || '').toUpperCase();
+
+    return name.includes('PANTONE') || name.includes('DIC');
+}
+
+function getColorFinalPrice(input, quantity) {
+    const groupEl = input.closest('.customize-option-group');
+
+    if (!groupEl) {
+        return parseFloat(input.dataset.price || 0);
+    }
+
+    const selectedColors = Array.from(
+        groupEl.querySelectorAll('.js-color-option-input:checked:not(:disabled)')
+    );
+
+    const optionName = input.dataset.optionName || '';
+    const price = parseFloat(input.dataset.price || 0);
+    const freeFromQty = parseInt(input.dataset.freeFromQty || 0);
+
+    const isPantoneDic = String(optionName).toUpperCase().includes('PANTONE') ||
+        String(optionName).toUpperCase().includes('DIC');
+
+    const firstSelectedColor = selectedColors[0];
+
+    if (firstSelectedColor && firstSelectedColor === input && !isPantoneDic) {
+        return 0;
+    }
+
+    let finalPrice = price;
+
+    if (freeFromQty > 0 && quantity >= freeFromQty) {
+        finalPrice = 0;
+    }
+
+    return finalPrice;
+}
+
         /*
         |--------------------------------------------------------------------------
         | Summary
@@ -2667,7 +2725,7 @@
             let html = '';
 
             const summaryOptions = document.getElementById('summary-options');
-            const checkedOptions = document.querySelectorAll('#customize-form input[type="radio"]:checked');
+            const checkedOptions = document.querySelectorAll('#customize-form input.js-option-input[type="radio"]:checked, #customize-form input.js-option-input[type="checkbox"]:checked');
             const selectedOptions = document.querySelectorAll(
                 '#customize-form select.option-select-detail, #customize-form .option-select-detail-hidden'
             );
@@ -2693,11 +2751,13 @@
                 const variantPrice = parseFloat(input.dataset.variantPrice || 0);
                 const priceType = input.dataset.priceType || 'per_order';
                 const freeFromQty = parseInt(input.dataset.freeFromQty || 0);
-                let finalPrice = price;
+              let finalPrice = price;
 
-                if (freeFromQty > 0 && quantity >= freeFromQty) {
-                    finalPrice = 0;
-                }
+if (input.classList.contains('js-color-option-input')) {
+    finalPrice = getColorFinalPrice(input, quantity);
+} else if (freeFromQty > 0 && quantity >= freeFromQty) {
+    finalPrice = 0;
+}
 
                 const isRuleOption = isOptionInMatchedRule(optionId, matchedRule);
 
@@ -3449,7 +3509,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             const quantityInput = document.getElementById('quantity');
 
-            document.querySelectorAll('#customize-form input[type="radio"]').forEach(function(input) {
+            document.querySelectorAll('#customize-form input.js-option-input[type="radio"], #customize-form input.js-option-input[type="checkbox"]').forEach(function(input) {
                 input.addEventListener('change', function() {
                     updateOptionDependencies();
                     updateSummary();
@@ -3561,9 +3621,9 @@
                         return;
                     }
 
-                    const colorRadios = document.querySelectorAll(
-                        '#customize-form input[type="radio"][name="options[' + groupId + ']"]'
-                    );
+                  const colorRadios = document.querySelectorAll(
+    '#customize-form input[type="checkbox"][name="options[' + groupId + '][]"]'
+);
 
                     colorRadios.forEach(function(radio) {
                         radio.checked = false;
@@ -3586,7 +3646,7 @@
                 });
             });
 
-            document.querySelectorAll('.option-color-item input[type="radio"]').forEach(function(radio) {
+            document.querySelectorAll('.option-color-item input[type="checkbox"]').forEach(function(radio) {
                 radio.addEventListener('change', function() {
                     const groupId = this.name.match(/\[(.*?)\]/)?.[1];
 
@@ -4032,6 +4092,33 @@
                     }
 
                     return true;
+                }
+
+                                /*
+                |--------------------------------------------------------------------------
+                | Case 2: color group
+                |--------------------------------------------------------------------------
+                | กลุ่มสีต้องเลือกให้ครบทุกสีที่แสดงอยู่ก่อน ถึงจะ auto next
+                |--------------------------------------------------------------------------
+                */
+                const colorInputs = Array.from(
+                    groupEl.querySelectorAll('.js-color-option-input:not(:disabled)')
+                ).filter(function(input) {
+                    const label = input.closest('.option-color-item');
+
+                    if (!label) {
+                        return false;
+                    }
+
+                    return label.style.display !== 'none';
+                });
+
+                if (colorInputs.length) {
+                    const checkedColors = colorInputs.filter(function(input) {
+                        return input.checked;
+                    });
+
+                    return checkedColors.length === colorInputs.length;
                 }
 
                 /*
