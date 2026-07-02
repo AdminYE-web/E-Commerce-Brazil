@@ -93,6 +93,10 @@ class ProductOptionAssignmentController extends Controller
     {
 
         $request->validate([
+            'selected_options' => 'nullable|array',
+
+            'selected_options.*' => 'integer|exists:product_options,option_id',
+
             'options' => 'nullable|array',
             'options.*.option_id' => 'required|exists:product_options,option_id',
             'options.*.sort_order' => 'nullable|integer|min:0',
@@ -144,39 +148,37 @@ class ProductOptionAssignmentController extends Controller
             ];
         }
 
-        $submittedOptionIds = array_map('intval', array_keys($syncData));
+        $selectedOptionIds = collect($request->input('selected_options', []))
+            ->map(fn ($id) => (int) $id)
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+
+        if (! $request->has('selected_options')) {
+            $selectedOptionIds = array_map('intval', array_keys($syncData));
+        }
+
+        foreach ($selectedOptionIds as $optionId) {
+            $syncData[$optionId] = $syncData[$optionId] ?? [
+                'sort_order' => 0,
+                'is_default' => 0,
+                'is_active' => 1,
+                'qty_rule_type' => null,
+                'min_qty' => null,
+                'max_qty' => null,
+                'exact_qty' => null,
+            ];
+        }
+
+        $syncData = array_intersect_key($syncData, array_flip($selectedOptionIds));
+
         $editableOptionIds = $this->editableOptionIdsFor($product)->all();
         $editableOptionIdLookup = array_flip($editableOptionIds);
-        $filteredOutOptionIds = array_values(array_diff($submittedOptionIds, $editableOptionIds));
-        $assignedBeforeIds = \DB::table('product_option_assignments')
-            ->where('product_id', $product->product_id)
-            ->pluck('option_id')
-            ->map(fn ($id) => (int) $id)
-            ->toArray();
-        $wouldAttachBeforeScopeFilter = array_values(array_diff($submittedOptionIds, $assignedBeforeIds));
-
         $syncData = array_intersect_key($syncData, $editableOptionIdLookup);
-        $selectedOptionIds = array_map('intval', array_keys($syncData));
-        $wouldAttachAfterScopeFilter = array_values(array_diff($selectedOptionIds, $assignedBeforeIds));
-        $optionIdsToDetach = array_values(array_diff($editableOptionIds, $selectedOptionIds));
 
-        dd([
-            'product' => [
-                'id' => $product->product_id,
-                'language' => $product->language,
-                'product_type' => $product->product_type,
-            ],
-            'request_option_count' => count($submittedOptionIds),
-            'request_option_ids' => $submittedOptionIds,
-            'editable_option_count' => count($editableOptionIds),
-            'editable_option_ids' => $editableOptionIds,
-            'filtered_out_by_scope' => $filteredOutOptionIds,
-            'already_assigned_count' => count($assignedBeforeIds),
-            'already_assigned_ids' => $assignedBeforeIds,
-            'would_attach_before_scope_filter' => $wouldAttachBeforeScopeFilter,
-            'would_attach_after_scope_filter' => $wouldAttachAfterScopeFilter,
-            'would_detach_from_editable_scope' => $optionIdsToDetach,
-        ]);
+        $selectedOptionIds = array_map('intval', array_keys($syncData));
+        $optionIdsToDetach = array_values(array_diff($editableOptionIds, $selectedOptionIds));
 
         $product->assignedOptions()->syncWithoutDetaching($syncData);
 

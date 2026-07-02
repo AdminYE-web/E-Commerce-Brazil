@@ -479,6 +479,7 @@
                                             <label class="option-main-check">
 
                                                 <input type="checkbox" class="option-checkbox"
+                                                    name="selected_options[]" value="{{ $option->option_id }}"
                                                     data-option-id="{{ $option->option_id }}"
                                                     {{ $isChecked ? 'checked' : '' }}>
 
