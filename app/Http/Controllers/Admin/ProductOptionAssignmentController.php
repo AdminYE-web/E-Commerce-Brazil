@@ -179,6 +179,34 @@ class ProductOptionAssignmentController extends Controller
 
         $selectedOptionIds = array_map('intval', array_keys($syncData));
         $optionIdsToDetach = array_values(array_diff($editableOptionIds, $selectedOptionIds));
+        $assignedBeforeIds = \DB::table('product_option_assignments')
+            ->where('product_id', $product->product_id)
+            ->pluck('option_id')
+            ->map(fn ($id) => (int) $id)
+            ->toArray();
+
+        dd([
+            'product' => [
+                'id' => $product->product_id,
+                'language' => $product->language,
+                'product_type' => $product->product_type,
+            ],
+            'request_has_selected_options' => $request->has('selected_options'),
+            'request_selected_options_raw' => $request->input('selected_options'),
+            'request_options_keys' => array_map('intval', array_keys($request->input('options', []))),
+            'final_sync_option_ids' => $selectedOptionIds,
+            'editable_option_count' => count($editableOptionIds),
+            'editable_option_ids' => $editableOptionIds,
+            'filtered_out_selected_options' => array_values(array_diff(
+                collect($request->input('selected_options', []))->map(fn ($id) => (int) $id)->filter()->unique()->values()->all(),
+                $editableOptionIds
+            )),
+            'already_assigned_count' => count($assignedBeforeIds),
+            'already_assigned_ids' => $assignedBeforeIds,
+            'will_attach' => array_values(array_diff($selectedOptionIds, $assignedBeforeIds)),
+            'will_update' => array_values(array_intersect($selectedOptionIds, $assignedBeforeIds)),
+            'will_detach_from_editable_scope' => $optionIdsToDetach,
+        ]);
 
         $product->assignedOptions()->syncWithoutDetaching($syncData);
 
