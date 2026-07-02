@@ -430,7 +430,7 @@
             </div>
         @endif
 
-        <form action="{{ route('admin.products.options.update', $product->product_id) }}" method="POST">
+        <form id="product-option-assignment-form" action="{{ route('admin.products.options.update', $product->product_id) }}" method="POST">
             @csrf
             @method('PUT')
 
@@ -651,6 +651,26 @@
             });
         });
 
+        const optionAssignmentForm = document.getElementById('product-option-assignment-form');
+
+        if (optionAssignmentForm) {
+            optionAssignmentForm.addEventListener('submit', function() {
+                optionAssignmentForm
+                    .querySelectorAll('[data-generated-selected-option]')
+                    .forEach(function(input) {
+                        input.remove();
+                    });
+
+                document.querySelectorAll('.option-checkbox:checked').forEach(function(checkbox) {
+                    const hidden = document.createElement('input');
+                    hidden.type = 'hidden';
+                    hidden.name = 'selected_options[]';
+                    hidden.value = checkbox.value || checkbox.dataset.optionId;
+                    hidden.setAttribute('data-generated-selected-option', '1');
+                    optionAssignmentForm.appendChild(hidden);
+                });
+            });
+        }
         // Select All / Deselect All handlers
         document.querySelectorAll('.btn-select-all').forEach(function(btn) {
             btn.addEventListener('click', function() {

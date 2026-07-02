@@ -186,4 +186,14 @@ class ProductOptionAssignmentControllerTest extends TestCase
             'is_active' => 1,
         ]);
     }
+
+    public function test_option_assignment_form_collects_checked_options_before_submit(): void
+    {
+        $contents = file_get_contents(resource_path('views/admin/product_option_assignments/edit.blade.php'));
+
+        $this->assertStringContainsString('id="product-option-assignment-form"', $contents);
+        $this->assertStringContainsString("querySelectorAll('.option-checkbox:checked')", $contents);
+        $this->assertStringContainsString("hidden.name = 'selected_options[]';", $contents);
+        $this->assertStringContainsString('data-generated-selected-option', $contents);
+    }
 }
