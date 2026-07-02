@@ -144,14 +144,41 @@ class ProductOptionAssignmentController extends Controller
             ];
         }
 
+        $submittedOptionIds = array_map('intval', array_keys($syncData));
         $editableOptionIds = $this->editableOptionIdsFor($product)->all();
         $editableOptionIdLookup = array_flip($editableOptionIds);
+        $filteredOutOptionIds = array_values(array_diff($submittedOptionIds, $editableOptionIds));
+        $assignedBeforeIds = \DB::table('product_option_assignments')
+            ->where('product_id', $product->product_id)
+            ->pluck('option_id')
+            ->map(fn ($id) => (int) $id)
+            ->toArray();
+        $wouldAttachBeforeScopeFilter = array_values(array_diff($submittedOptionIds, $assignedBeforeIds));
+
         $syncData = array_intersect_key($syncData, $editableOptionIdLookup);
+        $selectedOptionIds = array_map('intval', array_keys($syncData));
+        $wouldAttachAfterScopeFilter = array_values(array_diff($selectedOptionIds, $assignedBeforeIds));
+        $optionIdsToDetach = array_values(array_diff($editableOptionIds, $selectedOptionIds));
+
+        dd([
+            'product' => [
+                'id' => $product->product_id,
+                'language' => $product->language,
+                'product_type' => $product->product_type,
+            ],
+            'request_option_count' => count($submittedOptionIds),
+            'request_option_ids' => $submittedOptionIds,
+            'editable_option_count' => count($editableOptionIds),
+            'editable_option_ids' => $editableOptionIds,
+            'filtered_out_by_scope' => $filteredOutOptionIds,
+            'already_assigned_count' => count($assignedBeforeIds),
+            'already_assigned_ids' => $assignedBeforeIds,
+            'would_attach_before_scope_filter' => $wouldAttachBeforeScopeFilter,
+            'would_attach_after_scope_filter' => $wouldAttachAfterScopeFilter,
+            'would_detach_from_editable_scope' => $optionIdsToDetach,
+        ]);
 
         $product->assignedOptions()->syncWithoutDetaching($syncData);
-
-        $selectedOptionIds = array_map('intval', array_keys($syncData));
-        $optionIdsToDetach = array_values(array_diff($editableOptionIds, $selectedOptionIds));
 
         if (! empty($optionIdsToDetach)) {
             $product->assignedOptions()->detach($optionIdsToDetach);
