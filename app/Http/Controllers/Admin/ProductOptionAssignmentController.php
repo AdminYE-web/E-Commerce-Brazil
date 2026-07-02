@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\OptionGroup;
 use App\Models\Product;
-use App\Models\ProductOption;
 use App\Models\ProductOptionGroupOrder;
 use Illuminate\Http\Request;
 
@@ -25,10 +24,10 @@ class ProductOptionAssignmentController extends Controller
         }])
             ->where('language', $language)
             ->where(function ($query) use ($productType) {
-                $query->where('product_type', $productType)
-                    ->orWhereNull('product_type')
-                    ->orWhere('product_type', 0);
-            })
+    $query->where('product_type', $productType)
+        ->orWhereNull('product_type')
+        ->orWhere('product_type', 0);
+})
             ->where('is_active', 1)
             ->get();
 
@@ -88,129 +87,148 @@ class ProductOptionAssignmentController extends Controller
             'assignedPivot'
         ));
     }
-
     public function update(Request $request, Product $product)
-    {
+{
+    $request->validate([
+        'options' => 'nullable|array',
+        'options.*.option_id' => 'required|exists:product_options,option_id',
+        'options.*.sort_order' => 'nullable|integer|min:0',
+        'options.*.is_default' => 'nullable|boolean',
+        'options.*.is_active' => 'nullable|boolean',
+        'options.*.qty_rule_type' => 'nullable|in:min,max,exact,range',
+        'options.*.min_qty' => 'nullable|integer|min:1',
+        'options.*.max_qty' => 'nullable|integer|min:1',
+        'options.*.exact_qty' => 'nullable|integer|min:1',
+    ]);
 
-        $request->validate([
-            'selected_options' => 'nullable|array',
+    $syncData = [];
 
-            'selected_options.*' => 'integer|exists:product_options,option_id',
+    foreach ($request->input('options', []) as $item) {
+        $optionId = (int) $item['option_id'];
 
-            'options' => 'nullable|array',
-            'options.*.option_id' => 'required|exists:product_options,option_id',
-            'options.*.sort_order' => 'nullable|integer|min:0',
-            'options.*.is_default' => 'nullable|boolean',
-            'options.*.is_active' => 'nullable|boolean',
-            'options.*.qty_rule_type' => 'nullable|in:min,max,exact,range',
-            'options.*.min_qty' => 'nullable|integer|min:1',
-            'options.*.max_qty' => 'nullable|integer|min:1',
-            'options.*.exact_qty' => 'nullable|integer|min:1',
-        ]);
+        $qtyRuleType = $item['qty_rule_type'] ?? null;
 
-        $syncData = [];
+        $minQty = null;
+        $maxQty = null;
+        $exactQty = null;
 
-        foreach ($request->input('options', []) as $item) {
-            $optionId = (int) $item['option_id'];
-
-            $qtyRuleType = $item['qty_rule_type'] ?? null;
-
-            $minQty = null;
-            $maxQty = null;
-            $exactQty = null;
-
-            if ($qtyRuleType === 'min') {
-                $minQty = ! empty($item['min_qty']) ? (int) $item['min_qty'] : null;
-            }
-
-            if ($qtyRuleType === 'max') {
-                $maxQty = ! empty($item['max_qty']) ? (int) $item['max_qty'] : null;
-            }
-
-            if ($qtyRuleType === 'exact') {
-                $exactQty = ! empty($item['exact_qty']) ? (int) $item['exact_qty'] : null;
-            }
-
-            if ($qtyRuleType === 'range') {
-                $minQty = ! empty($item['min_qty']) ? (int) $item['min_qty'] : null;
-                $maxQty = ! empty($item['max_qty']) ? (int) $item['max_qty'] : null;
-            }
-
-            $syncData[$optionId] = [
-                'sort_order' => $item['sort_order'] ?? 0,
-                'is_default' => ! empty($item['is_default']) ? 1 : 0,
-                'is_active' => ! empty($item['is_active']) ? 1 : 0,
-
-                'qty_rule_type' => $qtyRuleType,
-                'min_qty' => $minQty,
-                'max_qty' => $maxQty,
-                'exact_qty' => $exactQty,
-            ];
+        if ($qtyRuleType === 'min') {
+            $minQty = !empty($item['min_qty']) ? (int) $item['min_qty'] : null;
         }
 
-        $selectedOptionIds = collect($request->input('selected_options', []))
-            ->map(fn ($id) => (int) $id)
-            ->filter()
-            ->unique()
-            ->values()
-            ->all();
-
-        if (! $request->has('selected_options')) {
-            $selectedOptionIds = array_map('intval', array_keys($syncData));
+        if ($qtyRuleType === 'max') {
+            $maxQty = !empty($item['max_qty']) ? (int) $item['max_qty'] : null;
         }
 
-        foreach ($selectedOptionIds as $optionId) {
-            $syncData[$optionId] = $syncData[$optionId] ?? [
-                'sort_order' => 0,
-                'is_default' => 0,
-                'is_active' => 1,
-                'qty_rule_type' => null,
-                'min_qty' => null,
-                'max_qty' => null,
-                'exact_qty' => null,
-            ];
+        if ($qtyRuleType === 'exact') {
+            $exactQty = !empty($item['exact_qty']) ? (int) $item['exact_qty'] : null;
         }
 
-        $syncData = array_intersect_key($syncData, array_flip($selectedOptionIds));
-
-        $editableOptionIds = $this->editableOptionIdsFor($product)->all();
-        $editableOptionIdLookup = array_flip($editableOptionIds);
-        $syncData = array_intersect_key($syncData, $editableOptionIdLookup);
-
-        $selectedOptionIds = array_map('intval', array_keys($syncData));
-        $optionIdsToDetach = array_values(array_diff($editableOptionIds, $selectedOptionIds));
-
-        $product->assignedOptions()->syncWithoutDetaching($syncData);
-
-        if (! empty($optionIdsToDetach)) {
-            $product->assignedOptions()->detach($optionIdsToDetach);
+        if ($qtyRuleType === 'range') {
+            $minQty = !empty($item['min_qty']) ? (int) $item['min_qty'] : null;
+            $maxQty = !empty($item['max_qty']) ? (int) $item['max_qty'] : null;
         }
 
-        return redirect()
-            ->route('admin.products.index')
-            ->with('success', 'Product options updated successfully.');
+        $syncData[$optionId] = [
+            'sort_order' => $item['sort_order'] ?? 0,
+            'is_default' => !empty($item['is_default']) ? 1 : 0,
+            'is_active' => !empty($item['is_active']) ? 1 : 0,
+            'qty_rule_type' => $qtyRuleType,
+            'min_qty' => $minQty,
+            'max_qty' => $maxQty,
+            'exact_qty' => $exactQty,
+        ];
     }
 
-    private function editableOptionIdsFor(Product $product)
-    {
-        $language = $product->language ?? session('admin_product_language', 'pt');
-        $productType = (int) $product->product_type;
+    $result = $product->assignedOptions()->sync($syncData);
 
-        return ProductOption::query()
-            ->where('product_options.language', $language)
-            ->where('product_options.is_active', 1)
-            ->whereHas('group', function ($query) use ($language, $productType) {
-                $query->where('language', $language)
-                    ->where(function ($query) use ($productType) {
-                        $query->where('product_type', $productType)
-                            ->orWhereNull('product_type')
-                            ->orWhere('product_type', 0);
-                    })
-                    ->where('is_active', 1);
-            })
-            ->pluck('option_id')
-            ->map(fn ($id) => (int) $id);
-    }
+    dd([
+        'product_id' => $product->product_id,
+        'product_language' => $product->language,
+        'product_type' => $product->product_type,
+
+        'request_count' => count($request->input('options', [])),
+        'request_option_ids' => array_keys($request->input('options', [])),
+
+        'sync_count' => count($syncData),
+        'sync_option_ids' => array_keys($syncData),
+
+        'sync_result' => $result,
+
+        'pivot_table' => $product->assignedOptions()->getTable(),
+
+        'saved_rows' => \DB::table($product->assignedOptions()->getTable())
+            ->where('product_id', $product->product_id)
+            ->orderBy('option_id')
+            ->get(),
+    ]);
+}
+
+    // public function update(Request $request, Product $product)
+    // {
+        
+        
+    //     $request->validate([
+    //         'options' => 'nullable|array',
+    //         'options.*.option_id' => 'required|exists:product_options,option_id',
+    //         'options.*.sort_order' => 'nullable|integer|min:0',
+    //         'options.*.is_default' => 'nullable|boolean',
+    //         'options.*.is_active' => 'nullable|boolean',
+    //         'options.*.qty_rule_type' => 'nullable|in:min,max,exact,range',
+    //         'options.*.min_qty' => 'nullable|integer|min:1',
+    //         'options.*.max_qty' => 'nullable|integer|min:1',
+    //         'options.*.exact_qty' => 'nullable|integer|min:1',
+    //     ]);
+
+    
+
+    //     $syncData = [];
+
+    //     foreach ($request->input('options', []) as $item) {
+    //         $optionId = (int) $item['option_id'];
+
+    //         $qtyRuleType = $item['qty_rule_type'] ?? null;
+
+    //         $minQty = null;
+    //         $maxQty = null;
+    //         $exactQty = null;
+
+    //         if ($qtyRuleType === 'min') {
+    //             $minQty = ! empty($item['min_qty']) ? (int) $item['min_qty'] : null;
+    //         }
+
+    //         if ($qtyRuleType === 'max') {
+    //             $maxQty = ! empty($item['max_qty']) ? (int) $item['max_qty'] : null;
+    //         }
+
+    //         if ($qtyRuleType === 'exact') {
+    //             $exactQty = ! empty($item['exact_qty']) ? (int) $item['exact_qty'] : null;
+    //         }
+
+    //         if ($qtyRuleType === 'range') {
+    //             $minQty = ! empty($item['min_qty']) ? (int) $item['min_qty'] : null;
+    //             $maxQty = ! empty($item['max_qty']) ? (int) $item['max_qty'] : null;
+    //         }
+
+    //         $syncData[$optionId] = [
+    //             'sort_order' => $item['sort_order'] ?? 0,
+    //             'is_default' => ! empty($item['is_default']) ? 1 : 0,
+    //             'is_active' => ! empty($item['is_active']) ? 1 : 0,
+
+    //             'qty_rule_type' => $qtyRuleType,
+    //             'min_qty' => $minQty,
+    //             'max_qty' => $maxQty,
+    //             'exact_qty' => $exactQty,
+    //         ];
+    //     }
+
+    //     $product->assignedOptions()->sync($syncData);
+        
+
+    //     return redirect()
+    //         ->route('admin.products.index')
+    //         ->with('success', 'Product options updated successfully.');
+    // }
 
     public function updateGroupSort(Request $request, Product $product)
     {
