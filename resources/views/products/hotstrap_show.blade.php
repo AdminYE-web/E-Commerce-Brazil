@@ -4133,25 +4133,32 @@ if (input.classList.contains('js-color-option-input')) {
                 | กลุ่มสีต้องเลือกให้ครบทุกสีที่แสดงอยู่ก่อน ถึงจะ auto next
                 |--------------------------------------------------------------------------
                 */
-                const colorInputs = Array.from(
-                    groupEl.querySelectorAll('.js-color-option-input:not(:disabled)')
-                ).filter(function(input) {
-                    const label = input.closest('.option-color-item');
+            const colorList = groupEl.querySelector('.option-color-list');
+const colorInputs = Array.from(
+    groupEl.querySelectorAll('.js-color-option-input:not(:disabled)')
+).filter(function(input) {
+    const label = input.closest('.option-color-item');
 
-                    if (!label) {
-                        return false;
-                    }
+    if (!label) {
+        return false;
+    }
 
-                    return label.style.display !== 'none';
-                });
+    return label.style.display !== 'none';
+});
 
-                if (colorInputs.length) {
-                    const checkedColors = colorInputs.filter(function(input) {
-                        return input.checked;
-                    });
+if (colorInputs.length) {
+    const checkedColors = colorInputs.filter(function(input) {
+        return input.checked;
+    });
 
-                    return checkedColors.length === colorInputs.length;
-                }
+    if (colorList && colorList.dataset.isColorPrint === '1') {
+        const maxColorSelect = parseInt(colorList.dataset.maxColorSelect || 6);
+
+        return checkedColors.length >= maxColorSelect;
+    }
+
+    return checkedColors.length === colorInputs.length;
+}
 
                 /*
                 |--------------------------------------------------------------------------
