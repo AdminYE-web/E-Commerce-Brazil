@@ -142,8 +142,8 @@ class ProductOptionAssignmentController extends Controller
             ];
         }
 
-        $result = $product->assignedOptions()->sync($syncData);
-        dd($result);
+        $product->assignedOptions()->sync($syncData);
+        
 
         return redirect()
             ->route('admin.products.index')
