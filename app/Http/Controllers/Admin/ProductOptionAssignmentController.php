@@ -23,7 +23,11 @@ class ProductOptionAssignmentController extends Controller
                 ->orderBy('option_name');
         }])
             ->where('language', $language)
-            ->where('product_type', $productType)
+            ->where(function ($query) use ($productType) {
+    $query->where('product_type', $productType)
+        ->orWhereNull('product_type')
+        ->orWhere('product_type', 0);
+})
             ->where('is_active', 1)
             ->get();
 
