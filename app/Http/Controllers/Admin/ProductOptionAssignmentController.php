@@ -165,70 +165,70 @@ class ProductOptionAssignmentController extends Controller
 // }
 
     public function update(Request $request, Product $product)
-    {
-        
-        
-        $request->validate([
-            'options' => 'nullable|array',
-            'options.*.option_id' => 'required|exists:product_options,option_id',
-            'options.*.sort_order' => 'nullable|integer|min:0',
-            'options.*.is_default' => 'nullable|boolean',
-            'options.*.is_active' => 'nullable|boolean',
-            'options.*.qty_rule_type' => 'nullable|in:min,max,exact,range',
-            'options.*.min_qty' => 'nullable|integer|min:1',
-            'options.*.max_qty' => 'nullable|integer|min:1',
-            'options.*.exact_qty' => 'nullable|integer|min:1',
-        ]);
+{
+    $options = json_decode($request->input('options_json', '[]'), true);
 
-    
+    if (!is_array($options)) {
+        $options = [];
+    }
 
-        $syncData = [];
+    validator(['options' => $options], [
+        'options' => 'nullable|array',
+        'options.*.option_id' => 'required|exists:product_options,option_id',
+        'options.*.sort_order' => 'nullable|integer|min:0',
+        'options.*.is_default' => 'nullable|boolean',
+        'options.*.is_active' => 'nullable|boolean',
+        'options.*.qty_rule_type' => 'nullable|in:min,max,exact,range',
+        'options.*.min_qty' => 'nullable|integer|min:1',
+        'options.*.max_qty' => 'nullable|integer|min:1',
+        'options.*.exact_qty' => 'nullable|integer|min:1',
+    ])->validate();
 
-        foreach ($request->input('options', []) as $item) {
-            $optionId = (int) $item['option_id'];
+    $syncData = [];
 
-            $qtyRuleType = $item['qty_rule_type'] ?? null;
+    foreach ($options as $item) {
+        $optionId = (int) $item['option_id'];
 
-            $minQty = null;
-            $maxQty = null;
-            $exactQty = null;
+        $qtyRuleType = $item['qty_rule_type'] ?? null;
 
-            if ($qtyRuleType === 'min') {
-                $minQty = ! empty($item['min_qty']) ? (int) $item['min_qty'] : null;
-            }
+        $minQty = null;
+        $maxQty = null;
+        $exactQty = null;
 
-            if ($qtyRuleType === 'max') {
-                $maxQty = ! empty($item['max_qty']) ? (int) $item['max_qty'] : null;
-            }
-
-            if ($qtyRuleType === 'exact') {
-                $exactQty = ! empty($item['exact_qty']) ? (int) $item['exact_qty'] : null;
-            }
-
-            if ($qtyRuleType === 'range') {
-                $minQty = ! empty($item['min_qty']) ? (int) $item['min_qty'] : null;
-                $maxQty = ! empty($item['max_qty']) ? (int) $item['max_qty'] : null;
-            }
-
-            $syncData[$optionId] = [
-                'sort_order' => $item['sort_order'] ?? 0,
-                'is_default' => ! empty($item['is_default']) ? 1 : 0,
-                'is_active' => ! empty($item['is_active']) ? 1 : 0,
-
-                'qty_rule_type' => $qtyRuleType,
-                'min_qty' => $minQty,
-                'max_qty' => $maxQty,
-                'exact_qty' => $exactQty,
-            ];
+        if ($qtyRuleType === 'min') {
+            $minQty = !empty($item['min_qty']) ? (int) $item['min_qty'] : null;
         }
 
-        $product->assignedOptions()->sync($syncData);
-        
+        if ($qtyRuleType === 'max') {
+            $maxQty = !empty($item['max_qty']) ? (int) $item['max_qty'] : null;
+        }
 
-        return redirect()
-            ->route('admin.products.index')
-            ->with('success', 'Product options updated successfully.');
+        if ($qtyRuleType === 'exact') {
+            $exactQty = !empty($item['exact_qty']) ? (int) $item['exact_qty'] : null;
+        }
+
+        if ($qtyRuleType === 'range') {
+            $minQty = !empty($item['min_qty']) ? (int) $item['min_qty'] : null;
+            $maxQty = !empty($item['max_qty']) ? (int) $item['max_qty'] : null;
+        }
+
+        $syncData[$optionId] = [
+            'sort_order' => $item['sort_order'] ?? 0,
+            'is_default' => !empty($item['is_default']) ? 1 : 0,
+            'is_active' => !empty($item['is_active']) ? 1 : 0,
+            'qty_rule_type' => $qtyRuleType,
+            'min_qty' => $minQty,
+            'max_qty' => $maxQty,
+            'exact_qty' => $exactQty,
+        ];
     }
+
+    $product->assignedOptions()->sync($syncData);
+
+    return redirect()
+        ->route('admin.products.index')
+        ->with('success', 'Product options updated successfully.');
+}
 
     public function updateGroupSort(Request $request, Product $product)
     {
