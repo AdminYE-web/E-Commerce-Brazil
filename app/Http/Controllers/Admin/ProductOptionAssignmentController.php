@@ -86,7 +86,7 @@ class ProductOptionAssignmentController extends Controller
 
     public function update(Request $request, Product $product)
     {
-        dd($request->all());
+        
         $request->validate([
             'options' => 'nullable|array',
             'options.*.option_id' => 'required|exists:product_options,option_id',
