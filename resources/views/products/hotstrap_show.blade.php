@@ -1752,7 +1752,7 @@
                     {{ in_array((int) $option->option_id, $selectedColorOptionIds, true) || (!$editingCartItem && $option->pivot->is_default) ? 'checked' : '' }}>
 
                 @php
-    $isPantoneDic = preg_match('/PANTONE|DIC/i', $option->option_name);
+   $isPantoneDic = preg_match('/^PANTONE\s*\/\s*DIC$/i', trim($option->option_name));
 @endphp
 
 @if ($isPantoneDic)

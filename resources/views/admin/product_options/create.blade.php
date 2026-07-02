@@ -297,13 +297,13 @@
                     <label>Additional Price With Tax</label>
 
                     <input type="number" step="0.01" name="additional_price_with_tax"
-                        value="{{ old('additional_price_with_tax') }}" min="0" placeholder="like 220">
+                        value="{{ old('additional_price_with_tax') }}" min="0" placeholder="For example 220">
                 </div>
                 <div class="form-group">
                     <label>Free From Quantity</label>
 
                     <input type="number" name="free_from_qty" value="{{ old('free_from_qty') }}" min="1"
-                        placeholder="like 100">
+                        placeholder="For example 100">
 
                     <small style="display:block; margin-top:6px; color:#6b7280;">
                         Entering 100 means that for orders of 100 units or more, the Additional Price for this option will be free.
