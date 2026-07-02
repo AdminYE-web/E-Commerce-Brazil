@@ -1405,6 +1405,25 @@
 .admin-preview-hidden {
     display: none !important;
 }
+.option-color-name-btn {
+    min-height: 34px;
+    padding: 0 14px;
+    border: 1px solid #d9dde7;
+    border-radius: 999px;
+    background: #fff;
+    color: #111827;
+    font-size: 13px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.option-color-item input:checked + .option-color-name-btn {
+    border-color: #3166f6;
+    box-shadow: 0 0 0 2px rgba(49, 102, 246, 0.18);
+    color: #3166f6;
+}
     </style>
 @endsection
 
@@ -1730,8 +1749,18 @@
                     data-free-from-qty="{{ $option->free_from_qty }}"
                     {{ in_array((int) $option->option_id, $selectedColorOptionIds, true) || (!$editingCartItem && $option->pivot->is_default) ? 'checked' : '' }}>
 
-                <span class="color-circle"
-                    style="background: {{ $option->color_code ?: '#ffffff' }};"></span>
+                @php
+    $isPantoneDic = preg_match('/PANTONE|DIC/i', $option->option_name);
+@endphp
+
+@if ($isPantoneDic)
+    <span class="option-color-name-btn">
+        {{ $option->option_name }}
+    </span>
+@else
+    <span class="color-circle"
+        style="background: {{ $option->color_code ?: '#ffffff' }};"></span>
+@endif
             </label>
         @endforeach
 
