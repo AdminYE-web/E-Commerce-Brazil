@@ -826,6 +826,7 @@
             line-height: 1.7;
             color: #111;
             padding: 12px 16px;
+            white-space: pre-line;
         }
 
         .grouped-buttons-wrapper {
@@ -881,6 +882,7 @@
             line-height: 1.7;
             color: #111;
             padding: 12px 16px;
+            white-space: pre-line;
         }
 
         .quantity-add-cart-section {
