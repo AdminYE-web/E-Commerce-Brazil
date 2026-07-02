@@ -9,6 +9,8 @@ $currentLanguageFlag = $languageFlags[$currentLanguage] ?? 'br';
 
 $cart = session('cart', []);
 $cartCount = count($cart);
+$headerLogoUrl = asset('assets/images/home/logo.png');
+$headerLogoAlt = config('app.name', 'HotStrap');
 @endphp
 
 
@@ -34,7 +36,7 @@ $cartCount = count($cart);
 
                 <!-- Logo -->
                 <a class="navbar-brand" href="{{ route('home') }}">
-                    <div class="logo-box"></div>
+                    <img src="{{ $headerLogoUrl }}" alt="{{ $headerLogoAlt }}" class="logo-box">
                 </a>
 
                 <!-- Menu -->
@@ -101,7 +103,7 @@ $cartCount = count($cart);
                         title="{{ __('messages.footer.account') }}">
                         <img src="{{ asset('assets/images/icon/account-icon.png') }}" alt="">
                     </a>
-                    <div class="language-dropdown">
+                    {{-- <div class="language-dropdown">
                         <button type="button" class="language-toggle">
                             <span class="fi fi-{{ $currentLanguageFlag }} lang-flag-toggle"></span>
                             <i class="bi bi-chevron-down"></i>
@@ -116,7 +118,7 @@ $cartCount = count($cart);
                             </a>
                             @endforeach
                         </div>
-                    </div>
+                    </div> --}}
                 </div>
 
             </nav>
@@ -369,7 +371,7 @@ $cartCount = count($cart);
 
             <!-- Logo -->
             <a href="{{ route('home') }}" class="mobile-logo-wrap">
-                <div class="logo-box mobile-logo"></div>
+                <img src="{{ $headerLogoUrl }}" alt="{{ $headerLogoAlt }}" class="logo-box mobile-logo">
             </a>
 
             <!-- Right icons -->
@@ -392,7 +394,7 @@ $cartCount = count($cart);
                     <img src="{{ asset('assets/images/icon/account-icon.png') }}" alt="">
                 </a>
 
-                <div class="language-dropdown">
+                {{-- <div class="language-dropdown">
                     <button type="button" class="language-toggle">
                         <span class="fi fi-{{ $currentLanguageFlag }} lang-flag-toggle"></span>
                         <i class="bi bi-chevron-down"></i>
@@ -407,7 +409,7 @@ $cartCount = count($cart);
                         </a>
                         @endforeach
                     </div>
-                </div>
+                </div> --}}
             </div>
         </div>
 
@@ -426,7 +428,7 @@ $cartCount = count($cart);
 <div class="offcanvas offcanvas-start mobile-offcanvas" tabindex="-1" id="mobileMenu">
     <div class="offcanvas-header mobile-menu-header">
         <a href="{{ route('home') }}" class="mobile-menu-logo">
-            <div class="logo-box"></div>
+            <img src="{{ $headerLogoUrl }}" alt="{{ $headerLogoAlt }}" class="logo-box">
         </a>
 
         <button type="button" class="btn-close custom-close" data-bs-dismiss="offcanvas"

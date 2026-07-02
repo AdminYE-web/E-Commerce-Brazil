@@ -1730,7 +1730,9 @@
             ->toArray();
     @endphp
 
-    <div class="option-color-list">
+    <div class="option-color-list"
+    data-is-color-print="{{ trim($groupName) === 'Impressão a cores' ? 1 : 0 }}"
+    data-max-color-select="{{ trim($groupName) === 'Impressão a cores' ? 6 : '' }}">
         @foreach ($options as $option)
             <label class="option-color-item" title="{{ $option->option_name }}">
                 <input type="checkbox"
@@ -2126,6 +2128,7 @@
 
 @section('js')
     <script>
+        
         const priceRules = @json($priceRules ?? []);
         const optionDependencies = @json($dependencies ?? []);
 
@@ -4280,6 +4283,37 @@ if (input.classList.contains('js-color-option-input')) {
             applyQuantityRuleLock();
             updateSummary();
         });
+
+        document.querySelectorAll('.js-color-option-input').forEach(function(input) {
+    input.addEventListener('change', function() {
+        const colorList = input.closest('.option-color-list');
+
+        if (!colorList) {
+            return;
+        }
+
+        const isColorPrint = colorList.dataset.isColorPrint === '1';
+        const maxColorSelect = parseInt(colorList.dataset.maxColorSelect || 0);
+
+        if (!isColorPrint || !maxColorSelect) {
+            return;
+        }
+
+        const checkedColors = colorList.querySelectorAll('.js-color-option-input:checked');
+
+        if (checkedColors.length > maxColorSelect) {
+            input.checked = false;
+
+            alert('เลือกสีได้สูงสุด ' + maxColorSelect + ' สี');
+        }
+
+        updateSummary();
+
+        if (typeof applyQuantityRuleLock === 'function') {
+            applyQuantityRuleLock();
+        }
+    });
+});
         
     </script>
     @if ($isAdminPreview ?? false)
@@ -4305,6 +4339,8 @@ if (input.classList.contains('js-color-option-input')) {
                 closeBtn.classList.add('admin-preview-hidden');
             });
         });
+
+        
     </script>
 @endif
 @endsection

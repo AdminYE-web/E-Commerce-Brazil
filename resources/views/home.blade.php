@@ -449,7 +449,7 @@
                 {{-- <div class="recommended-swiper-pagination"></div> --}}
             </div>
             <div class="text-center mt-4">
-                <a href="{{ route('products.index') }}" class="btn hero-cta">
+                <a href="{{ route('products.index', ['product_type' => 1]) }}" class="btn hero-cta">
                     <span>{{ __('messages.home.view_more') }}</span>
                 </a>
             </div>
@@ -518,7 +518,7 @@
                 {{-- <div class="recommended-swiper-pagination"></div> --}}
             </div>
             <div class="text-center mt-4">
-                <a href="{{ route('products.index') }}" class="btn hero-cta">
+                <a href="{{ route('products.index', ['product_type' => 2]) }}" class="btn hero-cta">
                     <span>{{ __('messages.home.view_more') }}</span>
                 </a>
             </div>
