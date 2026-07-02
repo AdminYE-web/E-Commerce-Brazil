@@ -142,7 +142,7 @@ class ProductOptionAssignmentController extends Controller
             ];
         }
 
-        $product->assignedOptions()->sync($syncData);
+        $result = $product->assignedOptions()->sync($syncData);
         dd($result);
 
         return redirect()
