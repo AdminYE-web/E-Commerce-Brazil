@@ -282,11 +282,12 @@
                     <small>ใช้สำหรับผูก option เดียวกันข้ามภาษา</small>
                 </div>
 
-                <div class="form-group">
-                    <label>Option Name</label>
-
-                    <input type="text" name="option_name" value="{{ old('option_name') }}" placeholder="For example, a rigid type.">
-                </div>
+                <textarea 
+    name="option_name" 
+    rows="4"
+    class="form-control"
+    placeholder="For example, a rigid type."
+>{{ old('option_name') }}</textarea>
 
                 <div class="form-group">
                     <label>Additional Price</label>

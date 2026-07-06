@@ -306,6 +306,7 @@
 
         .option-button-item span {
             font-size: 16px;
+              white-space: pre-line;
         }
 
         .option-color-list {

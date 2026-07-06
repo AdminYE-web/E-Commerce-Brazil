@@ -350,11 +350,14 @@
                     <input type="text" name="option_code" value="{{ old('option_code', $option->option_code) }}">
                 </div>
 
-                <div class="form-group">
-                    <label>Option Name</label>
+               <div class="form-group">
+    <label>Option Name</label>
 
-                    <input type="text" name="option_name" value="{{ old('option_name', $option->option_name) }}">
-                </div>
+    <textarea 
+        name="option_name"
+        rows="4"
+    >{{ old('option_name', $option->option_name) }}</textarea>
+</div>
                 <div class="form-group" style="display: none">
     <label>Translation Key</label>
     <input type="text"
