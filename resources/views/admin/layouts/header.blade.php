@@ -41,7 +41,7 @@
         ];
     @endphp
 
-    <div class="admin-language-dropdown">
+    <div class="admin-language-dropdown"  style="display:none;">
         <button type="button" class="admin-language-btn">
             {{ $languageLabels[$currentProductLanguage] ?? 'Portuguese' }} ▾
         </button>
