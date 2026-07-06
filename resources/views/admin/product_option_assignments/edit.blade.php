@@ -403,6 +403,24 @@
             border-radius: 12px;
             padding: 10px;
         }
+        .option-scrollspy-search {
+    width: 100%;
+    margin-bottom: 8px;
+    padding: 9px 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 13px;
+    outline: none;
+    background: #fff;
+
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+.option-scrollspy-search:focus {
+    border-color: var(--accent);
+}
     </style>
 @endsection
 
@@ -609,13 +627,19 @@
                     @endforeach
                 </div>
 
-                <nav class="option-scrollspy">
-                    @foreach ($groups as $group)
-                        <a href="#option-group-{{ $group->option_group_id }}">
-                            {{ $group->group_name }}
-                        </a>
-                    @endforeach
-                </nav>
+               <nav class="option-scrollspy">
+    <input type="text"
+        id="optionGroupSearch"
+        class="option-scrollspy-search"
+        placeholder="Search option group...">
+
+    @foreach ($groups as $group)
+        <a href="#option-group-{{ $group->option_group_id }}"
+            data-search-text="{{ strtolower($group->group_name . ' ' . $group->group_code) }}">
+            {{ $group->group_name }}
+        </a>
+    @endforeach
+</nav>
             </div>
 
             <div class="form-actions">
@@ -1011,5 +1035,25 @@
                 input.disabled = true;
             });
         });
+        document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('optionGroupSearch');
+    const navLinks = document.querySelectorAll('.option-scrollspy a');
+
+    if (!searchInput) return;
+
+    searchInput.addEventListener('input', function() {
+        const keyword = this.value.toLowerCase().trim();
+
+        navLinks.forEach(function(link) {
+            const text = link.dataset.searchText || link.textContent.toLowerCase();
+
+            if (text.includes(keyword)) {
+                link.style.display = 'block';
+            } else {
+                link.style.display = 'none';
+            }
+        });
+    });
+});
     </script>
 @endsection
