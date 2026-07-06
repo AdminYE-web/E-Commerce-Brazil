@@ -126,8 +126,8 @@
 
             background: rgba(255, 255, 255, 0.96);
             /* backdrop-filter: blur(8px);
-                        border-top: 1px solid var(--border);
-                        box-shadow: 0 -8px 20px rgba(15, 23, 42, 0.08); */
+                            border-top: 1px solid var(--border);
+                            box-shadow: 0 -8px 20px rgba(15, 23, 42, 0.08); */
         }
 
         .btn-outline,
@@ -430,10 +430,11 @@
             </div>
         @endif
 
-        <form id="product-options-form" action="{{ route('admin.products.options.update', $product->product_id) }}" method="POST">
+        <form id="product-options-form" action="{{ route('admin.products.options.update', $product->product_id) }}"
+            method="POST">
             @csrf
             @method('PUT')
-<input type="hidden" name="options_json" id="options_json">
+            <input type="hidden" name="options_json" id="options_json">
             <div class="options-layout">
                 <div class="option-group-list">
                     @foreach ($groups as $group)
@@ -451,6 +452,11 @@
 
                                 <div class="option-group-actions" style="display: flex; gap: 8px;">
                                     <button type="button" class="option-group-toggle">+</button>
+
+                                    <button type="button" class="btn-outline btn-move-after-active"
+                                        style="min-height: 28px; padding: 4px 10px; font-size: 12px; border-radius: 6px;">
+                                        move top
+                                    </button>
                                     <button type="button" class="btn-outline btn-select-all"
                                         style="min-height: 28px; padding: 4px 10px; font-size: 12px; border-radius: 6px;">
                                         select all
@@ -711,67 +717,151 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const groupList = document.querySelector('.option-group-list');
+    const groupList = document.querySelector('.option-group-list');
 
-            if (groupList && typeof Sortable !== 'undefined') {
-                new Sortable(groupList, {
-                    animation: 160,
-                    handle: '.group-drag-handle',
-                    ghostClass: 'sortable-ghost',
-                    chosenClass: 'sortable-chosen',
+    if (groupList && typeof Sortable !== 'undefined') {
+        new Sortable(groupList, {
+            animation: 160,
+            handle: '.group-drag-handle',
+            ghostClass: 'sortable-ghost',
+            chosenClass: 'sortable-chosen',
 
-                    // ทำให้ลากใกล้ขอบจอแล้ว scroll ตาม
-                    scroll: true,
-                    forceAutoScrollFallback: true,
-                    scrollSensitivity: 120,
-                    scrollSpeed: 18,
-                    bubbleScroll: true,
+            // ทำให้ลากใกล้ขอบจอแล้ว scroll ตาม
+            scroll: true,
+            forceAutoScrollFallback: true,
+            scrollSensitivity: 120,
+            scrollSpeed: 18,
+            bubbleScroll: true,
 
-                    onEnd: function() {
-                        updateProductGroupSortOrder();
-                    }
-                });
-            }
-
-            function updateProductGroupSortOrder() {
-                const cards = document.querySelectorAll('.option-group-card[data-group-id]');
-
-                const items = Array.from(cards).map(function(card, index) {
-                    return {
-                        option_group_id: card.dataset.groupId,
-                        sort_order: index + 1
-                    };
-                });
-
-                groupList.classList.add('is-saving');
-
-                fetch('{{ route('admin.products.option-groups.updateSort', $product->product_id) }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Accept': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            items: items
-                        })
-                    })
-                    .then(function(response) {
-                        if (!response.ok) {
-                            throw new Error('Unable to update group order.');
-                        }
-
-                        return response.json();
-                    })
-                    .catch(function(error) {
-                        console.error(error);
-                        alert('Unable to update group order.');
-                    })
-                    .finally(function() {
-                        groupList.classList.remove('is-saving');
-                    });
+            onEnd: function() {
+                updateProductGroupSortOrder();
+                syncScrollspyOrder();
             }
         });
+    }
+
+    /**
+     * เช็คว่า group นี้มี option ที่เปิดใช้งานอยู่ไหม
+     */
+    function isGroupActive(card) {
+        const checkedOptions = card.querySelectorAll('.option-checkbox:checked');
+
+        return Array.from(checkedOptions).some(function(checkbox) {
+            const optionId = checkbox.dataset.optionId;
+            const setting = card.querySelector('.option-setting-' + optionId);
+
+            if (!setting) return false;
+
+            const activeCheckbox = setting.querySelector('[name$="[is_active]"]');
+
+            // ถ้าไม่มี checkbox Active ให้ถือว่า option ที่ checked คือ active
+            return !activeCheckbox || activeCheckbox.checked;
+        });
+    }
+
+    /**
+     * ย้าย group ที่กด ไปต่อจาก group ล่าสุดที่มี option active
+     */
+    function moveGroupAfterLastActive(card) {
+        if (!groupList || !card) return;
+
+        const cards = Array.from(
+            groupList.querySelectorAll('.option-group-card[data-group-id]')
+        );
+
+        const lastActiveCard = cards
+            .filter(function(item) {
+                return item !== card && isGroupActive(item);
+            })
+            .pop();
+
+        if (lastActiveCard) {
+            lastActiveCard.insertAdjacentElement('afterend', card);
+        } else {
+            groupList.prepend(card);
+        }
+
+        syncScrollspyOrder();
+        updateProductGroupSortOrder();
+
+        card.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+    }
+
+    /**
+     * จัดลำดับ sidebar ขวาให้ตรงกับ group ที่ถูกย้าย
+     */
+    function syncScrollspyOrder() {
+        const sidebar = document.querySelector('.option-scrollspy');
+
+        if (!sidebar) return;
+
+        document.querySelectorAll('.option-group-card[data-group-id]').forEach(function(card) {
+            const link = sidebar.querySelector('a[href="#' + card.id + '"]');
+
+            if (link) {
+                sidebar.appendChild(link);
+            }
+        });
+    }
+
+    /**
+     * ปุ่มย้าย group ไปต่อจาก active group ล่าสุด
+     */
+    document.querySelectorAll('.btn-move-after-active').forEach(function(button) {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const card = this.closest('.option-group-card');
+
+            moveGroupAfterLastActive(card);
+        });
+    });
+
+    function updateProductGroupSortOrder() {
+        if (!groupList) return;
+
+        const cards = document.querySelectorAll('.option-group-card[data-group-id]');
+
+        const items = Array.from(cards).map(function(card, index) {
+            return {
+                option_group_id: card.dataset.groupId,
+                sort_order: index + 1
+            };
+        });
+
+        groupList.classList.add('is-saving');
+
+        fetch('{{ route('admin.products.option-groups.updateSort', $product->product_id) }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({
+                    items: items
+                })
+            })
+            .then(function(response) {
+                if (!response.ok) {
+                    throw new Error('Unable to update group order.');
+                }
+
+                return response.json();
+            })
+            .catch(function(error) {
+                console.error(error);
+                alert('Unable to update group order.');
+            })
+            .finally(function() {
+                groupList.classList.remove('is-saving');
+            });
+    }
+});
         document.querySelectorAll('.option-sortable-list').forEach(function(optionList) {
             new Sortable(optionList, {
                 animation: 160,
@@ -891,33 +981,35 @@
         });
     </script>
     <script>
-document.getElementById('product-options-form').addEventListener('submit', function () {
-    const options = [];
+        document.getElementById('product-options-form').addEventListener('submit', function() {
+            const options = [];
 
-    document.querySelectorAll('.option-checkbox:checked').forEach(function (checkbox) {
-        const optionId = checkbox.dataset.optionId;
-        const setting = document.querySelector('.option-setting-' + optionId);
+            document.querySelectorAll('.option-checkbox:checked').forEach(function(checkbox) {
+                const optionId = checkbox.dataset.optionId;
+                const setting = document.querySelector('.option-setting-' + optionId);
 
-        if (!setting) return;
+                if (!setting) return;
 
-        options.push({
-            option_id: parseInt(optionId),
-            sort_order: parseInt(setting.querySelector('[name$="[sort_order]"]')?.value || 0),
-            is_default: setting.querySelector('[name$="[is_default]"]')?.checked ? 1 : 0,
-            is_active: setting.querySelector('[name$="[is_active]"]')?.checked ? 1 : 0,
-            qty_rule_type: setting.querySelector('[name$="[qty_rule_type]"]')?.value || null,
-            min_qty: setting.querySelector('[name$="[min_qty]"]')?.value || null,
-            max_qty: setting.querySelector('[name$="[max_qty]"]')?.value || null,
-            exact_qty: setting.querySelector('[name$="[exact_qty]"]')?.value || null,
+                options.push({
+                    option_id: parseInt(optionId),
+                    sort_order: parseInt(setting.querySelector('[name$="[sort_order]"]')?.value ||
+                        0),
+                    is_default: setting.querySelector('[name$="[is_default]"]')?.checked ? 1 : 0,
+                    is_active: setting.querySelector('[name$="[is_active]"]')?.checked ? 1 : 0,
+                    qty_rule_type: setting.querySelector('[name$="[qty_rule_type]"]')?.value ||
+                        null,
+                    min_qty: setting.querySelector('[name$="[min_qty]"]')?.value || null,
+                    max_qty: setting.querySelector('[name$="[max_qty]"]')?.value || null,
+                    exact_qty: setting.querySelector('[name$="[exact_qty]"]')?.value || null,
+                });
+            });
+
+            document.getElementById('options_json').value = JSON.stringify(options);
+
+            // กันไม่ให้ input options[...] เดิมถูกส่งไปด้วย
+            document.querySelectorAll('[name^="options["]').forEach(function(input) {
+                input.disabled = true;
+            });
         });
-    });
-
-    document.getElementById('options_json').value = JSON.stringify(options);
-
-    // กันไม่ให้ input options[...] เดิมถูกส่งไปด้วย
-    document.querySelectorAll('[name^="options["]').forEach(function (input) {
-        input.disabled = true;
-    });
-});
-</script>
+    </script>
 @endsection

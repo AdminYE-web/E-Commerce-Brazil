@@ -430,10 +430,10 @@
             </div>
         @endif
 
-        <form action="{{ route('admin.products.options.update', $product->product_id) }}" method="POST">
+        <form id="product-options-form" action="{{ route('admin.products.options.update', $product->product_id) }}" method="POST">
             @csrf
             @method('PUT')
-
+<input type="hidden" name="options_json" id="options_json">
             <div class="options-layout">
                 <div class="option-group-list">
                     @foreach ($groups as $group)
@@ -890,4 +890,34 @@
             });
         });
     </script>
+    <script>
+document.getElementById('product-options-form').addEventListener('submit', function () {
+    const options = [];
+
+    document.querySelectorAll('.option-checkbox:checked').forEach(function (checkbox) {
+        const optionId = checkbox.dataset.optionId;
+        const setting = document.querySelector('.option-setting-' + optionId);
+
+        if (!setting) return;
+
+        options.push({
+            option_id: parseInt(optionId),
+            sort_order: parseInt(setting.querySelector('[name$="[sort_order]"]')?.value || 0),
+            is_default: setting.querySelector('[name$="[is_default]"]')?.checked ? 1 : 0,
+            is_active: setting.querySelector('[name$="[is_active]"]')?.checked ? 1 : 0,
+            qty_rule_type: setting.querySelector('[name$="[qty_rule_type]"]')?.value || null,
+            min_qty: setting.querySelector('[name$="[min_qty]"]')?.value || null,
+            max_qty: setting.querySelector('[name$="[max_qty]"]')?.value || null,
+            exact_qty: setting.querySelector('[name$="[exact_qty]"]')?.value || null,
+        });
+    });
+
+    document.getElementById('options_json').value = JSON.stringify(options);
+
+    // กันไม่ให้ input options[...] เดิมถูกส่งไปด้วย
+    document.querySelectorAll('[name^="options["]').forEach(function (input) {
+        input.disabled = true;
+    });
+});
+</script>
 @endsection
