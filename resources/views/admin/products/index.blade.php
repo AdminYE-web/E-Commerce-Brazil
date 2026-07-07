@@ -336,6 +336,92 @@ td {
 .pagination-container nav span {
     text-decoration: none;
 }
+.pagination-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-top: 24px;
+    padding: 16px 24px;
+    border-top: 1px solid var(--border);
+    flex-wrap: wrap;
+}
+
+.pagination-container nav {
+    width: 100%;
+}
+
+.pagination-container .hidden {
+    display: none !important;
+}
+
+.pagination-container svg {
+    width: 16px !important;
+    height: 16px !important;
+}
+
+.pagination-container nav > div:first-child {
+    display: none;
+}
+
+.pagination-container nav > div:last-child {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.pagination-container p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.pagination-container .relative.z-0 {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.pagination-container .relative.inline-flex {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: #fff;
+    color: var(--fg);
+    text-decoration: none;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.pagination-container .relative.inline-flex:hover {
+    background: var(--bg);
+}
+
+.pagination-container span[aria-current="page"] span {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+}
+
+.pagination-container .cursor-default {
+    opacity: .5;
+    pointer-events: none;
+}
+
+/* กัน bullet จุดดำ */
+.pagination-container ul,
+.pagination-container li {
+    list-style: none !important;
+    margin: 0;
+    padding: 0;
+}
     </style>
 @endsection
 @section('content')
@@ -592,9 +678,9 @@ td {
             </tbody>
         </table>
 
-        <div class="pagination-container">
-            {{ $products->links() }}
-        </div>
+       <div class="pagination-container">
+    {{ $products->appends(request()->query())->links() }}
+</div>
     </div>
     <script>
         document.addEventListener('click', function(e) {
