@@ -422,6 +422,86 @@ td {
     margin: 0;
     padding: 0;
 }
+.pagination-container {
+    margin-top: 24px;
+    padding: 16px 24px;
+    border-top: 1px solid var(--border);
+}
+
+.pagination-container nav {
+    width: 100%;
+}
+
+.pagination-container nav > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.pagination-container p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+/* สำหรับ Bootstrap pagination */
+.pagination-container .pagination {
+    display: flex !important;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none !important;
+}
+
+.pagination-container .page-item {
+    list-style: none !important;
+    margin: 0;
+    padding: 0;
+}
+
+.pagination-container .page-link {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--fg);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1;
+    text-decoration: none !important;
+}
+
+.pagination-container .page-link:hover {
+    background: var(--bg);
+}
+
+.pagination-container .page-item.active .page-link {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+}
+
+.pagination-container .page-item.disabled .page-link {
+    color: #cbd5e1;
+    background: #fff;
+    opacity: 1;
+    pointer-events: none;
+}
+
+/* กัน bullet จุดดำ */
+.pagination-container ul,
+.pagination-container li {
+    list-style: none !important;
+}
     </style>
 @endsection
 @section('content')
