@@ -280,8 +280,11 @@
                         value="{{ old('translation_key', $translationKey ?? '') }}" placeholder=" opt_xxxxxxxx">
                     <small>ใช้สำหรับผูก option เดียวกันข้ามภาษา</small>
                 </div>
-<label>Option Name</label>
+                <div class="form-group" >
+                    <label>Option Name</label>
                 <textarea name="option_name" rows="4" class="form-control" placeholder="For example, a rigid type.">{{ old('option_name') }}</textarea>
+
+                </div>
 
                 <div class="form-group">
                     <label>Additional Price</label>
