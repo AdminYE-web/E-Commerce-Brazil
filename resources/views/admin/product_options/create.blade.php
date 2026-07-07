@@ -3,32 +3,32 @@
 @section('title', 'Add Product Option | Indigo Admin')
 
 @section('css')
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
-<style>
-    .select2-container {
-        width: 100% !important;
-        font-size: 14px;
-    }
+    <style>
+        .select2-container {
+            width: 100% !important;
+            font-size: 14px;
+        }
 
-    .select2-container--default .select2-selection--single {
-        height: 42px;
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-    }
+        .select2-container--default .select2-selection--single {
+            height: 42px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+        }
 
-    .select2-container--default .select2-selection--single .select2-selection__rendered {
-        color: var(--fg);
-        line-height: 42px;
-        padding-left: 12px;
-    }
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            color: var(--fg);
+            line-height: 42px;
+            padding-left: 12px;
+        }
 
-    .select2-container--default .select2-selection--single .select2-selection__arrow {
-        height: 42px;
-    }
-</style>
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 42px;
+        }
+    </style>
     <style>
         .form-card {
             background: var(--surface);
@@ -209,7 +209,6 @@
                 flex-direction: column;
             }
         }
-        
     </style>
 @endsection
 
@@ -246,27 +245,27 @@
                 <div class="form-group">
                     <label>Option Group</label>
 
-                   <select name="option_group_id" id="option_group_id" class="searchable-select">
-    <option value="">-- Select Group --</option>
+                    <select name="option_group_id" id="option_group_id" class="searchable-select">
+                        <option value="">-- Select Group --</option>
 
-    <optgroup label="Hotstrap (Type 1)">
-        @foreach ($groups->where('product_type', 1) as $group)
-            <option value="{{ $group->option_group_id }}"
-                {{ old('option_group_id') == $group->option_group_id ? 'selected' : '' }}>
-                {{ $group->group_name }} ({{ $group->group_code }})
-            </option>
-        @endforeach
-    </optgroup>
+                        <optgroup label="Hotstrap (Type 1)">
+                            @foreach ($groups->where('product_type', 1) as $group)
+                                <option value="{{ $group->option_group_id }}"
+                                    {{ old('option_group_id') == $group->option_group_id ? 'selected' : '' }}>
+                                    {{ $group->group_name }} ({{ $group->group_code }})
+                                </option>
+                            @endforeach
+                        </optgroup>
 
-    <optgroup label="Hotmobily (Type 2)">
-        @foreach ($groups->where('product_type', 2) as $group)
-            <option value="{{ $group->option_group_id }}"
-                {{ old('option_group_id') == $group->option_group_id ? 'selected' : '' }}>
-                {{ $group->group_name }} ({{ $group->group_code }})
-            </option>
-        @endforeach
-    </optgroup>
-</select>
+                        <optgroup label="Hotmobily (Type 2)">
+                            @foreach ($groups->where('product_type', 2) as $group)
+                                <option value="{{ $group->option_group_id }}"
+                                    {{ old('option_group_id') == $group->option_group_id ? 'selected' : '' }}>
+                                    {{ $group->group_name }} ({{ $group->group_code }})
+                                </option>
+                            @endforeach
+                        </optgroup>
+                    </select>
                 </div>
 
                 <div class="form-group">
@@ -277,17 +276,12 @@
                 </div>
                 <div class="form-group" style="display: none">
                     <label>Translation Key</label>
-                    <input type="text" name="translation_key" value="{{ old('translation_key', $translationKey ?? '') }}"
-                        placeholder=" opt_xxxxxxxx">
+                    <input type="text" name="translation_key"
+                        value="{{ old('translation_key', $translationKey ?? '') }}" placeholder=" opt_xxxxxxxx">
                     <small>ใช้สำหรับผูก option เดียวกันข้ามภาษา</small>
                 </div>
-
-                <textarea 
-    name="option_name" 
-    rows="4"
-    class="form-control"
-    placeholder="For example, a rigid type."
->{{ old('option_name') }}</textarea>
+<label>Option Name</label>
+                <textarea name="option_name" rows="4" class="form-control" placeholder="For example, a rigid type.">{{ old('option_name') }}</textarea>
 
                 <div class="form-group">
                     <label>Additional Price</label>
@@ -307,7 +301,8 @@
                         placeholder="For example 100">
 
                     <small style="display:block; margin-top:6px; color:#6b7280;">
-                        Entering 100 means that for orders of 100 units or more, the Additional Price for this option will be free.
+                        Entering 100 means that for orders of 100 units or more, the Additional Price for this option will
+                        be free.
                     </small>
                 </div>
 
