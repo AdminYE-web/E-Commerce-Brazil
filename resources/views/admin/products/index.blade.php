@@ -307,6 +307,35 @@ td {
 td {
     position: relative;
 }
+.pagination-container {
+    padding: 16px 24px 24px;
+}
+
+.pagination-container ul,
+.pagination-container li {
+    list-style: none !important;
+    margin: 0;
+    padding: 0;
+}
+
+.pagination-container nav > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.pagination-container nav ul {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.pagination-container nav a,
+.pagination-container nav span {
+    text-decoration: none;
+}
     </style>
 @endsection
 @section('content')
