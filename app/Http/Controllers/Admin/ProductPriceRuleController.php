@@ -13,97 +13,97 @@ use Illuminate\Http\Request;
 class ProductPriceRuleController extends Controller
 {
     public function index(Request $request)
-{
-    $search = $request->input('search');
-    $language = session('admin_product_language', 'pt');
-    $productId = $request->input('product_id');
+    {
+        $search = $request->input('search');
+        $language = session('admin_product_language', 'pt');
+        $productId = $request->input('product_id');
 
-    /*
+        /*
     |--------------------------------------------------------------------------
     | Product list
     |--------------------------------------------------------------------------
     */
-    $products = Product::with(['category', 'material'])
-        ->where('language', $language)
-        ->when($search, function ($query) use ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('product_name', 'like', '%'.$search.'%')
-                    ->orWhere('product_code', 'like', '%'.$search.'%');
-            });
-        })
-        ->withCount('priceRules')
-        ->orderBy('product_id', 'desc')
-        ->paginate(15)
-        ->withQueryString();
+        $products = Product::with(['category', 'material'])
+            ->where('language', $language)
+            ->when($search, function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('product_name', 'like', '%' . $search . '%')
+                        ->orWhere('product_code', 'like', '%' . $search . '%');
+                });
+            })
+            ->withCount('priceRules')
+            ->orderBy('product_id', 'desc')
+            ->paginate(15)
+            ->withQueryString();
 
-    /*
+        /*
     |--------------------------------------------------------------------------
     | Selected product rules
     |--------------------------------------------------------------------------
     */
-    $selectedProduct = null;
-   $rules = null;
+        $selectedProduct = null;
+        $rules = null;
 
-if ($productId) {
-    $selectedProduct = Product::where('language', $language)
-        ->where('product_id', $productId)
-        ->firstOrFail();
+        if ($productId) {
+            $selectedProduct = Product::where('language', $language)
+                ->where('product_id', $productId)
+                ->firstOrFail();
 
-   $rules = ProductPriceRule::with(['product', 'options.group', 'tiers'])
-    ->where('product_id', $selectedProduct->product_id)
-    ->when($search, function ($query) use ($search) {
-        $query->where(function ($q) use ($search) {
-            $q->where('rule_name', 'like', '%'.$search.'%')
-                ->orWhereHas('options', function ($optionQuery) use ($search) {
-                    $optionQuery->where('option_name', 'like', '%'.$search.'%')
-                        ->orWhereHas('group', function ($groupQuery) use ($search) {
-                            $groupQuery->where('group_name', 'like', '%'.$search.'%');
-                        });
-                });
-        });
-    })
-    ->orderBy('rule_id', 'desc')
-    ->paginate(15)
-    ->withQueryString();
-}
+            $rules = ProductPriceRule::with(['product', 'options.group', 'tiers'])
+                ->where('product_id', $selectedProduct->product_id)
+                ->when($search, function ($query) use ($search) {
+                    $query->where(function ($q) use ($search) {
+                        $q->where('rule_name', 'like', '%' . $search . '%')
+                            ->orWhereHas('options', function ($optionQuery) use ($search) {
+                                $optionQuery->where('option_name', 'like', '%' . $search . '%')
+                                    ->orWhereHas('group', function ($groupQuery) use ($search) {
+                                        $groupQuery->where('group_name', 'like', '%' . $search . '%');
+                                    });
+                            });
+                    });
+                })
+                ->orderBy('rule_id', 'desc')
+                ->paginate(15)
+                ->withQueryString();
+        }
 
-    return view('admin.product_price_rules.index', compact(
-        'products',
-        'rules',
-        'search',
-        'language',
-        'selectedProduct',
-        'productId'
-    ));
-}
+        return view('admin.product_price_rules.index', compact(
+            'products',
+            'rules',
+            'search',
+            'language',
+            'selectedProduct',
+            'productId'
+        ));
+    }
 
     public function create()
-{
-    $language = session('admin_product_language', 'pt');
-    $selectedProductId = request('product_id');
+    {
+        $language = session('admin_product_language', 'pt');
+        $selectedProductId = request('product_id');
 
-    $products = Product::where('language', $language)
-        ->orderBy('product_name')
-        ->get();
+        $products = Product::where('language', $language)
+            ->orderBy('product_name')
+            ->get();
 
-    $options = ProductOption::with('group')
-        ->where('language', $language)
-        ->where('is_active', 1)
-        ->whereHas('group', function ($query) use ($language) {
-            $query->where('language', $language)
-                ->where('option_group_main', 1);
-        })
-        ->orderBy('option_group_id')
-        ->orderBy('option_name')
-        ->get();
+        $options = ProductOption::with('group')
+            ->where('language', $language)
+            ->where('is_active', 1)
+            ->whereHas('group', function ($query) use ($language) {
+                $query->where('language', $language)
+                    ->where('option_group_main', 1);
+            })
+            ->orderBy('option_group_id')
+            ->orderBy('option_name')
+            ->get();
 
-    return view('admin.product_price_rules.create', compact(
-        'products',
-        'options',
-        'language',
-        'selectedProductId'
-    ));
-}
+        return view('admin.product_price_rules.create', compact(
+            'products',
+            'options',
+            'language',
+            'selectedProductId'
+        ));
+    }
 
     public function store(Request $request)
     {
@@ -178,7 +178,9 @@ if ($productId) {
         }
 
         return redirect()
-            ->route('admin.product-price-rules.index')
+            ->route('admin.product-price-rules.index', [
+                'product_id' => $request->product_id,
+            ])
             ->with('success', 'Product price rule created successfully.');
     }
 
@@ -288,18 +290,24 @@ if ($productId) {
         }
 
         return redirect()
-            ->route('admin.product-price-rules.index')
+            ->route('admin.product-price-rules.index', [
+                'product_id' => $request->product_id,
+            ])
             ->with('success', 'Product price rule updated successfully.');
     }
 
-    public function destroy(ProductPriceRule $productPriceRule)
-    {
-        $productPriceRule->delete();
+public function destroy(ProductPriceRule $productPriceRule)
+{
+    $productId = $productPriceRule->product_id;
 
-        return redirect()
-            ->route('admin.product-price-rules.index')
-            ->with('success', 'Product price rule deleted successfully.');
-    }
+    $productPriceRule->delete();
+
+    return redirect()
+        ->route('admin.product-price-rules.index', [
+            'product_id' => $productId,
+        ])
+        ->with('success', 'Product price rule deleted successfully.');
+}
 
     public function show($id)
     {
