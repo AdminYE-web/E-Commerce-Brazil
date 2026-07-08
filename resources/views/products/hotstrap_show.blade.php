@@ -1427,6 +1427,29 @@
     box-shadow: 0 0 0 2px rgba(49, 102, 246, 0.18);
     color: #3166f6;
 }
+
+.option-bs-dropdown-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.option-dropdown-name {
+    flex: 1;
+    text-align: left;
+}
+
+.option-dropdown-price {
+    flex-shrink: 0;
+    color: #dc2626;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.option-bs-dropdown-item.active .option-dropdown-price {
+    color: #fff;
+}
     </style>
 @endsection
 
@@ -1870,24 +1893,38 @@
                                         <div class="dropdown option-bs-dropdown">
                                             <button class="btn dropdown-toggle option-bs-dropdown-btn" type="button"
                                                 data-bs-toggle="dropdown" aria-expanded="false">
-                                                <span class="option-bs-dropdown-label">
-                                                    {{ $selectedOption?->option_name ?? 'Please select' }}
-                                                </span>
+                                              @php
+    $selectedOptionPrice = $selectedOption ? $getOptionPrice($selectedOption) : 0;
+
+    $selectedOptionLabel = $selectedOption
+        ? $selectedOption->option_name . ($selectedOptionPrice > 0 ? '  +¥ ' . number_format($selectedOptionPrice, 2) : '')
+        : 'Please select';
+@endphp
+
+<span class="option-bs-dropdown-label">
+    {{ $selectedOptionLabel }}
+</span>
                                             </button>
 
                                             <ul class="dropdown-menu option-bs-dropdown-menu">
                                                 @foreach ($options as $option)
-                                                    @php
-                                                        $imagePath = $option->mainImage
-                                                            ? asset('storage/' . $option->mainImage->image_path)
-                                                            : '';
-                                                    @endphp
+                                                   @php
+    $imagePath = $option->mainImage
+        ? asset('storage/' . $option->mainImage->image_path)
+        : '';
+
+    $optionPrice = $getOptionPrice($option);
+
+    $optionLabelWithPrice = $option->option_name .
+        ($optionPrice > 0 ? '  +¥ ' . number_format($optionPrice, 2) : '');
+@endphp
 
                                                     <li>
                                                         <button type="button"
                                                             class="dropdown-item option-bs-dropdown-item {{ $selectedOptionId && (int) $selectedOptionId === (int) $option->option_id ? 'active' : '' }}"
                                                             data-option-id="{{ $option->option_id }}"
                                                             data-option-name="{{ $option->option_name }}"
+                                                            data-label-with-price="{{ $optionLabelWithPrice }}"
                                                             data-price="{{ $getOptionPrice($option) }}"
                                                             data-price-rates='@json($getOptionPriceRates($option))'
                                                             data-price-type="{{ $option->price_type }}"
@@ -1898,7 +1935,15 @@
                                                             data-min-qty="{{ $option->pivot->min_qty ?? 0 }}"
                                                             data-max-qty="{{ $option->pivot->max_qty ?? 0 }}"
                                                             data-exact-qty="{{ $option->pivot->exact_qty ?? 0 }}">
-                                                            {{ $option->option_name }}
+                                                            <span class="option-dropdown-name">
+    {{ $option->option_name }}
+</span>
+
+@if ($optionPrice > 0)
+    <span class="option-dropdown-price">
+        +¥ {{ number_format($optionPrice, 2) }}
+    </span>
+@endif
                                                         </button>
                                                     </li>
                                                 @endforeach
@@ -2695,9 +2740,9 @@
             hiddenInput.dataset.maxQty = item.dataset.maxQty || 0;
             hiddenInput.dataset.exactQty = item.dataset.exactQty || 0;
 
-            if (label) {
-                label.textContent = item.dataset.optionName || item.textContent.trim();
-            }
+           if (label) {
+    label.textContent = item.dataset.labelWithPrice || item.dataset.optionName || item.textContent.trim();
+}
 
             wrap.querySelectorAll('.option-bs-dropdown-item').forEach(function(dropdownItem) {
                 dropdownItem.classList.remove('active');
