@@ -209,6 +209,49 @@
                 flex-direction: column;
             }
         }
+        .price-rate-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr auto;
+    gap: 12px;
+    align-items: end;
+    padding: 12px;
+    margin-bottom: 10px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--bg);
+}
+
+.price-rate-row label {
+    font-size: 13px;
+    margin-bottom: 6px;
+}
+
+@media (max-width: 900px) {
+    .price-rate-row {
+        grid-template-columns: 1fr;
+    }
+}
+.price-mode-box {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.price-mode-item {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: #fff;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.price-mode-item input {
+    margin: 0;
+}
     </style>
 @endsection
 
@@ -291,12 +334,72 @@
 
                     <input type="number" step="0.01" name="additional_price" value="{{ old('additional_price', 0) }}">
                 </div>
+               
                 <div class="form-group">
                     <label>Additional Price With Tax</label>
 
                     <input type="number" step="0.01" name="additional_price_with_tax"
                         value="{{ old('additional_price_with_tax') }}" min="0" placeholder="For example 220">
                 </div>
+                 <div class="form-group full">
+    <label>Additional Price Mode</label>
+
+    <div class="price-mode-box">
+        <label class="price-mode-item">
+            <input type="radio"
+                name="price_mode"
+                value="normal"
+                {{ old('price_mode', 'normal') == 'normal' ? 'checked' : '' }}>
+            Normal Price
+        </label>
+
+        <label class="price-mode-item">
+            <input type="radio"
+                name="price_mode"
+                value="rate"
+                {{ old('price_mode') == 'rate' ? 'checked' : '' }}>
+            Rate by Quantity
+        </label>
+    </div>
+
+    <small style="display:block; margin-top:6px; color:#6b7280;">
+        Normal Price = ใช้ราคา Additional Price ธรรมดา / Rate by Quantity = ตั้งราคาตามจำนวนสินค้า
+    </small>
+</div>
+               <div class="form-group full" id="price-rate-section">
+    <label>Additional Price Rates</label>
+
+    <div id="price-rate-list">
+        <div class="price-rate-row">
+            <div>
+                <label>From Qty</label>
+                <input type="number" name="price_rates[0][min_qty]" min="1" value="1">
+            </div>
+
+            <div>
+                <label>Additional Price</label>
+                <input type="number" step="0.01" name="price_rates[0][additional_price]" value="0" class="rate-price">
+            </div>
+
+            <div>
+                <label>With Tax</label>
+                <input type="number" step="0.01" name="price_rates[0][additional_price_with_tax]" value="0" class="rate-price-tax">
+            </div>
+
+            <button type="button" class="btn-outline remove-rate" style="display:none;">
+                Remove
+            </button>
+        </div>
+    </div>
+
+    <button type="button" id="add-price-rate" class="btn-outline" style="margin-top:12px;">
+        + Add Rate
+    </button>
+
+    <small style="display:block; margin-top:6px; color:#6b7280;">
+        Example: Qty 1 = 39, Qty 50 = 35 means orders from 50 pcs will use 35 per item.
+    </small>
+</div>
                 <div class="form-group">
                     <label>Free From Quantity</label>
 
@@ -374,7 +477,7 @@
 @endsection
 
 @section('js')
-    <script>
+    {{-- <script>
         document.addEventListener('DOMContentLoaded', function() {
             const priceInput = document.querySelector('input[name="additional_price"]');
             const priceWithTaxInput = document.querySelector('input[name="additional_price_with_tax"]');
@@ -390,31 +493,111 @@
                 });
             }
         });
-    </script>
+    </script> --}}
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const priceInput = document.querySelector('input[name="additional_price"]');
-            const priceWithTaxInput = document.querySelector('input[name="additional_price_with_tax"]');
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const priceInput = document.querySelector('input[name="additional_price"]');
+        const priceWithTaxInput = document.querySelector('input[name="additional_price_with_tax"]');
 
-            if (priceInput && priceWithTaxInput) {
-                priceInput.addEventListener('input', function() {
-                    const priceVal = parseFloat(this.value);
-                    if (!isNaN(priceVal)) {
-                        priceWithTaxInput.value = (priceVal * 1.1).toFixed(2);
-                    } else {
-                        priceWithTaxInput.value = '';
-                    }
-                });
+        function calculateTax(price) {
+            const priceVal = parseFloat(price);
+            return !isNaN(priceVal) ? (priceVal * 1.1).toFixed(2) : '';
+        }
+
+        if (priceInput && priceWithTaxInput) {
+            priceInput.addEventListener('input', function() {
+                priceWithTaxInput.value = calculateTax(this.value);
+            });
+        }
+
+        const rateList = document.getElementById('price-rate-list');
+        const addRateBtn = document.getElementById('add-price-rate');
+        const priceModeInputs = document.querySelectorAll('input[name="price_mode"]');
+        const priceRateSection = document.getElementById('price-rate-section');
+
+        let rateIndex = rateList ? rateList.querySelectorAll('.price-rate-row').length : 0;
+
+        function togglePriceRateSection() {
+            const selectedMode = document.querySelector('input[name="price_mode"]:checked')?.value || 'normal';
+            const isRateMode = selectedMode === 'rate';
+
+            if (!priceRateSection) {
+                return;
             }
 
-            $('#option_group_id').select2({
-                placeholder: '-- Select Group --',
-                allowClear: true,
-                width: '100%'
+            priceRateSection.style.display = isRateMode ? 'block' : 'none';
+
+            priceRateSection.querySelectorAll('input, button').forEach(function(el) {
+                el.disabled = !isRateMode;
             });
+
+            if (addRateBtn) {
+                addRateBtn.disabled = !isRateMode;
+            }
+        }
+
+        priceModeInputs.forEach(function(input) {
+            input.addEventListener('change', togglePriceRateSection);
         });
-    </script>
+
+        if (addRateBtn && rateList) {
+            addRateBtn.addEventListener('click', function() {
+                const row = document.createElement('div');
+                row.className = 'price-rate-row';
+
+                row.innerHTML = `
+                    <div>
+                        <label>From Qty</label>
+                        <input type="number" name="price_rates[${rateIndex}][min_qty]" min="1" placeholder="50">
+                    </div>
+
+                    <div>
+                        <label>Additional Price</label>
+                        <input type="number" step="0.01" name="price_rates[${rateIndex}][additional_price]" value="0" class="rate-price">
+                    </div>
+
+                    <div>
+                        <label>With Tax</label>
+                        <input type="number" step="0.01" name="price_rates[${rateIndex}][additional_price_with_tax]" value="0" class="rate-price-tax">
+                    </div>
+
+                    <button type="button" class="btn-outline remove-rate">
+                        Remove
+                    </button>
+                `;
+
+                rateList.appendChild(row);
+                rateIndex++;
+
+                togglePriceRateSection();
+            });
+
+            rateList.addEventListener('input', function(e) {
+                if (e.target.classList.contains('rate-price')) {
+                    const row = e.target.closest('.price-rate-row');
+                    const taxInput = row.querySelector('.rate-price-tax');
+
+                    taxInput.value = calculateTax(e.target.value);
+                }
+            });
+
+            rateList.addEventListener('click', function(e) {
+                if (e.target.classList.contains('remove-rate')) {
+                    e.target.closest('.price-rate-row').remove();
+                }
+            });
+        }
+
+        togglePriceRateSection();
+
+        $('#option_group_id').select2({
+            placeholder: '-- Select Group --',
+            allowClear: true,
+            width: '100%'
+        });
+    });
+</script>
 @endsection

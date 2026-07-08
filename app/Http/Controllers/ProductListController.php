@@ -156,6 +156,7 @@ class ProductListController extends Controller
             'assignedOptions.group.parent',
             'assignedOptions.mainImage',
             'assignedOptions.variants',
+             'assignedOptions.priceRates',
         ]);
 
         $groupOrders = ProductOptionGroupOrder::where('product_id', $product->product_id)
@@ -304,6 +305,7 @@ class ProductListController extends Controller
             'assignedOptions.group.parent',
             'assignedOptions.mainImage',
             'assignedOptions.variants',
+            'assignedOptions.priceRates',
         ]);
 
         $groupOrders = ProductOptionGroupOrder::where('product_id', $product->product_id)
@@ -509,6 +511,7 @@ class ProductListController extends Controller
             'assignedOptions.group.parent',
             'assignedOptions.mainImage',
             'assignedOptions.variants',
+            'assignedOptions.priceRates',
         ])
             ->where('language', $langKey)
             ->where('product_code', $code)
@@ -669,6 +672,7 @@ class ProductListController extends Controller
         'assignedOptions.group.parent',
         'assignedOptions.mainImage',
         'assignedOptions.variants',
+         'assignedOptions.priceRates',
     ]);
 
     $groupOrders = ProductOptionGroupOrder::where('product_id', $product->product_id)

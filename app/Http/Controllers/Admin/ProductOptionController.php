@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\ProductOptionPriceRate;
 use App\Http\Controllers\Controller;
 use App\Models\OptionGroup;
 use App\Models\OptionImage;
@@ -127,6 +128,11 @@ class ProductOptionController extends Controller
             'free_from_qty' => 'nullable|integer|min:1',
             'translation_key' => 'nullable|string|max:255',
             'additional_price_with_tax' => 'nullable|numeric|min:0',
+            'price_rates' => 'nullable|array',
+'price_rates.*.min_qty' => 'nullable|integer|min:1',
+'price_rates.*.additional_price' => 'nullable|numeric|min:0',
+'price_rates.*.additional_price_with_tax' => 'nullable|numeric|min:0',
+'price_mode' => 'nullable|in:normal,rate',
 
         ]);
 
@@ -145,6 +151,9 @@ class ProductOptionController extends Controller
             'additional_price_with_tax' => $request->additional_price_with_tax,
 
         ]);
+        if ($request->input('price_mode') === 'rate') {
+    $this->syncPriceRates($option, $request);
+}
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $index => $image) {
                 $path = $image->store('options', 'public');
@@ -166,7 +175,7 @@ class ProductOptionController extends Controller
 
     public function edit(ProductOption $productOption)
     {
-        $productOption->load('images');
+       $productOption->load(['images', 'priceRates']);
 
         $language = $productOption->language ?? session('admin_product_language', 'pt');
 
@@ -196,6 +205,11 @@ class ProductOptionController extends Controller
             'free_from_qty' => 'nullable|integer|min:1',
             'translation_key' => 'nullable|string|max:255',
             'additional_price_with_tax' => 'nullable|numeric|min:0',
+            'price_rates' => 'nullable|array',
+'price_rates.*.min_qty' => 'nullable|integer|min:1',
+'price_rates.*.additional_price' => 'nullable|numeric|min:0',
+'price_rates.*.additional_price_with_tax' => 'nullable|numeric|min:0',
+'price_mode' => 'nullable|in:normal,rate',
 
         ]);
         if ($request->has('delete_images')) {
@@ -227,6 +241,11 @@ class ProductOptionController extends Controller
             'translation_key' => $request->translation_key ?: $productOption->translation_key ?: 'opt_'.strtolower(Str::random(12)),
             'additional_price_with_tax' => $request->additional_price_with_tax,
         ]);
+        if ($request->input('price_mode') === 'rate') {
+    $this->syncPriceRates($productOption, $request);
+} else {
+    $productOption->priceRates()->delete();
+}
         if ($request->hasFile('images')) {
             $currentMaxSort = $productOption->images()->max('sort_order') ?? 0;
             $hasMainImage = $productOption->images()->where('is_main', 1)->exists();
@@ -344,4 +363,28 @@ class ProductOptionController extends Controller
             ->route('admin.product-options.index')
             ->with('success', 'ลบตัวเลือกสินค้าเรียบร้อยแล้ว');
     }
+    private function syncPriceRates(ProductOption $option, Request $request): void
+{
+    $option->priceRates()->delete();
+
+    $rates = $request->input('price_rates', []);
+
+    foreach ($rates as $rate) {
+        if (empty($rate['min_qty'])) {
+            continue;
+        }
+
+        $price = $rate['additional_price'] ?? 0;
+        $priceWithTax = $rate['additional_price_with_tax'] ?? null;
+
+        ProductOptionPriceRate::create([
+            'option_id' => $option->option_id,
+            'min_qty' => $rate['min_qty'],
+            'additional_price' => $price,
+            'additional_price_with_tax' => $priceWithTax !== null
+                ? $priceWithTax
+                : round($price * 1.1, 2),
+        ]);
+    }
+}
 }

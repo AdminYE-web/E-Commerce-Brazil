@@ -18,7 +18,7 @@ class CartController extends Controller
             'quantity' => 'required|integer|min:1',
 
             'options' => 'nullable|array',
-            'options.*' => 'nullable|exists:product_options,option_id',
+            'options.*' => 'nullable',
 
             'variants' => 'nullable|array',
             'variants.*' => 'nullable|exists:product_option_variants,variant_id',
@@ -42,24 +42,56 @@ class CartController extends Controller
         $selectedOptionIds = [];
         $optionTotal = 0;
 
-        foreach ($request->input('options', []) as $groupId => $optionId) {
+        $normalizedOptions = [];
+
+        foreach ($request->input('options', []) as $groupId => $optionValue) {
+            if (is_array($optionValue)) {
+                foreach ($optionValue as $optionId) {
+                    if (! $optionId) {
+                        continue;
+                    }
+
+                    $normalizedOptions[] = [
+                        'group_id' => (int) $groupId,
+                        'option_id' => (int) $optionId,
+                    ];
+                }
+
+                continue;
+            }
+
+            if (! $optionValue) {
+                continue;
+            }
+
+            $normalizedOptions[] = [
+                'group_id' => (int) $groupId,
+                'option_id' => (int) $optionValue,
+            ];
+        }
+
+        foreach ($normalizedOptions as $selected) {
+            $groupId = $selected['group_id'];
+            $optionId = $selected['option_id'];
             if (! $optionId) {
                 continue;
             }
 
             $selectedOptionIds[] = (int) $optionId;
 
-            $option = ProductOption::with('group')
+            $option = ProductOption::with(['group', 'priceRates'])
                 ->where('option_id', $optionId)
-                ->first();
-            $assignment = \DB::table('product_option_assignments')
-                ->where('product_id', $product->product_id)
-                ->where('option_id', $option->option_id)
                 ->first();
 
             if (! $option) {
                 continue;
             }
+           
+
+            $assignment = \DB::table('product_option_assignments')
+                ->where('product_id', $product->product_id)
+                ->where('option_id', $option->option_id)
+                ->first();
 
             $variant = null;
 
@@ -69,7 +101,7 @@ class CartController extends Controller
                     ->first();
             }
 
-            $optionPrice = $this->optionPrice($option);
+            $optionPrice = $this->optionPrice($option, $quantity);
             $variantPrice = $this->variantPrice($variant);
             $previousOrderNos = $request->input('previous_order_no', []);
 
@@ -78,6 +110,9 @@ class CartController extends Controller
                 'group_name' => $option->group->group_name ?? '',
                 'option_id' => $option->option_id,
                 'option_name' => $option->option_name,
+
+                'is_color_option' => ($option->group->display_type ?? '') === 'color',
+'is_pantone_dic' => preg_match('/PANTONE|DIC/i', $option->option_name) ? 1 : 0,
 
                 'price' => $optionPrice,
                 'price_type' => $option->price_type,
@@ -101,6 +136,25 @@ class CartController extends Controller
 
         $matchedRule = $this->findMatchedPriceRule($product, $selectedOptionIds);
         $unitPrice = $this->findTierPrice($matchedRule, $quantity);
+
+//         dd([
+//     'quantity' => $quantity,
+//     'selectedOptionIds' => $selectedOptionIds,
+//     'matchedRule' => $matchedRule ? [
+//         'rule_id' => $matchedRule->rule_id,
+//         'rule_name' => $matchedRule->rule_name,
+//         'option_ids' => $matchedRule->options->pluck('option_id')->values(),
+//         'tiers' => $matchedRule->tiers->map(function ($tier) {
+//             return [
+//                 'min_qty' => $tier->min_qty,
+//                 'max_qty' => $tier->max_qty,
+//                 'unit_price' => $tier->unit_price,
+//                 'unit_price_with_tax' => $tier->unit_price_with_tax ?? null,
+//             ];
+//         })->values(),
+//     ] : null,
+//     'unitPrice' => $unitPrice,
+// ]);
 
         //         dd([
         //     'product_id' => $product->product_id,
@@ -131,23 +185,42 @@ class CartController extends Controller
             ? $matchedRule->options->pluck('option_id')->map(fn ($id) => (int) $id)->toArray()
             : [];
 
-        foreach ($selectedOptions as $selectedOption) {
-            $isRuleOption = in_array((int) $selectedOption['option_id'], $ruleOptionIds);
+        $freeColorUsedByGroup = [];
 
-            if ($isRuleOption) {
-                continue;
-            }
+foreach ($selectedOptions as $selectedOption) {
+    $isRuleOption = in_array((int) $selectedOption['option_id'], $ruleOptionIds);
 
-            $price = (float) ($selectedOption['price'] ?? 0);
-            $variantPrice = (float) ($selectedOption['variant_price'] ?? 0);
-            $priceType = $selectedOption['price_type'] ?? 'per_order';
+    if ($isRuleOption) {
+        continue;
+    }
 
-            if ($priceType === 'per_item') {
-                $optionTotal += ($price + $variantPrice) * $quantity;
-            } else {
-                $optionTotal += $price + $variantPrice;
-            }
-        }
+    $price = (float) ($selectedOption['price'] ?? 0);
+    $variantPrice = (float) ($selectedOption['variant_price'] ?? 0);
+    $priceType = $selectedOption['price_type'] ?? 'per_order';
+
+    $freeFromQty = !empty($selectedOption['free_from_qty'])
+        ? (int) $selectedOption['free_from_qty']
+        : null;
+
+    if ($freeFromQty && $quantity >= $freeFromQty) {
+        $price = 0;
+    }
+
+    $isColorOption = !empty($selectedOption['is_color_option']);
+    $isPantoneDic = !empty($selectedOption['is_pantone_dic']);
+    $colorGroupId = (int) ($selectedOption['group_id'] ?? 0);
+
+    if ($isColorOption && !$isPantoneDic && empty($freeColorUsedByGroup[$colorGroupId])) {
+        $price = 0;
+        $freeColorUsedByGroup[$colorGroupId] = true;
+    }
+
+    if ($priceType === 'per_item') {
+        $optionTotal += ($price + $variantPrice) * $quantity;
+    } else {
+        $optionTotal += $price + $variantPrice;
+    }
+}
 
         $customColors = [];
 
@@ -246,6 +319,8 @@ class CartController extends Controller
 
             $optionTotal = 0;
 
+            $freeColorUsedByGroup = [];
+
             foreach (($item['options'] ?? []) as $selectedOption) {
                 $optionId = (int) ($selectedOption['option_id'] ?? 0);
 
@@ -253,11 +328,15 @@ class CartController extends Controller
                     continue;
                 }
 
-                $option = ProductOption::where('option_id', $optionId)->first();
+                $option = ProductOption::with('priceRates')
+                    ->where('option_id', $optionId)
+                    ->first();
 
-                $price = $option ? $this->optionPrice($option) : (float) ($selectedOption['price'] ?? 0);
+                $price = $option ? $this->optionPrice($option, $quantity) : (float) ($selectedOption['price'] ?? 0);
 
                 $variantPrice = 0;
+
+                
 
                 if (! empty($selectedOption['variant_id'])) {
                     $variant = ProductOptionVariant::where('variant_id', $selectedOption['variant_id'])->first();
@@ -266,6 +345,23 @@ class CartController extends Controller
                     $variantPrice = (float) ($selectedOption['variant_price'] ?? 0);
                 }
 
+                $freeFromQty = !empty($selectedOption['free_from_qty'])
+    ? (int) $selectedOption['free_from_qty']
+    : null;
+
+if ($freeFromQty && $quantity >= $freeFromQty) {
+    $price = 0;
+}
+
+$isColorOption = !empty($selectedOption['is_color_option']);
+$isPantoneDic = !empty($selectedOption['is_pantone_dic']);
+$colorGroupId = (int) ($selectedOption['group_id'] ?? 0);
+
+if ($isColorOption && !$isPantoneDic && empty($freeColorUsedByGroup[$colorGroupId])) {
+    $price = 0;
+    $freeColorUsedByGroup[$colorGroupId] = true;
+}
+
                 $priceType = $selectedOption['price_type'] ?? 'per_order';
 
                 if ($priceType === 'per_item') {
@@ -273,24 +369,27 @@ class CartController extends Controller
                 } else {
                     $optionTotal += $price + $variantPrice;
                 }
-                $cart[$key]['options'] = collect($item['options'] ?? [])->map(function ($selectedOption) {
-                    $optionId = (int) ($selectedOption['option_id'] ?? 0);
-                    $option = ProductOption::where('option_id', $optionId)->first();
+                $cart[$key]['options'] = collect($item['options'] ?? [])->map(function ($selectedOption) use ($quantity) {
+    $optionId = (int) ($selectedOption['option_id'] ?? 0);
 
-                    if ($option) {
-                        $selectedOption['price'] = $this->optionPrice($option);
-                    }
+    $option = ProductOption::with('priceRates')
+        ->where('option_id', $optionId)
+        ->first();
 
-                    if (! empty($selectedOption['variant_id'])) {
-                        $variant = ProductOptionVariant::where('variant_id', $selectedOption['variant_id'])->first();
+    if ($option) {
+        $selectedOption['price'] = $this->optionPrice($option, $quantity);
+    }
 
-                        if ($variant) {
-                            $selectedOption['variant_price'] = $this->variantPrice($variant);
-                        }
-                    }
+    if (! empty($selectedOption['variant_id'])) {
+        $variant = ProductOptionVariant::where('variant_id', $selectedOption['variant_id'])->first();
 
-                    return $selectedOption;
-                })->toArray();
+        if ($variant) {
+            $selectedOption['variant_price'] = $this->variantPrice($variant);
+        }
+    }
+
+    return $selectedOption;
+})->toArray();
             }
 
             $productTotal = $unitPrice * $quantity;
@@ -391,16 +490,20 @@ class CartController extends Controller
         */
         $optionTotal = 0;
 
-        foreach (($item['options'] ?? []) as $selectedOption) {
+        $freeColorUsedByGroup = [];
+
+        foreach (($cartItem['options'] ?? []) as $selectedOption) {
             $optionId = (int) ($selectedOption['option_id'] ?? 0);
 
             if (in_array($optionId, $ruleOptionIds)) {
                 continue;
             }
 
-            $option = ProductOption::where('option_id', $optionId)->first();
+            $option = ProductOption::with('priceRates')
+                ->where('option_id', $optionId)
+                ->first();
 
-            $price = $option ? $this->optionPrice($option) : (float) ($selectedOption['price'] ?? 0);
+            $price = $option ? $this->optionPrice($option, $quantity) : (float) ($selectedOption['price'] ?? 0);
 
             $variantPrice = 0;
 
@@ -411,6 +514,23 @@ class CartController extends Controller
                 $variantPrice = (float) ($selectedOption['variant_price'] ?? 0);
             }
 
+            $freeFromQty = !empty($selectedOption['free_from_qty'])
+    ? (int) $selectedOption['free_from_qty']
+    : null;
+
+if ($freeFromQty && $quantity >= $freeFromQty) {
+    $price = 0;
+}
+
+$isColorOption = !empty($selectedOption['is_color_option']);
+$isPantoneDic = !empty($selectedOption['is_pantone_dic']);
+$colorGroupId = (int) ($selectedOption['group_id'] ?? 0);
+
+if ($isColorOption && !$isPantoneDic && empty($freeColorUsedByGroup[$colorGroupId])) {
+    $price = 0;
+    $freeColorUsedByGroup[$colorGroupId] = true;
+}
+
             $priceType = $selectedOption['price_type'] ?? 'per_order';
 
             if ($priceType === 'per_item') {
@@ -418,24 +538,24 @@ class CartController extends Controller
             } else {
                 $optionTotal += $price + $variantPrice;
             }
-            $cart[$key]['options'] = collect($item['options'] ?? [])->map(function ($selectedOption) {
-                $optionId = (int) ($selectedOption['option_id'] ?? 0);
-                $option = ProductOption::where('option_id', $optionId)->first();
+            // $cart[$key]['options'] = collect($item['options'] ?? [])->map(function ($selectedOption) {
+            //     $optionId = (int) ($selectedOption['option_id'] ?? 0);
+            //     $option = ProductOption::where('option_id', $optionId)->first();
 
-                if ($option) {
-                    $selectedOption['price'] = $this->optionPrice($option);
-                }
+            //     if ($option) {
+            //         $selectedOption['price'] = $this->optionPrice($option);
+            //     }
 
-                if (! empty($selectedOption['variant_id'])) {
-                    $variant = ProductOptionVariant::where('variant_id', $selectedOption['variant_id'])->first();
+            //     if (! empty($selectedOption['variant_id'])) {
+            //         $variant = ProductOptionVariant::where('variant_id', $selectedOption['variant_id'])->first();
 
-                    if ($variant) {
-                        $selectedOption['variant_price'] = $this->variantPrice($variant);
-                    }
-                }
+            //         if ($variant) {
+            //             $selectedOption['variant_price'] = $this->variantPrice($variant);
+            //         }
+            //     }
 
-                return $selectedOption;
-            })->toArray();
+            //     return $selectedOption;
+            // })->toArray();
         }
 
         $productTotal = $unitPrice * $quantity;
@@ -635,13 +755,36 @@ class CartController extends Controller
         return $this->priceTaxMode() === 'include_tax';
     }
 
-    private function optionPrice(ProductOption $option): float
+    private function optionPrice(ProductOption $option, ?int $quantity = null): float
     {
-        if ($this->useTaxIncludedPrice()) {
-            return (float) ($option->additional_price_with_tax ?? $option->additional_price ?? 0);
+        $basePrice = $this->useTaxIncludedPrice()
+            ? (float) ($option->additional_price_with_tax ?? $option->additional_price ?? 0)
+            : (float) ($option->additional_price ?? 0);
+
+        if (! $quantity) {
+            return $basePrice;
         }
 
-        return (float) ($option->additional_price ?? 0);
+        if (! $option->relationLoaded('priceRates')) {
+            $option->load('priceRates');
+        }
+
+        if (! $option->priceRates || ! $option->priceRates->count()) {
+            return $basePrice;
+        }
+
+        $matchedRate = $option->priceRates
+            ->where('min_qty', '<=', $quantity)
+            ->sortByDesc('min_qty')
+            ->first();
+
+        if (! $matchedRate) {
+            return $basePrice;
+        }
+
+        return $this->useTaxIncludedPrice()
+            ? (float) ($matchedRate->additional_price_with_tax ?? $matchedRate->additional_price ?? 0)
+            : (float) ($matchedRate->additional_price ?? 0);
     }
 
     private function variantPrice($variant): float

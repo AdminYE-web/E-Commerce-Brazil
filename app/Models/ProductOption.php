@@ -87,4 +87,10 @@ class ProductOption extends Model
             ->orderBy('is_default', 'desc')
             ->orderBy('sort_order');
     }
+    public function priceRates()
+{
+    return $this->hasMany(ProductOptionPriceRate::class, 'option_id', 'option_id')
+        ->orderBy('min_qty');
+}
+    
 }

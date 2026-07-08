@@ -3,30 +3,31 @@
 @section('title', 'Edit Product Option | Indigo Admin')
 
 @section('css')
- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <style>
         .select2-container {
-    width: 100% !important;
-    font-size: 14px;
-}
+            width: 100% !important;
+            font-size: 14px;
+        }
 
-.select2-container--default .select2-selection--single {
-    height: 42px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-}
+        .select2-container--default .select2-selection--single {
+            height: 42px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+        }
 
-.select2-container--default .select2-selection--single .select2-selection__rendered {
-    color: var(--fg);
-    line-height: 42px;
-    padding-left: 12px;
-}
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            color: var(--fg);
+            line-height: 42px;
+            padding-left: 12px;
+        }
 
-.select2-container--default .select2-selection--single .select2-selection__arrow {
-    height: 42px;
-}
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 42px;
+        }
+
         .form-card {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -282,6 +283,51 @@
             height: 14px;
             margin: 0;
         }
+
+        .price-rate-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr auto;
+            gap: 12px;
+            align-items: end;
+            padding: 12px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--bg);
+        }
+
+        .price-rate-row label {
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        @media (max-width: 900px) {
+            .price-rate-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        .price-mode-box {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.price-mode-item {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: #fff;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.price-mode-item input {
+    width: auto !important;
+    margin: 0;
+}
     </style>
 @endsection
 
@@ -350,22 +396,17 @@
                     <input type="text" name="option_code" value="{{ old('option_code', $option->option_code) }}">
                 </div>
 
-               <div class="form-group">
-    <label>Option Name</label>
+                <div class="form-group">
+                    <label>Option Name</label>
 
-    <textarea 
-        name="option_name"
-        rows="4"
-    >{{ old('option_name', $option->option_name) }}</textarea>
-</div>
+                    <textarea name="option_name" rows="4">{{ old('option_name', $option->option_name) }}</textarea>
+                </div>
                 <div class="form-group" style="display: none">
-    <label>Translation Key</label>
-    <input type="text"
-        name="translation_key"
-        value="{{ old('translation_key', $option->translation_key ?? '') }}"
-        placeholder=" opt_xxxxxxxx">
-    <small>ใช้สำหรับผูก option เดียวกันข้ามภาษา</small>
-</div>
+                    <label>Translation Key</label>
+                    <input type="text" name="translation_key"
+                        value="{{ old('translation_key', $option->translation_key ?? '') }}" placeholder=" opt_xxxxxxxx">
+                    <small>ใช้สำหรับผูก option เดียวกันข้ามภาษา</small>
+                </div>
 
                 <div class="form-group">
                     <label>Additional Price</label>
@@ -374,14 +415,117 @@
                         value="{{ old('additional_price', $option->additional_price) }}">
                 </div>
                 <div class="form-group">
-    <label>Additional Price With Tax</label>
+                    <label>Additional Price With Tax</label>
 
-    <input type="number"
-        step="0.01"
-        name="additional_price_with_tax"
-        value="{{ old('additional_price_with_tax', $option->additional_price_with_tax ?? '') }}"
-        min="0"
-        placeholder=" 220">
+                    <input type="number" step="0.01" name="additional_price_with_tax"
+                        value="{{ old('additional_price_with_tax', $option->additional_price_with_tax ?? '') }}"
+                        min="0" placeholder=" 220">
+                </div>
+
+                @php
+    $currentPriceMode = old('price_mode');
+
+    if (!$currentPriceMode) {
+        $currentPriceMode = $option->priceRates && $option->priceRates->count()
+            ? 'rate'
+            : 'normal';
+    }
+@endphp
+
+<div class="form-group full">
+    <label>Additional Price Mode</label>
+
+    <div class="price-mode-box">
+        <label class="price-mode-item">
+            <input type="radio"
+                name="price_mode"
+                value="normal"
+                {{ $currentPriceMode == 'normal' ? 'checked' : '' }}>
+            Normal Price
+        </label>
+
+        <label class="price-mode-item">
+            <input type="radio"
+                name="price_mode"
+                value="rate"
+                {{ $currentPriceMode == 'rate' ? 'checked' : '' }}>
+            Rate by Quantity
+        </label>
+    </div>
+</div>
+
+                @php
+    $priceRates = old('price_rates');
+
+    if (is_null($priceRates)) {
+        if ($option->priceRates && $option->priceRates->count()) {
+            $priceRates = $option->priceRates->map(function ($rate) {
+                return [
+                    'min_qty' => $rate->min_qty,
+                    'additional_price' => $rate->additional_price,
+                    'additional_price_with_tax' => $rate->additional_price_with_tax,
+                ];
+            })->toArray();
+        } else {
+            $priceRates = [
+                [
+                    'min_qty' => 1,
+                    'additional_price' => $option->additional_price ?? 0,
+                    'additional_price_with_tax' => $option->additional_price_with_tax ?? 0,
+                ],
+            ];
+        }
+    }
+@endphp
+
+<div class="form-group full" id="price-rate-section">
+    <label>Additional Price Rates</label>
+
+    <div id="price-rate-list">
+        @foreach ($priceRates as $index => $rate)
+            <div class="price-rate-row">
+                <div>
+                    <label>From Qty</label>
+                    <input type="number"
+                        name="price_rates[{{ $index }}][min_qty]"
+                        min="1"
+                        value="{{ $rate['min_qty'] ?? 1 }}">
+                </div>
+
+                <div>
+                    <label>Additional Price</label>
+                    <input type="number"
+                        step="0.01"
+                        name="price_rates[{{ $index }}][additional_price]"
+                        value="{{ $rate['additional_price'] ?? 0 }}"
+                        class="rate-price">
+                </div>
+
+                <div>
+                    <label>With Tax</label>
+                    <input type="number"
+                        step="0.01"
+                        name="price_rates[{{ $index }}][additional_price_with_tax]"
+                        value="{{ $rate['additional_price_with_tax'] ?? 0 }}"
+                        class="rate-price-tax">
+                </div>
+
+                <button type="button"
+                    class="btn-outline remove-rate"
+                    style="{{ $index == 0 ? 'display:none;' : '' }}">
+                    Remove
+                </button>
+            </div>
+        @endforeach
+    </div>
+
+    <button type="button" id="add-price-rate" class="btn-outline" style="margin-top:12px;">
+        + Add Rate
+    </button>
+
+    <small style="display:block; margin-top:6px; color:#6b7280;">
+        Example: Qty 1 = 39, Qty 50 = 35 means orders from 50 pcs will use 35 per item.
+    </small>
 </div>
                 <div class="form-group">
                     <label>Free From Quantity</label>
@@ -390,7 +534,8 @@
                         min="1" placeholder=" 100">
 
                     <small style="display:block; margin-top:6px; color:#6b7280;">
-                      Entering 100 means that for orders of 100 units or more, the Additional Price for this option will be free.
+                        Entering 100 means that for orders of 100 units or more, the Additional Price for this option will
+                        be free.
                     </small>
                 </div>
 
@@ -490,25 +635,7 @@
 @endsection
 
 @section('js')
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const priceInput = document.querySelector('input[name="additional_price"]');
-            const priceWithTaxInput = document.querySelector('input[name="additional_price_with_tax"]');
-
-            if (priceInput && priceWithTaxInput) {
-                priceInput.addEventListener('input', function() {
-                    const priceVal = parseFloat(this.value);
-                    if (!isNaN(priceVal)) {
-                        priceWithTaxInput.value = (priceVal * 1.1).toFixed(2);
-                    } else {
-                        priceWithTaxInput.value = '';
-                    }
-                });
-            }
-        });
-    </script>
-     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <script>
@@ -516,17 +643,96 @@
             const priceInput = document.querySelector('input[name="additional_price"]');
             const priceWithTaxInput = document.querySelector('input[name="additional_price_with_tax"]');
 
+            function calculateTax(price) {
+                const priceVal = parseFloat(price);
+                return !isNaN(priceVal) ? (priceVal * 1.1).toFixed(2) : '';
+            }
+
             if (priceInput && priceWithTaxInput) {
                 priceInput.addEventListener('input', function() {
-                    const priceVal = parseFloat(this.value);
+                    priceWithTaxInput.value = calculateTax(this.value);
+                });
+            }
 
-                    if (!isNaN(priceVal)) {
-                        priceWithTaxInput.value = (priceVal * 1.1).toFixed(2);
-                    } else {
-                        priceWithTaxInput.value = '';
+            const rateList = document.getElementById('price-rate-list');
+            const addRateBtn = document.getElementById('add-price-rate');
+            const priceRateSection = document.getElementById('price-rate-section');
+            const priceModeInputs = document.querySelectorAll('input[name="price_mode"]');
+
+            let rateIndex = rateList ? rateList.querySelectorAll('.price-rate-row').length : 0;
+
+            function togglePriceRateSection() {
+                const selectedMode = document.querySelector('input[name="price_mode"]:checked')?.value || 'normal';
+                const isRateMode = selectedMode === 'rate';
+
+                if (!priceRateSection) {
+                    return;
+                }
+
+                priceRateSection.style.display = isRateMode ? 'block' : 'none';
+
+                priceRateSection.querySelectorAll('input, button').forEach(function(el) {
+                    el.disabled = !isRateMode;
+                });
+
+                if (addRateBtn) {
+                    addRateBtn.disabled = !isRateMode;
+                }
+            }
+
+            priceModeInputs.forEach(function(input) {
+                input.addEventListener('change', togglePriceRateSection);
+            });
+
+            if (addRateBtn && rateList) {
+                addRateBtn.addEventListener('click', function() {
+                    const row = document.createElement('div');
+                    row.className = 'price-rate-row';
+
+                    row.innerHTML = `
+                        <div>
+                            <label>From Qty</label>
+                            <input type="number" name="price_rates[${rateIndex}][min_qty]" min="1" placeholder="50">
+                        </div>
+
+                        <div>
+                            <label>Additional Price</label>
+                            <input type="number" step="0.01" name="price_rates[${rateIndex}][additional_price]" value="0" class="rate-price">
+                        </div>
+
+                        <div>
+                            <label>With Tax</label>
+                            <input type="number" step="0.01" name="price_rates[${rateIndex}][additional_price_with_tax]" value="0" class="rate-price-tax">
+                        </div>
+
+                        <button type="button" class="btn-outline remove-rate">
+                            Remove
+                        </button>
+                    `;
+
+                    rateList.appendChild(row);
+                    rateIndex++;
+
+                    togglePriceRateSection();
+                });
+
+                rateList.addEventListener('input', function(e) {
+                    if (e.target.classList.contains('rate-price')) {
+                        const row = e.target.closest('.price-rate-row');
+                        const taxInput = row.querySelector('.rate-price-tax');
+
+                        taxInput.value = calculateTax(e.target.value);
+                    }
+                });
+
+                rateList.addEventListener('click', function(e) {
+                    if (e.target.classList.contains('remove-rate')) {
+                        e.target.closest('.price-rate-row').remove();
                     }
                 });
             }
+
+            togglePriceRateSection();
 
             $('#option_group_id').select2({
                 placeholder: '-- Select Group --',
