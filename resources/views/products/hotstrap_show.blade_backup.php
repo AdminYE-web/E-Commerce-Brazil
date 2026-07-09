@@ -1427,6 +1427,29 @@
     box-shadow: 0 0 0 2px rgba(49, 102, 246, 0.18);
     color: #3166f6;
 }
+
+.option-bs-dropdown-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.option-dropdown-name {
+    flex: 1;
+    text-align: left;
+}
+
+.option-dropdown-price {
+    flex-shrink: 0;
+    color: #dc2626;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.option-bs-dropdown-item.active .option-dropdown-price {
+    color: #fff;
+}
     </style>
 @endsection
 
@@ -1470,6 +1493,26 @@
 
             return $option->additional_price ?? 0;
         };
+        $getOptionPriceRates = function ($option) use ($useTaxIncludedPrice) {
+    if (!$option->priceRates || !$option->priceRates->count()) {
+        return [];
+    }
+
+    return $option->priceRates
+        ->sortBy('min_qty')
+        ->map(function ($rate) use ($useTaxIncludedPrice) {
+            return [
+                'min_qty' => (int) $rate->min_qty,
+                'price' => (float) (
+                    $useTaxIncludedPrice
+                        ? ($rate->additional_price_with_tax ?? $rate->additional_price ?? 0)
+                        : ($rate->additional_price ?? 0)
+                ),
+            ];
+        })
+        ->values()
+        ->toArray();
+};
 
         $getVariantPrice = function ($variant) use ($useTaxIncludedPrice) {
             if ($useTaxIncludedPrice) {
@@ -1565,6 +1608,7 @@
                                                     value="{{ $option->option_id }}" data-group-name="{{ $groupName }}"
                                                     class="js-option-input" data-option-name="{{ $option->option_name }}"
                                                     data-price="{{ $getOptionPrice($option) }}"
+                                                    data-price-rates='@json($getOptionPriceRates($option))'
                                                     data-price-type="{{ $option->price_type }}"
                                                     data-option-id="{{ $option->option_id }}"
                                                     data-qty-rule-type="{{ $option->pivot->qty_rule_type }}"
@@ -1608,6 +1652,7 @@
                                                     value="{{ $option->option_id }}" data-group-name="{{ $groupName }}"
                                                     class="js-option-input" data-option-name="{{ $option->option_name }}"
                                                     data-price="{{ $getOptionPrice($option) }}"
+                                                    data-price-rates='@json($getOptionPriceRates($option))'
                                                     data-price-type="{{ $option->price_type }}"
                                                     data-option-id="{{ $option->option_id }}"
                                                     data-qty-rule-type="{{ $option->pivot->qty_rule_type }}"
@@ -1669,6 +1714,7 @@
                                                     value="{{ $option->option_id }}" data-group-name="{{ $groupName }}"
                                                     class="js-option-input" data-option-name="{{ $option->option_name }}"
                                                     data-price="{{ $getOptionPrice($option) }}"
+                                                    data-price-rates='@json($getOptionPriceRates($option))'
                                                     data-price-type="{{ $option->price_type }}"
                                                     data-option-id="{{ $option->option_id }}"
                                                     data-qty-rule-type="{{ $option->pivot->qty_rule_type }}"
@@ -1836,6 +1882,7 @@
                                             data-option-id="{{ $selectedOption?->option_id ?? '' }}"
                                             data-option-name="{{ $selectedOption?->option_name ?? '' }}"
                                             data-price="{{ $selectedOption ? $getOptionPrice($selectedOption) : 0 }}"
+                                            data-price-rates='@json($selectedOption ? $getOptionPriceRates($selectedOption) : [])'
                                             data-price-type="{{ $selectedOption?->price_type ?? 'per_order' }}"
                                             data-free-from-qty="{{ $selectedOption?->free_from_qty ?? 0 }}"
                                             data-qty-rule-type="{{ $selectedOption?->pivot->qty_rule_type ?? '' }}"
@@ -1846,25 +1893,40 @@
                                         <div class="dropdown option-bs-dropdown">
                                             <button class="btn dropdown-toggle option-bs-dropdown-btn" type="button"
                                                 data-bs-toggle="dropdown" aria-expanded="false">
-                                                <span class="option-bs-dropdown-label">
-                                                    {{ $selectedOption?->option_name ?? 'Please select' }}
-                                                </span>
+                                              @php
+    $selectedOptionPrice = $selectedOption ? $getOptionPrice($selectedOption) : 0;
+
+    $selectedOptionLabel = $selectedOption
+        ? $selectedOption->option_name . ($selectedOptionPrice > 0 ? '  +¥ ' . number_format($selectedOptionPrice, 2) : '')
+        : 'Please select';
+@endphp
+
+<span class="option-bs-dropdown-label">
+    {{ $selectedOptionLabel }}
+</span>
                                             </button>
 
                                             <ul class="dropdown-menu option-bs-dropdown-menu">
                                                 @foreach ($options as $option)
-                                                    @php
-                                                        $imagePath = $option->mainImage
-                                                            ? asset('storage/' . $option->mainImage->image_path)
-                                                            : '';
-                                                    @endphp
+                                                   @php
+    $imagePath = $option->mainImage
+        ? asset('storage/' . $option->mainImage->image_path)
+        : '';
+
+    $optionPrice = $getOptionPrice($option);
+
+    $optionLabelWithPrice = $option->option_name .
+        ($optionPrice > 0 ? '  +¥ ' . number_format($optionPrice, 2) : '');
+@endphp
 
                                                     <li>
                                                         <button type="button"
                                                             class="dropdown-item option-bs-dropdown-item {{ $selectedOptionId && (int) $selectedOptionId === (int) $option->option_id ? 'active' : '' }}"
                                                             data-option-id="{{ $option->option_id }}"
                                                             data-option-name="{{ $option->option_name }}"
+                                                            data-label-with-price="{{ $optionLabelWithPrice }}"
                                                             data-price="{{ $getOptionPrice($option) }}"
+                                                            data-price-rates='@json($getOptionPriceRates($option))'
                                                             data-price-type="{{ $option->price_type }}"
                                                             data-free-from-qty="{{ $option->free_from_qty ?? 0 }}"
                                                             data-image="{{ $imagePath }}"
@@ -1873,7 +1935,15 @@
                                                             data-min-qty="{{ $option->pivot->min_qty ?? 0 }}"
                                                             data-max-qty="{{ $option->pivot->max_qty ?? 0 }}"
                                                             data-exact-qty="{{ $option->pivot->exact_qty ?? 0 }}">
-                                                            {{ $option->option_name }}
+                                                            <span class="option-dropdown-name">
+    {{ $option->option_name }}
+</span>
+
+@if ($optionPrice > 0)
+    <span class="option-dropdown-price">
+        +¥ {{ number_format($optionPrice, 2) }}
+    </span>
+@endif
                                                         </button>
                                                     </li>
                                                 @endforeach
@@ -2018,6 +2088,7 @@
                                                     data-group-name="{{ $groupName }}"
                                                     data-option-name="{{ $option->option_name }}"
                                                     data-price="{{ $getOptionPrice($option) }}"
+                                                    data-price-rates='@json($getOptionPriceRates($option))'
                                                     data-price-type="{{ $option->price_type }}"
                                                     data-option-id="{{ $option->option_id }}"
                                                     data-qty-rule-type="{{ $option->pivot->qty_rule_type }}"
@@ -2621,6 +2692,7 @@
                 hiddenInput.dataset.optionId = '';
                 hiddenInput.dataset.optionName = '';
                 hiddenInput.dataset.price = 0;
+                hiddenInput.dataset.priceRates = '[]';
                 hiddenInput.dataset.priceType = 'per_order';
                 hiddenInput.dataset.freeFromQty = 0;
                 hiddenInput.dataset.qtyRuleType = '';
@@ -2660,6 +2732,7 @@
             hiddenInput.dataset.optionId = item.dataset.optionId || '';
             hiddenInput.dataset.optionName = item.dataset.optionName || '';
             hiddenInput.dataset.price = item.dataset.price || 0;
+            hiddenInput.dataset.priceRates = item.dataset.priceRates || '[]';
             hiddenInput.dataset.priceType = item.dataset.priceType || 'per_order';
             hiddenInput.dataset.qtyRuleType = item.dataset.qtyRuleType || '';
             hiddenInput.dataset.freeFromQty = item.dataset.freeFromQty || 0;
@@ -2667,9 +2740,9 @@
             hiddenInput.dataset.maxQty = item.dataset.maxQty || 0;
             hiddenInput.dataset.exactQty = item.dataset.exactQty || 0;
 
-            if (label) {
-                label.textContent = item.dataset.optionName || item.textContent.trim();
-            }
+           if (label) {
+    label.textContent = item.dataset.labelWithPrice || item.dataset.optionName || item.textContent.trim();
+}
 
             wrap.querySelectorAll('.option-bs-dropdown-item').forEach(function(dropdownItem) {
                 dropdownItem.classList.remove('active');
@@ -2709,6 +2782,35 @@
     return name.includes('PANTONE') || name.includes('DIC');
 }
 
+function getRatePriceByQty(element, quantity) {
+    const basePrice = parseFloat(element.dataset.price || 0);
+
+    let rates = [];
+
+    try {
+        rates = JSON.parse(element.dataset.priceRates || '[]');
+    } catch (e) {
+        rates = [];
+    }
+
+    if (!Array.isArray(rates) || rates.length === 0) {
+        return basePrice;
+    }
+
+    let matchedPrice = basePrice;
+
+    rates.forEach(function(rate) {
+        const minQty = parseInt(rate.min_qty || 0);
+        const price = parseFloat(rate.price || 0);
+
+        if (quantity >= minQty) {
+            matchedPrice = price;
+        }
+    });
+
+    return matchedPrice;
+}
+
 function getColorFinalPrice(input, quantity) {
     const groupEl = input.closest('.customize-option-group');
 
@@ -2721,7 +2823,7 @@ function getColorFinalPrice(input, quantity) {
     );
 
     const optionName = input.dataset.optionName || '';
-    const price = parseFloat(input.dataset.price || 0);
+   const price = getRatePriceByQty(input, quantity);
     const freeFromQty = parseInt(input.dataset.freeFromQty || 0);
 
     const isPantoneDic = String(optionName).toUpperCase().includes('PANTONE') ||
@@ -2782,7 +2884,7 @@ function getColorFinalPrice(input, quantity) {
                 const groupName = input.dataset.groupName || '';
                 const optionName = input.dataset.optionName || '';
                 const variantName = input.dataset.variantName || '';
-                const price = parseFloat(input.dataset.price || 0);
+                const price = getRatePriceByQty(input, quantity);
                 const variantPrice = parseFloat(input.dataset.variantPrice || 0);
                 const priceType = input.dataset.priceType || 'per_order';
                 const freeFromQty = parseInt(input.dataset.freeFromQty || 0);
@@ -2854,7 +2956,7 @@ if (input.classList.contains('js-color-option-input')) {
                     optionId = parseInt(select.value);
                     groupName = select.dataset.groupName || '';
                     optionName = select.dataset.optionName || '';
-                    price = parseFloat(select.dataset.price || 0);
+                    price = getRatePriceByQty(select, quantity);
                     priceType = select.dataset.priceType || 'per_order';
                     freeFromQty = parseInt(select.dataset.freeFromQty || 0);
                 } else {
@@ -2867,7 +2969,7 @@ if (input.classList.contains('js-color-option-input')) {
                     optionId = parseInt(selected.value);
                     groupName = select.dataset.groupName || '';
                     optionName = selected.dataset.optionName || selected.textContent || '';
-                    price = parseFloat(selected.dataset.price || 0);
+                    price = getRatePriceByQty(selected, quantity);
                     priceType = selected.dataset.priceType || 'per_order';
                     freeFromQty = parseInt(selected.dataset.freeFromQty || 0);
                 }

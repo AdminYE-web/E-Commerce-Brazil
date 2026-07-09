@@ -2204,6 +2204,7 @@
     <script>
         
         const priceRules = @json($priceRules ?? []);
+        const optionPriceRules = @json($optionPriceRules ?? []);
         const optionDependencies = @json($dependencies ?? []);
 
         let isUpdatingDependencies = false;
@@ -2589,6 +2590,82 @@
                 .includes(parseInt(optionId));
         }
 
+        function findMatchedOptionPriceRule(targetOptionId, selectedOptionIds) {
+            const matchedRules = optionPriceRules.filter(function(rule) {
+                const conditionOptionIds = rule.option_ids || [];
+
+                if (parseInt(rule.target_option_id || 0) !== parseInt(targetOptionId || 0)) {
+                    return false;
+                }
+
+                if (!conditionOptionIds.length) {
+                    return false;
+                }
+
+                return conditionOptionIds.every(function(optionId) {
+                    return selectedOptionIds.includes(parseInt(optionId));
+                });
+            });
+
+            if (!matchedRules.length) {
+                return null;
+            }
+
+            matchedRules.sort(function(a, b) {
+                return (b.option_ids || []).length - (a.option_ids || []).length;
+            });
+
+            return matchedRules[0];
+        }
+
+        function getOptionRuleTierPrice(rule, quantity) {
+            quantity = parseInt(quantity || 0);
+
+            if (!rule || !quantity || quantity <= 0) {
+                return null;
+            }
+
+            const tiers = rule.tiers || [];
+            const matchedTiers = tiers.filter(function(tier) {
+                const minQty = parseInt(tier.min_qty);
+                const maxQty = tier.max_qty === null ? null : parseInt(tier.max_qty);
+
+                return quantity >= minQty && (maxQty === null || quantity <= maxQty);
+            });
+
+            if (matchedTiers.length) {
+                matchedTiers.sort(function(a, b) {
+                    return parseInt(b.min_qty) - parseInt(a.min_qty);
+                });
+
+                return parseFloat(matchedTiers[0].additional_price || 0);
+            }
+
+            const sortedTiers = [...tiers].sort(function(a, b) {
+                return parseInt(b.min_qty) - parseInt(a.min_qty);
+            });
+
+            const highestTier = sortedTiers[0];
+
+            if (highestTier && quantity > parseInt(highestTier.min_qty)) {
+                return parseFloat(highestTier.additional_price || 0);
+            }
+
+            return null;
+        }
+
+        function getOptionReplacementPrice(optionId, currentPrice, quantity, selectedOptionIds) {
+            const matchedOptionRule = findMatchedOptionPriceRule(optionId, selectedOptionIds);
+
+            if (!matchedOptionRule) {
+                return currentPrice;
+            }
+
+            const replacementPrice = getOptionRuleTierPrice(matchedOptionRule, quantity);
+
+            return replacementPrice === null ? currentPrice : replacementPrice;
+        }
+
         /*
         |--------------------------------------------------------------------------
         | Select Detail Preview
@@ -2896,6 +2973,8 @@ if (input.classList.contains('js-color-option-input')) {
     finalPrice = 0;
 }
 
+                finalPrice = getOptionReplacementPrice(optionId, finalPrice, quantity, selectedOptionIds);
+
                 const isRuleOption = isOptionInMatchedRule(optionId, matchedRule);
 
                 if (!isRuleOption) {
@@ -2979,6 +3058,8 @@ if (input.classList.contains('js-color-option-input')) {
                 if (freeFromQty > 0 && quantity >= freeFromQty) {
                     finalPrice = 0;
                 }
+
+                finalPrice = getOptionReplacementPrice(optionId, finalPrice, quantity, selectedOptionIds);
 
                 const isRuleOption = isOptionInMatchedRule(optionId, matchedRule);
 

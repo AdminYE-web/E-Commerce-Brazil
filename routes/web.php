@@ -1,5 +1,7 @@
 <?php
 
+
+use App\Http\Controllers\Admin\ProductOptionPriceRuleController;
 use App\Http\Controllers\AccountAddressController;
 use App\Http\Controllers\AccountContactController;
 use App\Http\Controllers\AccountController;
@@ -389,6 +391,11 @@ Route::post('menu-products/add', [MenuProductController::class, 'add'])
 
 Route::post('menu-products/{product}/remove', [MenuProductController::class, 'remove'])
     ->name('menu-products.remove');
+
+    Route::resource('option-price-rules', ProductOptionPriceRuleController::class)
+    ->parameters([
+        'option-price-rules' => 'optionPriceRule',
+    ]);
 
 
 

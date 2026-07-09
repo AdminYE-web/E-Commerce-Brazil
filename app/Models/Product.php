@@ -161,4 +161,15 @@ class Product extends Model
             ->where('product_price_rule_tiers.is_display', 1)
             ->where('product_price_rule_tiers.is_active', 1);
     }
+
+    public function optionPriceRules()
+    {
+        return $this->hasMany(
+            ProductOptionPriceRule::class,
+            'product_id',
+            'product_id'
+        )
+            ->where('is_active', 1)
+            ->orderBy('option_price_rule_id');
+    }
 }

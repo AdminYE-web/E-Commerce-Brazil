@@ -32,6 +32,8 @@ class CartController extends Controller
             'mainImage',
             'priceRules.options',
             'priceRules.tiers',
+            'optionPriceRules.options',
+            'optionPriceRules.tiers',
         ])
             ->where('product_id', $request->product_id)
             ->firstOrFail();
@@ -86,7 +88,6 @@ class CartController extends Controller
             if (! $option) {
                 continue;
             }
-           
 
             $assignment = \DB::table('product_option_assignments')
                 ->where('product_id', $product->product_id)
@@ -112,7 +113,7 @@ class CartController extends Controller
                 'option_name' => $option->option_name,
 
                 'is_color_option' => ($option->group->display_type ?? '') === 'color',
-'is_pantone_dic' => preg_match('/PANTONE|DIC/i', $option->option_name) ? 1 : 0,
+                'is_pantone_dic' => preg_match('/PANTONE|DIC/i', $option->option_name) ? 1 : 0,
 
                 'price' => $optionPrice,
                 'price_type' => $option->price_type,
@@ -137,24 +138,24 @@ class CartController extends Controller
         $matchedRule = $this->findMatchedPriceRule($product, $selectedOptionIds);
         $unitPrice = $this->findTierPrice($matchedRule, $quantity);
 
-//         dd([
-//     'quantity' => $quantity,
-//     'selectedOptionIds' => $selectedOptionIds,
-//     'matchedRule' => $matchedRule ? [
-//         'rule_id' => $matchedRule->rule_id,
-//         'rule_name' => $matchedRule->rule_name,
-//         'option_ids' => $matchedRule->options->pluck('option_id')->values(),
-//         'tiers' => $matchedRule->tiers->map(function ($tier) {
-//             return [
-//                 'min_qty' => $tier->min_qty,
-//                 'max_qty' => $tier->max_qty,
-//                 'unit_price' => $tier->unit_price,
-//                 'unit_price_with_tax' => $tier->unit_price_with_tax ?? null,
-//             ];
-//         })->values(),
-//     ] : null,
-//     'unitPrice' => $unitPrice,
-// ]);
+        //         dd([
+        //     'quantity' => $quantity,
+        //     'selectedOptionIds' => $selectedOptionIds,
+        //     'matchedRule' => $matchedRule ? [
+        //         'rule_id' => $matchedRule->rule_id,
+        //         'rule_name' => $matchedRule->rule_name,
+        //         'option_ids' => $matchedRule->options->pluck('option_id')->values(),
+        //         'tiers' => $matchedRule->tiers->map(function ($tier) {
+        //             return [
+        //                 'min_qty' => $tier->min_qty,
+        //                 'max_qty' => $tier->max_qty,
+        //                 'unit_price' => $tier->unit_price,
+        //                 'unit_price_with_tax' => $tier->unit_price_with_tax ?? null,
+        //             ];
+        //         })->values(),
+        //     ] : null,
+        //     'unitPrice' => $unitPrice,
+        // ]);
 
         //         dd([
         //     'product_id' => $product->product_id,
@@ -185,42 +186,49 @@ class CartController extends Controller
             ? $matchedRule->options->pluck('option_id')->map(fn ($id) => (int) $id)->toArray()
             : [];
 
+        $selectedOptions = $this->applyOptionPriceRulesToSelectedOptions(
+            $selectedOptions,
+            $product,
+            $selectedOptionIds,
+            $quantity
+        );
+
         $freeColorUsedByGroup = [];
 
-foreach ($selectedOptions as $selectedOption) {
-    $isRuleOption = in_array((int) $selectedOption['option_id'], $ruleOptionIds);
+        foreach ($selectedOptions as $selectedOption) {
+            $isRuleOption = in_array((int) $selectedOption['option_id'], $ruleOptionIds);
 
-    if ($isRuleOption) {
-        continue;
-    }
+            if ($isRuleOption) {
+                continue;
+            }
 
-    $price = (float) ($selectedOption['price'] ?? 0);
-    $variantPrice = (float) ($selectedOption['variant_price'] ?? 0);
-    $priceType = $selectedOption['price_type'] ?? 'per_order';
+            $price = (float) ($selectedOption['price'] ?? 0);
+            $variantPrice = (float) ($selectedOption['variant_price'] ?? 0);
+            $priceType = $selectedOption['price_type'] ?? 'per_order';
 
-    $freeFromQty = !empty($selectedOption['free_from_qty'])
-        ? (int) $selectedOption['free_from_qty']
-        : null;
+            $freeFromQty = ! empty($selectedOption['free_from_qty'])
+                ? (int) $selectedOption['free_from_qty']
+                : null;
 
-    if ($freeFromQty && $quantity >= $freeFromQty) {
-        $price = 0;
-    }
+            if ($freeFromQty && $quantity >= $freeFromQty) {
+                $price = 0;
+            }
 
-    $isColorOption = !empty($selectedOption['is_color_option']);
-    $isPantoneDic = !empty($selectedOption['is_pantone_dic']);
-    $colorGroupId = (int) ($selectedOption['group_id'] ?? 0);
+            $isColorOption = ! empty($selectedOption['is_color_option']);
+            $isPantoneDic = ! empty($selectedOption['is_pantone_dic']);
+            $colorGroupId = (int) ($selectedOption['group_id'] ?? 0);
 
-    if ($isColorOption && !$isPantoneDic && empty($freeColorUsedByGroup[$colorGroupId])) {
-        $price = 0;
-        $freeColorUsedByGroup[$colorGroupId] = true;
-    }
+            if ($isColorOption && ! $isPantoneDic && empty($freeColorUsedByGroup[$colorGroupId])) {
+                $price = 0;
+                $freeColorUsedByGroup[$colorGroupId] = true;
+            }
 
-    if ($priceType === 'per_item') {
-        $optionTotal += ($price + $variantPrice) * $quantity;
-    } else {
-        $optionTotal += $price + $variantPrice;
-    }
-}
+            if ($priceType === 'per_item') {
+                $optionTotal += ($price + $variantPrice) * $quantity;
+            } else {
+                $optionTotal += $price + $variantPrice;
+            }
+        }
 
         $customColors = [];
 
@@ -297,6 +305,8 @@ foreach ($selectedOptions as $selectedOption) {
                 'mainImage',
                 'priceRules.options',
                 'priceRules.tiers',
+                'optionPriceRules.options',
+                'optionPriceRules.tiers',
             ])
                 ->where('product_id', $item['product_id'])
                 ->first();
@@ -317,11 +327,42 @@ foreach ($selectedOptions as $selectedOption) {
                 ? $matchedRule->options->pluck('option_id')->map(fn ($id) => (int) $id)->toArray()
                 : [];
 
+            $itemOptions = collect($item['options'] ?? [])->map(function ($selectedOption) use ($quantity) {
+                $optionId = (int) ($selectedOption['option_id'] ?? 0);
+
+                $option = ProductOption::with('priceRates')
+                    ->where('option_id', $optionId)
+                    ->first();
+
+                if ($option) {
+                    $selectedOption['price'] = $this->optionPrice($option, $quantity);
+                }
+
+                if (! empty($selectedOption['variant_id'])) {
+                    $variant = ProductOptionVariant::where('variant_id', $selectedOption['variant_id'])->first();
+
+                    if ($variant) {
+                        $selectedOption['variant_price'] = $this->variantPrice($variant);
+                    }
+                }
+
+                return $selectedOption;
+            })->toArray();
+
+            $itemOptions = $this->applyOptionPriceRulesToSelectedOptions(
+                $itemOptions,
+                $product,
+                $selectedOptionIds,
+                $quantity
+            );
+
+            $cart[$key]['options'] = $itemOptions;
+
             $optionTotal = 0;
 
             $freeColorUsedByGroup = [];
 
-            foreach (($item['options'] ?? []) as $selectedOption) {
+            foreach ($itemOptions as $selectedOption) {
                 $optionId = (int) ($selectedOption['option_id'] ?? 0);
 
                 if (in_array($optionId, $ruleOptionIds)) {
@@ -336,8 +377,6 @@ foreach ($selectedOptions as $selectedOption) {
 
                 $variantPrice = 0;
 
-                
-
                 if (! empty($selectedOption['variant_id'])) {
                     $variant = ProductOptionVariant::where('variant_id', $selectedOption['variant_id'])->first();
                     $variantPrice = $this->variantPrice($variant);
@@ -345,22 +384,22 @@ foreach ($selectedOptions as $selectedOption) {
                     $variantPrice = (float) ($selectedOption['variant_price'] ?? 0);
                 }
 
-                $freeFromQty = !empty($selectedOption['free_from_qty'])
+                $freeFromQty = ! empty($selectedOption['free_from_qty'])
     ? (int) $selectedOption['free_from_qty']
     : null;
 
-if ($freeFromQty && $quantity >= $freeFromQty) {
-    $price = 0;
-}
+                if ($freeFromQty && $quantity >= $freeFromQty) {
+                    $price = 0;
+                }
 
-$isColorOption = !empty($selectedOption['is_color_option']);
-$isPantoneDic = !empty($selectedOption['is_pantone_dic']);
-$colorGroupId = (int) ($selectedOption['group_id'] ?? 0);
+                $isColorOption = ! empty($selectedOption['is_color_option']);
+                $isPantoneDic = ! empty($selectedOption['is_pantone_dic']);
+                $colorGroupId = (int) ($selectedOption['group_id'] ?? 0);
 
-if ($isColorOption && !$isPantoneDic && empty($freeColorUsedByGroup[$colorGroupId])) {
-    $price = 0;
-    $freeColorUsedByGroup[$colorGroupId] = true;
-}
+                if ($isColorOption && ! $isPantoneDic && empty($freeColorUsedByGroup[$colorGroupId])) {
+                    $price = 0;
+                    $freeColorUsedByGroup[$colorGroupId] = true;
+                }
 
                 $priceType = $selectedOption['price_type'] ?? 'per_order';
 
@@ -369,27 +408,7 @@ if ($isColorOption && !$isPantoneDic && empty($freeColorUsedByGroup[$colorGroupI
                 } else {
                     $optionTotal += $price + $variantPrice;
                 }
-                $cart[$key]['options'] = collect($item['options'] ?? [])->map(function ($selectedOption) use ($quantity) {
-    $optionId = (int) ($selectedOption['option_id'] ?? 0);
 
-    $option = ProductOption::with('priceRates')
-        ->where('option_id', $optionId)
-        ->first();
-
-    if ($option) {
-        $selectedOption['price'] = $this->optionPrice($option, $quantity);
-    }
-
-    if (! empty($selectedOption['variant_id'])) {
-        $variant = ProductOptionVariant::where('variant_id', $selectedOption['variant_id'])->first();
-
-        if ($variant) {
-            $selectedOption['variant_price'] = $this->variantPrice($variant);
-        }
-    }
-
-    return $selectedOption;
-})->toArray();
             }
 
             $productTotal = $unitPrice * $quantity;
@@ -443,6 +462,8 @@ if ($isColorOption && !$isPantoneDic && empty($freeColorUsedByGroup[$colorGroupI
             'mainImage',
             'priceRules.options',
             'priceRules.tiers',
+            'optionPriceRules.options',
+            'optionPriceRules.tiers',
         ])
             ->where('product_id', $cartItem['product_id'])
             ->first();
@@ -481,6 +502,35 @@ if ($isColorOption && !$isPantoneDic && empty($freeColorUsedByGroup[$colorGroupI
             ? $matchedRule->options->pluck('option_id')->map(fn ($id) => (int) $id)->toArray()
             : [];
 
+        $cartItemOptions = collect($cartItem['options'] ?? [])->map(function ($selectedOption) use ($quantity) {
+            $optionId = (int) ($selectedOption['option_id'] ?? 0);
+
+            $option = ProductOption::with('priceRates')
+                ->where('option_id', $optionId)
+                ->first();
+
+            if ($option) {
+                $selectedOption['price'] = $this->optionPrice($option, $quantity);
+            }
+
+            if (! empty($selectedOption['variant_id'])) {
+                $variant = ProductOptionVariant::where('variant_id', $selectedOption['variant_id'])->first();
+
+                if ($variant) {
+                    $selectedOption['variant_price'] = $this->variantPrice($variant);
+                }
+            }
+
+            return $selectedOption;
+        })->toArray();
+
+        $cartItemOptions = $this->applyOptionPriceRulesToSelectedOptions(
+            $cartItemOptions,
+            $product,
+            $selectedOptionIds,
+            $quantity
+        );
+
         /*
         |--------------------------------------------------------------------------
         | Recalculate option total
@@ -492,7 +542,7 @@ if ($isColorOption && !$isPantoneDic && empty($freeColorUsedByGroup[$colorGroupI
 
         $freeColorUsedByGroup = [];
 
-        foreach (($cartItem['options'] ?? []) as $selectedOption) {
+        foreach ($cartItemOptions as $selectedOption) {
             $optionId = (int) ($selectedOption['option_id'] ?? 0);
 
             if (in_array($optionId, $ruleOptionIds)) {
@@ -514,22 +564,22 @@ if ($isColorOption && !$isPantoneDic && empty($freeColorUsedByGroup[$colorGroupI
                 $variantPrice = (float) ($selectedOption['variant_price'] ?? 0);
             }
 
-            $freeFromQty = !empty($selectedOption['free_from_qty'])
+            $freeFromQty = ! empty($selectedOption['free_from_qty'])
     ? (int) $selectedOption['free_from_qty']
     : null;
 
-if ($freeFromQty && $quantity >= $freeFromQty) {
-    $price = 0;
-}
+            if ($freeFromQty && $quantity >= $freeFromQty) {
+                $price = 0;
+            }
 
-$isColorOption = !empty($selectedOption['is_color_option']);
-$isPantoneDic = !empty($selectedOption['is_pantone_dic']);
-$colorGroupId = (int) ($selectedOption['group_id'] ?? 0);
+            $isColorOption = ! empty($selectedOption['is_color_option']);
+            $isPantoneDic = ! empty($selectedOption['is_pantone_dic']);
+            $colorGroupId = (int) ($selectedOption['group_id'] ?? 0);
 
-if ($isColorOption && !$isPantoneDic && empty($freeColorUsedByGroup[$colorGroupId])) {
-    $price = 0;
-    $freeColorUsedByGroup[$colorGroupId] = true;
-}
+            if ($isColorOption && ! $isPantoneDic && empty($freeColorUsedByGroup[$colorGroupId])) {
+                $price = 0;
+                $freeColorUsedByGroup[$colorGroupId] = true;
+            }
 
             $priceType = $selectedOption['price_type'] ?? 'per_order';
 
@@ -562,6 +612,7 @@ if ($isColorOption && !$isPantoneDic && empty($freeColorUsedByGroup[$colorGroupI
         $itemTotal = $productTotal + $optionTotal;
 
         $cart[$cartItemId]['quantity'] = $quantity;
+        $cart[$cartItemId]['options'] = $cartItemOptions;
 
         $cart[$cartItemId]['price_rule_id'] = $matchedRule->rule_id ?? null;
         $cart[$cartItemId]['price_rule_name'] = $matchedRule->rule_name ?? null;
@@ -596,6 +647,106 @@ if ($isColorOption && !$isPantoneDic && empty($freeColorUsedByGroup[$colorGroupI
         return redirect()
             ->route('cart.index')
             ->with('success', 'Item removed.');
+    }
+
+    private function applyOptionPriceRulesToSelectedOptions(array $selectedOptions, Product $product, array $selectedOptionIds, int $quantity): array
+    {
+        $selectedOptionIds = collect($selectedOptionIds)
+            ->map(fn ($id) => (int) $id)
+            ->filter()
+            ->unique()
+            ->values()
+            ->toArray();
+
+        return collect($selectedOptions)
+            ->map(function ($selectedOption) use ($product, $selectedOptionIds, $quantity) {
+                $optionId = (int) ($selectedOption['option_id'] ?? 0);
+
+                if (! $optionId) {
+                    return $selectedOption;
+                }
+
+                $matchedRule = $this->findMatchedOptionPriceRule($product, $optionId, $selectedOptionIds);
+
+                if ($matchedRule) {
+                    $selectedOption['price'] = $this->findOptionRuleTierPrice($matchedRule, $quantity);
+                }
+
+                return $selectedOption;
+            })
+            ->toArray();
+    }
+
+    private function findMatchedOptionPriceRule(Product $product, int $targetOptionId, array $selectedOptionIds)
+    {
+        $selectedOptionIds = collect($selectedOptionIds)
+            ->map(fn ($id) => (int) $id)
+            ->filter()
+            ->unique()
+            ->values()
+            ->toArray();
+
+        $rules = $product->relationLoaded('optionPriceRules')
+            ? $product->optionPriceRules
+            : $product->optionPriceRules()->with(['options', 'tiers'])->get();
+
+        $matchedRules = $rules->filter(function ($rule) use ($targetOptionId, $selectedOptionIds) {
+            if ((int) $rule->target_option_id !== $targetOptionId) {
+                return false;
+            }
+
+            $conditionOptionIds = $rule->options
+                ->pluck('option_id')
+                ->map(fn ($id) => (int) $id)
+                ->filter()
+                ->unique()
+                ->values()
+                ->toArray();
+
+            if (empty($conditionOptionIds)) {
+                return false;
+            }
+
+            return empty(array_diff($conditionOptionIds, $selectedOptionIds));
+        });
+
+        return $matchedRules
+            ->sortByDesc(function ($rule) {
+                return $rule->options->count();
+            })
+            ->first();
+    }
+
+    private function findOptionRuleTierPrice($rule, int $quantity): float
+    {
+        $tiers = $rule->tiers;
+
+        $matchedTier = $tiers
+            ->filter(function ($tier) use ($quantity) {
+                return $quantity >= $tier->min_qty
+                    && (
+                        is_null($tier->max_qty)
+                        || $quantity <= $tier->max_qty
+                    );
+            })
+            ->sortByDesc('min_qty')
+            ->first();
+
+        if (! $matchedTier) {
+            $matchedTier = $tiers
+                ->sortByDesc('min_qty')
+                ->first();
+        }
+
+        if (! $matchedTier) {
+            return 0;
+        }
+
+        if ($this->useTaxIncludedPrice()) {
+            return (float) ($matchedTier->additional_price_with_tax ?? $matchedTier->additional_price ?? 0);
+        }
+
+        return (float) ($matchedTier->additional_price ?? 0);
     }
 
     private function findMatchedPriceRule(Product $product, array $selectedOptionIds)

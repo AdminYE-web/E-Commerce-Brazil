@@ -64,6 +64,10 @@
                 <li><a href="{{ route('admin.product-price-rules.index') }}"
                         class="sub-nav-link {{ request()->routeIs('admin.product-price-rules.*') ? 'active' : '' }}">Product
                         Price Rules</a></li>
+                <li><a href="{{ route('admin.option-price-rules.index') }}"
+                        class="sub-nav-link {{ request()->routeIs('admin.option-price-rules.*') ? 'active' : '' }}">Option
+                        Price Rules</a></li>
+                        
                 <li><a href="{{ route('admin.option-groups.index') }}"
                         class="sub-nav-link {{ request()->routeIs('admin.option-groups.*') ? 'active' : '' }}">Option
                         Groups</a></li>
