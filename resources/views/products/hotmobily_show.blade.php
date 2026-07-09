@@ -3277,6 +3277,62 @@ if (input.classList.contains('js-color-option-input')) {
                         }
                     }
                 });
+                    const selectOptions = document.querySelectorAll(
+                        '#customize-form select.option-select-detail option[data-option-id="' + optionId + '"]'
+                    );
+
+                    selectOptions.forEach(function(option) {
+                        option.hidden = false;
+                        option.disabled = false;
+
+                        if (actionType === 'hide') {
+                            option.hidden = true;
+                        }
+
+                        if (actionType === 'disable') {
+                            option.disabled = true;
+                        }
+                    });
+
+                    const dropdownItems = document.querySelectorAll(
+                        '#customize-form .option-bs-dropdown-item[data-option-id="' + optionId + '"]'
+                    );
+
+                    dropdownItems.forEach(function(item) {
+                        item.hidden = false;
+                        item.disabled = false;
+                        item.style.pointerEvents = '';
+                        item.classList.remove('disabled');
+                        item.classList.remove('is-option-disabled-by-dependency');
+
+                        const wrap = item.closest('.option-select-detail-wrap');
+                        const hiddenInput = wrap ? wrap.querySelector('.option-select-detail-hidden') : null;
+                        const isSelected = hiddenInput && hiddenInput.value == item.dataset.optionId;
+
+                        if (actionType === 'hide') {
+                            item.hidden = true;
+                            item.classList.remove('active');
+
+                            if (isSelected && wrap) {
+                                clearBootstrapDropdown(wrap);
+                            }
+                        }
+
+                        if (actionType === 'disable') {
+                            item.disabled = true;
+                            item.style.pointerEvents = 'none';
+                            item.classList.add('disabled');
+                            item.classList.add('is-option-disabled-by-dependency');
+
+                            if (isSelected && wrap) {
+                                clearBootstrapDropdown(wrap);
+                            }
+                        }
+
+                        if (actionType === 'show' && isSelected && hiddenInput) {
+                            hiddenInput.disabled = false;
+                        }
+                    });
             }
         }
 

@@ -51,6 +51,29 @@ class ProductDetailLocalizationTest extends TestCase
         $this->assertStringNotContainsString('selectFirstAvailableBootstrapItem(wrap);', $contents);
     }
 
+    public function test_option_dependencies_show_target_options_inside_detail_dropdowns(): void
+    {
+        foreach (['hotstrap_show', 'hotmobily_show'] as $view) {
+            $contents = file_get_contents(resource_path("views/products/{$view}.blade.php"));
+            $applyBlock = substr(
+                $contents,
+                strpos($contents, 'function applySingleDependency(dep)'),
+                strpos($contents, 'function applyDependencyActions()') - strpos($contents, 'function applySingleDependency(dep)')
+            );
+
+            $this->assertStringContainsString(
+                '#customize-form select.option-select-detail option[data-option-id="'."' + optionId + '".'"]',
+                $applyBlock
+            );
+            $this->assertStringContainsString(
+                '#customize-form .option-bs-dropdown-item[data-option-id="'."' + optionId + '".'"]',
+                $applyBlock
+            );
+            $this->assertStringContainsString('item.hidden = false;', $applyBlock);
+            $this->assertStringContainsString('item.disabled = false;', $applyBlock);
+        }
+    }
+
     public function test_hotstrap_checked_radio_click_can_advance_to_next_step(): void
     {
         $contents = file_get_contents(resource_path('views/products/hotstrap_show.blade.php'));
