@@ -373,7 +373,9 @@ class CartController extends Controller
                     ->where('option_id', $optionId)
                     ->first();
 
-                $price = $option ? $this->optionPrice($option, $quantity) : (float) ($selectedOption['price'] ?? 0);
+                $price = array_key_exists('price', $selectedOption)
+                    ? (float) $selectedOption['price']
+                    : ($option ? $this->optionPrice($option, $quantity) : 0);
 
                 $variantPrice = 0;
 
@@ -553,7 +555,9 @@ class CartController extends Controller
                 ->where('option_id', $optionId)
                 ->first();
 
-            $price = $option ? $this->optionPrice($option, $quantity) : (float) ($selectedOption['price'] ?? 0);
+            $price = array_key_exists('price', $selectedOption)
+                    ? (float) $selectedOption['price']
+                    : ($option ? $this->optionPrice($option, $quantity) : 0);
 
             $variantPrice = 0;
 

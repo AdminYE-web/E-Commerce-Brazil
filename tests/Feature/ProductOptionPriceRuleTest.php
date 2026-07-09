@@ -183,6 +183,56 @@ class ProductOptionPriceRuleTest extends TestCase
         $this->assertSame(20.0, (float) $targetCartOption['price']);
     }
 
+    public function test_cart_index_keeps_option_price_rule_replacement_when_recalculating_totals(): void
+    {
+        [$product, $targetOption, $conditionOption] = $this->createProductWithTargetAndConditionOptions();
+
+        $targetOption->update([
+            'additional_price' => 0,
+            'additional_price_with_tax' => 0,
+            'price_type' => 'per_order',
+        ]);
+
+        $rule = ProductOptionPriceRule::create([
+            'product_id' => $product->product_id,
+            'target_option_id' => $targetOption->option_id,
+            'rule_name' => 'Two side printed + holder',
+            'is_active' => 1,
+        ]);
+
+        $rule->options()->sync([
+            $targetOption->option_id,
+            $conditionOption->option_id,
+        ]);
+        $rule->tiers()->create([
+            'min_qty' => 1,
+            'max_qty' => null,
+            'additional_price' => 20,
+            'additional_price_with_tax' => 22,
+            'is_active' => 1,
+        ]);
+
+        $this->post(route('cart.add'), [
+            'product_id' => $product->product_id,
+            'quantity' => 1,
+            'options' => [
+                $targetOption->option_group_id => $targetOption->option_id,
+                $conditionOption->option_group_id => $conditionOption->option_id,
+            ],
+        ])->assertRedirect(route('cart.index'));
+
+        $this->assertSame(20.0, (float) collect(session('cart'))->first()['option_total']);
+
+        $this->get(route('cart.index'))->assertOk();
+
+        $item = collect(session('cart'))->first();
+        $targetCartOption = collect($item['options'])->firstWhere('option_id', $targetOption->option_id);
+
+        $this->assertSame(20.0, (float) $targetCartOption['price']);
+        $this->assertSame(20.0, (float) $item['option_total']);
+        $this->assertSame(20.0, (float) $item['item_total']);
+    }
+
     public function test_product_detail_pages_apply_option_price_rules_in_live_summary(): void
     {
         $hotstrapContents = file_get_contents(resource_path('views/products/hotstrap_show.blade.php'));
