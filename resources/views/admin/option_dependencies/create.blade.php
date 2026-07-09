@@ -203,6 +203,9 @@
                                 <option value="{{ $option->option_id }}"
                                     {{ old('parent_option_id') == $option->option_id ? 'selected' : '' }}>
                                     {{ $option->group->group_name ?? '-' }} ({{ $option->group->group_code ?? '-' }}) / {{ $option->option_name }}
+@if($option->option_code)
+    ({{ $option->option_code }})
+@endif
                                 </option>
                             @endforeach
                         </optgroup>
@@ -211,6 +214,9 @@
                                 <option value="{{ $option->option_id }}"
                                     {{ old('parent_option_id') == $option->option_id ? 'selected' : '' }}>
                                     {{ $option->group->group_name ?? '-' }} ({{ $option->group->group_code ?? '-' }}) / {{ $option->option_name }}
+@if($option->option_code)
+    ({{ $option->option_code }})
+@endif
                                 </option>
                             @endforeach
                         </optgroup>
@@ -264,6 +270,9 @@
                                 <option value="{{ $option->option_id }}"
                                     {{ old('target_option_id') == $option->option_id ? 'selected' : '' }}>
                                     {{ $option->group->group_name ?? '-' }} ({{ $option->group->group_code ?? '-' }}) / {{ $option->option_name }}
+@if($option->option_code)
+    ({{ $option->option_code }})
+@endif
                                 </option>
                             @endforeach
                         </optgroup>
@@ -272,6 +281,9 @@
                                 <option value="{{ $option->option_id }}"
                                     {{ old('target_option_id') == $option->option_id ? 'selected' : '' }}>
                                     {{ $option->group->group_name ?? '-' }} ({{ $option->group->group_code ?? '-' }}) / {{ $option->option_name }}
+@if($option->option_code)
+    ({{ $option->option_code }})
+@endif
                                 </option>
                             @endforeach
                         </optgroup>
