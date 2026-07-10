@@ -142,6 +142,104 @@
     .action-link.duplicate {
     color: #7c3aed;
 }
+.pagination-container {
+    padding: 18px 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.pagination-info {
+    color: #64748b;
+    font-size: 13px;
+}
+
+.custom-pagination {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.custom-pagination li {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.custom-pagination a,
+.custom-pagination span {
+    min-width: 36px;
+    height: 36px;
+    padding: 0 11px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    background: #fff;
+    color: var(--fg);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.custom-pagination a:hover {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: #fff;
+}
+
+.custom-pagination .active span {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: #fff;
+    font-weight: 700;
+}
+
+.custom-pagination .disabled span {
+    background: #f8fafc;
+    color: #cbd5e1;
+    cursor: not-allowed;
+}
+
+.custom-pagination .pagination-dots span {
+    min-width: 28px;
+    padding: 0 4px;
+    border-color: transparent;
+    background: transparent;
+}
+
+@media (max-width: 600px) {
+    .pagination-container {
+        justify-content: center;
+        padding: 16px;
+    }
+
+    .pagination-info {
+        width: 100%;
+        text-align: center;
+    }
+
+    .custom-pagination {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .custom-pagination a,
+    .custom-pagination span {
+        min-width: 34px;
+        height: 34px;
+        padding: 0 9px;
+    }
+}
 </style>
 @endsection
 
@@ -303,8 +401,101 @@
         </tbody>
     </table>
 
+    @if ($rules->hasPages())
+    @php
+        // เก็บค่า Search และ Filter ไว้เมื่อเปลี่ยนหน้า
+        $rules->appends(request()->except('page'));
+
+        $currentPage = $rules->currentPage();
+        $lastPage = $rules->lastPage();
+
+        // แสดงเลขหน้ารอบหน้าปัจจุบัน
+        $startPage = max(1, $currentPage - 2);
+        $endPage = min($lastPage, $currentPage + 2);
+    @endphp
+
     <div class="pagination-container">
-        {{ $rules->links() }}
+        <div class="pagination-info">
+            Showing
+            <strong>{{ $rules->firstItem() }}</strong>
+            to
+            <strong>{{ $rules->lastItem() }}</strong>
+            of
+            <strong>{{ $rules->total() }}</strong>
+            results
+        </div>
+
+        <ul class="custom-pagination">
+            {{-- Previous --}}
+            @if ($rules->onFirstPage())
+                <li class="disabled">
+                    <span>‹ Previous</span>
+                </li>
+            @else
+                <li>
+                    <a href="{{ $rules->previousPageUrl() }}" rel="prev">
+                        ‹ Previous
+                    </a>
+                </li>
+            @endif
+
+            {{-- หน้าแรก --}}
+            @if ($startPage > 1)
+                <li>
+                    <a href="{{ $rules->url(1) }}">1</a>
+                </li>
+
+                @if ($startPage > 2)
+                    <li class="pagination-dots">
+                        <span>…</span>
+                    </li>
+                @endif
+            @endif
+
+            {{-- เลขหน้า --}}
+            @for ($page = $startPage; $page <= $endPage; $page++)
+                @if ($page === $currentPage)
+                    <li class="active">
+                        <span>{{ $page }}</span>
+                    </li>
+                @else
+                    <li>
+                        <a href="{{ $rules->url($page) }}">
+                            {{ $page }}
+                        </a>
+                    </li>
+                @endif
+            @endfor
+
+            {{-- หน้าสุดท้าย --}}
+            @if ($endPage < $lastPage)
+                @if ($endPage < $lastPage - 1)
+                    <li class="pagination-dots">
+                        <span>…</span>
+                    </li>
+                @endif
+
+                <li>
+                    <a href="{{ $rules->url($lastPage) }}">
+                        {{ $lastPage }}
+                    </a>
+                </li>
+            @endif
+
+            {{-- Next --}}
+            @if ($rules->hasMorePages())
+                <li>
+                    <a href="{{ $rules->nextPageUrl() }}" rel="next">
+                        Next ›
+                    </a>
+                </li>
+            @else
+                <li class="disabled">
+                    <span>Next ›</span>
+                </li>
+            @endif
+        </ul>
     </div>
+@endif
 </div>
 @endsection
