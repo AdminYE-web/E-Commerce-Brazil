@@ -148,6 +148,117 @@ class ProductOptionPriceRuleController extends Controller
             ->route('admin.option-price-rules.index')
             ->with('success', 'Option price rule created successfully.');
     }
+    public function duplicate(
+    Request $request,
+    ProductOptionPriceRule $optionPriceRule
+) {
+    $language = session('admin_product_language', 'pt');
+
+    $optionPriceRule->load([
+        'product',
+        'targetOption.group',
+        'options.group',
+        'tiers',
+    ]);
+
+    $products = Product::where('language', $language)
+        ->whereIn('is_active', [1, 3])
+        ->orderBy('product_name')
+        ->get();
+
+    /*
+    |--------------------------------------------------------------------------
+    | Product ที่ต้องการนำกฎไปใช้
+    |--------------------------------------------------------------------------
+    |
+    | ตอนกด Duplicate ครั้งแรก จะเลือก Product เดิมไว้ก่อน
+    | เมื่อผู้ใช้เปลี่ยน Product ระบบจะส่ง product_id กลับมาที่หน้านี้
+    |
+    */
+    $selectedProductId = (int) $request->input(
+        'product_id',
+        $optionPriceRule->product_id
+    );
+
+    $selectedProduct = Product::where('language', $language)
+        ->whereIn('is_active', [1, 3])
+        ->where('product_id', $selectedProductId)
+        ->firstOrFail();
+
+    $selectedProduct->load(['assignedOptions.group']);
+
+    $options = $this->activeAssignedOptionsForProduct(
+        $selectedProduct,
+        $language
+    );
+
+    /*
+    |--------------------------------------------------------------------------
+    | จับคู่ Target Option กับ Product ใหม่
+    |--------------------------------------------------------------------------
+    |
+    | เริ่มจาก option_id เดียวกันก่อน
+    | ถ้าเป็นคนละ option_id จะลองจับคู่จาก option_code
+    | และ group_name
+    |
+    */
+    $selectedTargetOptionId = $this->findMatchingOptionId(
+        $optionPriceRule->targetOption,
+        $options
+    );
+
+    /*
+    |--------------------------------------------------------------------------
+    | จับคู่ Required Options กับ Product ใหม่
+    |--------------------------------------------------------------------------
+    */
+    $selectedOptionIds = $optionPriceRule->options
+        ->map(function ($sourceOption) use ($options) {
+            return $this->findMatchingOptionId(
+                $sourceOption,
+                $options
+            );
+        })
+        ->filter()
+        ->unique()
+        ->values()
+        ->toArray();
+
+    /*
+    |--------------------------------------------------------------------------
+    | Copy Additional Price Tiers
+    |--------------------------------------------------------------------------
+    */
+    $tiers = $optionPriceRule->tiers
+        ->sortBy('min_qty')
+        ->map(function ($tier) {
+            return [
+                'min_qty' => $tier->min_qty,
+                'max_qty' => $tier->max_qty,
+                'additional_price' => $tier->additional_price,
+                'additional_price_with_tax' => $tier->additional_price_with_tax,
+            ];
+        })
+        ->values()
+        ->toArray();
+
+    $duplicateRule = $optionPriceRule;
+
+    $duplicateRuleName = $optionPriceRule->rule_name . ' - Copy';
+
+    return view('admin.option_price_rules.create', compact(
+        'products',
+        'selectedProduct',
+        'selectedProductId',
+        'options',
+        'selectedTargetOptionId',
+        'selectedOptionIds',
+        'tiers',
+        'duplicateRule',
+        'duplicateRuleName',
+        'language'
+    ));
+}
 
     public function edit(ProductOptionPriceRule $optionPriceRule)
     {
@@ -284,4 +395,73 @@ class ProductOptionPriceRuleController extends Controller
             ->values()
             ->toArray();
     }
+    private function findMatchingOptionId(
+    $sourceOption,
+    $availableOptions
+): ?int {
+    if (! $sourceOption) {
+        return null;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | 1. ถ้า Product ใหม่ใช้ option_id เดียวกัน
+    |--------------------------------------------------------------------------
+    */
+    $matchedOption = $availableOptions->first(function ($option) use ($sourceOption) {
+        return (int) $option->option_id === (int) $sourceOption->option_id;
+    });
+
+    if ($matchedOption) {
+        return (int) $matchedOption->option_id;
+    }
+
+    $sourceGroupName = $sourceOption->group->group_name ?? null;
+
+    /*
+    |--------------------------------------------------------------------------
+    | 2. จับคู่ด้วย option_code และชื่อ Group
+    |--------------------------------------------------------------------------
+    */
+    if (! empty($sourceOption->option_code)) {
+        $matchedOption = $availableOptions->first(function ($option) use (
+            $sourceOption,
+            $sourceGroupName
+        ) {
+            $sameCode = (string) $option->option_code
+                === (string) $sourceOption->option_code;
+
+            $sameGroup = ! $sourceGroupName
+                || ($option->group->group_name ?? null) === $sourceGroupName;
+
+            return $sameCode && $sameGroup;
+        });
+
+        if ($matchedOption) {
+            return (int) $matchedOption->option_id;
+        }
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | 3. สำรองด้วย option_name และชื่อ Group
+    |--------------------------------------------------------------------------
+    */
+    $matchedOption = $availableOptions->first(function ($option) use (
+        $sourceOption,
+        $sourceGroupName
+    ) {
+        $sameName = (string) $option->option_name
+            === (string) $sourceOption->option_name;
+
+        $sameGroup = ! $sourceGroupName
+            || ($option->group->group_name ?? null) === $sourceGroupName;
+
+        return $sameName && $sameGroup;
+    });
+
+    return $matchedOption
+        ? (int) $matchedOption->option_id
+        : null;
+}
 }

@@ -139,6 +139,9 @@
             min-width: 1000px;
         }
     }
+    .action-link.duplicate {
+    color: #7c3aed;
+}
 </style>
 @endsection
 
@@ -265,6 +268,15 @@
                                class="action-link">
                                 Edit
                             </a>
+
+                                 <a href="{{ route(
+                'admin.option-price-rules.duplicate',
+                $rule->option_price_rule_id
+            ) }}"
+           class="action-link duplicate">
+            Duplicate
+        </a>
+                            
 
                             <form action="{{ route('admin.option-price-rules.destroy', $rule->option_price_rule_id) }}"
                                   method="POST"

@@ -1,6 +1,11 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Add Option Price Rule | Indigo Admin')
+@section(
+    'title',
+    isset($duplicateRule)
+        ? 'Duplicate Option Price Rule | Indigo Admin'
+        : 'Add Option Price Rule | Indigo Admin'
+)
 
 @section('css')
 <style>
@@ -29,6 +34,17 @@
         margin: 0;
         color: var(--muted);
         font-size: 14px;
+    }
+
+    .duplicate-notice {
+        margin-bottom: 20px;
+        padding: 12px 16px;
+        border: 1px solid #ddd6fe;
+        border-radius: 8px;
+        background: #f5f3ff;
+        color: #6d28d9;
+        font-size: 14px;
+        line-height: 1.5;
     }
 
     .form-grid {
@@ -81,6 +97,7 @@
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 18px;
     }
+
     .required-option-simple-box {
         border: 1px solid var(--border);
         border-radius: 8px;
@@ -124,7 +141,8 @@
         margin-bottom: 8px;
     }
 
-    .required-option-item input[type="checkbox"] {
+    .required-option-item input[type="checkbox"],
+    .required-option-item input[type="radio"] {
         width: 16px;
         height: 16px;
         accent-color: #2563eb;
@@ -190,6 +208,7 @@
         color: #22314a;
         outline: none;
         background: #fff;
+        min-width: 0;
     }
 
     .tier-input:first-child {
@@ -305,15 +324,37 @@
         padding-left: 20px;
     }
 
-    @media (max-width: 700px) {
-        .form-grid,
-        .price-tier-header,
-        .price-tier-row {
+    @media (max-width: 900px) {
+        .option-rule-columns {
             grid-template-columns: 1fr;
         }
 
-        .tier-action {
-            justify-content: flex-start;
+        .price-tier-card {
+            max-width: 100%;
+            overflow-x: auto;
+        }
+
+        .price-tier-header,
+        .price-tier-row {
+            min-width: 840px;
+        }
+    }
+
+    @media (max-width: 700px) {
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .form-header {
+            flex-direction: column;
+        }
+
+        .checkbox-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .form-actions {
+            flex-wrap: wrap;
         }
     }
 </style>
@@ -321,17 +362,125 @@
 
 @section('content')
 
+@php
+    /*
+    |--------------------------------------------------------------------------
+    | Determine page mode
+    |--------------------------------------------------------------------------
+    */
+    $isDuplicate = isset($duplicateRule);
+
+    /*
+    |--------------------------------------------------------------------------
+    | Rule name
+    |--------------------------------------------------------------------------
+    |
+    | old() has first priority when validation fails.
+    | Duplicate name is used when opening duplicate page for the first time.
+    |
+    */
+    $formRuleName = old(
+        'rule_name',
+        $duplicateRuleName ?? ''
+    );
+
+    /*
+    |--------------------------------------------------------------------------
+    | Selected product
+    |--------------------------------------------------------------------------
+    */
+    $formProductId = old(
+        'product_id',
+        $selectedProductId ?? ''
+    );
+
+    /*
+    |--------------------------------------------------------------------------
+    | Target option
+    |--------------------------------------------------------------------------
+    */
+    $formTargetOptionId = old(
+        'target_option_id',
+        $selectedTargetOptionId ?? null
+    );
+
+    /*
+    |--------------------------------------------------------------------------
+    | Required condition options
+    |--------------------------------------------------------------------------
+    */
+    $formSelectedOptionIds = collect(
+        old('option_ids', $selectedOptionIds ?? [])
+    )
+        ->map(fn ($id) => (int) $id)
+        ->filter()
+        ->unique()
+        ->values()
+        ->toArray();
+
+    /*
+    |--------------------------------------------------------------------------
+    | Price tiers
+    |--------------------------------------------------------------------------
+    */
+    $formTiers = old(
+        'tiers',
+        $tiers ?? [
+            [
+                'min_qty' => '',
+                'max_qty' => '',
+                'additional_price' => '',
+                'additional_price_with_tax' => '',
+            ],
+        ]
+    );
+
+    /*
+    |--------------------------------------------------------------------------
+    | Active status
+    |--------------------------------------------------------------------------
+    */
+    $formIsActive = old(
+        'is_active',
+        $isDuplicate
+            ? (int) ($duplicateRule->is_active ?? 0)
+            : 1
+    );
+@endphp
+
 <div class="form-card">
     <div class="form-header">
         <div>
-            <h1>Add Option Price Rule</h1>
-            <p>Create additional option prices by selected options and quantity tiers.</p>
+            <h1>
+                {{ $isDuplicate
+                    ? 'Duplicate Option Price Rule'
+                    : 'Add Option Price Rule'
+                }}
+            </h1>
+
+            <p>
+                @if ($isDuplicate)
+                    Copy the existing rule, select another product and save it as a new rule.
+                @else
+                    Create additional option prices by selected options and quantity tiers.
+                @endif
+            </p>
         </div>
 
         <a href="{{ route('admin.option-price-rules.index') }}" class="btn-outline">
             Back
         </a>
     </div>
+
+    @if ($isDuplicate)
+        <div class="duplicate-notice">
+            This is a copy of
+            <strong>{{ $duplicateRule->rule_name }}</strong>.
+
+            You may change the product, rule name, options and prices before saving.
+            The original rule will not be changed.
+        </div>
+    @endif
 
     @if ($errors->any())
         <div class="alert-error">
@@ -343,37 +492,67 @@
         </div>
     @endif
 
-    <form action="{{ route('admin.option-price-rules.store') }}" method="POST">
+    <form
+        id="option-price-rule-form"
+        action="{{ route('admin.option-price-rules.store') }}"
+        method="POST"
+    >
         @csrf
 
-        <div class="section-title">Rule Information</div>
+        <div class="section-title">
+            Rule Information
+        </div>
 
         <div class="form-grid">
             <div class="form-group">
-                <label>Product</label>
-                <select name="product_id" id="product_id" required>
-                    <option value="">-- Select Product --</option>
+                <label for="product_id">
+                    Product
+                </label>
+
+                <select
+                    name="product_id"
+                    id="product_id"
+                    required
+                >
+                    <option value="">
+                        -- Select Product --
+                    </option>
 
                     @foreach ($products as $product)
-                        <option value="{{ $product->product_id }}"
-                            {{ old('product_id', $selectedProductId ?? '') == $product->product_id ? 'selected' : '' }}>
-                            {{ $product->product_name }} | {{ $product->product_code }}
+                        <option
+                            value="{{ $product->product_id }}"
+                            {{ (string) $formProductId === (string) $product->product_id
+                                ? 'selected'
+                                : ''
+                            }}
+                        >
+                            {{ $product->product_name }}
+                            |
+                            {{ $product->product_code }}
                         </option>
                     @endforeach
                 </select>
             </div>
 
             <div class="form-group">
-                <label>Rule Name</label>
-                <input type="text"
-                       name="rule_name"
-                       value="{{ old('rule_name') }}"
-                       placeholder="For example, Black rope + 200m"
-                       required>
+                <label for="rule_name">
+                    Rule Name
+                </label>
+
+                <input
+                    type="text"
+                    id="rule_name"
+                    name="rule_name"
+                    value="{{ $formRuleName }}"
+                    placeholder="For example, Black rope + 200m"
+                    required
+                >
             </div>
         </div>
 
-        <div class="section-title">Option Rule Conditions</div>
+        <div class="section-title">
+            Option Rule Conditions
+        </div>
 
         <div class="option-rule-columns">
             <div>
@@ -381,7 +560,10 @@
                     Select the option whose price will be replaced by this rule.
                 </p>
 
-                <div class="required-option-simple-box" id="target-options-box">
+                <div
+                    class="required-option-simple-box"
+                    id="target-options-box"
+                >
                     <p class="muted-text">
                         Please select a product first.
                     </p>
@@ -393,78 +575,99 @@
                     Select all options the customer must choose before this price applies.
                 </p>
 
-                <div class="required-option-simple-box" id="required-options-box">
+                <div
+                    class="required-option-simple-box"
+                    id="required-options-box"
+                >
                     <p class="muted-text">
                         Please select a product first.
                     </p>
                 </div>
             </div>
         </div>
-        <div class="section-title">Additional Price Tiers</div>
+
+        <div class="section-title">
+            Additional Price Tiers
+        </div>
 
         <div class="price-tier-card">
             <div class="price-tier-header">
-                <div class="price-tier-title">Quantity</div>
-                <div class="price-tier-title">Additional Price</div>
-                <div class="price-tier-title">Additional Price With Tax</div>
+                <div class="price-tier-title">
+                    Quantity
+                </div>
+
+                <div class="price-tier-title">
+                    Additional Price
+                </div>
+
+                <div class="price-tier-title">
+                    Additional Price With Tax
+                </div>
+
                 <div class="price-tier-title"></div>
             </div>
 
             <div id="tier-wrapper">
-                @php
-                    $oldTiers = old('tiers', [
-                        [
-                            'min_qty' => '',
-                            'max_qty' => '',
-                            'additional_price' => '',
-                            'additional_price_with_tax' => '',
-                        ],
-                    ]);
-                @endphp
-
-                @foreach ($oldTiers as $index => $tier)
+                @foreach ($formTiers as $index => $tier)
                     <div class="price-tier-row">
                         <div class="tier-input-group">
-                            <input type="number"
-                                   name="tiers[{{ $index }}][min_qty]"
-                                   value="{{ $tier['min_qty'] ?? '' }}"
-                                   class="tier-input"
-                                   min="1"
-                                   data-tier-field="min_qty"
-                                   required>
+                            <input
+                                type="number"
+                                name="tiers[{{ $index }}][min_qty]"
+                                value="{{ $tier['min_qty'] ?? '' }}"
+                                class="tier-input"
+                                min="1"
+                                data-tier-field="min_qty"
+                                required
+                            >
 
                             <span class="tier-suffix"></span>
 
-                            <input type="hidden"
-                                   name="tiers[{{ $index }}][max_qty]"
-                                   value="{{ $tier['max_qty'] ?? '' }}">
+                            <input
+                                type="hidden"
+                                name="tiers[{{ $index }}][max_qty]"
+                                value="{{ $tier['max_qty'] ?? '' }}"
+                            >
                         </div>
 
                         <div class="tier-input-group">
-                            <span class="tier-prefix">¥</span>
-                            <input type="number"
-                                   step="0.01"
-                                   name="tiers[{{ $index }}][additional_price]"
-                                   value="{{ $tier['additional_price'] ?? '' }}"
-                                   class="tier-input"
-                                   min="0"
-                                   data-tier-field="additional_price"
-                                   required>
+                            <span class="tier-prefix">
+                                ¥
+                            </span>
+
+                            <input
+                                type="number"
+                                step="0.01"
+                                name="tiers[{{ $index }}][additional_price]"
+                                value="{{ $tier['additional_price'] ?? '' }}"
+                                class="tier-input"
+                                min="0"
+                                data-tier-field="additional_price"
+                                required
+                            >
                         </div>
 
                         <div class="tier-input-group">
-                            <span class="tier-prefix">¥</span>
-                            <input type="number"
-                                   step="0.01"
-                                   name="tiers[{{ $index }}][additional_price_with_tax]"
-                                   value="{{ $tier['additional_price_with_tax'] ?? '' }}"
-                                   class="tier-input"
-                                   min="0"
-                                   data-tier-field="additional_price_with_tax">
+                            <span class="tier-prefix">
+                                ¥
+                            </span>
+
+                            <input
+                                type="number"
+                                step="0.01"
+                                name="tiers[{{ $index }}][additional_price_with_tax]"
+                                value="{{ $tier['additional_price_with_tax'] ?? '' }}"
+                                class="tier-input"
+                                min="0"
+                                data-tier-field="additional_price_with_tax"
+                            >
                         </div>
 
                         <div class="tier-action">
-                            <button type="button" class="remove-tier">
+                            <button
+                                type="button"
+                                class="remove-tier"
+                            >
                                 Remove
                             </button>
                         </div>
@@ -475,26 +678,47 @@
 
         <br>
 
-        <button type="button" id="add-tier" class="btn-outline">
+        <button
+            type="button"
+            id="add-tier"
+            class="btn-outline"
+        >
             + Add Tier
         </button>
 
-        <div class="section-title">Status</div>
+        <div class="section-title">
+            Status
+        </div>
 
         <div class="checkbox-grid">
             <label>
-                <input type="checkbox" name="is_active" value="1" {{ old('is_active', 1) ? 'checked' : '' }}>
+                <input
+                    type="checkbox"
+                    name="is_active"
+                    value="1"
+                    {{ $formIsActive ? 'checked' : '' }}
+                >
+
                 Active
             </label>
         </div>
 
         <div class="form-actions">
-            <a href="{{ route('admin.option-price-rules.index') }}" class="btn-outline">
+            <a
+                href="{{ route('admin.option-price-rules.index') }}"
+                class="btn-outline"
+            >
                 Cancel
             </a>
 
-            <button type="submit" class="btn-primary">
-                Save Option Price Rule
+            <button
+                type="submit"
+                class="btn-primary"
+            >
+                {{ $isDuplicate
+                    ? 'Save Duplicated Rule'
+                    : 'Save Option Price Rule'
+                }}
             </button>
         </div>
     </form>
@@ -504,37 +728,81 @@
 
 @section('js')
 <script>
+    /*
+    |--------------------------------------------------------------------------
+    | PHP values
+    |--------------------------------------------------------------------------
+    */
+    const isDuplicate = @json($isDuplicate);
+    const selectedTargetOptionId = @json($formTargetOptionId);
+    const selectedRequiredOptionIds = @json($formSelectedOptionIds);
+
+    const duplicateUrl = @json(
+        $isDuplicate
+            ? route(
+                'admin.option-price-rules.duplicate',
+                $duplicateRule->option_price_rule_id
+            )
+            : null
+    );
+
+    /*
+    |--------------------------------------------------------------------------
+    | Tier rows
+    |--------------------------------------------------------------------------
+    */
+    const tierWrapper = document.getElementById('tier-wrapper');
+    const addTierButton = document.getElementById('add-tier');
+    const optionPriceRuleForm = document.getElementById('option-price-rule-form');
+
     let tierIndex = document.querySelectorAll('.price-tier-row').length;
 
     function reindexTiers() {
-        document.querySelectorAll('.price-tier-row').forEach(function(row, index) {
-            const minInput = row.querySelector('input[name*="[min_qty]"]');
-            const maxInput = row.querySelector('input[name*="[max_qty]"]');
-            const priceInput = row.querySelector('input[name*="[additional_price]"]:not([name*="[additional_price_with_tax]"])');
-            const priceWithTaxInput = row.querySelector('input[name*="[additional_price_with_tax]"]');
+        document
+            .querySelectorAll('.price-tier-row')
+            .forEach(function(row, index) {
+                const minInput = row.querySelector(
+                    'input[name*="[min_qty]"]'
+                );
 
-            if (minInput) {
-                minInput.name = `tiers[${index}][min_qty]`;
-            }
+                const maxInput = row.querySelector(
+                    'input[name*="[max_qty]"]'
+                );
 
-            if (maxInput) {
-                maxInput.name = `tiers[${index}][max_qty]`;
-            }
+                const priceInput = row.querySelector(
+                    'input[name*="[additional_price]"]:not([name*="[additional_price_with_tax]"])'
+                );
 
-            if (priceInput) {
-                priceInput.name = `tiers[${index}][additional_price]`;
-            }
+                const priceWithTaxInput = row.querySelector(
+                    'input[name*="[additional_price_with_tax]"]'
+                );
 
-            if (priceWithTaxInput) {
-                priceWithTaxInput.name = `tiers[${index}][additional_price_with_tax]`;
-            }
-        });
+                if (minInput) {
+                    minInput.name = `tiers[${index}][min_qty]`;
+                }
+
+                if (maxInput) {
+                    maxInput.name = `tiers[${index}][max_qty]`;
+                }
+
+                if (priceInput) {
+                    priceInput.name = `tiers[${index}][additional_price]`;
+                }
+
+                if (priceWithTaxInput) {
+                    priceWithTaxInput.name =
+                        `tiers[${index}][additional_price_with_tax]`;
+                }
+            });
 
         tierIndex = document.querySelectorAll('.price-tier-row').length;
     }
 
     function addTier(focusField = 'min_qty') {
-        const wrapper = document.getElementById('tier-wrapper');
+        if (!tierWrapper) {
+            return;
+        }
+
         const currentIndex = tierIndex;
 
         const html = `
@@ -548,6 +816,7 @@
                         data-tier-field="min_qty"
                         required
                     >
+
                     <span class="tier-suffix"></span>
 
                     <input
@@ -558,7 +827,10 @@
                 </div>
 
                 <div class="tier-input-group">
-                    <span class="tier-prefix">¥</span>
+                    <span class="tier-prefix">
+                        ¥
+                    </span>
+
                     <input
                         type="number"
                         step="0.01"
@@ -571,7 +843,10 @@
                 </div>
 
                 <div class="tier-input-group">
-                    <span class="tier-prefix">¥</span>
+                    <span class="tier-prefix">
+                        ¥
+                    </span>
+
                     <input
                         type="number"
                         step="0.01"
@@ -583,97 +858,171 @@
                 </div>
 
                 <div class="tier-action">
-                    <button type="button" class="remove-tier">
+                    <button
+                        type="button"
+                        class="remove-tier"
+                    >
                         Remove
                     </button>
                 </div>
             </div>
         `;
 
-        wrapper.insertAdjacentHTML('beforeend', html);
+        tierWrapper.insertAdjacentHTML('beforeend', html);
+
         tierIndex++;
 
-        const newRow = wrapper.querySelector('.price-tier-row:last-child');
+        const newRow = tierWrapper.querySelector(
+            '.price-tier-row:last-child'
+        );
 
-        if (newRow) {
-            const focusInput = newRow.querySelector(`[data-tier-field="${focusField}"]`);
+        if (!newRow) {
+            return;
+        }
 
-            if (focusInput) {
-                setTimeout(function() {
-                    focusInput.focus();
-                }, 50);
-            }
+        const focusInput = newRow.querySelector(
+            `[data-tier-field="${focusField}"]`
+        );
+
+        if (focusInput) {
+            setTimeout(function() {
+                focusInput.focus();
+            }, 50);
         }
     }
 
-    document.getElementById('add-tier').addEventListener('click', function() {
-        addTier('min_qty');
-    });
+    if (addTierButton) {
+        addTierButton.addEventListener('click', function() {
+            addTier('min_qty');
+        });
+    }
 
-    document.getElementById('tier-wrapper').addEventListener('keydown', function(e) {
-        if (e.key !== 'Enter') {
-            return;
-        }
-
-        const input = e.target;
-
-        if (!input.classList.contains('tier-input')) {
-            return;
-        }
-
-        e.preventDefault();
-
-        const currentRow = input.closest('.price-tier-row');
-        const field = input.dataset.tierField || 'min_qty';
-
-        if (!currentRow) {
-            return;
-        }
-
-        const nextRow = currentRow.nextElementSibling;
-
-        if (nextRow && nextRow.classList.contains('price-tier-row')) {
-            const nextInput = nextRow.querySelector(`[data-tier-field="${field}"]`);
-
-            if (nextInput) {
-                nextInput.focus();
+    if (tierWrapper) {
+        tierWrapper.addEventListener('keydown', function(e) {
+            if (e.key !== 'Enter') {
+                return;
             }
 
-            return;
-        }
+            const input = e.target;
 
-        addTier(field);
-    });
+            if (!input.classList.contains('tier-input')) {
+                return;
+            }
 
-    document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('remove-tier')) {
-            const items = document.querySelectorAll('.price-tier-row');
+            e.preventDefault();
 
-            if (items.length <= 1) {
+            const currentRow = input.closest('.price-tier-row');
+            const field = input.dataset.tierField || 'min_qty';
+
+            if (!currentRow) {
+                return;
+            }
+
+            const nextRow = currentRow.nextElementSibling;
+
+            if (
+                nextRow &&
+                nextRow.classList.contains('price-tier-row')
+            ) {
+                const nextInput = nextRow.querySelector(
+                    `[data-tier-field="${field}"]`
+                );
+
+                if (nextInput) {
+                    nextInput.focus();
+                }
+
+                return;
+            }
+
+            addTier(field);
+        });
+
+        tierWrapper.addEventListener('click', function(e) {
+            const removeButton = e.target.closest('.remove-tier');
+
+            if (!removeButton) {
+                return;
+            }
+
+            const rows = document.querySelectorAll('.price-tier-row');
+
+            if (rows.length <= 1) {
                 alert('ต้องมีอย่างน้อย 1 tier');
                 return;
             }
 
-            e.target.closest('.price-tier-row').remove();
-            reindexTiers();
-        }
-    });
+            const row = removeButton.closest('.price-tier-row');
 
-    document.querySelector('form').addEventListener('submit', function() {
-        reindexTiers();
-    });
+            if (row) {
+                row.remove();
+                reindexTiers();
+            }
+        });
+
+        /*
+        |--------------------------------------------------------------------------
+        | Auto-calculate additional price with 10% tax
+        |--------------------------------------------------------------------------
+        */
+        tierWrapper.addEventListener('input', function(e) {
+            if (
+                !e.target ||
+                !e.target.name ||
+                !e.target.name.includes('[additional_price]') ||
+                e.target.name.includes('[additional_price_with_tax]')
+            ) {
+                return;
+            }
+
+            const row = e.target.closest('.price-tier-row');
+
+            if (!row) {
+                return;
+            }
+
+            const priceWithTaxInput = row.querySelector(
+                'input[name*="[additional_price_with_tax]"]'
+            );
+
+            if (!priceWithTaxInput) {
+                return;
+            }
+
+            const priceValue = parseFloat(e.target.value);
+
+            if (isNaN(priceValue)) {
+                priceWithTaxInput.value = '';
+                return;
+            }
+
+            priceWithTaxInput.value = (priceValue * 1.1).toFixed(2);
+        });
+    }
+
+    if (optionPriceRuleForm) {
+        optionPriceRuleForm.addEventListener('submit', function() {
+            reindexTiers();
+        });
+    }
 
     /*
     |--------------------------------------------------------------------------
-    | Load required options by selected product
+    | Product options
     |--------------------------------------------------------------------------
     */
-
     const productSelect = document.getElementById('product_id');
     const targetOptionsBox = document.getElementById('target-options-box');
     const requiredOptionsBox = document.getElementById('required-options-box');
-    const oldTargetOptionId = @json(old('target_option_id'));
-    const oldOptionIds = @json(old('option_ids', []));
+
+    function escapeHtml(value) {
+        return String(value ?? '')
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#039;');
+    }
 
     function renderOptionSelectors(groups) {
         if (!groups || groups.length === 0) {
@@ -682,43 +1031,78 @@
                     No options assigned to this product.
                 </p>
             `;
+
             targetOptionsBox.innerHTML = emptyHtml;
             requiredOptionsBox.innerHTML = emptyHtml;
+
             return;
         }
 
-        let targetHtml = `<div class="required-option-list">`;
-        let requiredHtml = `<div class="required-option-list">`;
+        const normalizedRequiredIds = (
+            Array.isArray(selectedRequiredOptionIds)
+                ? selectedRequiredOptionIds
+                : []
+        ).map(String);
+
+        let targetHtml = `
+            <div class="required-option-list">
+        `;
+
+        let requiredHtml = `
+            <div class="required-option-list">
+        `;
 
         groups.forEach(function(group) {
+            const groupName = escapeHtml(group.group_name || '-');
+
             targetHtml += `
                 <div class="required-option-group">
                     <div class="required-option-group-title">
-                        ${group.group_name || '-'}
+                        ${groupName}
                     </div>
             `;
 
             requiredHtml += `
                 <div class="required-option-group">
                     <div class="required-option-group-title">
-                        ${group.group_name || '-'}
+                        ${groupName}
                     </div>
             `;
 
-            group.options.forEach(function(option) {
-                const targetChecked = String(oldTargetOptionId || '') === String(option.option_id) ? 'checked' : '';
-                const requiredChecked = oldOptionIds.map(String).includes(String(option.option_id)) ? 'checked' : '';
+            const groupOptions = Array.isArray(group.options)
+                ? group.options
+                : [];
+
+            groupOptions.forEach(function(option) {
+                const optionId = String(option.option_id);
+                const optionName = escapeHtml(option.option_name || '-');
+                const optionCode = option.option_code
+                    ? ` (${escapeHtml(option.option_code)})`
+                    : '';
+
+                const targetChecked =
+                    String(selectedTargetOptionId || '') === optionId
+                        ? 'checked'
+                        : '';
+
+                const requiredChecked =
+                    normalizedRequiredIds.includes(optionId)
+                        ? 'checked'
+                        : '';
 
                 targetHtml += `
                     <label class="required-option-item">
                         <input
                             type="radio"
                             name="target_option_id"
-                            value="${option.option_id}"
+                            value="${optionId}"
                             ${targetChecked}
                             required
                         >
-                        <span>${option.option_name}</span>
+
+                        <span>
+                            ${optionName}${optionCode}
+                        </span>
                     </label>
                 `;
 
@@ -727,21 +1111,34 @@
                         <input
                             type="checkbox"
                             name="option_ids[]"
-                            value="${option.option_id}"
+                            value="${optionId}"
                             data-required-option-checkbox
                             ${requiredChecked}
                         >
-                        <span>${option.option_name}</span>
+
+                        <span>
+                            ${optionName}${optionCode}
+                        </span>
                     </label>
                 `;
             });
 
-            targetHtml += `</div>`;
-            requiredHtml += `</div>`;
+            targetHtml += `
+                </div>
+            `;
+
+            requiredHtml += `
+                </div>
+            `;
         });
 
-        targetHtml += `</div>`;
-        requiredHtml += `</div>`;
+        targetHtml += `
+            </div>
+        `;
+
+        requiredHtml += `
+            </div>
+        `;
 
         targetOptionsBox.innerHTML = targetHtml;
         requiredOptionsBox.innerHTML = requiredHtml;
@@ -754,8 +1151,10 @@
                     Please select a product first.
                 </p>
             `;
+
             targetOptionsBox.innerHTML = selectProductHtml;
             requiredOptionsBox.innerHTML = selectProductHtml;
+
             return;
         }
 
@@ -764,10 +1163,14 @@
                 Loading options...
             </p>
         `;
+
         targetOptionsBox.innerHTML = loadingHtml;
         requiredOptionsBox.innerHTML = loadingHtml;
 
-        const url = `{{ url('admin-panel/product-price-rules/product-options') }}/${productId}`;
+        const productOptionsBaseUrl =
+            @json(url('admin-panel/product-price-rules/product-options'));
+
+        const url = `${productOptionsBaseUrl}/${productId}`;
 
         fetch(url, {
             headers: {
@@ -775,71 +1178,70 @@
                 'X-Requested-With': 'XMLHttpRequest'
             }
         })
-        .then(function(response) {
-            if (!response.ok) {
-                throw new Error('HTTP ' + response.status);
-            }
+            .then(function(response) {
+                if (!response.ok) {
+                    throw new Error('HTTP ' + response.status);
+                }
 
-            return response.json();
-        })
-        .then(function(data) {
-            renderOptionSelectors(data.groups);
-        })
-        .catch(function(error) {
-            console.error(error);
+                return response.json();
+            })
+            .then(function(data) {
+                renderOptionSelectors(data.groups || []);
+            })
+            .catch(function(error) {
+                console.error(error);
 
-            const errorHtml = `
-                <p class="muted-text" style="color:#b91c1c;">
-                    Cannot load product options.
-                </p>
-            `;
-            targetOptionsBox.innerHTML = errorHtml;
-            requiredOptionsBox.innerHTML = errorHtml;
-        });
+                const errorHtml = `
+                    <p
+                        class="muted-text"
+                        style="color:#b91c1c;"
+                    >
+                        Cannot load product options.
+                    </p>
+                `;
+
+                targetOptionsBox.innerHTML = errorHtml;
+                requiredOptionsBox.innerHTML = errorHtml;
+            });
     }
-
 
     if (productSelect) {
         productSelect.addEventListener('change', function() {
-            loadProductOptions(this.value);
+            const productId = this.value;
+
+            if (!productId) {
+                loadProductOptions('');
+                return;
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Duplicate mode
+            |--------------------------------------------------------------------------
+            |
+            | Reload through duplicate route so the controller can match the
+            | source options with the options assigned to the new product.
+            |
+            */
+            if (isDuplicate && duplicateUrl) {
+                const url = new URL(
+                    duplicateUrl,
+                    window.location.origin
+                );
+
+                url.searchParams.set('product_id', productId);
+
+                window.location.href = url.toString();
+
+                return;
+            }
+
+            loadProductOptions(productId);
         });
 
         if (productSelect.value) {
             loadProductOptions(productSelect.value);
         }
-    }
-    /*
-    |--------------------------------------------------------------------------
-    | Auto-calculate additional price with 10% tax
-    |--------------------------------------------------------------------------
-    */
-    const tierWrapper = document.getElementById('tier-wrapper');
-
-    if (tierWrapper) {
-        tierWrapper.addEventListener('input', function(e) {
-            if (
-                e.target &&
-                e.target.name &&
-                e.target.name.includes('[additional_price]') &&
-                !e.target.name.includes('[additional_price_with_tax]')
-            ) {
-                const row = e.target.closest('.price-tier-row');
-
-                if (row) {
-                    const priceWithTaxInput = row.querySelector('input[name*="[additional_price_with_tax]"]');
-
-                    if (priceWithTaxInput) {
-                        const priceVal = parseFloat(e.target.value);
-
-                        if (!isNaN(priceVal)) {
-                            priceWithTaxInput.value = (priceVal * 1.1).toFixed(2);
-                        } else {
-                            priceWithTaxInput.value = '';
-                        }
-                    }
-                }
-            }
-        });
     }
 </script>
 @endsection

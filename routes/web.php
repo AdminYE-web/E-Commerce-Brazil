@@ -397,6 +397,10 @@ Route::post('menu-products/{product}/remove', [MenuProductController::class, 're
         'option-price-rules' => 'optionPriceRule',
     ]);
 
+    Route::get(
+    '/option-price-rules/{optionPriceRule}/duplicate',
+    [ProductOptionPriceRuleController::class, 'duplicate']
+)->name('option-price-rules.duplicate');
 
 
 
