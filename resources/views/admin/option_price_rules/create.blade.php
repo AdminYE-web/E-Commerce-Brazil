@@ -1054,18 +1054,21 @@
 
         groups.forEach(function(group) {
             const groupName = escapeHtml(group.group_name || '-');
+            const groupCode = group.group_code
+                ? ` (${escapeHtml(group.group_code)})`
+                : '';
 
             targetHtml += `
                 <div class="required-option-group">
                     <div class="required-option-group-title">
-                        ${groupName}
+                        ${groupName}${groupCode}
                     </div>
             `;
 
             requiredHtml += `
                 <div class="required-option-group">
                     <div class="required-option-group-title">
-                        ${groupName}
+                        ${groupName}${groupCode}
                     </div>
             `;
 

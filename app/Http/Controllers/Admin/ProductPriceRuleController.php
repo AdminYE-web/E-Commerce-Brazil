@@ -27,8 +27,8 @@ class ProductPriceRuleController extends Controller
             ->where('language', $language)
             ->when($search, function ($query) use ($search) {
                 $query->where(function ($q) use ($search) {
-                    $q->where('product_name', 'like', '%' . $search . '%')
-                        ->orWhere('product_code', 'like', '%' . $search . '%');
+                    $q->where('product_name', 'like', '%'.$search.'%')
+                        ->orWhere('product_code', 'like', '%'.$search.'%');
                 });
             })
             ->withCount('priceRules')
@@ -53,11 +53,11 @@ class ProductPriceRuleController extends Controller
                 ->where('product_id', $selectedProduct->product_id)
                 ->when($search, function ($query) use ($search) {
                     $query->where(function ($q) use ($search) {
-                        $q->where('rule_name', 'like', '%' . $search . '%')
+                        $q->where('rule_name', 'like', '%'.$search.'%')
                             ->orWhereHas('options', function ($optionQuery) use ($search) {
-                                $optionQuery->where('option_name', 'like', '%' . $search . '%')
+                                $optionQuery->where('option_name', 'like', '%'.$search.'%')
                                     ->orWhereHas('group', function ($groupQuery) use ($search) {
-                                        $groupQuery->where('group_name', 'like', '%' . $search . '%');
+                                        $groupQuery->where('group_name', 'like', '%'.$search.'%');
                                     });
                             });
                     });
@@ -296,18 +296,18 @@ class ProductPriceRuleController extends Controller
             ->with('success', 'Product price rule updated successfully.');
     }
 
-public function destroy(ProductPriceRule $productPriceRule)
-{
-    $productId = $productPriceRule->product_id;
+    public function destroy(ProductPriceRule $productPriceRule)
+    {
+        $productId = $productPriceRule->product_id;
 
-    $productPriceRule->delete();
+        $productPriceRule->delete();
 
-    return redirect()
-        ->route('admin.product-price-rules.index', [
-            'product_id' => $productId,
-        ])
-        ->with('success', 'Product price rule deleted successfully.');
-}
+        return redirect()
+            ->route('admin.product-price-rules.index', [
+                'product_id' => $productId,
+            ])
+            ->with('success', 'Product price rule deleted successfully.');
+    }
 
     public function show($id)
     {
@@ -347,10 +347,12 @@ public function destroy(ProductPriceRule $productPriceRule)
                 return [
                     'group_id' => $group->option_group_id ?? null,
                     'group_name' => $group->group_name ?? '-',
+                    'group_code' => $group->group_code ?? null,
                     'options' => $groupOptions->map(function ($option) {
                         return [
                             'option_id' => $option->option_id,
                             'option_name' => $option->option_name,
+                            'option_code' => $option->option_code,
                         ];
                     })->values(),
                 ];

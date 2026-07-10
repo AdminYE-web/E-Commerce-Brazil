@@ -127,11 +127,37 @@ class ProductOptionPriceRuleTest extends TestCase
         $this->assertStringNotContainsString("if (e.target && e.target.name === 'target_option_id')", $createContents);
         $this->assertStringContainsString("productSelect.addEventListener('change'", $createContents);
         $this->assertStringContainsString('loadProductOptions(productSelect.value);', $createContents);
+        $this->assertStringContainsString('const groupCode = group.group_code', $createContents);
+        $this->assertStringContainsString('${groupName}${groupCode}', $createContents);
 
         $this->assertStringNotContainsString('checkbox.disabled = Boolean(isTarget);', $editContents);
         $this->assertStringNotContainsString('checkbox.checked = false;', $editContents);
         $this->assertStringNotContainsString("if (e.target && e.target.name === 'target_option_id')", $editContents);
         $this->assertStringContainsString('loadProductOptions(productIdInput.value);', $editContents);
+    }
+
+    public function test_product_options_endpoint_includes_group_and_option_codes_for_admin_rule_forms(): void
+    {
+        $admin = AdminUser::create([
+            'name' => 'Option Rule Admin',
+            'email' => 'option-rule-code-admin-'.uniqid().'@example.com',
+            'password' => Hash::make('password'),
+            'role' => 'super_admin',
+            'is_active' => 1,
+        ]);
+
+        [$product] = $this->createProductWithTargetAndConditionOptions();
+
+        $response = $this
+            ->actingAs($admin, 'admin')
+            ->getJson(route('admin.product-price-rules.product-options', $product));
+
+        $response
+            ->assertOk()
+            ->assertJsonPath('groups.0.group_name', 'Cord Color')
+            ->assertJsonPath('groups.0.group_code', 'cord_color_test')
+            ->assertJsonPath('groups.0.options.0.option_name', 'Black cord')
+            ->assertJsonPath('groups.0.options.0.option_code', 'BLACK');
     }
 
     public function test_cart_uses_matching_option_price_rule_as_target_option_replacement_price(): void
@@ -262,18 +288,20 @@ class ProductOptionPriceRuleTest extends TestCase
         ]);
 
         $cordGroup = OptionGroup::create([
-            'group_code' => 'cord_color_'.uniqid(),
+            'group_code' => 'cord_color_test',
             'group_name' => 'Cord Color',
             'language' => 'pt',
             'product_type' => 1,
+            'option_group_main' => 1,
             'is_active' => 1,
         ]);
 
         $sizeGroup = OptionGroup::create([
-            'group_code' => 'cord_size_'.uniqid(),
+            'group_code' => 'cord_size_test',
             'group_name' => 'Cord Size',
             'language' => 'pt',
             'product_type' => 1,
+            'option_group_main' => 1,
             'is_active' => 1,
         ]);
 
