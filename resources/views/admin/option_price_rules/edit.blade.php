@@ -699,6 +699,15 @@
     const oldTargetOptionId = @json(old('target_option_id', $selectedTargetOptionId ?? null));
     const oldOptionIds = @json(old('option_ids', $selectedOptionIds ?? []));
 
+    function escapeHtml(value) {
+        return String(value ?? '')
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#039;');
+    }
+
     function renderOptionSelectors(groups) {
         if (!groups || groups.length === 0) {
             const emptyHtml = `
@@ -715,21 +724,30 @@
         let requiredHtml = `<div class="required-option-list">`;
 
         groups.forEach(function(group) {
+            const groupName = escapeHtml(group.group_name || '-');
+            const groupCode = group.group_code
+                ? ` (${escapeHtml(group.group_code)})`
+                : '';
+
             targetHtml += `
                 <div class="required-option-group">
                     <div class="required-option-group-title">
-                        ${group.group_name || '-'}
+                        ${groupName}${groupCode}
                     </div>
             `;
 
             requiredHtml += `
                 <div class="required-option-group">
                     <div class="required-option-group-title">
-                        ${group.group_name || '-'}
+                        ${groupName}${groupCode}
                     </div>
             `;
 
             group.options.forEach(function(option) {
+                const optionName = escapeHtml(option.option_name || '-');
+                const optionCode = option.option_code
+                    ? ` (${escapeHtml(option.option_code)})`
+                    : '';
                 const targetChecked = String(oldTargetOptionId || '') === String(option.option_id) ? 'checked' : '';
                 const requiredChecked = oldOptionIds.map(String).includes(String(option.option_id)) ? 'checked' : '';
 
@@ -742,7 +760,7 @@
                             ${targetChecked}
                             required
                         >
-                        <span>${option.option_name}</span>
+                        <span>${optionName}${optionCode}</span>
                     </label>
                 `;
 
@@ -755,7 +773,7 @@
                             data-required-option-checkbox
                             ${requiredChecked}
                         >
-                        <span>${option.option_name}</span>
+                        <span>${optionName}${optionCode}</span>
                     </label>
                 `;
             });

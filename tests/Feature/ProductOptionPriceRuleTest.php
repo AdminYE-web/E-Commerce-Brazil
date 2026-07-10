@@ -134,6 +134,9 @@ class ProductOptionPriceRuleTest extends TestCase
         $this->assertStringNotContainsString('checkbox.checked = false;', $editContents);
         $this->assertStringNotContainsString("if (e.target && e.target.name === 'target_option_id')", $editContents);
         $this->assertStringContainsString('loadProductOptions(productIdInput.value);', $editContents);
+        $this->assertStringContainsString('const groupCode = group.group_code', $editContents);
+        $this->assertStringContainsString('${groupName}${groupCode}', $editContents);
+        $this->assertStringContainsString('${optionName}${optionCode}', $editContents);
     }
 
     public function test_product_options_endpoint_includes_group_and_option_codes_for_admin_rule_forms(): void
