@@ -9,6 +9,8 @@ use App\Models\ProductPriceRule;
 use App\Models\ProductPriceRuleOption;
 use App\Models\ProductPriceRuleTier;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class ProductPriceRuleController extends Controller
 {
@@ -105,9 +107,79 @@ class ProductPriceRuleController extends Controller
         ));
     }
 
+    public function duplicate(Request $request, ProductPriceRule $productPriceRule)
+    {
+        $language = session('admin_product_language', 'pt');
+
+        $productPriceRule->load(['product', 'options.group', 'tiers']);
+
+        $products = Product::where('language', $language)
+            ->orderBy('product_name')
+            ->get();
+
+        $selectedProductId = (int) $request->input(
+            'product_id',
+            $productPriceRule->product_id
+        );
+
+        $selectedProduct = Product::where('language', $language)
+            ->where('product_id', $selectedProductId)
+            ->firstOrFail();
+
+        $availableOptions = $selectedProduct->options()
+            ->with('group')
+            ->wherePivot('is_active', 1)
+            ->where('product_options.is_active', 1)
+            ->where('product_options.language', $language)
+            ->whereHas('group', function ($query) use ($language) {
+                $query->where('language', $language)
+                    ->where('option_group_main', 1);
+            })
+            ->get();
+
+        $selectedOptionIds = $productPriceRule->options
+            ->map(fn ($sourceOption) => $this->findMatchingOptionId($sourceOption, $availableOptions))
+            ->filter()
+            ->unique()
+            ->values()
+            ->toArray();
+
+        $tiers = $productPriceRule->tiers
+            ->sortBy('min_qty')
+            ->values()
+            ->map(fn ($tier) => [
+                'min_qty' => $tier->min_qty,
+                'max_qty' => $tier->max_qty,
+                'unit_price' => $tier->unit_price,
+                'unit_price_with_tax' => $tier->unit_price_with_tax,
+            ])
+            ->toArray();
+
+        $displayTierIndex = $productPriceRule->tiers
+            ->sortBy('min_qty')
+            ->values()
+            ->search(fn ($tier) => (int) $tier->is_display === 1);
+
+        if ($displayTierIndex === false) {
+            $displayTierIndex = 0;
+        }
+
+        return view('admin.product_price_rules.create', [
+            'products' => $products,
+            'options' => $availableOptions,
+            'language' => $language,
+            'selectedProductId' => $selectedProductId,
+            'selectedOptionIds' => $selectedOptionIds,
+            'tiers' => $tiers,
+            'displayTierIndex' => $displayTierIndex,
+            'duplicateRule' => $productPriceRule,
+            'duplicateRuleName' => trim(($productPriceRule->rule_name ?? '').' - Copy'),
+        ]);
+    }
+
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'product_id' => 'required|exists:products,product_id',
             'rule_name' => 'nullable|string|max:255',
             'sort_order' => 'nullable|integer|min:0',
@@ -124,6 +196,11 @@ class ProductPriceRuleController extends Controller
             'is_active' => 'nullable|boolean',
             'display_tier_index' => 'nullable|integer|min:0',
         ]);
+
+        $this->validateRuleOptionsBelongToProduct(
+            (int) $validated['product_id'],
+            $validated['option_ids']
+        );
 
         $rule = ProductPriceRule::create([
             'product_id' => $request->product_id,
@@ -216,7 +293,7 @@ class ProductPriceRuleController extends Controller
 
     public function update(Request $request, ProductPriceRule $productPriceRule)
     {
-        $request->validate([
+        $validated = $request->validate([
             'product_id' => 'required|exists:products,product_id',
             'rule_name' => 'nullable|string|max:255',
             'sort_order' => 'nullable|integer|min:0',
@@ -233,6 +310,11 @@ class ProductPriceRuleController extends Controller
             'is_active' => 'nullable|boolean',
             'display_tier_index' => 'nullable|integer|min:0',
         ]);
+
+        $this->validateRuleOptionsBelongToProduct(
+            (int) $validated['product_id'],
+            $validated['option_ids']
+        );
 
         $productPriceRule->update([
             'product_id' => $request->product_id,
@@ -377,5 +459,68 @@ class ProductPriceRuleController extends Controller
             ->update([
                 'is_display' => 0,
             ]);
+    }
+
+    private function validateRuleOptionsBelongToProduct(int $productId, array $optionIds): void
+    {
+        $optionIds = collect($optionIds)
+            ->map(fn ($id) => (int) $id)
+            ->filter()
+            ->unique()
+            ->values();
+
+        $assignedCount = DB::table('product_option_assignments')
+            ->where('product_id', $productId)
+            ->where('is_active', 1)
+            ->whereIn('option_id', $optionIds)
+            ->count();
+
+        if ($assignedCount !== $optionIds->count()) {
+            throw ValidationException::withMessages([
+                'option_ids' => __('admin.product_price_rules.validation.options_belong_to_product'),
+            ]);
+        }
+    }
+
+    private function findMatchingOptionId($sourceOption, $availableOptions): ?int
+    {
+        $matchedOption = $availableOptions->first(
+            fn ($option) => (int) $option->option_id === (int) $sourceOption->option_id
+        );
+
+        if ($matchedOption) {
+            return (int) $matchedOption->option_id;
+        }
+
+        if (! empty($sourceOption->translation_key)) {
+            $matchedOption = $availableOptions->first(
+                fn ($option) => (string) $option->translation_key === (string) $sourceOption->translation_key
+            );
+
+            if ($matchedOption) {
+                return (int) $matchedOption->option_id;
+            }
+        }
+
+        $sourceGroupCode = $sourceOption->group->group_code ?? null;
+        $sourceGroupName = $sourceOption->group->group_name ?? null;
+
+        $matchedOption = $availableOptions->first(function ($option) use (
+            $sourceOption,
+            $sourceGroupCode,
+            $sourceGroupName
+        ) {
+            $sameOption = ! empty($sourceOption->option_code)
+                ? (string) $option->option_code === (string) $sourceOption->option_code
+                : (string) $option->option_name === (string) $sourceOption->option_name;
+
+            $sameGroup = $sourceGroupCode
+                ? (string) ($option->group->group_code ?? '') === (string) $sourceGroupCode
+                : (string) ($option->group->group_name ?? '') === (string) $sourceGroupName;
+
+            return $sameOption && $sameGroup;
+        });
+
+        return $matchedOption ? (int) $matchedOption->option_id : null;
     }
 }

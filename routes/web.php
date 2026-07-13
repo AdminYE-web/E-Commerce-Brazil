@@ -292,6 +292,8 @@ Route::prefix('admin-panel')->name('admin.')->group(function () {
         Route::delete('product-option-variants/{variant}', [ProductOptionVariantController::class, 'destroy'])
             ->name('product-option-variants.destroy');
 
+        Route::get('product-price-rules/{productPriceRule}/duplicate', [ProductPriceRuleController::class, 'duplicate'])
+            ->name('product-price-rules.duplicate');
         Route::resource('product-price-rules', ProductPriceRuleController::class);
         Route::resource('product-artwork-templates', ProductArtworkTemplateController::class);
         Route::resource('material-homes', MaterialHomeController::class);

@@ -1,6 +1,6 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Add Product Price Rule | Indigo Admin')
+@section('title', isset($duplicateRule) ? __('admin.product_price_rules.duplicate.title').' | Indigo Admin' : 'Add Product Price Rule | Indigo Admin')
 
 @section('css')
     <style>
@@ -235,6 +235,16 @@
         .alert-error ul {
             margin: 0;
             padding-left: 20px;
+        }
+
+        .duplicate-notice {
+            margin-bottom: 18px;
+            padding: 12px 16px;
+            border: 1px solid #c4b5fd;
+            border-radius: 8px;
+            background: #f5f3ff;
+            color: #5b21b6;
+            font-size: 14px;
         }
 
         .btn-danger-light {
@@ -529,17 +539,41 @@
 
 @section('content')
 
+    @php
+        $isDuplicate = isset($duplicateRule);
+        $formProductId = old('product_id', $selectedProductId ?? '');
+        $formRuleName = old('rule_name', $duplicateRuleName ?? '');
+        $formSortOrder = old('sort_order', $isDuplicate ? $duplicateRule->sort_order : 0);
+        $formSelectedOptionIds = collect(old('option_ids', $selectedOptionIds ?? []))
+            ->map(fn ($id) => (int) $id)
+            ->filter()
+            ->unique()
+            ->values()
+            ->toArray();
+        $formIsActive = old('is_active', $isDuplicate ? (int) $duplicateRule->is_active : 1);
+    @endphp
+
     <div class="form-card">
         <div class="form-header">
             <div>
-                <h1>Add Product Price Rule</h1>
-                <p>Create pricing rules by selected options and quantity tiers.</p>
+                <h1>{{ $isDuplicate ? __('admin.product_price_rules.duplicate.title') : 'Add Product Price Rule' }}</h1>
+                <p>
+                    {{ $isDuplicate
+                        ? __('admin.product_price_rules.duplicate.description')
+                        : 'Create pricing rules by selected options and quantity tiers.' }}
+                </p>
             </div>
 
             <a href="{{ route('admin.product-price-rules.index') }}" class="btn-outline">
                 Back
             </a>
         </div>
+
+        @if ($isDuplicate)
+            <div class="duplicate-notice">
+                {{ __('admin.product_price_rules.duplicate.notice', ['name' => $duplicateRule->rule_name ?? '-']) }}
+            </div>
+        @endif
 
         @if ($errors->any())
             <div class="alert-error">
@@ -564,7 +598,7 @@
 
                         @foreach ($products as $product)
     <option value="{{ $product->product_id }}"
-        {{ old('product_id', $selectedProductId ?? '') == $product->product_id ? 'selected' : '' }}>
+        {{ $formProductId == $product->product_id ? 'selected' : '' }}>
         {{ $product->product_name }}
     </option>
 @endforeach
@@ -573,13 +607,13 @@
 
                 <div class="form-group">
                     <label>Rule Name</label>
-                    <input type="text" name="rule_name" value="{{ old('rule_name') }}"
+                    <input type="text" name="rule_name" value="{{ $formRuleName }}"
                         placeholder="For example, 20mm + One Side">
                 </div>
 
                 <div class="form-group" style="display: none">
                     <label>Sort Order</label>
-                    <input type="number" name="sort_order" value="{{ old('sort_order', 0) }}">
+                    <input type="number" name="sort_order" value="{{ $formSortOrder }}">
                 </div>
             </div>
 
@@ -608,7 +642,7 @@
 
                 <div id="tier-wrapper">
                     @php
-                        $oldTiers = old('tiers', [
+                        $oldTiers = old('tiers', $tiers ?? [
                             [
                                 'min_qty' => '',
                                 'max_qty' => '',
@@ -644,7 +678,7 @@
                             </div>
                             <div class="tier-display">
                                 <input type="radio" name="display_tier_index" value="{{ $index }}"
-                                    {{ old('display_tier_index', 0) == $index ? 'checked' : '' }}>
+                                    {{ old('display_tier_index', $displayTierIndex ?? 0) == $index ? 'checked' : '' }}>
                             </div>
 
                             <div class="tier-action">
@@ -670,7 +704,7 @@
 
             <div class="checkbox-grid">
                 <label>
-                    <input type="checkbox" name="is_active" value="1" {{ old('is_active', 1) ? 'checked' : '' }}>
+                    <input type="checkbox" name="is_active" value="1" {{ $formIsActive ? 'checked' : '' }}>
                     Active
                 </label>
             </div>
@@ -908,7 +942,13 @@
 
         const productSelect = document.getElementById('product_id');
         const requiredOptionsBox = document.getElementById('required-options-box');
-        const oldOptionIds = @json(old('option_ids', []));
+        const oldOptionIds = @json($formSelectedOptionIds);
+        const isDuplicate = @json($isDuplicate);
+        const duplicateUrl = @json(
+            $isDuplicate
+                ? route('admin.product-price-rules.duplicate', $duplicateRule->rule_id)
+                : null
+        );
 
         function renderRequiredOptions(groups) {
             if (!groups || groups.length === 0) {
@@ -1006,6 +1046,14 @@
 
         if (productSelect) {
             productSelect.addEventListener('change', function() {
+                if (isDuplicate && duplicateUrl && this.value) {
+                    const url = new URL(duplicateUrl, window.location.origin);
+                    url.searchParams.set('product_id', this.value);
+                    window.location.href = url.toString();
+
+                    return;
+                }
+
                 loadProductOptions(this.value);
             });
 

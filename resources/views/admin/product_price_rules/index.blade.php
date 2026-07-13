@@ -55,6 +55,10 @@
             color: #dc2626;
         }
 
+        .action-link.duplicate {
+            color: #7c3aed;
+        }
+
         .mini-badge {
             display: inline-flex;
             align-items: center;
@@ -493,6 +497,11 @@
                             <a href="{{ route('admin.product-price-rules.edit', $rule->rule_id) }}"
                                class="action-link">
                                 Edit
+                            </a>
+
+                            <a href="{{ route('admin.product-price-rules.duplicate', $rule->rule_id) }}"
+                               class="action-link duplicate">
+                                {{ __('admin.product_price_rules.duplicate.button') }}
                             </a>
 
                             <form action="{{ route('admin.product-price-rules.destroy', $rule->rule_id) }}"
