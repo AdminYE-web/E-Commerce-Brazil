@@ -264,7 +264,7 @@
             background: #fee2e2;
         }
 
-      
+
 
 
         .price-tier-title {
@@ -432,46 +432,47 @@
             accent-color: #2563eb;
             flex-shrink: 0;
         }
+
         .price-tier-card {
-    border: 1px solid #d9e0ea;
-    border-radius: 8px;
-    overflow: hidden;
-    background: #fff;
-    max-width: 1060px;
-}
+            border: 1px solid #d9e0ea;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #fff;
+            max-width: 1060px;
+        }
 
-.price-tier-header,
-.price-tier-row {
-    display: grid;
-    grid-template-columns: 250px 250px 250px 90px 90px;
-    align-items: center;
-}
+        .price-tier-header,
+        .price-tier-row {
+            display: grid;
+            grid-template-columns: 250px 250px 250px 90px 90px;
+            align-items: center;
+        }
 
-.price-tier-header {
-    background: #f8fafc;
-    border-bottom: 1px solid #d9e0ea;
-}
+        .price-tier-header {
+            background: #f8fafc;
+            border-bottom: 1px solid #d9e0ea;
+        }
 
-.price-tier-row {
-    padding: 14px 16px;
-    border-bottom: 1px solid #eef2f7;
-}
+        .price-tier-row {
+            padding: 14px 16px;
+            border-bottom: 1px solid #eef2f7;
+        }
 
-.price-tier-row > div {
-    padding-right: 16px;
-}
+        .price-tier-row>div {
+            padding-right: 16px;
+        }
 
-.price-tier-row > div:last-child {
-    padding-right: 0;
-}
+        .price-tier-row>div:last-child {
+            padding-right: 0;
+        }
 
-.tier-display,
-.tier-action {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding-right: 0 !important;
-}
+        .tier-display,
+        .tier-action {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-right: 0 !important;
+        }
     </style>
 @endsection
 
@@ -480,12 +481,13 @@
     <div class="form-card">
         <div class="form-header">
             <div>
-                <h1>Edit Product Price Rule</h1>
-                <p>Update pricing rule, selected options and quantity tiers.</p>
+                <h1>{{ request()->cookie('dev') == '1' ? 'Edit Product Price Rule' : '商品価格ルールの編集' }}</h1>
+                <p>{{ request()->cookie('dev') == '1' ? 'Update pricing rule, selected options and quantity tiers.' : '価格ルール、選択されたオプション、数量区分を更新します。' }}
+                </p>
             </div>
 
             <a href="{{ route('admin.product-price-rules.index') }}" class="btn-outline">
-                Back
+                {{ request()->cookie('dev') == '1' ? 'Back' : '戻る' }}
             </a>
         </div>
 
@@ -503,11 +505,11 @@
             @csrf
             @method('PUT')
 
-            <div class="section-title">Rule Information</div>
+            <div class="section-title">{{ request()->cookie('dev') == '1' ? 'Rule Information' : 'ルール情報' }}</div>
 
             <div class="form-grid">
                 <div class="form-group">
-                    <label>Product</label>
+                    <label>{{ request()->cookie('dev') == '1' ? 'Product' : '商品' }}</label>
 
                     <input type="text" value="{{ $rule->product->product_name ?? '-' }}" readonly
                         style="background:#f3f4f6; cursor:not-allowed;">
@@ -517,50 +519,50 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Rule Name</label>
+                    <label>{{ request()->cookie('dev') == '1' ? 'Rule Name' : 'ルール名' }}</label>
                     <input type="text" name="rule_name" value="{{ old('rule_name', $rule->rule_name) }}"
                         placeholder="เช่น 20mm + One Side">
                 </div>
 
                 <div class="form-group" style="display: none">
-                    <label>Sort Order</label>
+                    <label>{{ request()->cookie('dev') == '1' ? 'Sort Order' : '並び順' }}</label>
                     <input type="number" name="sort_order" value="{{ old('sort_order', $rule->sort_order) }}">
                 </div>
             </div>
 
-            <div class="section-title">Required Options</div>
+            <div class="section-title">{{ request()->cookie('dev') == '1' ? 'Required Options' : '必須オプション' }}</div>
 
             @php
                 $selectedOptionIds = old('option_ids', $rule->options->pluck('option_id')->toArray());
             @endphp
 
             <p class="muted-text" style="margin-bottom: 12px;">
-                Select all the options that the customer must choose in order to use this price rate.
+                {{ request()->cookie('dev') == '1' ? 'Select all the options that the customer must choose in order to use this price rate.' : 'この価格レートを使用するには、顧客が選択する必要があるすべてのオプションを選択してください。' }}
             </p>
 
             <div class="required-option-simple-box" id="required-options-box">
                 <p class="muted-text">
-                    Loading options...
+                    {{ request()->cookie('dev') == '1' ? 'Loading options...' : 'オプションをロード中...' }}
                 </p>
             </div>
 
-            <div class="section-title">Price Tiers</div>
+            <div class="section-title">{{ request()->cookie('dev') == '1' ? 'Price Tiers' : '数量区分' }}</div>
 
             @php
-               $oldTiers = old(
-    'tiers',
-    $rule->tiers
-        ->map(function ($tier) {
-            return [
-                'min_qty' => $tier->min_qty,
-                'max_qty' => $tier->max_qty,
-                'unit_price' => $tier->unit_price,
-                'unit_price_with_tax' => $tier->unit_price_with_tax,
-                'is_display' => $tier->is_display,
-            ];
-        })
-        ->toArray(),
-);
+                $oldTiers = old(
+                    'tiers',
+                    $rule->tiers
+                        ->map(function ($tier) {
+                            return [
+                                'min_qty' => $tier->min_qty,
+                                'max_qty' => $tier->max_qty,
+                                'unit_price' => $tier->unit_price,
+                                'unit_price_with_tax' => $tier->unit_price_with_tax,
+                                'is_display' => $tier->is_display,
+                            ];
+                        })
+                        ->toArray(),
+                );
 
                 $displayTierIndex = old('display_tier_index');
 
@@ -575,15 +577,15 @@
                 }
 
                 if (empty($oldTiers)) {
-                   $oldTiers = [
-    [
-        'min_qty' => '',
-        'max_qty' => '',
-        'unit_price' => '',
-        'unit_price_with_tax' => '',
-        'is_display' => 1,
-    ],
-];
+                    $oldTiers = [
+                        [
+                            'min_qty' => '',
+                            'max_qty' => '',
+                            'unit_price' => '',
+                            'unit_price_with_tax' => '',
+                            'is_display' => 1,
+                        ],
+                    ];
 
                     $displayTierIndex = 0;
                 }
@@ -591,10 +593,11 @@
 
             <div class="price-tier-card">
                 <div class="price-tier-header">
-                    <div class="price-tier-title">Quantity</div>
-                    <div class="price-tier-title">Unit Price </div>
-                     <div class="price-tier-title">Unit Price With Tax</div>
-                    <div class="price-tier-title">Display</div>
+                    <div class="price-tier-title">{{ request()->cookie('dev') == '1' ? 'Quantity' : '数量' }}</div>
+                    <div class="price-tier-title">{{ request()->cookie('dev') == '1' ? 'Unit Price' : '単価' }}</div>
+                    <div class="price-tier-title">{{ request()->cookie('dev') == '1' ? 'Unit Price With Tax' : '税込単価' }}
+                    </div>
+                    <div class="price-tier-title">{{ request()->cookie('dev') == '1' ? 'Display' : '表示' }}</div>
                     <div class="price-tier-title"></div>
                 </div>
 
@@ -618,11 +621,11 @@
                                     value="{{ $tier['unit_price'] ?? '' }}" class="tier-input" min="0">
                             </div>
                             <div class="tier-input-group">
-    <span class="tier-prefix">¥</span>
+                                <span class="tier-prefix">¥</span>
 
-    <input type="number" step="0.01" name="tiers[{{ $index }}][unit_price_with_tax]"
-        value="{{ $tier['unit_price_with_tax'] ?? '' }}" class="tier-input" min="0">
-</div>
+                                <input type="number" step="0.01" name="tiers[{{ $index }}][unit_price_with_tax]"
+                                    value="{{ $tier['unit_price_with_tax'] ?? '' }}" class="tier-input" min="0">
+                            </div>
                             <div class="tier-display">
                                 <input type="radio" name="display_tier_index" value="{{ $index }}"
                                     {{ (int) $displayTierIndex === (int) $index ? 'checked' : '' }}>
@@ -630,7 +633,7 @@
 
                             <div class="tier-action">
                                 <button type="button" class="remove-tier">
-                                    Remove
+                                    {{ request()->cookie('dev') == '1' ? 'Remove' : '削除' }}
                                 </button>
                             </div>
                         </div>
@@ -643,26 +646,26 @@
 
 
             <button type="button" id="add-tier" class="btn-outline">
-                + Add Tier
+                {{ request()->cookie('dev') == '1' ? '+ Add Tier' : '追加' }}
             </button>
 
-            <div class="section-title">Status</div>
+            <div class="section-title">{{ request()->cookie('dev') == '1' ? 'Status' : 'ステータス' }}</div>
 
             <div class="checkbox-grid">
                 <label>
                     <input type="checkbox" name="is_active" value="1"
                         {{ old('is_active', $rule->is_active) ? 'checked' : '' }}>
-                    Active
+                    {{ request()->cookie('dev') == '1' ? 'Active' : 'アクティブ' }}
                 </label>
             </div>
 
             <div class="form-actions">
                 <a href="{{ route('admin.product-price-rules.index') }}" class="btn-outline">
-                    Cancel
+                    {{ request()->cookie('dev') == '1' ? 'Cancel' : 'キャンセル' }}
                 </a>
 
                 <button type="submit" class="btn-primary">
-                    Update Price Rule
+                    {{ request()->cookie('dev') == '1' ? 'Update Price Rule' : '更新' }}
                 </button>
             </div>
         </form>
@@ -678,9 +681,10 @@
             document.querySelectorAll('.price-tier-row').forEach(function(row, index) {
                 const minInput = row.querySelector('input[name*="[min_qty]"]');
                 const maxInput = row.querySelector('input[name*="[max_qty]"]');
-                const priceInput = row.querySelector('input[name*="[unit_price]"]:not([name*="[unit_price_with_tax]"])');
-const priceWithTaxInput = row.querySelector('input[name*="[unit_price_with_tax]"]');
-const displayRadio = row.querySelector('input[name="display_tier_index"]');
+                const priceInput = row.querySelector(
+                    'input[name*="[unit_price]"]:not([name*="[unit_price_with_tax]"])');
+                const priceWithTaxInput = row.querySelector('input[name*="[unit_price_with_tax]"]');
+                const displayRadio = row.querySelector('input[name="display_tier_index"]');
 
                 if (minInput) {
                     minInput.name = `tiers[${index}][min_qty]`;
@@ -694,8 +698,8 @@ const displayRadio = row.querySelector('input[name="display_tier_index"]');
                     priceInput.name = `tiers[${index}][unit_price]`;
                 }
                 if (priceWithTaxInput) {
-    priceWithTaxInput.name = `tiers[${index}][unit_price_with_tax]`;
-}
+                    priceWithTaxInput.name = `tiers[${index}][unit_price_with_tax]`;
+                }
 
                 if (displayRadio) {
                     displayRadio.value = index;
@@ -951,7 +955,8 @@ const displayRadio = row.querySelector('input[name="display_tier_index"]');
         const tierWrapper = document.getElementById('tier-wrapper');
         if (tierWrapper) {
             tierWrapper.addEventListener('input', function(e) {
-                if (e.target && e.target.name && e.target.name.includes('[unit_price]') && !e.target.name.includes('[unit_price_with_tax]')) {
+                if (e.target && e.target.name && e.target.name.includes('[unit_price]') && !e.target.name.includes(
+                        '[unit_price_with_tax]')) {
                     const row = e.target.closest('.price-tier-row');
                     if (row) {
                         const priceWithTaxInput = row.querySelector('input[name*="[unit_price_with_tax]"]');

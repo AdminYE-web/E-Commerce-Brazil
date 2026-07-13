@@ -217,30 +217,32 @@
     <div class="table-card">
         <div class="table-header">
             <div>
-                <div class="table-title">Product Options</div>
+                <div class="table-title">{{ request()->cookie('dev') === '1' ? 'Product Options' : '商品オプション' }}</div>
                 <div class="showing-text">
-                    Manage option choices, prices, variants, images and status.
+                    {{ request()->cookie('dev') === '1'
+                        ? 'Manage option choices, prices, variants, images and status.'
+                        : 'オプションの選択肢、価格、バリエーション、画像、ステータスを管理します。' }}
                 </div>
             </div>
 
             <div class="table-actions">
                 <a href="{{ route('admin.product-options.create') }}" class="btn-primary">
-                    + Add Product Option
+                    {{ request()->cookie('dev') === '1' ? '+ Add Product Option' : '+ 商品オプションを追加' }}
                 </a>
             </div>
         </div>
         <form method="GET" action="{{ route('admin.product-options.index') }}" class="product-option-search-form">
             <div class="product-option-search-row">
                 <input type="text" name="search" value="{{ request('search') }}" class="product-option-search-input"
-                    placeholder="Search by option name, option code or group...">
+                    placeholder="{{ request()->cookie('dev') === '1' ? 'Search by option name, option code or group...' : 'オプション名、オプションコード、またはグループで検索...' }}">
 
                 <button type="submit" class="product-option-search-btn">
-                    Search
+                    {{ request()->cookie('dev') === '1' ? 'Search' : '検索' }}
                 </button>
 
-                @if(request('search'))
+                @if (request('search'))
                     <a href="{{ route('admin.product-options.index') }}" class="product-option-reset-btn">
-                        Reset
+                        {{ request()->cookie('dev') === '1' ? 'Reset' : 'リセット' }}
                     </a>
                 @endif
             </div>
@@ -255,12 +257,14 @@
         <table>
             <thead>
                 <tr>
-                    <th>Option</th>
-                    <th>Group</th>
-                    <th>Additional Price</th>
-                    <th>Price Type</th>
-                    <th>Status</th>
-                    <th style="text-align: right;">Manage</th>
+                    <th>{{ request()->cookie('dev') === '1' ? 'Option' : 'オプション' }}</th>
+                    <th>{{ request()->cookie('dev') === '1' ? 'Group' : 'グループ' }}</th>
+                    <th>{{ request()->cookie('dev') === '1' ? 'Additional Price' : '追加料金' }}</th>
+                    <th>{{ request()->cookie('dev') === '1' ? 'Price Type' : '価格タイプ' }}</th>
+                    <th>{{ request()->cookie('dev') === '1' ? 'Status' : 'ステータス' }}</th>
+                    <th style="text-align: right;">
+                        {{ request()->cookie('dev') === '1' ? 'Manage' : '管理' }}
+                    </th>
                 </tr>
             </thead>
 
@@ -303,42 +307,48 @@
 
                         <td>
                             @if ($option->is_active)
-                                <span class="status-pill status-active">Active</span>
+                                <span class="status-pill status-active">
+                                    {{ request()->cookie('dev') === '1' ? 'Active' : '有効' }}
+                                </span>
                             @else
-                                <span class="status-pill status-inactive">Inactive</span>
+                                <span class="status-pill status-inactive">
+                                    {{ request()->cookie('dev') === '1' ? 'Inactive' : '無効' }}
+                                </span>
                             @endif
                         </td>
 
                         <td style="text-align: right;">
                             <div class="action-btns" style="justify-content: flex-end;">
                                 @if (!empty($option->is_missing_translation))
-                                    <form action="{{ route('admin.product-options.duplicate-translation', $option->option_id) }}"
+                                    <form
+                                        action="{{ route('admin.product-options.duplicate-translation', $option->option_id) }}"
                                         method="POST" style="display:inline;">
                                         @csrf
 
                                         <button type="submit" class="action-link duplicate"
                                             onclick="return confirm('Duplicate this PT option for {{ strtoupper($language) }}?')">
-                                            Duplicate
+                                            {{ request()->cookie('dev') === '1' ? 'Duplicate' : '複製' }}
                                         </button>
                                     </form>
                                 @else
-                                    <a href="{{ route('admin.product-options.edit', $option->option_id) }}" class="action-link">
-                                        Edit
+                                    <a href="{{ route('admin.product-options.edit', $option->option_id) }}"
+                                        class="action-link">
+                                        {{ request()->cookie('dev') === '1' ? 'Edit' : '編集' }}
                                     </a>
 
                                     <a href="{{ route('admin.product-options.variants.index', $option->option_id) }}"
                                         class="action-link">
-                                        Variants
+                                        {{ request()->cookie('dev') === '1' ? 'Variants' : 'バリエーション' }}
                                     </a>
 
-                                    <form action="{{ route('admin.product-options.destroy', $option->option_id) }}" method="POST"
-                                        style="display:inline;">
+                                    <form action="{{ route('admin.product-options.destroy', $option->option_id) }}"
+                                        method="POST" style="display:inline;">
                                         @csrf
                                         @method('DELETE')
 
                                         <button type="submit" class="action-link delete"
                                             onclick="return confirm('Delete this product option?')">
-                                            Delete
+                                            {{ request()->cookie('dev') === '1' ? 'Delete' : '削除' }}
                                         </button>
                                     </form>
                                 @endif

@@ -293,215 +293,219 @@
         .action-menu button:hover {
             background: #f3f4f6;
         }
+
         .table-card {
-    overflow: visible;
-}
+            overflow: visible;
+        }
 
-table,
-tbody,
-tr,
-td {
-    overflow: visible;
-}
+        table,
+        tbody,
+        tr,
+        td {
+            overflow: visible;
+        }
 
-td {
-    position: relative;
-}
-.pagination-container {
-    padding: 16px 24px 24px;
-}
+        td {
+            position: relative;
+        }
 
-.pagination-container ul,
-.pagination-container li {
-    list-style: none !important;
-    margin: 0;
-    padding: 0;
-}
+        .pagination-container {
+            padding: 16px 24px 24px;
+        }
 
-.pagination-container nav > div {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    flex-wrap: wrap;
-}
+        .pagination-container ul,
+        .pagination-container li {
+            list-style: none !important;
+            margin: 0;
+            padding: 0;
+        }
 
-.pagination-container nav ul {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
+        .pagination-container nav>div {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
 
-.pagination-container nav a,
-.pagination-container nav span {
-    text-decoration: none;
-}
-.pagination-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 16px;
-    margin-top: 24px;
-    padding: 16px 24px;
-    border-top: 1px solid var(--border);
-    flex-wrap: wrap;
-}
+        .pagination-container nav ul {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
 
-.pagination-container nav {
-    width: 100%;
-}
+        .pagination-container nav a,
+        .pagination-container nav span {
+            text-decoration: none;
+        }
 
-.pagination-container .hidden {
-    display: none !important;
-}
+        .pagination-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            margin-top: 24px;
+            padding: 16px 24px;
+            border-top: 1px solid var(--border);
+            flex-wrap: wrap;
+        }
 
-.pagination-container svg {
-    width: 16px !important;
-    height: 16px !important;
-}
+        .pagination-container nav {
+            width: 100%;
+        }
 
-.pagination-container nav > div:first-child {
-    display: none;
-}
+        .pagination-container .hidden {
+            display: none !important;
+        }
 
-.pagination-container nav > div:last-child {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 16px;
-    flex-wrap: wrap;
-}
+        .pagination-container svg {
+            width: 16px !important;
+            height: 16px !important;
+        }
 
-.pagination-container p {
-    margin: 0;
-    color: var(--muted);
-    font-size: 14px;
-}
+        .pagination-container nav>div:first-child {
+            display: none;
+        }
 
-.pagination-container .relative.z-0 {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-}
+        .pagination-container nav>div:last-child {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
 
-.pagination-container .relative.inline-flex {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 36px;
-    height: 36px;
-    padding: 0 12px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    background: #fff;
-    color: var(--fg);
-    text-decoration: none;
-    font-size: 14px;
-    transition: 0.2s;
-}
+        .pagination-container p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 14px;
+        }
 
-.pagination-container .relative.inline-flex:hover {
-    background: var(--bg);
-}
+        .pagination-container .relative.z-0 {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
 
-.pagination-container span[aria-current="page"] span {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: #fff;
-}
+        .pagination-container .relative.inline-flex {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 36px;
+            height: 36px;
+            padding: 0 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: #fff;
+            color: var(--fg);
+            text-decoration: none;
+            font-size: 14px;
+            transition: 0.2s;
+        }
 
-.pagination-container .cursor-default {
-    opacity: .5;
-    pointer-events: none;
-}
+        .pagination-container .relative.inline-flex:hover {
+            background: var(--bg);
+        }
 
-/* กัน bullet จุดดำ */
-.pagination-container ul,
-.pagination-container li {
-    list-style: none !important;
-    margin: 0;
-    padding: 0;
-}
-.pagination-container {
-    margin-top: 24px;
-    padding: 16px 24px;
-    border-top: 1px solid var(--border);
-}
+        .pagination-container span[aria-current="page"] span {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+        }
 
-.pagination-container nav {
-    width: 100%;
-}
+        .pagination-container .cursor-default {
+            opacity: .5;
+            pointer-events: none;
+        }
 
-.pagination-container nav > div {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    flex-wrap: wrap;
-}
+        /* กัน bullet จุดดำ */
+        .pagination-container ul,
+        .pagination-container li {
+            list-style: none !important;
+            margin: 0;
+            padding: 0;
+        }
 
-.pagination-container p {
-    margin: 0;
-    color: var(--muted);
-    font-size: 14px;
-}
+        .pagination-container {
+            margin-top: 24px;
+            padding: 16px 24px;
+            border-top: 1px solid var(--border);
+        }
 
-/* สำหรับ Bootstrap pagination */
-.pagination-container .pagination {
-    display: flex !important;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 6px;
-    margin: 0;
-    padding: 0;
-    list-style: none !important;
-}
+        .pagination-container nav {
+            width: 100%;
+        }
 
-.pagination-container .page-item {
-    list-style: none !important;
-    margin: 0;
-    padding: 0;
-}
+        .pagination-container nav>div {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
 
-.pagination-container .page-link {
-    display: inline-flex !important;
-    align-items: center;
-    justify-content: center;
-    min-width: 36px;
-    height: 36px;
-    padding: 0 12px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    background: #fff;
-    color: var(--fg);
-    font-size: 14px;
-    font-weight: 500;
-    line-height: 1;
-    text-decoration: none !important;
-}
+        .pagination-container p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 14px;
+        }
 
-.pagination-container .page-link:hover {
-    background: var(--bg);
-}
+        /* สำหรับ Bootstrap pagination */
+        .pagination-container .pagination {
+            display: flex !important;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 6px;
+            margin: 0;
+            padding: 0;
+            list-style: none !important;
+        }
 
-.pagination-container .page-item.active .page-link {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: #fff;
-}
+        .pagination-container .page-item {
+            list-style: none !important;
+            margin: 0;
+            padding: 0;
+        }
 
-.pagination-container .page-item.disabled .page-link {
-    color: #cbd5e1;
-    background: #fff;
-    opacity: 1;
-    pointer-events: none;
-}
+        .pagination-container .page-link {
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
+            min-width: 36px;
+            height: 36px;
+            padding: 0 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: #fff;
+            color: var(--fg);
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 1;
+            text-decoration: none !important;
+        }
 
-/* กัน bullet จุดดำ */
-.pagination-container ul,
-.pagination-container li {
-    list-style: none !important;
-}
+        .pagination-container .page-link:hover {
+            background: var(--bg);
+        }
+
+        .pagination-container .page-item.active .page-link {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+        }
+
+        .pagination-container .page-item.disabled .page-link {
+            color: #cbd5e1;
+            background: #fff;
+            opacity: 1;
+            pointer-events: none;
+        }
+
+        /* กัน bullet จุดดำ */
+        .pagination-container ul,
+        .pagination-container li {
+            list-style: none !important;
+        }
     </style>
 @endsection
 @section('content')
@@ -509,23 +513,25 @@ td {
     <div class="table-card">
         <div class="table-header">
             <div>
-                <div class="table-title">Products</div>
-                <div class="showing-text">Manage product data, options, details, images and status.</div>
+                <div class="table-title">{{ request()->cookie('dev') == '1' ? 'Products' : '製品' }}</div>
+                <div class="showing-text">
+                    {{ request()->cookie('dev') == '1' ? 'Manage product data, options, details, images and status.' : '製品データ、オプション、詳細、画像、ステータスを管理します。' }}
+                </div>
             </div>
 
             <div class="table-actions">
                 <a href="{{ route('admin.products.create') }}" class="btn-outline">
-                    + Add Product
+                    {{ request()->cookie('dev') == '1' ? '+ Add Product' : '+ 製品追加' }}
                 </a>
             </div>
         </div>
         <form method="GET" action="{{ route('admin.products.index') }}" class="product-search-form">
             <div class="product-search-row">
                 <input type="text" name="search" value="{{ request('search') }}" class="product-search-input"
-                    placeholder="Search by product name or product code...">
+                    placeholder="{{ request()->cookie('dev') == '1' ? 'Search by product name or product code...' : '製品名または製品コードで検索...' }}">
 
                 <select name="type" class="product-filter-select">
-                    <option value="">All Types</option>
+                    <option value="">{{ request()->cookie('dev') == '1' ? 'All Types' : '全てのタイプ' }}</option>
                     <option value="1" {{ request('type') == '1' ? 'selected' : '' }}>
                         Hotstrap
                     </option>
@@ -535,7 +541,7 @@ td {
                 </select>
 
                 <select name="category_id" class="product-filter-select">
-                    <option value="">All Categories</option>
+                    <option value="">{{ request()->cookie('dev') == '1' ? 'All Categories' : '全てのカテゴリ' }}</option>
                     @foreach ($categories as $category)
                         <option value="{{ $category->category_id }}"
                             {{ request('category_id') == $category->category_id ? 'selected' : '' }}>
@@ -545,7 +551,7 @@ td {
                 </select>
 
                 <select name="material_id" class="product-filter-select">
-                    <option value="">All Materials</option>
+                    <option value="">{{ request()->cookie('dev') == '1' ? 'All Materials' : '全ての素材' }}</option>
                     @foreach ($materials as $material)
                         <option value="{{ $material->material_id }}"
                             {{ request('material_id') == $material->material_id ? 'selected' : '' }}>
@@ -555,28 +561,28 @@ td {
                 </select>
 
                 <select name="status" class="product-filter-select">
-                    <option value="">All Status</option>
+                    <option value="">{{ request()->cookie('dev') == '1' ? 'All Status' : 'すべてのステータス' }}</option>
 
                     <option value="1" {{ request('status') === '1' ? 'selected' : '' }}>
-                        Public
+                        {{ request()->cookie('dev') == '1' ? 'Public' : '公開' }}
                     </option>
 
                     <option value="3" {{ request('status') === '3' ? 'selected' : '' }}>
-                        Draft
+                        {{ request()->cookie('dev') == '1' ? 'Draft' : 'ドラフト' }}
                     </option>
 
                     <option value="0" {{ request('status') === '0' ? 'selected' : '' }}>
-                        Inactive
+                        {{ request()->cookie('dev') == '1' ? 'Inactive' : '非公開' }}
                     </option>
                 </select>
 
                 <button type="submit" class="product-search-btn">
-                    Search
+                    {{ request()->cookie('dev') == '1' ? 'Search' : '検索' }}
                 </button>
 
                 @if (request()->hasAny(['search', 'type', 'category_id', 'material_id', 'status']))
                     <a href="{{ route('admin.products.index') }}" class="product-reset-btn">
-                        Reset
+                        {{ request()->cookie('dev') == '1' ? 'Reset' : 'リセット' }}
                     </a>
                 @endif
             </div>
@@ -591,15 +597,15 @@ td {
         <table>
             <thead>
                 <tr>
-                    <th>Status Alert</th>
-                    <th>Product</th>
-                    <th>Type</th>
-                    <th>Category</th>
-                    <th>Material</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Status Alert' : 'ステータスアラート' }}</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Product' : '製品' }}</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Type' : 'タイプ' }}</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Category' : 'カテゴリ' }}</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Material' : 'マテリアル' }}</th>
 
-                    <th>Status</th>
-                    <th>Lang</th>
-                    <th style="text-align: right;">Manage</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Status' : 'ステータス' }}</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Lang' : '言語' }}</th>
+                    <th style="text-align: right;">{{ request()->cookie('dev') == '1' ? 'Manage' : '管理' }}</th>
                 </tr>
             </thead>
 
@@ -656,11 +662,14 @@ td {
 
                         <td>
                             @if ((int) $product->is_active === 1)
-                                <span class="status-pill status-active">Public</span>
+                                <span
+                                    class="status-pill status-active">{{ request()->cookie('dev') == '1' ? 'Public' : '公開' }}</span>
                             @elseif ((int) $product->is_active === 3)
-                                <span class="status-pill status-inactive">Draft</span>
+                                <span
+                                    class="status-pill status-inactive">{{ request()->cookie('dev') == '1' ? 'Draft' : 'ドラフト' }}</span>
                             @else
-                                <span class="status-pill status-inactive">Inactive</span>
+                                <span
+                                    class="status-pill status-inactive">{{ request()->cookie('dev') == '1' ? 'Inactive' : '非公開' }}</span>
                             @endif
                         </td>
                         <td>
@@ -681,26 +690,25 @@ td {
 
                                         <button type="submit" class="action-link duplicate"
                                             onclick="return confirm('Duplicate this {{ strtoupper($product->language) }} product for {{ strtoupper($language) }}?')">
-                                            Add language
+                                            {{ request()->cookie('dev') == '1' ? 'Add language' : '言語を追加' }}
                                         </button>
                                     </form>
                                 @else
-                                   
                                     {{-- Preview Dropdown --}}
                                     <div class="action-dropdown">
                                         <button type="button" class="action-link dropdown-btn">
-                                            Preview ▾
+                                            {{ request()->cookie('dev') == '1' ? 'Preview ▾' : 'プレビュー ▾' }}
                                         </button>
 
                                         <div class="action-menu">
                                             <a href="{{ route('admin.products.preview', $product->product_id) }}"
                                                 target="_blank">
-                                                Product Preview
+                                                {{ request()->cookie('dev') == '1' ? 'Product Preview' : '製品プレビュー' }}
                                             </a>
 
                                             <a href="{{ route('admin.products.preview-order', $product->product_id) }}"
                                                 target="_blank">
-                                                Order Preview
+                                                {{ request()->cookie('dev') == '1' ? 'Order Preview' : '注文プレビュー' }}
                                             </a>
                                         </div>
                                     </div>
@@ -708,37 +716,37 @@ td {
                                     {{-- More Dropdown --}}
                                     <div class="action-dropdown">
                                         <button type="button" class="action-link dropdown-btn">
-                                            More ▾
+                                            {{ request()->cookie('dev') == '1' ? 'More ▾' : 'その他 ▾' }}
                                         </button>
 
                                         <div class="action-menu">
-                                             <a href="{{ route('admin.products.edit', $product->product_id) }}" class="action-link">
-                                        Edit
-                                    </a>
+                                            <a href="{{ route('admin.products.edit', $product->product_id) }}"
+                                                class="action-link">
+                                                {{ request()->cookie('dev') == '1' ? 'Edit' : '編集' }}
+                                            </a>
 
-                                    @if ($product->detail)
-                                        <a href="{{ route('admin.product-details.edit', $product->detail->product_detail_id) }}"
-                                            class="action-link">
-                                            Detail
-                                        </a>
-                                    @else
-                                        <a href="{{ route('admin.product-details.create', ['product_id' => $product->product_id]) }}"
-                                            class="action-link">
-                                            Add Detail
-                                        </a>
-                                    @endif
+                                            @if ($product->detail)
+                                                <a href="{{ route('admin.product-details.edit', $product->detail->product_detail_id) }}"
+                                                    class="action-link">
+                                                    {{ request()->cookie('dev') == '1' ? 'Detail' : '詳細' }}
+                                                </a>
+                                            @else
+                                                <a href="{{ route('admin.product-details.create', ['product_id' => $product->product_id]) }}"
+                                                    class="action-link">
+                                                    {{ request()->cookie('dev') == '1' ? 'Add Detail' : '詳細を追加' }}
+                                                </a>
+                                            @endif
 
                                             <a href="{{ route('admin.products.options.edit', $product->product_id) }}">
-                                                Options
+                                                {{ request()->cookie('dev') == '1' ? 'Options' : 'オプション' }}
                                             </a>
 
                                             <form action="{{ route('admin.products.duplicate', $product->product_id) }}"
                                                 method="POST">
                                                 @csrf
 
-                                                <button type="submit"
-                                                    onclick="return confirm('Duplicate this product?')">
-                                                    Duplicate
+                                                <button type="submit" onclick="return confirm('Duplicate this product?')">
+                                                    {{ request()->cookie('dev') == '1' ? 'Duplicate' : '複製' }}
                                                 </button>
                                             </form>
 
@@ -749,7 +757,7 @@ td {
 
                                                 <button type="submit" class="delete"
                                                     onclick="return confirm('Delete this product?')">
-                                                    Delete
+                                                    {{ request()->cookie('dev') == '1' ? 'Delete' : '削除' }}
                                                 </button>
                                             </form>
                                         </div>
@@ -768,9 +776,9 @@ td {
             </tbody>
         </table>
 
-       <div class="pagination-container">
-    {{ $products->appends(request()->query())->links() }}
-</div>
+        <div class="pagination-container">
+            {{ $products->appends(request()->query())->links() }}
+        </div>
     </div>
     <script>
         document.addEventListener('click', function(e) {

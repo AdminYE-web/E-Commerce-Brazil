@@ -165,19 +165,20 @@
     <div class="form-card">
         <div class="form-header">
             <div>
-                <h1>Add Material</h1>
-                <p>Create new material code, name and active status.</p>
+                <h1>{{ request()->cookie('dev') == '1' ? 'Add Material' : '追加マテリアル' }}</h1>
+                <p>{{ request()->cookie('dev') == '1' ? 'Create new material code, name and active status.' : '製品マテリアル、コード、アクティブステータスを作成します。' }}
+                </p>
             </div>
 
             <a href="{{ route('admin.materials.index', ['product_type' => $productType ?? 1]) }}" class="btn-outline">
-    Back
-</a>
+                {{ request()->cookie('dev') == '1' ? 'Back' : '戻る' }}
+            </a>
         </div>
 
-        @if($errors->any())
+        @if ($errors->any())
             <div class="alert-error">
                 <ul>
-                    @foreach($errors->all() as $error)
+                    @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
                 </ul>
@@ -187,54 +188,54 @@
         <form action="{{ route('admin.materials.store') }}" method="POST">
             @csrf
 
-            <div class="section-title">Material Information</div>
+            <div class="section-title">{{ request()->cookie('dev') == '1' ? 'Material Information' : 'マテリアル情報' }}</div>
 
             <div class="form-grid">
                 <div class="form-group">
-                    <label>Material Code</label>
+                    <label>{{ request()->cookie('dev') == '1' ? 'Material Code' : 'マテリアルコード' }}</label>
                     <input type="text" name="material_code" value="{{ old('material_code') }}">
                 </div>
                 <div class="form-group">
-                    <label>Material Name</label>
+                    <label>{{ request()->cookie('dev') == '1' ? 'Material Name' : 'マテリアル名' }}</label>
                     <input type="text" name="material_name" value="{{ old('material_name') }}">
                 </div>
-             <div class="form-group">
-    <label>Product Type</label>
-    <select name="product_type" required>
-        <option value="1" {{ old('product_type', $productType ?? 1) == 1 ? 'selected' : '' }}>
-            Hotstrap
-        </option>
-        <option value="2" {{ old('product_type', $productType ?? 1) == 2 ? 'selected' : '' }}>
-            Hotmobily
-        </option>
-    </select>
-</div>
+                <div class="form-group">
+                    <label>{{ request()->cookie('dev') == '1' ? 'Product Type' : '製品タイプ' }}</label>
+                    <select name="product_type" required>
+                        <option value="1" {{ old('product_type', $productType ?? 1) == 1 ? 'selected' : '' }}>
+                            Hotstrap
+                        </option>
+                        <option value="2" {{ old('product_type', $productType ?? 1) == 2 ? 'selected' : '' }}>
+                            Hotmobily
+                        </option>
+                    </select>
+                </div>
                 <div class="form-group" style="display: none">
-                    <label>Translation Key</label>
-                    <input type="text" name="translation_key" value="{{ old('translation_key', $translationKey ?? '') }}"
-                        placeholder="เช่น mat_xxxxxxxx">
-                    <small>ใช้สำหรับผูก material เดียวกันข้ามภาษา</small>
+                    <label>{{ request()->cookie('dev') == '1' ? 'Translation Key' : '翻訳キー' }}</label>
+                    <input type="text" name="translation_key"
+                        value="{{ old('translation_key', $translationKey ?? '') }}" placeholder="เช่น mat_xxxxxxxx">
+                    <small>{{ request()->cookie('dev') == '1' ? 'Used to bind the same material across languages' : 'ใช้สำหรับผูก material เดียวกันข้ามภาษา' }}</small>
                 </div>
 
-                
+
             </div>
 
-            <div class="section-title">Status</div>
+            <div class="section-title">{{ request()->cookie('dev') == '1' ? 'Status' : 'ステータス' }}</div>
 
             <div class="checkbox-grid">
                 <label>
                     <input type="checkbox" name="is_active" value="1" {{ old('is_active', 1) ? 'checked' : '' }}>
-                    Active
+                    {{ request()->cookie('dev') == '1' ? 'Active' : 'アクティブ' }}
                 </label>
             </div>
 
             <div class="form-actions">
-               <a href="{{ route('admin.materials.index', ['product_type' => $productType ?? 1]) }}" class="btn-outline">
-    Cancel
-</a>
+                <a href="{{ route('admin.materials.index', ['product_type' => $productType ?? 1]) }}" class="btn-outline">
+                    {{ request()->cookie('dev') == '1' ? 'Cancel' : 'キャンセル' }}
+                </a>
 
                 <button type="submit" class="btn-primary">
-                    Save Material
+                    {{ request()->cookie('dev') == '1' ? 'Save Material' : '保存マテリアル' }}
                 </button>
             </div>
         </form>

@@ -270,30 +270,32 @@
         .action-link.duplicate {
             color: #2563eb;
         }
+
         .option-group-filter-select {
-    min-width: 150px;
-    height: 38px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 0 10px;
-    background: #fff;
-    color: var(--fg);
-    font-size: 14px;
-    outline: none;
-}
+            min-width: 150px;
+            height: 38px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0 10px;
+            background: #fff;
+            color: var(--fg);
+            font-size: 14px;
+            outline: none;
+        }
 
-@media (max-width: 900px) {
-    .option-group-search-input,
-    .option-group-filter-select {
-        width: 100%;
-        min-width: 100%;
-    }
+        @media (max-width: 900px) {
 
-    .option-group-search-btn,
-    .option-group-reset-btn {
-        width: 100%;
-    }
-}
+            .option-group-search-input,
+            .option-group-filter-select {
+                width: 100%;
+                min-width: 100%;
+            }
+
+            .option-group-search-btn,
+            .option-group-reset-btn {
+                width: 100%;
+            }
+        }
     </style>
 @endsection
 @section('content')
@@ -301,49 +303,51 @@
     <div class="table-card">
         <div class="table-header">
             <div>
-                <div class="table-title">Option Groups</div>
+                <div class="table-title">{{ request()->cookie('dev') == '1' ? 'Option Groups' : '商品オプショングループ管理' }}</div>
                 <div class="showing-text">
-                    Manage option groups, display type, parent group and status.
+                    {{ request()->cookie('dev') === '1'
+                        ? 'Manage option groups, display type, parent group and status.'
+                        : 'オプショングループ、表示形式、親グループ、ステータスを管理します。' }}
                 </div>
             </div>
 
             <div class="table-actions">
                 <a href="{{ route('admin.option-groups.create') }}" class="btn-primary">
-                    + Add Option Group
+                    +
+                    {{ request()->cookie('dev') === '1' ? 'Add Option Group' : 'オプショングループを追加' }}
                 </a>
             </div>
         </div>
-       <form method="GET" action="{{ route('admin.option-groups.index') }}" class="option-group-search-form">
-    <div class="option-group-search-row">
-        <input type="text"
-               name="search"
-               value="{{ request('search') }}"
-               class="option-group-search-input"
-               placeholder="Search by group name or group code...">
+        <form method="GET" action="{{ route('admin.option-groups.index') }}" class="option-group-search-form">
+            <div class="option-group-search-row">
+                <input type="text" name="search" value="{{ request('search') }}" class="option-group-search-input"
+                    placeholder="Search by group name or group code...">
 
-        <select name="type" class="option-group-filter-select">
-            <option value="">All Types</option>
+                <select name="type" class="option-group-filter-select">
+                    <option value="">
+                        {{ request()->cookie('dev') === '1' ? 'All Types' : 'すべてのタイプ' }}
+                    </option>
 
-            <option value="1" {{ request('type') == '1' ? 'selected' : '' }}>
-                Hotstrap
-            </option>
+                    <option value="1" {{ request('type') == '1' ? 'selected' : '' }}>
+                        Hotstrap
+                    </option>
 
-            <option value="2" {{ request('type') == '2' ? 'selected' : '' }}>
-                Hotmobily
-            </option>
-        </select>
+                    <option value="2" {{ request('type') == '2' ? 'selected' : '' }}>
+                        Hotmobily
+                    </option>
+                </select>
 
-        <button type="submit" class="option-group-search-btn">
-            Search
-        </button>
+                <button type="submit" class="option-group-search-btn">
+                    {{ request()->cookie('dev') === '1' ? 'Search' : '検索' }}
+                </button>
 
-        @if(request()->hasAny(['search', 'type']))
-            <a href="{{ route('admin.option-groups.index') }}" class="option-group-reset-btn">
-                Reset
-            </a>
-        @endif
-    </div>
-</form>
+                @if (request()->hasAny(['search', 'type']))
+                    <a href="{{ route('admin.option-groups.index') }}" class="option-group-reset-btn">
+                        {{ request()->cookie('dev') === '1' ? 'Reset' : 'リセット' }}
+                    </a>
+                @endif
+            </div>
+        </form>
 
         @if (session('success'))
             <div class="alert-success">
@@ -354,14 +358,14 @@
         <table>
             <thead>
                 <tr>
-                    <th>Group</th>
-                    <th>Parent Group</th>
-                    <th>Display Type</th>
-                    <th>Main Price</th>
-                    <th>Sort</th>
-                    <th>Required</th>
-                    <th>Status</th>
-                    <th style="text-align: right;">Manage</th>
+                    <th>{{ request()->cookie('dev') === '1' ? 'Group' : 'グループ' }}</th>
+                    <th>{{ request()->cookie('dev') === '1' ? 'Parent Group' : '親グループ' }}</th>
+                    <th>{{ request()->cookie('dev') === '1' ? 'Display Type' : '表示タイプ' }}</th>
+                    <th>{{ request()->cookie('dev') === '1' ? 'Main Price' : 'メインプライス' }}</th>
+                    <th>{{ request()->cookie('dev') === '1' ? 'Sort' : '並び順' }}</th>
+                    <th>{{ request()->cookie('dev') === '1' ? 'Required' : '必須' }}</th>
+                    <th>{{ request()->cookie('dev') === '1' ? 'Status' : 'ステータス' }}</th>
+                    <th style="text-align: right;">{{ request()->cookie('dev') === '1' ? 'Manage' : '管理' }}</th>
                 </tr>
             </thead>
 
@@ -399,37 +403,47 @@
 
                         <td>
                             @if ($group->is_active)
-                                <span class="status-pill status-active">Active</span>
+                                <span class="status-pill status-active">
+                                    {{ request()->cookie('dev') === '1' ? 'Active' : '有効' }}
+                                </span>
                             @else
-                                <span class="status-pill status-inactive">Inactive</span>
+                                <span class="status-pill status-inactive">
+                                    {{ request()->cookie('dev') === '1' ? 'Inactive' : '無効' }}
+                                </span>
                             @endif
                         </td>
 
                         <td style="text-align: right;">
                             <div class="action-btns" style="justify-content: flex-end;">
                                 @if (!empty($group->is_missing_translation))
-                                    <form action="{{ route('admin.option-groups.duplicate-translation', $group->option_group_id) }}"
+                                    <form
+                                        action="{{ route('admin.option-groups.duplicate-translation', $group->option_group_id) }}"
                                         method="POST" style="display:inline;">
                                         @csrf
 
                                         <button type="submit" class="action-link duplicate"
-                                            onclick="return confirm('Duplicate this PT option group for {{ strtoupper($language) }}?')">
-                                            Duplicate
+                                            onclick="return confirm(
+            '{{ request()->cookie('dev') === '1'
+                ? 'Duplicate this PT option group for ' . strtoupper($language) . '?'
+                : strtoupper($language) . ' 用にこのPTオプショングループを複製しますか？' }}'
+        )">
+                                            {{ request()->cookie('dev') === '1' ? 'Duplicate' : '複製' }}
                                         </button>
                                     </form>
                                 @else
-                                    <a href="{{ route('admin.option-groups.edit', $group->option_group_id) }}" class="action-link">
-                                        Edit
+                                    <a href="{{ route('admin.option-groups.edit', $group->option_group_id) }}"
+                                        class="action-link">
+                                        {{ request()->cookie('dev') === '1' ? 'Edit' : '編集' }}
                                     </a>
 
-                                    <form action="{{ route('admin.option-groups.destroy', $group->option_group_id) }}" method="POST"
-                                        style="display:inline;">
+                                    <form action="{{ route('admin.option-groups.destroy', $group->option_group_id) }}"
+                                        method="POST" style="display:inline;">
                                         @csrf
                                         @method('DELETE')
 
                                         <button type="submit" class="action-link delete"
                                             onclick="return confirm('Delete this option group?')">
-                                            Delete
+                                            {{ request()->cookie('dev') === '1' ? 'Delete' : '削除' }}
                                         </button>
                                     </form>
                                 @endif

@@ -194,12 +194,12 @@
     <div class="form-card">
         <div class="form-header">
             <div>
-                <h1>Edit Category</h1>
+                <h1>{{ request()->cookie('dev') == '1' ? 'Edit Category' : '編集カテゴリ' }}</h1>
                 <p>Update category code, name, image, sort order and status.</p>
             </div>
 
             <a href="{{ route('admin.categories.index') }}" class="btn-outline">
-                Back
+                {{ request()->cookie('dev') == '1' ? 'Back' : '戻る' }}
             </a>
         </div>
 
@@ -218,15 +218,15 @@
             @csrf
             @method('PUT')
 
-            <div class="section-title">Category Information</div>
+            <div class="section-title">{{ request()->cookie('dev') == '1' ? 'Category Information' : 'カテゴリ情報' }}</div>
 
             <div class="form-grid">
                 <div class="form-group">
-                    <label>Category Code</label>
+                    <label>{{ request()->cookie('dev') == '1' ? 'Category Code' : 'カテゴリコード' }}</label>
                     <input type="text" name="category_code" value="{{ old('category_code', $category->category_code) }}">
                 </div>
                 <div class="form-group">
-                    <label>Product Type</label>
+                    <label>{{ request()->cookie('dev') == '1' ? 'Product Type' : 'プロダクトタイプ' }}</label>
                     <select name="product_type" required>
                         <option value="1"
                             {{ old('product_type', $category->product_type ?? 1) == 1 ? 'selected' : '' }}>
@@ -239,16 +239,17 @@
                     </select>
                 </div>
                 <div class="form-group" style="display: none">
-                    <label>Translation Key</label>
+                    <label>{{ request()->cookie('dev') == '1' ? 'Translation Key' : 'トランスクリプションキー' }}</label>
                     <input type="text" name="translation_key"
                         value="{{ old('translation_key', $category->translation_key ?? '') }}"
                         placeholder="เช่น cat_xxxxxxxx">
-                    <small>ใช้สำหรับผูก category เดียวกันข้ามภาษา</small>
+                    <small>{{ request()->cookie('dev') == '1' ? 'Used to link categories across languages' : 'ใช้สำหรับผูก category เดียวกันข้ามภาษา' }}</small>
                 </div>
 
                 <div class="form-group">
-                    <label>Category Name</label>
-                    <input type="text" name="category_name" value="{{ old('category_name', $category->category_name) }}">
+                    <label>{{ request()->cookie('dev') == '1' ? 'Category Name' : 'カテゴリ名' }}</label>
+                    <input type="text" name="category_name"
+                        value="{{ old('category_name', $category->category_name) }}">
                 </div>
 
                 {{-- <div class="form-group">
@@ -258,11 +259,11 @@
                 </div> --}}
             </div>
 
-            <div class="section-title">Category Image</div>
+            <div class="section-title">{{ request()->cookie('dev') == '1' ? 'Category Image' : 'カテゴリ画像' }}</div>
 
             <div class="form-grid">
                 <div class="form-group">
-                    <label>Current Image</label>
+                    <label>{{ request()->cookie('dev') == '1' ? 'Current Image' : '現在の画像' }}</label>
 
                     @if ($category->image_path)
                         <div class="current-image-box">
@@ -275,29 +276,29 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Change Category Image</label>
+                    <label>{{ request()->cookie('dev') == '1' ? 'Change Category Image' : '変更カテゴリ画像' }}</label>
                     <input type="file" name="image_path" accept="image/*">
-                    <small>Recommended mobile size:  88x88.</small>
+                    <small>{{ request()->cookie('dev') == '1' ? 'Recommended mobile size:  88x88.' : '推奨モバイルサイズ：88x88。' }}</small>
                 </div>
             </div>
 
-            <div class="section-title">Status</div>
+            <div class="section-title">{{ request()->cookie('dev') == '1' ? 'Status' : 'ステータス' }}</div>
 
             <div class="checkbox-grid">
                 <label>
                     <input type="checkbox" name="is_active" value="1"
                         {{ old('is_active', $category->is_active) ? 'checked' : '' }}>
-                    Active
+                    {{ request()->cookie('dev') == '1' ? 'Active' : 'アクティブ' }}
                 </label>
             </div>
 
             <div class="form-actions">
                 <a href="{{ route('admin.categories.index') }}" class="btn-outline">
-                    Cancel
+                    {{ request()->cookie('dev') == '1' ? 'Cancel' : 'キャンセル' }}
                 </a>
 
                 <button type="submit" class="btn-primary">
-                    Update Category
+                    {{ request()->cookie('dev') == '1' ? 'Update Category' : '更新カテゴリ' }}
                 </button>
             </div>
         </form>

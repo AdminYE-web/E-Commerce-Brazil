@@ -182,12 +182,19 @@
     <div class="form-card">
         <div class="form-header">
             <div>
-                <h1>Add Option Group</h1>
-                <p>Create option group, display type, parent group and pricing condition.</p>
+                <h1>
+                    {{ request()->cookie('dev') === '1' ? 'Add Option Group' : 'オプショングループを追加' }}
+                </h1>
+
+                <p>
+                    {{ request()->cookie('dev') === '1'
+                        ? 'Create option group, display type, parent group and pricing condition.'
+                        : 'オプショングループ、表示形式、親グループ、価格条件を作成します。' }}
+                </p>
             </div>
 
             <a href="{{ route('admin.option-groups.index') }}" class="btn-outline">
-                Back
+                {{ request()->cookie('dev') === '1' ? 'Back' : '戻る' }}
             </a>
         </div>
 
@@ -204,11 +211,15 @@
         <form action="{{ route('admin.option-groups.store') }}" method="POST">
             @csrf
 
-            <div class="section-title">Group Information</div>
+            <div class="section-title">
+                {{ request()->cookie('dev') === '1' ? 'Group Information' : 'グループ情報' }}
+            </div>
 
             <div class="form-grid">
                 <div class="form-group">
-                    <label>Product Type</label>
+                    <label>
+                        {{ request()->cookie('dev') === '1' ? 'Product Type' : '製品タイプ' }}
+                    </label>
                     <select name="product_type" class="form-control" required>
                         <option value="1" {{ old('product_type', 1) == 1 ? 'selected' : '' }}>
                             Type 1 - Hotstrap
@@ -219,29 +230,36 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Group Code</label>
+                    <label>
+                        {{ request()->cookie('dev') === '1' ? 'Group Code' : 'グループコード' }}
+                    </label>
                     <input type="text" name="group_code" value="{{ old('group_code') }}" placeholder="เช่น pouch_type">
                 </div>
                 <div class="form-group" style="display: none">
                     <label>Translation Key</label>
-                    <input type="text" name="translation_key" value="{{ old('translation_key', $translationKey ?? '') }}"
-                        placeholder="เช่น og_xxxxxxxx">
+                    <input type="text" name="translation_key"
+                        value="{{ old('translation_key', $translationKey ?? '') }}" placeholder="เช่น og_xxxxxxxx">
 
                     <small>ใช้สำหรับผูก option group เดียวกันข้ามภาษา</small>
                 </div>
 
                 <div class="form-group">
-                    <label>Group Name</label>
+                    <label>
+                        {{ request()->cookie('dev') === '1' ? 'Group Name' : 'グループ名' }}
+                    </label>
                     <input type="text" name="group_name" value="{{ old('group_name') }}" placeholder="เช่น ประเภทซอง">
                 </div>
 
                 <div class="form-group">
-                    <label>Parent Group</label>
+                    <label>
+                        {{ request()->cookie('dev') === '1' ? 'Parent Group' : '親グループ' }}
+                    </label>
                     <select name="parent_group_id">
                         <option value="">-- No Parent --</option>
 
                         @foreach ($parentGroups as $parent)
-                            <option value="{{ $parent->option_group_id }}" {{ old('parent_group_id') == $parent->option_group_id ? 'selected' : '' }}>
+                            <option value="{{ $parent->option_group_id }}"
+                                {{ old('parent_group_id') == $parent->option_group_id ? 'selected' : '' }}>
                                 {{ $parent->group_name }}
                             </option>
                         @endforeach
@@ -249,38 +267,43 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Display Type</label>
+                    <label>
+                        {{ request()->cookie('dev') === '1' ? 'Display Type' : '表示形式' }}
+                    </label>
                     <select name="display_type">
                         <option value="button" {{ old('display_type', 'button') == 'button' ? 'selected' : '' }}>
-                            button
+                            {{ request()->cookie('dev') === '1' ? 'Button' : 'ボタン' }}
                         </option>
 
                         <option value="image_card" {{ old('display_type') == 'image_card' ? 'selected' : '' }}>
-                            image_card
+                            {{ request()->cookie('dev') === '1' ? 'Image Card' : '画像カード' }}
                         </option>
 
                         <option value="color" {{ old('display_type') == 'color' ? 'selected' : '' }}>
-                            color 
+                            {{ request()->cookie('dev') === '1' ? 'Color' : 'カラー' }}
                         </option>
 
                         <option value="select_detail" {{ old('display_type') == 'select_detail' ? 'selected' : '' }}>
-                            select_detail
+                            {{ request()->cookie('dev') === '1' ? 'Select Detail' : 'セレクト詳細' }}
                         </option>
 
-                        <option value="image_card_variant" {{ old('display_type') == 'image_card_variant' ? 'selected' : '' }}>
-                            image_card_variant
+                        <option value="image_card_variant"
+                            {{ old('display_type') == 'image_card_variant' ? 'selected' : '' }}>
+                            {{ request()->cookie('dev') === '1' ? 'Image Card Variant' : '画像カードバリアント' }}
                         </option>
 
-                        <option value="image_grid_compact" {{ old('display_type') == 'image_grid_compact' ? 'selected' : '' }}>
-                            image_grid_compact
+                        <option value="image_grid_compact"
+                            {{ old('display_type') == 'image_grid_compact' ? 'selected' : '' }}>
+                            {{ request()->cookie('dev') === '1' ? 'Image Grid Compact' : '画像グリッドコンパクト' }}
                         </option>
 
                         <option value="grouped_buttons" {{ old('display_type') == 'grouped_buttons' ? 'selected' : '' }}>
-                            grouped_buttons
+                            {{ request()->cookie('dev') === '1' ? 'Grouped Buttons' : 'グループ化ボタン' }}
                         </option>
 
-                        <option value="previous_order_design" {{ old('display_type') == 'previous_order_design' ? 'selected' : '' }}>
-                            previous_order_design - Yes/No + Previous Order No
+                        <option value="previous_order_design"
+                            {{ old('display_type') == 'previous_order_design' ? 'selected' : '' }}>
+                            {{ request()->cookie('dev') === '1' ? 'Previous Order Design' : '前回の注文デザイン' }}
                         </option>
                     </select>
                 </div>
@@ -291,39 +314,44 @@
                 </div>
 
                 <div class="form-group full">
-                    <label>Help Text</label>
+                    <label>
+                        {{ request()->cookie('dev') === '1' ? 'Help Text' : 'ヘルプテキスト' }}
+                    </label>
                     <textarea name="help_text" rows="4"
-                        placeholder="The message to be displayed when the info button is pressed.">{{ old('help_text') }}</textarea>
+                        placeholder="{{ request()->cookie('dev') === '1' ? 'The message to be displayed when the info button is pressed.' : '情報ボタンを押したときに表示されるメッセージ。' }}">{{ old('help_text') }}</textarea>
                 </div>
             </div>
 
-            <div class="section-title">Group Status</div>
+            <div class="section-title">
+                {{ request()->cookie('dev') === '1' ? 'Group Status' : 'グループステータス' }}
+            </div>
 
             <div class="checkbox-grid">
                 <label>
-                    <input type="checkbox" name="option_group_main" value="1" {{ old('option_group_main') ? 'checked' : '' }}>
-                    Main Price Group
-                    <small>Used as a primary condition in Product Price Rules.</small>
+                    <input type="checkbox" name="option_group_main" value="1"
+                        {{ old('option_group_main') ? 'checked' : '' }}>
+                    {{ request()->cookie('dev') === '1' ? 'Main Price Group' : 'メイン価格グループ' }}
+                    <small>{{ request()->cookie('dev') === '1' ? 'Used as a primary condition in Product Price Rules.' : '製品価格ルールで使用される主要な条件。' }}</small>
                 </label>
 
                 <label>
                     <input type="checkbox" name="is_required" value="1" {{ old('is_required', 1) ? 'checked' : '' }}>
-                    Required
+                    {{ request()->cookie('dev') === '1' ? 'Required' : '必須' }}
                 </label>
 
                 <label>
                     <input type="checkbox" name="is_active" value="1" {{ old('is_active', 1) ? 'checked' : '' }}>
-                    Active
+                    {{ request()->cookie('dev') === '1' ? 'Active' : 'アクティブ' }}
                 </label>
             </div>
 
             <div class="form-actions">
                 <a href="{{ route('admin.option-groups.index') }}" class="btn-outline">
-                    Cancel
+                    {{ request()->cookie('dev') === '1' ? 'Cancel' : 'キャンセル' }}
                 </a>
 
                 <button type="submit" class="btn-primary">
-                    Save Option Group
+                    {{ request()->cookie('dev') === '1' ? 'Save Option Group' : 'オプショングループを保存' }}
                 </button>
             </div>
         </form>

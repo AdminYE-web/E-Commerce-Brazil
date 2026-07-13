@@ -205,12 +205,13 @@
     <div class="form-card">
         <div class="form-header">
             <div>
-                <h1>Edit Product</h1>
-                <p>Update product information, images, artwork settings and display status.</p>
+                <h1>{{ request()->cookie('dev') == '1' ? 'Edit Product' : '製品編集' }}</h1>
+                <p>{{ request()->cookie('dev') == '1' ? 'Update product information, images, artwork settings and display status.' : '' }}
+                </p>
             </div>
 
             <a href="{{ route('admin.products.index') }}" class="btn-outline">
-                Back
+                {{ request()->cookie('dev') == '1' ? 'Back' : '戻る' }}
             </a>
         </div>
 
@@ -230,9 +231,9 @@
 
             <div class="form-grid">
                 <div class="form-group">
-                    <label>Product Code</label>
+                    <label>{{ request()->cookie('dev') == '1' ? 'Product Code' : '製品コード' }}</label>
                     <input type="text" name="product_code" value="{{ old('product_code', $product->product_code) }}">
-                    <small>This section will be displayed as the product URL.</small>
+                    <small>{{ request()->cookie('dev') == '1' ? 'This section will be displayed as the product URL.' : '' }}</small>
                 </div>
                 <div class="form-group" style="display: none">
                     <label>Translation Key</label>
@@ -243,60 +244,60 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Product Type</label>
-                   <select name="product_type" id="product_type">
-    <option value="1" {{ old('product_type', $product->product_type) == 1 ? 'selected' : '' }}>
-        hotstrap
-    </option>
-    <option value="2" {{ old('product_type', $product->product_type) == 2 ? 'selected' : '' }}>
-        hotmobily
-    </option>
-</select>
+                    <label>{{ request()->cookie('dev') == '1' ? 'Product Type' : '製品タイプ' }}</label>
+                    <select name="product_type" id="product_type">
+                        <option value="1" {{ old('product_type', $product->product_type) == 1 ? 'selected' : '' }}>
+                            hotstrap
+                        </option>
+                        <option value="2" {{ old('product_type', $product->product_type) == 2 ? 'selected' : '' }}>
+                            hotmobily
+                        </option>
+                    </select>
                 </div>
 
                 <div class="form-group">
-                    <label>Category</label>
-                   <select name="category_id" id="category_id">
-    <option value="">-- Select Category --</option>
-    @foreach ($categories as $category)
-        <option value="{{ $category->category_id }}"
-            data-product-type="{{ $category->product_type }}"
-            {{ old('category_id', $product->category_id) == $category->category_id ? 'selected' : '' }}>
-            {{ $category->category_name }}
-        </option>
-    @endforeach
-</select>
+                    <label>{{ request()->cookie('dev') == '1' ? 'Category' : 'カテゴリー' }}</label>
+                    <select name="category_id" id="category_id">
+                        <option value="">-- {{ request()->cookie('dev') == '1' ? 'Select Category' : 'カテゴリーを選択' }} --
+                        </option>
+                        @foreach ($categories as $category)
+                            <option value="{{ $category->category_id }}" data-product-type="{{ $category->product_type }}"
+                                {{ old('category_id', $product->category_id) == $category->category_id ? 'selected' : '' }}>
+                                {{ $category->category_name }}
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
 
                 <div class="form-group">
-                    <label>Material</label>
-                   <select name="material_id" id="material_id">
-    <option value="">-- Select Material --</option>
-    @foreach ($materials as $material)
-        <option value="{{ $material->material_id }}"
-            data-product-type="{{ $material->product_type }}"
-            {{ old('material_id', $product->material_id) == $material->material_id ? 'selected' : '' }}>
-            {{ $material->material_name }}
-        </option>
-    @endforeach
-</select>
+                    <label>{{ request()->cookie('dev') == '1' ? 'Material' : '素材' }}</label>
+                    <select name="material_id" id="material_id">
+                        <option value="">-- {{ request()->cookie('dev') == '1' ? 'Select Material' : '素材を選択' }} --
+                        </option>
+                        @foreach ($materials as $material)
+                            <option value="{{ $material->material_id }}" data-product-type="{{ $material->product_type }}"
+                                {{ old('material_id', $product->material_id) == $material->material_id ? 'selected' : '' }}>
+                                {{ $material->material_name }}
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
 
                 <div class="form-group full">
-                    <label>Product Name</label>
+                    <label>{{ request()->cookie('dev') == '1' ? 'Product Name' : '商品名' }}</label>
                     <input type="text" name="product_name" value="{{ old('product_name', $product->product_name) }}">
                 </div>
 
                 <div class="form-group full">
-                    <label>Description</label>
+                    <label>{{ request()->cookie('dev') == '1' ? 'Description' : '説明' }}</label>
                     <textarea name="description" rows="5">{{ old('description', $product->description) }}</textarea>
                 </div>
             </div>
 
-            <div class="section-title">Product Images</div>
+            <div class="section-title">{{ request()->cookie('dev') == '1' ? 'Product Images' : '商品画像' }}</div>
 
             <div class="image-panel">
-                <label>Current Images</label>
+                <label>{{ request()->cookie('dev') == '1' ? 'Current Images' : '現在の画像' }}</label>
 
                 <div class="image-grid">
                     @forelse ($product->images as $image)
@@ -306,23 +307,23 @@
                             <label class="radio-label">
                                 <input type="radio" name="main_image_id" value="{{ $image->image_id }}"
                                     {{ $image->is_main ? 'checked' : '' }}>
-                                Main Image
+                                {{ request()->cookie('dev') == '1' ? 'Main Image' : 'メイン画像' }}
                             </label>
                         </div>
                     @empty
-                        <p class="muted-text">No images</p>
+                        <p class="muted-text">{{ request()->cookie('dev') == '1' ? 'No images' : '画像がありません' }}</p>
                     @endforelse
                 </div>
             </div>
 
             <div class="form-group">
-                <label>Add New Product Images</label>
+                <label>{{ request()->cookie('dev') == '1' ? 'Add New Product Images' : '追加する画像' }}</label>
                 <input type="file" name="images[]" multiple accept="image/*">
-                <small>Recommended size: 300x300.</small>
+                <small>{{ request()->cookie('dev') == '1' ? 'Recommended size: 300x300.' : '' }}</small>
             </div>
 
             <div class="image-panel">
-                <label>Current Gallery Images</label>
+                <label>{{ request()->cookie('dev') == '1' ? 'Current Gallery Images' : '現在のギャラリー画像' }}</label>
 
                 <div class="image-grid">
                     @forelse ($product->galleryImages as $image)
@@ -331,23 +332,25 @@
 
                             <label class="delete-image-label">
                                 <input type="checkbox" name="delete_gallery_images[]" value="{{ $image->image_id }}">
-                                Delete
+                                {{ request()->cookie('dev') == '1' ? 'Delete' : '削除' }}
                             </label>
                         </div>
                     @empty
-                        <p class="muted-text">No gallery images</p>
+                        <p class="muted-text">{{ request()->cookie('dev') == '1' ? 'No gallery images' : 'ギャラリー画像がありません' }}
+                        </p>
                     @endforelse
                 </div>
             </div>
 
             <div class="form-group">
-                <label>Add Gallery Images</label>
+                <label>{{ request()->cookie('dev') == '1' ? 'Add Gallery Images' : '追加する画像' }}</label>
                 <input type="file" name="gallery_images[]" multiple accept="image/*">
-                <small>You can upload multiple photos to display as a gallery below the main photo.</small>
-                <small>Recommended size: 521x274.</small>
+                <small>{{ request()->cookie('dev') == '1' ? 'You can upload multiple photos to display as a gallery below the main photo.' : 'メイン写真の下にギャラリーとして表示する複数の写真をアップロードできます。' }}</small>
+                <small>{{ request()->cookie('dev') == '1' ? 'Recommended size: 521x274.' : '推奨サイズ: 521x274。' }}</small>
             </div>
 
-            <div class="section-title">Artwork / Template Setting</div>
+            <div class="section-title">
+                {{ request()->cookie('dev') == '1' ? 'Artwork / Template Setting' : 'アートワーク/テンプレート設定' }}</div>
 
             <div class="checkbox-grid">
                 {{-- <label><input type="checkbox" name="product_recomend" value="1"
@@ -360,32 +363,32 @@
                 </label> --}}
                 {{-- <label><input type="checkbox" name="is_antivirus_included" value="1" {{ old('is_antivirus_included', $product->is_antivirus_included) ? 'checked' : '' }}> Antivirus Included</label> --}}
                 <label><input type="checkbox" name="can_upload_artwork" value="1"
-                        {{ old('can_upload_artwork', $product->can_upload_artwork ?? 0) ? 'checked' : '' }}> Allow Upload
-                    Artwork</label>
+                        {{ old('can_upload_artwork', $product->can_upload_artwork ?? 0) ? 'checked' : '' }}>
+                    {{ request()->cookie('dev') == '1' ? 'Allow Upload Artwork' : 'アートワークのアップロードを許可' }}</label>
                 <label><input type="checkbox" name="artwork_required" value="1"
-                        {{ old('artwork_required', $product->artwork_required ?? 0) ? 'checked' : '' }}> Artwork
-                    Required</label>
+                        {{ old('artwork_required', $product->artwork_required ?? 0) ? 'checked' : '' }}>
+                    {{ request()->cookie('dev') == '1' ? 'Artwork Required' : 'アートワーク必須' }}</label>
                 <label><input type="checkbox" name="allow_text_print" value="1"
-                        {{ old('allow_text_print', $product->allow_text_print ?? 0) ? 'checked' : '' }}> Allow Text
-                    Printing</label>
+                        {{ old('allow_text_print', $product->allow_text_print ?? 0) ? 'checked' : '' }}>
+                    {{ request()->cookie('dev') == '1' ? 'Allow Text Printing' : 'テキスト印刷を許可' }}</label>
                 <label><input type="checkbox" name="allow_font_select" value="1"
-                        {{ old('allow_font_select', $product->allow_font_select ?? 0) ? 'checked' : '' }}> Allow Font
-                    Selection</label>
+                        {{ old('allow_font_select', $product->allow_font_select ?? 0) ? 'checked' : '' }}>
+                    {{ request()->cookie('dev') == '1' ? 'Allow Font Selection' : 'フォント選択を許可' }}</label>
                 <label><input type="checkbox" name="allow_template_select" value="1"
-                        {{ old('allow_template_select', $product->allow_template_select ?? 0) ? 'checked' : '' }}> Allow
-                    Template Selection</label>
+                        {{ old('allow_template_select', $product->allow_template_select ?? 0) ? 'checked' : '' }}>
+                    {{ request()->cookie('dev') == '1' ? 'Allow Template Selection' : 'テンプレート選択を許可' }}</label>
                 {{-- <label><input type="checkbox" name="product_premium" value="1" {{ old('product_premium', $product->product_premium) ? 'checked' : '' }}> Product Premium</label> --}}
             </div>
             <div class="form-group" style="max-width: 20%">
-                <label>Status</label>
+                <label>{{ request()->cookie('dev') == '1' ? 'Status' : 'ステータス' }}</label>
 
                 <select name="is_active">
                     <option value="1" {{ old('is_active', $product->is_active) == 1 ? 'selected' : '' }}>
-                        Public
+                        {{ request()->cookie('dev') == '1' ? 'Public' : '公開' }}
                     </option>
 
                     <option value="3" {{ old('is_active', $product->is_active) == 3 ? 'selected' : '' }}>
-                        Draft
+                        {{ request()->cookie('dev') == '1' ? 'Draft' : '非公開' }}
                     </option>
                 </select>
             </div>
@@ -413,8 +416,10 @@
         </div> --}}
 
             <div class="form-actions">
-                <a href="{{ route('admin.products.index') }}" class="btn-outline">Cancel</a>
-                <button type="submit" class="btn-primary">Update Product</button>
+                <a href="{{ route('admin.products.index') }}"
+                    class="btn-outline">{{ request()->cookie('dev') == '1' ? 'Cancel' : 'キャンセル' }}</a>
+                <button type="submit"
+                    class="btn-primary">{{ request()->cookie('dev') == '1' ? 'Update Product' : '更新' }}</button>
             </div>
         </form>
     </div>
@@ -422,7 +427,7 @@
 @endsection
 @section('js')
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const productTypeSelect = document.getElementById('product_type');
             const categorySelect = document.getElementById('category_id');
             const materialSelect = document.getElementById('material_id');
@@ -434,7 +439,7 @@
             function filterSelectByProductType(selectElement) {
                 const selectedType = String(productTypeSelect.value);
 
-                Array.from(selectElement.options).forEach(function (option) {
+                Array.from(selectElement.options).forEach(function(option) {
                     if (!option.value) {
                         option.hidden = false;
                         option.disabled = false;

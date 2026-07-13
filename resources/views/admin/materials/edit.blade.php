@@ -165,12 +165,13 @@
     <div class="form-card">
         <div class="form-header">
             <div>
-                <h1>Edit Material</h1>
-                <p>Update material code, name and active status.</p>
+                <h1>{{ request()->cookie('dev') == '1' ? 'Edit Material' : 'マテリアルを編集' }}</h1>
+                <p>{{ request()->cookie('dev') == '1' ? 'Update material code, name and active status.' : '製品マテリアル、コード、アクティブステータスを更新します。' }}
+                </p>
             </div>
 
             <a href="{{ route('admin.materials.index') }}" class="btn-outline">
-                Back
+                {{ request()->cookie('dev') == '1' ? 'Back' : '戻る' }}
             </a>
         </div>
 
@@ -188,19 +189,20 @@
             @csrf
             @method('PUT')
 
-            <div class="section-title">Material Information</div>
+            <div class="section-title">{{ request()->cookie('dev') == '1' ? 'Material Information' : 'マテリアル情報' }}</div>
 
             <div class="form-grid">
                 <div class="form-group">
-                    <label>Material Code</label>
+                    <label>{{ request()->cookie('dev') == '1' ? 'Material Code' : 'マテリアルコード' }}</label>
                     <input type="text" name="material_code" value="{{ old('material_code', $material->material_code) }}">
                 </div>
-                  <div class="form-group">
-                    <label>Material Name</label>
-                    <input type="text" name="material_name" value="{{ old('material_name', $material->material_name) }}">
+                <div class="form-group">
+                    <label>{{ request()->cookie('dev') == '1' ? 'Material Name' : 'マテリアル名' }}</label>
+                    <input type="text" name="material_name"
+                        value="{{ old('material_name', $material->material_name) }}">
                 </div>
                 <div class="form-group">
-                    <label>Product Type</label>
+                    <label>{{ request()->cookie('dev') == '1' ? 'Product Type' : '製品タイプ' }}</label>
                     <select name="product_type" required>
                         <option value="1"
                             {{ old('product_type', $material->product_type ?? 1) == 1 ? 'selected' : '' }}>
@@ -213,33 +215,33 @@
                     </select>
                 </div>
                 <div class="form-group" style="display: none">
-                    <label>Translation Key</label>
+                    <label>{{ request()->cookie('dev') == '1' ? 'Translation Key' : '翻訳キー' }}</label>
                     <input type="text" name="translation_key"
                         value="{{ old('translation_key', $material->translation_key ?? '') }}"
                         placeholder="เช่น mat_xxxxxxxx">
-                    <small>ใช้สำหรับผูก material เดียวกันข้ามภาษา</small>
+                    <small>{{ request()->cookie('dev') == '1' ? 'Used to bind the same material across languages' : 'ใช้สำหรับผูก material เดียวกันข้ามภาษา' }}</small>
                 </div>
 
-              
+
             </div>
 
-            <div class="section-title">Status</div>
+            <div class="section-title">{{ request()->cookie('dev') == '1' ? 'Status' : 'ステータス' }}</div>
 
             <div class="checkbox-grid">
                 <label>
                     <input type="checkbox" name="is_active" value="1"
                         {{ old('is_active', $material->is_active) ? 'checked' : '' }}>
-                    Active
+                    {{ request()->cookie('dev') == '1' ? 'Active' : 'アクティブ' }}
                 </label>
             </div>
 
             <div class="form-actions">
                 <a href="{{ route('admin.materials.index') }}" class="btn-outline">
-                    Cancel
+                    {{ request()->cookie('dev') == '1' ? 'Back' : '戻る' }}
                 </a>
 
                 <button type="submit" class="btn-primary">
-                    Update Material
+                    {{ request()->cookie('dev') == '1' ? 'Update Material' : '更新' }}
                 </button>
             </div>
         </form>

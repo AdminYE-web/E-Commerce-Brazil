@@ -306,28 +306,29 @@
                 grid-template-columns: 1fr;
             }
         }
+
         .price-mode-box {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-}
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
 
-.price-mode-item {
-    display: inline-flex !important;
-    align-items: center;
-    gap: 8px;
-    padding: 12px 14px;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    background: #fff;
-    cursor: pointer;
-    font-weight: 600;
-}
+        .price-mode-item {
+            display: inline-flex !important;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 14px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: #fff;
+            cursor: pointer;
+            font-weight: 600;
+        }
 
-.price-mode-item input {
-    width: auto !important;
-    margin: 0;
-}
+        .price-mode-item input {
+            width: auto !important;
+            margin: 0;
+        }
     </style>
 @endsection
 
@@ -336,12 +337,15 @@
     <div class="form-card">
         <div class="form-header">
             <div>
-                <h1>Edit Product Option</h1>
-                <p>Update option details, price, color, images and variants.</p>
+                <h1>{{ request()->cookie('dev') === '1' ? 'Edit Product Option' : '商品オプションを編集' }}</h1>
+                <p>{{ request()->cookie('dev') === '1'
+                    ? 'Update option details, price, color, images and variants.'
+                    : 'オプションの詳細、価格、カラー、画像、バリエーションを更新します。' }}
+                </p>
             </div>
 
             <a href="{{ route('admin.product-options.index') }}" class="btn-outline">
-                Back
+                {{ request()->cookie('dev') === '1' ? 'Back' : '戻る' }}
             </a>
         </div>
 
@@ -361,14 +365,16 @@
             @csrf
             @method('PUT')
 
-            <div class="section-title">Option Information</div>
+            <div class="section-title">{{ request()->cookie('dev') === '1' ? 'Option Information' : 'オプション情報' }}
+            </div>
 
             <div class="form-grid">
                 <div class="form-group">
-                    <label>Option Group</label>
+                    <label>{{ request()->cookie('dev') === '1' ? 'Option Group' : 'オプショングループ' }}</label>
 
                     <select name="option_group_id" id="option_group_id" class="searchable-select">
-                        <option value="">-- Select Group --</option>
+                        <option value="">
+                            {{ request()->cookie('dev') === '1' ? '-- Select Group --' : '-- グループを選択 --' }}</option>
 
                         <optgroup label="Hotstrap (Type 1)">
                             @foreach ($groups->where('product_type', 1) as $group)
@@ -391,13 +397,13 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Option Code</label>
+                    <label>{{ request()->cookie('dev') === '1' ? 'Option Code' : 'オプションコード' }}</label>
 
                     <input type="text" name="option_code" value="{{ old('option_code', $option->option_code) }}">
                 </div>
 
                 <div class="form-group">
-                    <label>Option Name</label>
+                    <label>{{ request()->cookie('dev') === '1' ? 'Option Name' : 'オプション名' }}</label>
 
                     <textarea name="option_name" rows="4">{{ old('option_name', $option->option_name) }}</textarea>
                 </div>
@@ -409,13 +415,13 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Additional Price</label>
+                    <label>{{ request()->cookie('dev') === '1' ? 'Additional Price' : '追加料金' }}</label>
 
                     <input type="number" step="0.01" name="additional_price"
                         value="{{ old('additional_price', $option->additional_price) }}">
                 </div>
                 <div class="form-group">
-                    <label>Additional Price With Tax</label>
+                    <label>{{ request()->cookie('dev') === '1' ? 'Additional Price With Tax' : '税込追加料金' }}</label>
 
                     <input type="number" step="0.01" name="additional_price_with_tax"
                         value="{{ old('additional_price_with_tax', $option->additional_price_with_tax ?? '') }}"
@@ -423,140 +429,132 @@
                 </div>
 
                 @php
-    $currentPriceMode = old('price_mode');
+                    $currentPriceMode = old('price_mode');
 
-    if (!$currentPriceMode) {
-        $currentPriceMode = $option->priceRates && $option->priceRates->count()
-            ? 'rate'
-            : 'normal';
-    }
-@endphp
+                    if (!$currentPriceMode) {
+                        $currentPriceMode = $option->priceRates && $option->priceRates->count() ? 'rate' : 'normal';
+                    }
+                @endphp
 
-<div class="form-group full">
-    <label>Additional Price Mode</label>
+                <div class="form-group full">
+                    <label>{{ request()->cookie('dev') === '1' ? 'Additional Price Mode' : '追加料金モード' }}</label>
 
-    <div class="price-mode-box">
-        <label class="price-mode-item">
-            <input type="radio"
-                name="price_mode"
-                value="normal"
-                {{ $currentPriceMode == 'normal' ? 'checked' : '' }}>
-            Normal Price
-        </label>
+                    <div class="price-mode-box">
+                        <label class="price-mode-item">
+                            <input type="radio" name="price_mode" value="normal"
+                                {{ $currentPriceMode == 'normal' ? 'checked' : '' }}>
+                            {{ request()->cookie('dev') === '1' ? 'Normal Price' : '通常価格' }}
+                        </label>
 
-        <label class="price-mode-item">
-            <input type="radio"
-                name="price_mode"
-                value="rate"
-                {{ $currentPriceMode == 'rate' ? 'checked' : '' }}>
-            Rate by Quantity
-        </label>
-    </div>
-</div>
+                        <label class="price-mode-item">
+                            <input type="radio" name="price_mode" value="rate"
+                                {{ $currentPriceMode == 'rate' ? 'checked' : '' }}>
+                            {{ request()->cookie('dev') === '1' ? 'Rate by Quantity' : '数量別価格' }}
+                        </label>
+                    </div>
+                </div>
 
                 @php
-    $priceRates = old('price_rates');
+                    $priceRates = old('price_rates');
 
-    if (is_null($priceRates)) {
-        if ($option->priceRates && $option->priceRates->count()) {
-            $priceRates = $option->priceRates->map(function ($rate) {
-                return [
-                    'min_qty' => $rate->min_qty,
-                    'additional_price' => $rate->additional_price,
-                    'additional_price_with_tax' => $rate->additional_price_with_tax,
-                ];
-            })->toArray();
-        } else {
-            $priceRates = [
-                [
-                    'min_qty' => 1,
-                    'additional_price' => $option->additional_price ?? 0,
-                    'additional_price_with_tax' => $option->additional_price_with_tax ?? 0,
-                ],
-            ];
-        }
-    }
-@endphp
+                    if (is_null($priceRates)) {
+                        if ($option->priceRates && $option->priceRates->count()) {
+                            $priceRates = $option->priceRates
+                                ->map(function ($rate) {
+                                    return [
+                                        'min_qty' => $rate->min_qty,
+                                        'additional_price' => $rate->additional_price,
+                                        'additional_price_with_tax' => $rate->additional_price_with_tax,
+                                    ];
+                                })
+                                ->toArray();
+                        } else {
+                            $priceRates = [
+                                [
+                                    'min_qty' => 1,
+                                    'additional_price' => $option->additional_price ?? 0,
+                                    'additional_price_with_tax' => $option->additional_price_with_tax ?? 0,
+                                ],
+                            ];
+                        }
+                    }
+                @endphp
 
-<div class="form-group full" id="price-rate-section">
-    <label>Additional Price Rates</label>
+                <div class="form-group full" id="price-rate-section">
+                    <label>{{ request()->cookie('dev') === '1' ? 'Additional Price Rates' : '追加料金レート' }}</label>
 
-    <div id="price-rate-list">
-        @foreach ($priceRates as $index => $rate)
-            <div class="price-rate-row">
-                <div>
-                    <label>From Qty</label>
-                    <input type="number"
-                        name="price_rates[{{ $index }}][min_qty]"
-                        min="1"
-                        value="{{ $rate['min_qty'] ?? 1 }}">
+                    <div id="price-rate-list">
+                        @foreach ($priceRates as $index => $rate)
+                            <div class="price-rate-row">
+                                <div>
+                                    <label>{{ request()->cookie('dev') === '1' ? 'From Qty' : '開始数量' }}</label>
+                                    <input type="number" name="price_rates[{{ $index }}][min_qty]" min="1"
+                                        value="{{ $rate['min_qty'] ?? 1 }}">
+                                </div>
+
+                                <div>
+                                    <label>{{ request()->cookie('dev') === '1' ? 'Additional Price' : '追加料金' }}</label>
+                                    <input type="number" step="0.01"
+                                        name="price_rates[{{ $index }}][additional_price]"
+                                        value="{{ $rate['additional_price'] ?? 0 }}" class="rate-price">
+                                </div>
+
+                                <div>
+                                    <label>{{ request()->cookie('dev') === '1' ? 'With Tax' : '税込' }}</label>
+                                    <input type="number" step="0.01"
+                                        name="price_rates[{{ $index }}][additional_price_with_tax]"
+                                        value="{{ $rate['additional_price_with_tax'] ?? 0 }}" class="rate-price-tax">
+                                </div>
+
+                                <button type="button" class="btn-outline remove-rate"
+                                    style="{{ $index == 0 ? 'display:none;' : '' }}">
+                                    {{ request()->cookie('dev') === '1' ? 'Remove' : '削除' }}
+                                </button>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    <button type="button" id="add-price-rate" class="btn-outline" style="margin-top:12px;">
+                        {{ request()->cookie('dev') === '1' ? '+ Add Rate' : '+ レート追加' }}
+                    </button>
+
+                    <small style="display:block; margin-top:6px; color:#6b7280;">
+                        {{ request()->cookie('dev') === '1'
+                            ? 'Example: Qty 1 = 39, Qty 50 = 35 means orders from 50 pcs will use 35 per item.'
+                            : '例：数量 1 = 39, 数量 50 = 35 の場合、50個から注文は1個あたり35を使用します。' }}
+                    </small>
                 </div>
-
-                <div>
-                    <label>Additional Price</label>
-                    <input type="number"
-                        step="0.01"
-                        name="price_rates[{{ $index }}][additional_price]"
-                        value="{{ $rate['additional_price'] ?? 0 }}"
-                        class="rate-price">
-                </div>
-
-                <div>
-                    <label>With Tax</label>
-                    <input type="number"
-                        step="0.01"
-                        name="price_rates[{{ $index }}][additional_price_with_tax]"
-                        value="{{ $rate['additional_price_with_tax'] ?? 0 }}"
-                        class="rate-price-tax">
-                </div>
-
-                <button type="button"
-                    class="btn-outline remove-rate"
-                    style="{{ $index == 0 ? 'display:none;' : '' }}">
-                    Remove
-                </button>
-            </div>
-        @endforeach
-    </div>
-
-    <button type="button" id="add-price-rate" class="btn-outline" style="margin-top:12px;">
-        + Add Rate
-    </button>
-
-    <small style="display:block; margin-top:6px; color:#6b7280;">
-        Example: Qty 1 = 39, Qty 50 = 35 means orders from 50 pcs will use 35 per item.
-    </small>
-</div>
                 <div class="form-group">
-                    <label>Free From Quantity</label>
+                    <label>{{ request()->cookie('dev') === '1' ? 'Free From Quantity' : '無料数量' }}</label>
 
                     <input type="number" name="free_from_qty" value="{{ old('free_from_qty', $option->free_from_qty) }}"
                         min="1" placeholder=" 100">
 
                     <small style="display:block; margin-top:6px; color:#6b7280;">
-                        Entering 100 means that for orders of 100 units or more, the Additional Price for this option will
-                        be free.
+                        {{ request()->cookie('dev') === '1'
+                            ? 'Entering 100 means that for orders of 100 units or more, the Additional Price for this option will be free.'
+                            : '100を入力すると、100個以上の注文に対して、このオプションの追加料金が無料になります。' }}
                     </small>
                 </div>
 
                 <div class="form-group">
-                    <label>Price Type</label>
+                    <label>{{ request()->cookie('dev') === '1' ? 'Price Type' : '価格タイプ' }}</label>
 
                     <select name="price_type">
                         <option value="per_item"
                             {{ old('price_type', $option->price_type) == 'per_item' ? 'selected' : '' }}>
-                            per_item - คิดต่อชิ้น
+                            {{ request()->cookie('dev') === '1' ? 'per_item - Per Item' : 'per_item - 1個あたり' }}
                         </option>
 
                         <option value="per_order"
                             {{ old('price_type', $option->price_type) == 'per_order' ? 'selected' : '' }}>
-                            per_order - คิดต่อออเดอร์
+                            {{ request()->cookie('dev') === '1' ? 'per_order - Per Order' : 'per_order - 1注文あたり' }}
                         </option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label>Color Code</label>
+                    <label>{{ request()->cookie('dev') === '1' ? 'Color Code' : 'カラーコード' }}</label>
 
                     <div class="color-picker-group">
                         <input type="text" name="color_code" id="color_code_input"
@@ -568,14 +566,15 @@
                 </div>
 
                 <div class="form-group full">
-                    <label>Option Detail</label>
+                    <label>{{ request()->cookie('dev') === '1' ? 'Option Detail' : 'オプション詳細' }}</label>
 
                     <textarea name="option_detail" rows="8"
                         placeholder="&#10;Model: ID-6_N&#10;Type: Soft Card Holder&#10;Card Size: 91 mm (H) x 55 mm (W)">{{ old('option_detail', $option->option_detail) }}</textarea>
                 </div>
             </div>
 
-            <div class="section-title">Option Status</div>
+            <div class="section-title">{{ request()->cookie('dev') === '1' ? 'Option Status' : 'オプションステータス' }}
+            </div>
 
             <div class="checkbox-grid">
                 <label>
@@ -585,7 +584,7 @@
                 </label>
             </div>
 
-            <div class="section-title">Current Images</div>
+            <div class="section-title">{{ request()->cookie('dev') === '1' ? 'Current Images' : '現在の画像' }}</div>
 
             @if ($option->images && $option->images->count())
                 <div class="image-grid">
@@ -596,14 +595,14 @@
                             <div class="image-card-body">
                                 @if ($image->is_main)
                                     <label class="main-image-check">
-                                        <span>Main Image</span>
+                                        <span>{{ request()->cookie('dev') === '1' ? 'Main Image' : 'メイン画像' }}</span>
                                         <input type="checkbox" checked disabled>
                                     </label>
                                 @endif
 
                                 <label class="remove-check">
                                     <input type="checkbox" name="delete_images[]" value="{{ $image->image_id }}">
-                                    <span>Remove image</span>
+                                    <span>{{ request()->cookie('dev') === '1' ? 'Remove image' : '削除' }}</span>
                                 </label>
                             </div>
                         </div>
@@ -613,20 +612,22 @@
                 <p>No images</p>
             @endif
 
-            <div class="section-title">Add New Images</div>
+            <div class="section-title">{{ request()->cookie('dev') === '1' ? 'Add New Images' : '新しい画像' }}
+            </div>
 
             <div class="form-group">
-                <label>Add New Option Images</label>
+                <label>{{ request()->cookie('dev') === '1' ? 'Add New Option Images' : '新しい画像' }}
+                </label>
                 <input type="file" name="images[]" multiple accept="image/*">
             </div>
 
             <div class="form-actions">
                 <a href="{{ route('admin.product-options.index') }}" class="btn-outline">
-                    Cancel
+                    {{ request()->cookie('dev') === '1' ? 'Cancel' : 'キャンセル' }}
                 </a>
 
                 <button type="submit" class="btn-primary">
-                    Update Product Option
+                    {{ request()->cookie('dev') === '1' ? 'Update Product Option' : '更新' }}
                 </button>
             </div>
         </form>

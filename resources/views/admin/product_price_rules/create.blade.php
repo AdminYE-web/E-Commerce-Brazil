@@ -1,6 +1,10 @@
 @extends('admin.layouts.app')
 
-@section('title', isset($duplicateRule) ? __('admin.product_price_rules.duplicate.title').' | Indigo Admin' : 'Add Product Price Rule | Indigo Admin')
+@section('title',
+    isset($duplicateRule)
+    ? __('admin.product_price_rules.duplicate.title') . ' | Indigo Admin'
+    : 'Add
+    Product Price Rule | Indigo Admin')
 
 @section('css')
     <style>
@@ -545,7 +549,7 @@
         $formRuleName = old('rule_name', $duplicateRuleName ?? '');
         $formSortOrder = old('sort_order', $isDuplicate ? $duplicateRule->sort_order : 0);
         $formSelectedOptionIds = collect(old('option_ids', $selectedOptionIds ?? []))
-            ->map(fn ($id) => (int) $id)
+            ->map(fn($id) => (int) $id)
             ->filter()
             ->unique()
             ->values()
@@ -556,16 +560,26 @@
     <div class="form-card">
         <div class="form-header">
             <div>
-                <h1>{{ $isDuplicate ? __('admin.product_price_rules.duplicate.title') : 'Add Product Price Rule' }}</h1>
+                <h1>
+                    @if (request()->cookie('dev') === '1')
+                        {{ $isDuplicate ? 'Duplicate Product Price Rule' : 'Add Product Price Rule' }}
+                    @else
+                        {{ $isDuplicate ? '商品価格ルールを複製' : '商品価格ルールを追加' }}
+                    @endif
+                </h1>
                 <p>
-                    {{ $isDuplicate
-                        ? __('admin.product_price_rules.duplicate.description')
-                        : 'Create pricing rules by selected options and quantity tiers.' }}
+                    {{ request()->cookie('dev') === '1'
+                        ? ($isDuplicate
+                            ? 'Create a new pricing rule based on the duplicated rule.'
+                            : 'Create pricing rules by selected options and quantity tiers.')
+                        : ($isDuplicate
+                            ? '複製したルールをもとに新しい価格ルールを作成します。'
+                            : '選択したオプションと数量区分に基づいて価格ルールを作成します。') }}
                 </p>
             </div>
 
             <a href="{{ route('admin.product-price-rules.index') }}" class="btn-outline">
-                Back
+                {{ request()->cookie('dev') == '1' ? 'Back' : '戻る' }}
             </a>
         </div>
 
@@ -588,25 +602,31 @@
         <form action="{{ route('admin.product-price-rules.store') }}" method="POST">
             @csrf
 
-            <div class="section-title">Rule Information</div>
+            <div class="section-title">
+                {{ request()->cookie('dev') == '1' ? 'Rule Information' : 'ルール情報' }}
+            </div>
 
             <div class="form-grid">
                 <div class="form-group">
-                    <label>Product</label>
+                    <label>
+                        {{ request()->cookie('dev') == '1' ? 'Product' : '商品' }}
+                    </label>
                     <select name="product_id" id="product_id" required>
                         <option value="">-- Select Product --</option>
 
                         @foreach ($products as $product)
-    <option value="{{ $product->product_id }}"
-        {{ $formProductId == $product->product_id ? 'selected' : '' }}>
-        {{ $product->product_name }}
-    </option>
-@endforeach
+                            <option value="{{ $product->product_id }}"
+                                {{ $formProductId == $product->product_id ? 'selected' : '' }}>
+                                {{ $product->product_name }}
+                            </option>
+                        @endforeach
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label>Rule Name</label>
+                    <label>
+                        {{ request()->cookie('dev') == '1' ? 'Rule Name' : 'ルール名' }}
+                    </label>
                     <input type="text" name="rule_name" value="{{ $formRuleName }}"
                         placeholder="For example, 20mm + One Side">
                 </div>
@@ -617,39 +637,54 @@
                 </div>
             </div>
 
-            <div class="section-title">Required Options</div>
+            <div class="section-title">
+                {{ request()->cookie('dev') == '1' ? 'Required Options' : '必須オプション' }}
+            </div>
 
             <p class="muted-text" style="margin-bottom: 12px;">
-                Select all the options that the customer must choose in order to use this price rate.
+                {{ request()->cookie('dev') == '1' ? 'Select all the options that the customer must choose in order to use this price rate.' : '選択したオプションと数量区分に基づいて価格ルールを作成します。' }}
             </p>
 
             <div class="required-option-simple-box" id="required-options-box">
                 <p class="muted-text">
-                    Please select a product first.
+                    {{ request()->cookie('dev') == '1' ? 'Please select a product first.' : 'まず商品を選択してください。' }}
                 </p>
             </div>
 
-            <div class="section-title">Price Tiers</div>
+            <div class="section-title">
+                {{ request()->cookie('dev') == '1' ? 'Price Tiers' : '数量区分' }}
+            </div>
 
             <div class="price-tier-card">
                 <div class="price-tier-header">
-                    <div class="price-tier-title">Quantity</div>
-                    <div class="price-tier-title">Unit Price </div>
-                    <div class="price-tier-title">Unit Price With Tax</div>
-                    <div class="price-tier-title">Display</div>
+                    <div class="price-tier-title">
+                        {{ request()->cookie('dev') == '1' ? 'Quantity' : '数量' }}
+                    </div>
+                    <div class="price-tier-title">
+                        {{ request()->cookie('dev') == '1' ? 'Unit Price' : '単価' }}
+                    </div>
+                    <div class="price-tier-title">
+                        {{ request()->cookie('dev') == '1' ? 'Unit Price With Tax' : '税込単価' }}
+                    </div>
+                    <div class="price-tier-title">
+                        {{ request()->cookie('dev') == '1' ? 'Display' : '表示' }}
+                    </div>
                     <div class="price-tier-title"></div>
                 </div>
 
                 <div id="tier-wrapper">
                     @php
-                        $oldTiers = old('tiers', $tiers ?? [
-                            [
-                                'min_qty' => '',
-                                'max_qty' => '',
-                                'unit_price' => '',
-                                'unit_price_with_tax' => '',
+                        $oldTiers = old(
+                            'tiers',
+                            $tiers ?? [
+                                [
+                                    'min_qty' => '',
+                                    'max_qty' => '',
+                                    'unit_price' => '',
+                                    'unit_price_with_tax' => '',
+                                ],
                             ],
-                        ]);
+                        );
                     @endphp
 
                     @foreach ($oldTiers as $index => $tier)
@@ -683,7 +718,7 @@
 
                             <div class="tier-action">
                                 <button type="button" class="remove-tier">
-                                    Remove
+                                    {{ request()->cookie('dev') == '1' ? 'Remove' : '削除' }}
                                 </button>
 
                             </div>
@@ -695,27 +730,29 @@
             <br>
 
             <button type="button" id="add-tier" class="btn-outline">
-                + Add Tier
+                {{ request()->cookie('dev') == '1' ? '+ Add Tier' : '+ 数量区分を追加' }}
             </button>
 
 
 
-            <div class="section-title">Status</div>
+            <div class="section-title">
+                {{ request()->cookie('dev') == '1' ? 'Status' : 'ステータス' }}
+            </div>
 
             <div class="checkbox-grid">
                 <label>
                     <input type="checkbox" name="is_active" value="1" {{ $formIsActive ? 'checked' : '' }}>
-                    Active
+                    {{ request()->cookie('dev') == '1' ? 'Active' : 'アクティブ' }}
                 </label>
             </div>
 
             <div class="form-actions">
                 <a href="{{ route('admin.product-price-rules.index') }}" class="btn-outline">
-                    Cancel
+                    {{ request()->cookie('dev') == '1' ? 'Cancel' : 'キャンセル' }}
                 </a>
 
                 <button type="submit" class="btn-primary">
-                    Save Price Rule
+                    {{ request()->cookie('dev') == '1' ? 'Save Price Rule' : '保存' }}
                 </button>
             </div>
         </form>
@@ -944,11 +981,7 @@
         const requiredOptionsBox = document.getElementById('required-options-box');
         const oldOptionIds = @json($formSelectedOptionIds);
         const isDuplicate = @json($isDuplicate);
-        const duplicateUrl = @json(
-            $isDuplicate
-                ? route('admin.product-price-rules.duplicate', $duplicateRule->rule_id)
-                : null
-        );
+        const duplicateUrl = @json($isDuplicate ? route('admin.product-price-rules.duplicate', $duplicateRule->rule_id) : null);
 
         function renderRequiredOptions(groups) {
             if (!groups || groups.length === 0) {

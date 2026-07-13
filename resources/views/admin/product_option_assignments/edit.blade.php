@@ -126,8 +126,8 @@
 
             background: rgba(255, 255, 255, 0.96);
             /* backdrop-filter: blur(8px);
-                            border-top: 1px solid var(--border);
-                            box-shadow: 0 -8px 20px rgba(15, 23, 42, 0.08); */
+                                    border-top: 1px solid var(--border);
+                                    box-shadow: 0 -8px 20px rgba(15, 23, 42, 0.08); */
         }
 
         .btn-outline,
@@ -403,24 +403,25 @@
             border-radius: 12px;
             padding: 10px;
         }
+
         .option-scrollspy-search {
-    width: 100%;
-    margin-bottom: 8px;
-    padding: 9px 10px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    font-size: 13px;
-    outline: none;
-    background: #fff;
+            width: 100%;
+            margin-bottom: 8px;
+            padding: 9px 10px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 13px;
+            outline: none;
+            background: #fff;
 
-    position: sticky;
-    top: 0;
-    z-index: 2;
-}
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
 
-.option-scrollspy-search:focus {
-    border-color: var(--accent);
-}
+        .option-scrollspy-search:focus {
+            border-color: var(--accent);
+        }
     </style>
 @endsection
 
@@ -429,12 +430,12 @@
     <div class="form-card">
         <div class="form-header">
             <div>
-                <h1>Manage Options</h1>
+                <h1>{{ request()->cookie('dev') == '1' ? 'Manage Options' : 'オプション設定' }}</h1>
                 <p>{{ $product->product_name }}</p>
             </div>
 
             <a href="{{ route('admin.products.index') }}" class="btn-outline mar-4">
-                Back
+                {{ request()->cookie('dev') == '1' ? 'Back' : '戻る' }}
             </a>
         </div>
 
@@ -473,15 +474,15 @@
 
                                     <button type="button" class="btn-outline btn-move-after-active"
                                         style="min-height: 28px; padding: 4px 10px; font-size: 12px; border-radius: 6px;">
-                                        move top
+                                        {{ request()->cookie('dev') == '1' ? 'move to top' : 'トップへ移動' }}
                                     </button>
                                     <button type="button" class="btn-outline btn-select-all"
                                         style="min-height: 28px; padding: 4px 10px; font-size: 12px; border-radius: 6px;">
-                                        select all
+                                        {{ request()->cookie('dev') == '1' ? 'select all' : 'すべて選択' }}
                                     </button>
                                     <button type="button" class="btn-outline btn-deselect-all"
                                         style="min-height: 28px; padding: 4px 10px; font-size: 12px; border-radius: 6px;">
-                                        deselect all
+                                        {{ request()->cookie('dev') == '1' ? 'deselect all' : '選択解除' }}
                                     </button>
                                 </div>
                             </div>
@@ -536,7 +537,7 @@
                                                         name="options[{{ $option->option_id }}][is_default]" value="1"
                                                         {{ $pivot && $pivot->is_default ? 'checked' : '' }}
                                                         {{ $isChecked ? '' : 'disabled' }}>
-                                                    Default
+                                                    {{ request()->cookie('dev') == '1' ? 'Default' : 'デフォルト' }}
                                                 </label>
 
                                                 <label class="mini-check">
@@ -544,52 +545,52 @@
                                                         name="options[{{ $option->option_id }}][is_active]" value="1"
                                                         {{ !$pivot || $pivot->is_active ? 'checked' : '' }}
                                                         {{ $isChecked ? '' : 'disabled' }}>
-                                                    Active
+                                                    {{ request()->cookie('dev') == '1' ? 'Active' : 'アクティブ' }}
                                                 </label>
 
                                                 <label>
-                                                    Quantity Rule
+                                                    {{ request()->cookie('dev') == '1' ? 'Quantity Rule' : '数量ルール' }}
                                                     <select name="options[{{ $option->option_id }}][qty_rule_type]"
                                                         class="qty-rule-select" {{ $isChecked ? '' : 'disabled' }}>
                                                         <option value=""
                                                             {{ empty($pivot?->qty_rule_type) ? 'selected' : '' }}>
-                                                            No limit
+                                                            {{ request()->cookie('dev') == '1' ? 'No limit' : '制限なし' }}
                                                         </option>
                                                         <option value="min"
                                                             {{ ($pivot?->qty_rule_type ?? '') === 'min' ? 'selected' : '' }}>
-                                                            Minimum only
+                                                            {{ request()->cookie('dev') == '1' ? 'Minimum only' : '最小のみ' }}
                                                         </option>
                                                         <option value="max"
                                                             {{ ($pivot?->qty_rule_type ?? '') === 'max' ? 'selected' : '' }}>
-                                                            Maximum only
+                                                            {{ request()->cookie('dev') == '1' ? 'Maximum only' : '最大のみ' }}
                                                         </option>
                                                         <option value="exact"
                                                             {{ ($pivot?->qty_rule_type ?? '') === 'exact' ? 'selected' : '' }}>
-                                                            Exact quantity only
+                                                            {{ request()->cookie('dev') == '1' ? 'Exact quantity only' : '数量指定のみ' }}
                                                         </option>
                                                         <option value="range"
                                                             {{ ($pivot?->qty_rule_type ?? '') === 'range' ? 'selected' : '' }}>
-                                                            Min - Max range
+                                                            {{ request()->cookie('dev') == '1' ? 'Min - Max range' : '最小-最大範囲' }}
                                                         </option>
                                                     </select>
                                                 </label>
 
                                                 <label>
-                                                    Min Qty
+                                                    {{ request()->cookie('dev') == '1' ? 'Min Qty' : '最小数量' }}
                                                     <input type="number" name="options[{{ $option->option_id }}][min_qty]"
                                                         value="{{ $pivot->min_qty ?? '' }}" min="1"
                                                         {{ $isChecked ? '' : 'disabled' }}>
                                                 </label>
 
                                                 <label>
-                                                    Max Qty
+                                                    {{ request()->cookie('dev') == '1' ? 'Max Qty' : '最大数量' }}
                                                     <input type="number" name="options[{{ $option->option_id }}][max_qty]"
                                                         value="{{ $pivot->max_qty ?? '' }}" min="1"
                                                         {{ $isChecked ? '' : 'disabled' }}>
                                                 </label>
 
                                                 <label>
-                                                    Exact Qty
+                                                    {{ request()->cookie('dev') == '1' ? 'Exact Qty' : '数量指定' }}
                                                     <input type="number"
                                                         name="options[{{ $option->option_id }}][exact_qty]"
                                                         value="{{ $pivot->exact_qty ?? '' }}" min="1"
@@ -627,28 +628,26 @@
                     @endforeach
                 </div>
 
-               <nav class="option-scrollspy">
-    <input type="text"
-        id="optionGroupSearch"
-        class="option-scrollspy-search"
-        placeholder="Search option group...">
+                <nav class="option-scrollspy">
+                    <input type="text" id="optionGroupSearch" class="option-scrollspy-search"
+                        placeholder="Search option group...">
 
-    @foreach ($groups as $group)
-        <a href="#option-group-{{ $group->option_group_id }}"
-            data-search-text="{{ strtolower($group->group_name . ' ' . $group->group_code) }}">
-            {{ $group->group_name }}
-        </a>
-    @endforeach
-</nav>
+                    @foreach ($groups as $group)
+                        <a href="#option-group-{{ $group->option_group_id }}"
+                            data-search-text="{{ strtolower($group->group_name . ' ' . $group->group_code) }}">
+                            {{ $group->group_name }}
+                        </a>
+                    @endforeach
+                </nav>
             </div>
 
             <div class="form-actions">
                 <a href="{{ route('admin.products.index') }}" class="btn-outline">
-                    Cancel
+                    {{ request()->cookie('dev') == '1' ? 'Cancel' : 'キャンセル' }}
                 </a>
 
                 <button type="submit" class="btn-primary">
-                    Save Options
+                    {{ request()->cookie('dev') == '1' ? 'Save Options' : 'オプションを保存' }}
                 </button>
             </div>
         </form>
@@ -741,151 +740,151 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-    const groupList = document.querySelector('.option-group-list');
+            const groupList = document.querySelector('.option-group-list');
 
-    if (groupList && typeof Sortable !== 'undefined') {
-        new Sortable(groupList, {
-            animation: 160,
-            handle: '.group-drag-handle',
-            ghostClass: 'sortable-ghost',
-            chosenClass: 'sortable-chosen',
+            if (groupList && typeof Sortable !== 'undefined') {
+                new Sortable(groupList, {
+                    animation: 160,
+                    handle: '.group-drag-handle',
+                    ghostClass: 'sortable-ghost',
+                    chosenClass: 'sortable-chosen',
 
-            // ทำให้ลากใกล้ขอบจอแล้ว scroll ตาม
-            scroll: true,
-            forceAutoScrollFallback: true,
-            scrollSensitivity: 120,
-            scrollSpeed: 18,
-            bubbleScroll: true,
+                    // ทำให้ลากใกล้ขอบจอแล้ว scroll ตาม
+                    scroll: true,
+                    forceAutoScrollFallback: true,
+                    scrollSensitivity: 120,
+                    scrollSpeed: 18,
+                    bubbleScroll: true,
 
-            onEnd: function() {
-                updateProductGroupSortOrder();
-                syncScrollspyOrder();
+                    onEnd: function() {
+                        updateProductGroupSortOrder();
+                        syncScrollspyOrder();
+                    }
+                });
             }
-        });
-    }
 
-    /**
-     * เช็คว่า group นี้มี option ที่เปิดใช้งานอยู่ไหม
-     */
-    function isGroupActive(card) {
-        const checkedOptions = card.querySelectorAll('.option-checkbox:checked');
+            /**
+             * เช็คว่า group นี้มี option ที่เปิดใช้งานอยู่ไหม
+             */
+            function isGroupActive(card) {
+                const checkedOptions = card.querySelectorAll('.option-checkbox:checked');
 
-        return Array.from(checkedOptions).some(function(checkbox) {
-            const optionId = checkbox.dataset.optionId;
-            const setting = card.querySelector('.option-setting-' + optionId);
+                return Array.from(checkedOptions).some(function(checkbox) {
+                    const optionId = checkbox.dataset.optionId;
+                    const setting = card.querySelector('.option-setting-' + optionId);
 
-            if (!setting) return false;
+                    if (!setting) return false;
 
-            const activeCheckbox = setting.querySelector('[name$="[is_active]"]');
+                    const activeCheckbox = setting.querySelector('[name$="[is_active]"]');
 
-            // ถ้าไม่มี checkbox Active ให้ถือว่า option ที่ checked คือ active
-            return !activeCheckbox || activeCheckbox.checked;
-        });
-    }
-
-    /**
-     * ย้าย group ที่กด ไปต่อจาก group ล่าสุดที่มี option active
-     */
-    function moveGroupAfterLastActive(card) {
-        if (!groupList || !card) return;
-
-        const cards = Array.from(
-            groupList.querySelectorAll('.option-group-card[data-group-id]')
-        );
-
-        const lastActiveCard = cards
-            .filter(function(item) {
-                return item !== card && isGroupActive(item);
-            })
-            .pop();
-
-        if (lastActiveCard) {
-            lastActiveCard.insertAdjacentElement('afterend', card);
-        } else {
-            groupList.prepend(card);
-        }
-
-        syncScrollspyOrder();
-        updateProductGroupSortOrder();
-
-        card.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-        });
-    }
-
-    /**
-     * จัดลำดับ sidebar ขวาให้ตรงกับ group ที่ถูกย้าย
-     */
-    function syncScrollspyOrder() {
-        const sidebar = document.querySelector('.option-scrollspy');
-
-        if (!sidebar) return;
-
-        document.querySelectorAll('.option-group-card[data-group-id]').forEach(function(card) {
-            const link = sidebar.querySelector('a[href="#' + card.id + '"]');
-
-            if (link) {
-                sidebar.appendChild(link);
+                    // ถ้าไม่มี checkbox Active ให้ถือว่า option ที่ checked คือ active
+                    return !activeCheckbox || activeCheckbox.checked;
+                });
             }
-        });
-    }
 
-    /**
-     * ปุ่มย้าย group ไปต่อจาก active group ล่าสุด
-     */
-    document.querySelectorAll('.btn-move-after-active').forEach(function(button) {
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
+            /**
+             * ย้าย group ที่กด ไปต่อจาก group ล่าสุดที่มี option active
+             */
+            function moveGroupAfterLastActive(card) {
+                if (!groupList || !card) return;
 
-            const card = this.closest('.option-group-card');
+                const cards = Array.from(
+                    groupList.querySelectorAll('.option-group-card[data-group-id]')
+                );
 
-            moveGroupAfterLastActive(card);
-        });
-    });
+                const lastActiveCard = cards
+                    .filter(function(item) {
+                        return item !== card && isGroupActive(item);
+                    })
+                    .pop();
 
-    function updateProductGroupSortOrder() {
-        if (!groupList) return;
-
-        const cards = document.querySelectorAll('.option-group-card[data-group-id]');
-
-        const items = Array.from(cards).map(function(card, index) {
-            return {
-                option_group_id: card.dataset.groupId,
-                sort_order: index + 1
-            };
-        });
-
-        groupList.classList.add('is-saving');
-
-        fetch('{{ route('admin.products.option-groups.updateSort', $product->product_id) }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Accept': 'application/json',
-                },
-                body: JSON.stringify({
-                    items: items
-                })
-            })
-            .then(function(response) {
-                if (!response.ok) {
-                    throw new Error('Unable to update group order.');
+                if (lastActiveCard) {
+                    lastActiveCard.insertAdjacentElement('afterend', card);
+                } else {
+                    groupList.prepend(card);
                 }
 
-                return response.json();
-            })
-            .catch(function(error) {
-                console.error(error);
-                alert('Unable to update group order.');
-            })
-            .finally(function() {
-                groupList.classList.remove('is-saving');
+                syncScrollspyOrder();
+                updateProductGroupSortOrder();
+
+                card.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+
+            /**
+             * จัดลำดับ sidebar ขวาให้ตรงกับ group ที่ถูกย้าย
+             */
+            function syncScrollspyOrder() {
+                const sidebar = document.querySelector('.option-scrollspy');
+
+                if (!sidebar) return;
+
+                document.querySelectorAll('.option-group-card[data-group-id]').forEach(function(card) {
+                    const link = sidebar.querySelector('a[href="#' + card.id + '"]');
+
+                    if (link) {
+                        sidebar.appendChild(link);
+                    }
+                });
+            }
+
+            /**
+             * ปุ่มย้าย group ไปต่อจาก active group ล่าสุด
+             */
+            document.querySelectorAll('.btn-move-after-active').forEach(function(button) {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    const card = this.closest('.option-group-card');
+
+                    moveGroupAfterLastActive(card);
+                });
             });
-    }
-});
+
+            function updateProductGroupSortOrder() {
+                if (!groupList) return;
+
+                const cards = document.querySelectorAll('.option-group-card[data-group-id]');
+
+                const items = Array.from(cards).map(function(card, index) {
+                    return {
+                        option_group_id: card.dataset.groupId,
+                        sort_order: index + 1
+                    };
+                });
+
+                groupList.classList.add('is-saving');
+
+                fetch('{{ route('admin.products.option-groups.updateSort', $product->product_id) }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            items: items
+                        })
+                    })
+                    .then(function(response) {
+                        if (!response.ok) {
+                            throw new Error('Unable to update group order.');
+                        }
+
+                        return response.json();
+                    })
+                    .catch(function(error) {
+                        console.error(error);
+                        alert('Unable to update group order.');
+                    })
+                    .finally(function() {
+                        groupList.classList.remove('is-saving');
+                    });
+            }
+        });
         document.querySelectorAll('.option-sortable-list').forEach(function(optionList) {
             new Sortable(optionList, {
                 animation: 160,
@@ -1036,24 +1035,24 @@
             });
         });
         document.addEventListener('DOMContentLoaded', function() {
-    const searchInput = document.getElementById('optionGroupSearch');
-    const navLinks = document.querySelectorAll('.option-scrollspy a');
+            const searchInput = document.getElementById('optionGroupSearch');
+            const navLinks = document.querySelectorAll('.option-scrollspy a');
 
-    if (!searchInput) return;
+            if (!searchInput) return;
 
-    searchInput.addEventListener('input', function() {
-        const keyword = this.value.toLowerCase().trim();
+            searchInput.addEventListener('input', function() {
+                const keyword = this.value.toLowerCase().trim();
 
-        navLinks.forEach(function(link) {
-            const text = link.dataset.searchText || link.textContent.toLowerCase();
+                navLinks.forEach(function(link) {
+                    const text = link.dataset.searchText || link.textContent.toLowerCase();
 
-            if (text.includes(keyword)) {
-                link.style.display = 'block';
-            } else {
-                link.style.display = 'none';
-            }
+                    if (text.includes(keyword)) {
+                        link.style.display = 'block';
+                    } else {
+                        link.style.display = 'none';
+                    }
+                });
+            });
         });
-    });
-});
     </script>
 @endsection

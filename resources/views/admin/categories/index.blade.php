@@ -144,38 +144,39 @@
         .sortable-chosen {
             background: #f8fafc;
         }
+
         .type-tabs {
-    display: flex;
-    gap: 8px;
-    margin: 0 24px 18px;
-    flex-wrap: wrap;
-}
+            display: flex;
+            gap: 8px;
+            margin: 0 24px 18px;
+            flex-wrap: wrap;
+        }
 
-.type-tab {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 36px;
-    padding: 8px 16px;
-    border-radius: 999px;
-    border: 1px solid var(--border);
-    background: #fff;
-    color: var(--fg);
-    font-size: 14px;
-    font-weight: 600;
-    text-decoration: none;
-}
+        .type-tab {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 36px;
+            padding: 8px 16px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: #fff;
+            color: var(--fg);
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+        }
 
-.type-tab:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-}
+        .type-tab:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
 
-.type-tab.active {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: #fff;
-}
+        .type-tab.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+        }
     </style>
 @endsection
 
@@ -184,16 +185,16 @@
     <div class="table-card">
         <div class="table-header">
             <div>
-                <div class="table-title">Categories</div>
+                <div class="table-title">{{ request()->cookie('dev') == '1' ? 'Categories' : 'カテゴリ' }}</div>
                 <div class="showing-text">
-                    Manage product categories, images, sort order and status.
+                    {{ request()->cookie('dev') == '1' ? 'Manage product categories, images, sort order and status.' : '商品カテゴリ、画像、並べ替え、ステータスを管理します。' }}
                 </div>
             </div>
 
             <div class="table-actions">
-              <a href="{{ route('admin.categories.create', ['product_type' => $productType]) }}" class="btn-primary">
-    + Add Category
-</a>
+                <a href="{{ route('admin.categories.create', ['product_type' => $productType]) }}" class="btn-primary">
+                    {{ request()->cookie('dev') == '1' ? '+ Add Category' : '+ カテゴリを追加' }}
+                </a>
             </div>
         </div>
 
@@ -203,23 +204,23 @@
             </div>
         @endif
         <div class="type-tabs">
-    @foreach ($typeTabs as $typeValue => $typeLabel)
-        <a href="{{ route('admin.categories.index', array_merge(request()->except('page'), ['product_type' => $typeValue])) }}"
-            class="type-tab {{ (int) $productType === (int) $typeValue ? 'active' : '' }}">
-            {{ $typeLabel }}
-        </a>
-    @endforeach
-</div>
+            @foreach ($typeTabs as $typeValue => $typeLabel)
+                <a href="{{ route('admin.categories.index', array_merge(request()->except('page'), ['product_type' => $typeValue])) }}"
+                    class="type-tab {{ (int) $productType === (int) $typeValue ? 'active' : '' }}">
+                    {{ $typeLabel }}
+                </a>
+            @endforeach
+        </div>
 
         <table>
             <thead>
                 <tr>
                     <th style="width: 50px;"></th>
-                    <th>Category</th>
-                    <th>Code</th>
-                    <th>Sort</th>
-                    <th>Status</th>
-                    <th style="text-align: right;">Manage</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Category' : 'カテゴリ' }}</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Code' : 'コード' }}</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Sort' : '並べ替え' }}</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Status' : 'ステータス' }}</th>
+                    <th style="text-align: right;">{{ request()->cookie('dev') == '1' ? 'Manage' : '管理' }}</th>
                 </tr>
             </thead>
 
@@ -228,8 +229,8 @@
                     <tr data-id="{{ $category->base_category_id ?? $category->category_id }}"
                         class="{{ !empty($category->is_missing_translation) ? 'translation-missing-row' : '' }}">
                         <td>
-    <span class="drag-handle">☰</span>
-</td>
+                            <span class="drag-handle">☰</span>
+                        </td>
                         <td>
                             <div class="product-cell">
                                 @if ($category->image_path)
@@ -260,9 +261,11 @@
 
                         <td>
                             @if ($category->is_active)
-                                <span class="status-pill status-active">Active</span>
+                                <span
+                                    class="status-pill status-active">{{ request()->cookie('dev') == '1' ? 'Active' : 'アクティブ' }}</span>
                             @else
-                                <span class="status-pill status-inactive">Inactive</span>
+                                <span
+                                    class="status-pill status-inactive">{{ request()->cookie('dev') == '1' ? 'Inactive' : '非アクティブ' }}</span>
                             @endif
                         </td>
 
@@ -282,7 +285,7 @@
                                 @else
                                     <a href="{{ route('admin.categories.edit', $category->category_id) }}"
                                         class="action-link">
-                                        Edit
+                                        {{ request()->cookie('dev') == '1' ? 'Edit' : '編集' }}
                                     </a>
 
                                     <form action="{{ route('admin.categories.destroy', $category->category_id) }}"
@@ -291,8 +294,8 @@
                                         @method('DELETE')
 
                                         <button type="submit" class="action-link delete"
-                                            onclick="return confirm('Delete this category?')">
-                                            Delete
+                                            onclick="return confirm('{{ request()->cookie('dev') == '1' ? 'Delete this category?' : 'このカテゴリを削除してもよろしいですか？' }}')">
+                                            {{ request()->cookie('dev') == '1' ? 'Delete' : '削除' }}
                                         </button>
                                     </form>
                                 @endif
@@ -301,7 +304,7 @@
                     </tr>
                 @empty
                     <tr>
-                       <td colspan="6" style="text-align: center; padding: 32px;">
+                        <td colspan="6" style="text-align: center; padding: 32px;">
                             No categories found.
                         </td>
                     </tr>
@@ -320,7 +323,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const tbody = document.getElementById('category-sortable-body');
 
             if (!tbody) {
@@ -335,7 +338,7 @@
                 ghostClass: 'sortable-ghost',
                 chosenClass: 'sortable-chosen',
 
-                onEnd: function () {
+                onEnd: function() {
                     saveCategorySort();
                 }
             });
@@ -343,14 +346,14 @@
             function saveCategorySort() {
                 const rows = Array.from(tbody.querySelectorAll('tr[data-id]'));
 
-                const orders = rows.map(function (row, index) {
+                const orders = rows.map(function(row, index) {
                     return {
                         id: row.dataset.id,
                         sort_order: baseSort + index + 1
                     };
                 });
 
-                rows.forEach(function (row, index) {
+                rows.forEach(function(row, index) {
                     const badge = row.querySelector('.sort-badge');
 
                     if (badge) {
@@ -359,27 +362,27 @@
                 });
 
                 fetch("{{ route('admin.categories.sort') }}", {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': "{{ csrf_token() }}"
-                    },
-                    body: JSON.stringify({
-                        orders: orders
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                        },
+                        body: JSON.stringify({
+                            orders: orders
+                        })
                     })
-                })
-                .then(async function (response) {
-                    if (!response.ok) {
-                        throw new Error(await response.text());
-                    }
+                    .then(async function(response) {
+                        if (!response.ok) {
+                            throw new Error(await response.text());
+                        }
 
-                    return response.json();
-                })
-                .catch(function (error) {
-                    console.error(error);
-                    alert('บันทึกลำดับไม่สำเร็จ กรุณารีเฟรชแล้วลองใหม่');
-                });
+                        return response.json();
+                    })
+                    .catch(function(error) {
+                        console.error(error);
+                        alert('บันทึกลำดับไม่สำเร็จ กรุณารีเฟรชแล้วลองใหม่');
+                    });
             }
         });
     </script>
