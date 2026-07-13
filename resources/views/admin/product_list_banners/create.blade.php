@@ -110,12 +110,12 @@
 <div class="form-card">
     <div class="form-header">
         <div>
-            <h1>Add Product List Banner</h1>
-            <p>Create product listing banner, image, CTA link and display status.</p>
+            <h1>{{ request()->cookie('dev') == '1' ? 'Add Product List Banner' : '商品一覧バナーを追加' }}</h1>
+            <p>{{ request()->cookie('dev') == '1' ? 'Create product listing banner, image, CTA link and display status.' : '商品一覧のバナー、画像、CTAリンク、表示ステータスを作成します。' }}</p>
         </div>
 
         <a href="{{ route('admin.product-list-banners.index') }}" class="btn-outline">
-            Back
+            {{ request()->cookie('dev') == '1' ? 'Back' : '戻る' }}
         </a>
     </div>
 
@@ -136,41 +136,41 @@
 
         <div class="form-grid">
             <div class="form-group">
-                <label>Title</label>
+                <label>{{ request()->cookie('dev') == '1' ? 'Title' : 'タイトル' }}</label>
                 <input type="text" name="title" value="{{ old('title') }}">
             </div>
 
             <div class="form-group">
-                <label>Subtitle</label>
+                <label>{{ request()->cookie('dev') == '1' ? 'Subtitle' : 'サブタイトル' }}</label>
                 <input type="text" name="subtitle" value="{{ old('subtitle') }}">
             </div>
 
             <div class="form-group">
-                <label>Button Text</label>
-                <input type="text" name="button_text" value="{{ old('button_text') }}" placeholder="เช่น Ver Detalhes">
+                <label>{{ request()->cookie('dev') == '1' ? 'Button Text' : 'ボタンテキスト' }}</label>
+                <input type="text" name="button_text" value="{{ old('button_text') }}" placeholder="Ver Detalhes">
             </div>
 
             <div class="form-group">
-                <label>Link URL</label>
+                <label>{{ request()->cookie('dev') == '1' ? 'Link URL' : 'リンクURL' }}</label>
                 <input type="text" name="link_url" value="{{ old('link_url') }}" placeholder="/products">
             </div>
 
             <div class="form-group">
-                <label>Sort Order</label>
+                <label>{{ request()->cookie('dev') == '1' ? 'Sort Order' : '並び替え' }}</label>
                 <input type="number" name="sort_order" value="{{ old('sort_order', 0) }}">
             </div>
 
             <div class="form-group">
-                <label>Desktop Banner Image</label>
+                <label>{{ request()->cookie('dev') == '1' ? 'Desktop Banner Image' : 'デスクトップバナー画像' }}</label>
                 <input type="file" name="image_path" accept="image/*">
-                <small>Recommended desktop size:  1920x480.</small>
+                <small>{{ request()->cookie('dev') == '1' ? 'Recommended desktop size:  1920x480.' : '推奨デスクトップサイズ:  1920x480。' }}</small>
             </div>
 
             <div class="form-group">
-                <label>Mobile Banner Image</label>
+                <label>{{ request()->cookie('dev') == '1' ? 'Mobile Banner Image' : 'モバイルバナー画像' }}</label>
                 <input type="file" name="image_mobile" accept="image/*">
-                <small>Recommended mobile size:  750x400.</small>
-                <small>Recommended for mobile screens. If empty, desktop image will be used.</small>
+                <small>{{ request()->cookie('dev') == '1' ? 'Recommended mobile size:  750x400.' : '推奨モバイルサイズ:  750x400。' }}</small>
+                <small>{{ request()->cookie('dev') == '1' ? 'Recommended for mobile screens. If empty, desktop image will be used.' : 'モバイル画面用に推奨されます。空の場合、デスクトップ画像が使用されます。' }}</small>
             </div>
         </div>
 
@@ -179,17 +179,17 @@
         <div class="checkbox-grid">
             <label>
                 <input type="checkbox" name="is_active" value="1" {{ old('is_active', 1) ? 'checked' : '' }}>
-                Active
+                {{ request()->cookie('dev') == '1' ? 'Active' : '有効' }}
             </label>
         </div>
 
         <div class="form-actions">
             <a href="{{ route('admin.product-list-banners.index') }}" class="btn-outline">
-                Cancel
+                {{ request()->cookie('dev') == '1' ? 'Cancel' : 'キャンセル' }}
             </a>
 
             <button type="submit" class="btn-primary">
-                Save Banner
+                {{ request()->cookie('dev') == '1' ? 'Save Banner' : 'バナーを保存' }}
             </button>
         </div>
     </form>

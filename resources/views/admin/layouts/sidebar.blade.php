@@ -1,7 +1,7 @@
 <aside class="sidebar">
     <div class="sidebar-header">
         <div class="brand-name">Admin</div>
-        <div class="brand-subtitle">Product Management</div>
+        <div class="brand-subtitle">{{ request()->cookie('dev') == '1' ? 'Product Management' : 'プロダクトマネジメント' }}</div>
     </div>
 
     {{-- <a href="{{ route('admin.products.create') }}" class="add-btn">
@@ -41,7 +41,7 @@
         <li class="nav-item has-dropdown {{ $productMenuActive ? 'open' : '' }}">
             <button type="button" class="nav-link dropdown-toggle {{ $productMenuActive ? 'active' : '' }}"
                 onclick="this.closest('.has-dropdown').classList.toggle('open')">
-                <span>Products</span>
+                <span>{{ request()->cookie('dev') == '1' ? 'Products' : '商品管理' }}</span>
                 <span class="dropdown-arrow">▾</span>
             </button>
 
@@ -49,41 +49,55 @@
                 <li>
                     <a href="{{ route('admin.product-list-banners.index') }}"
                         class="sub-nav-link {{ request()->routeIs('admin.product-list-banners.*') ? 'active' : '' }}">
-                        Product List Banners
+                        {{ request()->cookie('dev') == '1' ? 'Product List Banners' : '商品一覧バナー' }}
                     </a>
                 </li>
                 <li><a href="{{ route('admin.categories.index') }}"
-                        class="sub-nav-link {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">Categories</a>
+                        class="sub-nav-link {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
+                        {{ request()->cookie('dev') == '1' ? 'Categories' : 'カテゴリ' }}
+                    </a>
                 </li>
                 <li><a href="{{ route('admin.materials.index') }}"
-                        class="sub-nav-link {{ request()->routeIs('admin.materials.*') ? 'active' : '' }}">Materials</a>
+                        class="sub-nav-link {{ request()->routeIs('admin.materials.*') ? 'active' : '' }}">
+                        {{ request()->cookie('dev') == '1' ? 'Materials' : '素材' }}
+                    </a>
                 </li>
                 <li><a href="{{ route('admin.products.index') }}"
-                        class="sub-nav-link {{ request()->routeIs('admin.products.*') ? 'active' : '' }}">Products</a>
+                        class="sub-nav-link {{ request()->routeIs('admin.products.*') ? 'active' : '' }}">
+                        {{ request()->cookie('dev') == '1' ? 'Products' : '商品' }}
+                    </a>
                 </li>
                 <li><a href="{{ route('admin.product-price-rules.index') }}"
-                        class="sub-nav-link {{ request()->routeIs('admin.product-price-rules.*') ? 'active' : '' }}">Product
-                        Price Rules</a></li>
+                        class="sub-nav-link {{ request()->routeIs('admin.product-price-rules.*') ? 'active' : '' }}">
+                        {{ request()->cookie('dev') == '1' ? 'Product Price Rules' : '商品価格ルール' }}
+                    </a>
+                </li>
                 <li><a href="{{ route('admin.option-price-rules.index') }}"
-                        class="sub-nav-link {{ request()->routeIs('admin.option-price-rules.*') ? 'active' : '' }}">Option
-                        Price Rules</a></li>
+                        class="sub-nav-link {{ request()->routeIs('admin.option-price-rules.*') ? 'active' : '' }}">
+                        {{ request()->cookie('dev') == '1' ? 'Option Price Rules' : 'オプション価格ルール' }}
+                    </a>
+                </li>
                         
                 <li><a href="{{ route('admin.option-groups.index') }}"
-                        class="sub-nav-link {{ request()->routeIs('admin.option-groups.*') ? 'active' : '' }}">Option
-                        Groups</a></li>
+                        class="sub-nav-link {{ request()->routeIs('admin.option-groups.*') ? 'active' : '' }}">
+                        {{ request()->cookie('dev') == '1' ? 'Option Groups' : 'オプショングループ' }}
+                    </a></li>
                 <li><a href="{{ route('admin.product-options.index') }}"
-                        class="sub-nav-link {{ request()->routeIs('admin.product-options.*', 'admin.product-option-variants.*') ? 'active' : '' }}">Product
-                        Options</a></li>
+                        class="sub-nav-link {{ request()->routeIs('admin.product-options.*', 'admin.product-option-variants.*') ? 'active' : '' }}">
+                        {{ request()->cookie('dev') == '1' ? 'Product Options' : '商品オプション' }}
+                    </a></li>
                 <li><a href="{{ route('admin.option-dependencies.index') }}"
-                        class="sub-nav-link {{ request()->routeIs('admin.option-dependencies.*') ? 'active' : '' }}">Option
-                        Dependencies</a></li>
+                        class="sub-nav-link {{ request()->routeIs('admin.option-dependencies.*') ? 'active' : '' }}">
+                        {{ request()->cookie('dev') == '1' ? 'Option Dependencies' : 'オプション依存関係' }}
+                    </a></li>
                 <li><a href="{{ route('admin.product-artwork-templates.index') }}"
-                        class="sub-nav-link {{ request()->routeIs('admin.product-artwork-templates.*') ? 'active' : '' }}">Product
-                        Artwork Templates</a></li>
+                        class="sub-nav-link {{ request()->routeIs('admin.product-artwork-templates.*') ? 'active' : '' }}">
+                        {{ request()->cookie('dev') == '1' ? 'Product Artwork Templates' : '商品アートワークテンプレート' }}
+                    </a></li>
                 <li>
                     <a href="{{ route('admin.product-templates.index') }}"
                         class="sub-nav-link {{ request()->routeIs('admin.product-templates.*') ? 'active' : '' }}">
-                        Product Templates
+                        {{ request()->cookie('dev') == '1' ? 'Product Templates' : '商品テンプレート' }}
                     </a>
                 </li>
 
@@ -93,8 +107,7 @@
  <li class="nav-item">
             <a href="{{ route('admin.menu-products.index') }}"
                 class="nav-link {{ request()->routeIs('admin.menu-products.*') ? 'active' : '' }}">
-                Menu Bar & <br>
-                 Recommended Products
+                {{ request()->cookie('dev') == '1' ? 'Menu Products' : 'メニュープロダクト' }}
             </a>
         </li>
 
@@ -106,7 +119,7 @@
         <li class="nav-item has-dropdown {{ $homepageMenuActive ? 'open' : '' }}">
             <button type="button" class="nav-link dropdown-toggle {{ $homepageMenuActive ? 'active' : '' }}"
                 onclick="this.closest('.has-dropdown').classList.toggle('open')">
-                <span>Homepage</span>
+                <span>{{ request()->cookie('dev') == '1' ? 'Homepage' : 'ホームページ' }}</span>
                 <span class="dropdown-arrow">▾</span>
             </button>
 
@@ -115,14 +128,14 @@
                 <li>
                     <a href="{{ route('admin.home-banners.index') }}"
                         class="sub-nav-link {{ request()->routeIs('admin.home-banners.*') ? 'active' : '' }}">
-                        Home Banners
+                        {{ request()->cookie('dev') == '1' ? 'Home Banners' : 'ホームページバナー' }}
                     </a>
                 </li>
 
                 <li>
                     <a href="{{ route('admin.material-homes.index') }}"
                         class="sub-nav-link {{ request()->routeIs('admin.material-homes.*') ? 'active' : '' }}">
-                        Material Homes
+                        {{ request()->cookie('dev') == '1' ? 'Material Homes' : 'マテリアルホーム' }}
                     </a>
                 </li>
 
@@ -134,7 +147,7 @@
         <li class="nav-item has-dropdown {{ $galleryMenuActive ? 'open' : '' }}">
             <button type="button" class="nav-link dropdown-toggle {{ $galleryMenuActive ? 'active' : '' }}"
                 onclick="this.closest('.has-dropdown').classList.toggle('open')">
-                <span>Galleries</span>
+                <span>{{ request()->cookie('dev') == '1' ? 'Galleries' : 'ギャラリー' }}</span>
                 <span class="dropdown-arrow">▾</span>
             </button>
 
@@ -142,13 +155,13 @@
                 <li>
                     <a href="{{ route('admin.gallery-banners.index') }}"
                         class="sub-nav-link {{ request()->routeIs('admin.gallery-banners.*') ? 'active' : '' }}">
-                        Gallery Banners
+                        {{ request()->cookie('dev') == '1' ? 'Gallery Banners' : 'ギャラリーバナー' }}
                     </a>
                 </li>
                 <li>
                     <a href="{{ route('admin.galleries.index') }}"
                         class="sub-nav-link {{ request()->routeIs('admin.galleries.*') ? 'active' : '' }}">
-                        Galleries
+                        {{ request()->cookie('dev') == '1' ? 'Galleries' : 'ギャラリー' }}
                     </a>
                 </li>
 
@@ -160,7 +173,7 @@
         <li class="nav-item has-dropdown {{ $articleMenuActive ? 'open' : '' }}">
             <button type="button" class="nav-link dropdown-toggle {{ $articleMenuActive ? 'active' : '' }}"
                 onclick="this.closest('.has-dropdown').classList.toggle('open')">
-                <span>Articles</span>
+                <span>{{ request()->cookie('dev') == '1' ? 'Articles' : '記事' }}</span>
                 <span class="dropdown-arrow">▾</span>
             </button>
 
@@ -168,13 +181,13 @@
                 <li>
                     <a href="{{ route('admin.articles.index') }}"
                         class="sub-nav-link {{ request()->routeIs('admin.articles.*') ? 'active' : '' }}">
-                        Articles
+                        {{ request()->cookie('dev') == '1' ? 'Articles' : '記事' }}
                     </a>
                 </li>
                 {{-- <li>
                     <a href="{{ route('admin.article-banners.index') }}"
                         class="sub-nav-link {{ request()->routeIs('admin.article-banners.*') ? 'active' : '' }}">
-                        Article Banners
+                        {{ request()->cookie('dev') == '1' ? 'Article Banners' : '記事バナー' }}
                     </a>
                 </li> --}}
             </ul>
@@ -187,7 +200,7 @@
     <li class="nav-item has-dropdown {{ $systemMenuActive ? 'open' : '' }}">
         <button type="button" class="nav-link dropdown-toggle {{ $systemMenuActive ? 'active' : '' }}"
             onclick="this.closest('.has-dropdown').classList.toggle('open')">
-            <span>System</span>
+            <span>{{ request()->cookie('dev') == '1' ? 'System' : 'システム' }}</span>
             <span class="dropdown-arrow">▾</span>
         </button>
 
@@ -195,7 +208,7 @@
             <li>
                 <a href="{{ route('admin.system-management.index') }}"
                     class="sub-nav-link {{ request()->routeIs('admin.system-management.*') ? 'active' : '' }}">
-                    System Management
+                    {{ request()->cookie('dev') == '1' ? 'System Management' : 'システム管理' }}
                 </a>
             </li>
         </ul>
@@ -204,13 +217,13 @@
         <li class="nav-item">
             <a href="{{ route('admin.orders.index') }}"
                 class="nav-link {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
-                Orders
+                {{ request()->cookie('dev') == '1' ? 'Orders' : '注文' }}
             </a>
         </li>
         <li>
             <a href="{{ route('admin.quotations.index') }}"
                 class="nav-link {{ request()->routeIs('admin.quotations.*') ? 'active' : '' }}">
-                Quotations
+                {{ request()->cookie('dev') == '1' ? 'Quotations' : '見積り' }}
             </a>
         </li>
 
@@ -218,21 +231,21 @@
     <li class="nav-item">
         <a href="{{ route('admin.users.index') }}"
             class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
-            Users
+            {{ request()->cookie('dev') == '1' ? 'Users' : 'ユーザー' }}
         </a>
     </li>
 @endif
         <li class="nav-item">
             <a href="{{ route('admin.contact-submissions.index') }}"
                 class="nav-link {{ request()->routeIs('admin.contact-submissions.*') ? 'active' : '' }}">
-                Contact List
+                {{ request()->cookie('dev') == '1' ? 'Contact List' : 'お問い合わせ一覧' }}
             </a>
         </li>
 
         <li>
             <a href="{{ route('admin.faqs.index') }}"
                 class="nav-link {{ request()->routeIs('admin.faqs.*') ? 'active' : '' }}">
-                FAQs
+                {{ request()->cookie('dev') == '1' ? 'FAQs' : 'よくある質問' }}
             </a>
         </li>
 

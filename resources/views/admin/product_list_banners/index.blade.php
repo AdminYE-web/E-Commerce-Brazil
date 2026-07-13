@@ -130,15 +130,15 @@
 <div class="table-card">
     <div class="table-header">
         <div>
-            <div class="table-title">Product List Banners</div>
+            <div class="table-title">{{ request()->cookie('dev') == '1' ? 'Product List Banners' : '商品一覧バナー' }}</div>
             <div class="showing-text">
-                Manage product listing banners, content, links, sort order and status.
+                {{ request()->cookie('dev') == '1' ? 'Manage product listing banners, content, links, sort order and status.' : '商品一覧のバナー、コンテンツ、リンク、並べ替え順序、ステータスを管理します。' }}
             </div>
         </div>
 
         <div class="table-actions">
             <a href="{{ route('admin.product-list-banners.create') }}" class="btn-primary">
-                + Add Banner
+                + {{ request()->cookie('dev') == '1' ? 'Add Banner' : 'バナーを追加' }}
             </a>
         </div>
     </div>
@@ -152,12 +152,12 @@
     <table>
         <thead>
             <tr>
-                <th>Banner</th>
-                <th>Button</th>
-                <th>Link</th>
-                <th>Sort</th>
-                <th>Status</th>
-                <th style="text-align:right;">Manage</th>
+                <th>{{ request()->cookie('dev') == '1' ? 'Banner' : 'バナー' }}</th>
+                <th>{{ request()->cookie('dev') == '1' ? 'Button' : 'ボタン' }}</th>
+                <th>{{ request()->cookie('dev') == '1' ? 'Link' : 'リンク' }}</th>
+                <th>{{ request()->cookie('dev') == '1' ? 'Sort' : '並び替え' }}</th>
+                <th>{{ request()->cookie('dev') == '1' ? 'Status' : 'ステータス' }}</th>
+                <th style="text-align:right;">{{ request()->cookie('dev') == '1' ? 'Manage' : '管理' }}
             </tr>
         </thead>
 
@@ -225,7 +225,7 @@
                         <div class="action-btns" style="justify-content:flex-end;">
                             <a href="{{ route('admin.product-list-banners.edit', $banner->banner_id) }}"
                                class="action-link">
-                                Edit
+                                {{ request()->cookie('dev') == '1' ? 'Edit' : '編集' }}
                             </a>
 
                             <form action="{{ route('admin.product-list-banners.destroy', $banner->banner_id) }}"
@@ -237,7 +237,7 @@
                                 <button type="submit"
                                         class="action-link delete"
                                         onclick="return confirm('Delete this banner?')">
-                                    Delete
+                                    {{ request()->cookie('dev') == '1' ? 'Delete' : '削除' }}
                                 </button>
                             </form>
                         </div>
