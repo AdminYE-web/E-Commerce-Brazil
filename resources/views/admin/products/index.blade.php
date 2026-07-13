@@ -732,6 +732,16 @@ td {
                                                 Options
                                             </a>
 
+                                            <form action="{{ route('admin.products.duplicate', $product->product_id) }}"
+                                                method="POST">
+                                                @csrf
+
+                                                <button type="submit"
+                                                    onclick="return confirm('Duplicate this product?')">
+                                                    Duplicate
+                                                </button>
+                                            </form>
+
                                             <form action="{{ route('admin.products.destroy', $product->product_id) }}"
                                                 method="POST">
                                                 @csrf

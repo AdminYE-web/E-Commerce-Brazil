@@ -9,141 +9,142 @@ use App\Models\Product;
 use App\Models\ProductImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
     public function index(Request $request)
-{
-    $search = $request->input('search');
-    $language = session('admin_product_language', 'pt');
+    {
+        $search = $request->input('search');
+        $language = session('admin_product_language', 'pt');
 
-    $type = $request->input('type');
-    $categoryId = $request->input('category_id');
-    $materialId = $request->input('material_id');
-    $status = $request->input('status');
+        $type = $request->input('type');
+        $categoryId = $request->input('category_id');
+        $materialId = $request->input('material_id');
+        $status = $request->input('status');
 
-    $productsQuery = Product::with(['category', 'material', 'mainImage'])
-        ->where(function ($query) use ($language) {
-            $query->where('language', $language)
-                ->orWhere(function ($q) use ($language) {
-                    $q->where('language', '!=', $language)
-                        ->whereNotExists(function ($subQuery) use ($language) {
-                            $subQuery->selectRaw(1)
-                                ->from('products as p2')
-                                ->whereColumn('p2.translation_key', 'products.translation_key')
-                                ->where('p2.language', $language);
-                        });
+        $productsQuery = Product::with(['category', 'material', 'mainImage'])
+            ->where(function ($query) use ($language) {
+                $query->where('language', $language)
+                    ->orWhere(function ($q) use ($language) {
+                        $q->where('language', '!=', $language)
+                            ->whereNotExists(function ($subQuery) use ($language) {
+                                $subQuery->selectRaw(1)
+                                    ->from('products as p2')
+                                    ->whereColumn('p2.translation_key', 'products.translation_key')
+                                    ->where('p2.language', $language);
+                            });
+                    });
+            })
+            ->when($search, function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('product_name', 'like', '%'.$search.'%')
+                        ->orWhere('product_code', 'like', '%'.$search.'%');
                 });
-        })
-        ->when($search, function ($query) use ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('product_name', 'like', '%'.$search.'%')
-                    ->orWhere('product_code', 'like', '%'.$search.'%');
+            })
+            ->when($type !== null && $type !== '', function ($query) use ($type) {
+                $query->where('product_type', $type);
+            })
+            ->when($categoryId, function ($query) use ($categoryId) {
+                $query->where('category_id', $categoryId);
+            })
+            ->when($materialId, function ($query) use ($materialId) {
+                $query->where('material_id', $materialId);
+            })
+            ->when($status !== null && $status !== '', function ($query) use ($status) {
+                $query->where('is_active', $status);
+            })
+            ->orderBy('product_id', 'desc');
+
+        $products = $productsQuery
+            ->paginate(15)
+            ->withQueryString();
+
+        $translationKeys = $products->pluck('translation_key')->filter()->unique();
+
+        $allLanguages = Product::whereIn('translation_key', $translationKeys)
+            ->select('translation_key', 'language')
+            ->get()
+            ->groupBy('translation_key')
+            ->map(function ($items) {
+                return $items->pluck('language')
+                    ->map(function ($lang) {
+                        return $lang === 'ja' ? 'jp' : $lang;
+                    })
+                    ->unique()
+                    ->sortBy(function ($lang) {
+                        $order = ['pt' => 1, 'jp' => 2, 'en' => 3];
+
+                        return $order[$lang] ?? 99;
+                    })
+                    ->implode(' ');
             });
-        })
-        ->when($type !== null && $type !== '', function ($query) use ($type) {
-            $query->where('product_type', $type);
-        })
-        ->when($categoryId, function ($query) use ($categoryId) {
-            $query->where('category_id', $categoryId);
-        })
-        ->when($materialId, function ($query) use ($materialId) {
-            $query->where('material_id', $materialId);
-        })
-        ->when($status !== null && $status !== '', function ($query) use ($status) {
-            $query->where('is_active', $status);
-        })
-        ->orderBy('product_id', 'desc');
 
-    $products = $productsQuery
-        ->paginate(15)
-        ->withQueryString();
+        $products->getCollection()->transform(function ($product) use ($language, $allLanguages) {
+            $product->is_missing_translation = $product->language !== $language;
 
-    $translationKeys = $products->pluck('translation_key')->filter()->unique();
+            $product->all_languages = $product->translation_key && isset($allLanguages[$product->translation_key])
+                ? $allLanguages[$product->translation_key]
+                : ($product->language === 'ja' ? 'jp' : $product->language);
 
-    $allLanguages = Product::whereIn('translation_key', $translationKeys)
-        ->select('translation_key', 'language')
-        ->get()
-        ->groupBy('translation_key')
-        ->map(function ($items) {
-            return $items->pluck('language')
-                ->map(function ($lang) {
-                    return $lang === 'ja' ? 'jp' : $lang;
-                })
-                ->unique()
-                ->sortBy(function ($lang) {
-                    $order = ['pt' => 1, 'jp' => 2, 'en' => 3];
-
-                    return $order[$lang] ?? 99;
-                })
-                ->implode(' ');
+            return $product;
         });
 
-    $products->getCollection()->transform(function ($product) use ($language, $allLanguages) {
-        $product->is_missing_translation = $product->language !== $language;
+        $categories = Category::where('is_active', 1)
+            ->where('language', $language)
+            ->orderBy('category_name')
+            ->get();
 
-        $product->all_languages = $product->translation_key && isset($allLanguages[$product->translation_key])
-            ? $allLanguages[$product->translation_key]
-            : ($product->language === 'ja' ? 'jp' : $product->language);
+        $materials = Material::where('is_active', 1)
+            ->where('language', $language)
+            ->orderBy('material_name')
+            ->get();
 
-        return $product;
-    });
-
-    $categories = Category::where('is_active', 1)
-        ->where('language', $language)
-        ->orderBy('category_name')
-        ->get();
-
-    $materials = Material::where('is_active', 1)
-        ->where('language', $language)
-        ->orderBy('material_name')
-        ->get();
-
-    return view('admin.products.index', compact(
-        'products',
-        'search',
-        'language',
-        'categories',
-        'materials',
-        'type',
-        'categoryId',
-        'materialId',
-        'status'
-    ));
-}
-
-   public function create(Request $request)
-{
-    $language = session('admin_product_language', 'pt');
-
-    $productType = (int) $request->input('product_type', 1);
-
-    if (!in_array($productType, [1, 2], true)) {
-        $productType = 1;
+        return view('admin.products.index', compact(
+            'products',
+            'search',
+            'language',
+            'categories',
+            'materials',
+            'type',
+            'categoryId',
+            'materialId',
+            'status'
+        ));
     }
 
-    $categories = Category::where('is_active', 1)
-        ->where('language', $language)
-        ->orderBy('category_name')
-        ->get();
+    public function create(Request $request)
+    {
+        $language = session('admin_product_language', 'pt');
 
-    $materials = Material::where('is_active', 1)
-        ->where('language', $language)
-        ->orderBy('material_name')
-        ->get();
+        $productType = (int) $request->input('product_type', 1);
 
-    $translationKey = 'product_'.strtolower(Str::random(12));
+        if (! in_array($productType, [1, 2], true)) {
+            $productType = 1;
+        }
 
-    return view('admin.products.create', compact(
-        'categories',
-        'materials',
-        'language',
-        'translationKey',
-        'productType'
-    ));
-}
+        $categories = Category::where('is_active', 1)
+            ->where('language', $language)
+            ->orderBy('category_name')
+            ->get();
+
+        $materials = Material::where('is_active', 1)
+            ->where('language', $language)
+            ->orderBy('material_name')
+            ->get();
+
+        $translationKey = 'product_'.strtolower(Str::random(12));
+
+        return view('admin.products.create', compact(
+            'categories',
+            'materials',
+            'language',
+            'translationKey',
+            'productType'
+        ));
+    }
 
     public function store(Request $request)
     {
@@ -169,7 +170,7 @@ class ProductController extends Controller
             'allow_font_select' => 'nullable|boolean',
             'allow_template_select' => 'nullable|boolean',
             'translation_key' => 'nullable|string|max:255',
-            
+
         ]);
         $language = session('admin_product_language', 'pt');
 
@@ -235,28 +236,28 @@ class ProductController extends Controller
     }
 
     public function edit(Product $product)
-{
-    $product->load(['images', 'galleryImages']);
+    {
+        $product->load(['images', 'galleryImages']);
 
-    $language = $product->language ?? session('admin_product_language', 'pt');
+        $language = $product->language ?? session('admin_product_language', 'pt');
 
-    $categories = Category::where('is_active', 1)
-        ->where('language', $language)
-        ->orderBy('category_name')
-        ->get();
+        $categories = Category::where('is_active', 1)
+            ->where('language', $language)
+            ->orderBy('category_name')
+            ->get();
 
-    $materials = Material::where('is_active', 1)
-        ->where('language', $language)
-        ->orderBy('material_name')
-        ->get();
+        $materials = Material::where('is_active', 1)
+            ->where('language', $language)
+            ->orderBy('material_name')
+            ->get();
 
-    return view('admin.products.edit', compact(
-        'product',
-        'categories',
-        'materials',
-        'language'
-    ));
-}
+        return view('admin.products.edit', compact(
+            'product',
+            'categories',
+            'materials',
+            'language'
+        ));
+    }
 
     public function update(Request $request, Product $product)
     {
@@ -270,7 +271,7 @@ class ProductController extends Controller
             'gallery_images.*' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'description' => 'nullable|string',
             'is_antivirus_included' => 'nullable|boolean',
-           'is_active' => 'required|integer|in:1,3',
+            'is_active' => 'required|integer|in:1,3',
             'product_recomend' => 'nullable|boolean',
             'product_recomend_menu' => 'nullable|boolean',
             'product_premium' => 'nullable|boolean',
@@ -378,21 +379,207 @@ class ProductController extends Controller
             ->with('success', 'Product updated successfully.');
     }
 
-   public function destroy(Product $product)
-{
-    $product->update([
-        'is_active' => 0,
-    ]);
+    public function destroy(Product $product)
+    {
+        $product->update([
+            'is_active' => 0,
+        ]);
 
-    $language = $product->language;
+        $language = $product->language;
 
-    Cache::forget('home_page_data_'.$language);
-    Cache::forget('home_page_data');
+        Cache::forget('home_page_data_'.$language);
+        Cache::forget('home_page_data');
 
-    return redirect()
-        ->route('admin.products.index')
-        ->with('success', 'Product has been moved to inactive.');
-}
+        return redirect()
+            ->route('admin.products.index')
+            ->with('success', 'Product has been moved to inactive.');
+    }
+
+    public function duplicate(Product $product)
+    {
+        $newProduct = DB::transaction(function () use ($product) {
+            $newProduct = $product->replicate();
+            $newProduct->product_code = $this->uniqueProductCode($product->product_code);
+            $newProduct->translation_key = 'product_'.strtolower(Str::random(12));
+            $newProduct->product_name = $this->uniqueProductName($product->product_name);
+            $newProduct->is_active = 3;
+            $newProduct->created_at = now();
+            $newProduct->updated_at = now();
+            $newProduct->save();
+
+            $this->duplicateRowsForProduct('product_images', 'image_id', $product->product_id, $newProduct->product_id);
+            $this->duplicateRowsForProduct('product_details', 'product_detail_id', $product->product_id, $newProduct->product_id);
+            $this->duplicateRowsForProduct('product_option_assignments', 'assignment_id', $product->product_id, $newProduct->product_id);
+            $this->duplicateRowsForProduct('product_option_group_orders', 'id', $product->product_id, $newProduct->product_id);
+            $this->duplicateRowsForProduct('product_price_tiers', 'tier_id', $product->product_id, $newProduct->product_id);
+            $this->duplicateRowsForProduct('product_artwork_templates', 'template_id', $product->product_id, $newProduct->product_id);
+            $this->duplicateRowsForProduct('product_templates', 'template_id', $product->product_id, $newProduct->product_id);
+            $this->duplicateRowsForProduct('faqs', 'faq_id', $product->product_id, $newProduct->product_id);
+            $this->duplicateProductPriceRules($product->product_id, $newProduct->product_id);
+            $this->duplicateProductOptionPriceRules($product->product_id, $newProduct->product_id);
+
+            return $newProduct;
+        });
+
+        Cache::forget('home_page_data_'.$product->language);
+        Cache::forget('home_page_data_'.$newProduct->language);
+        Cache::forget('home_page_data');
+
+        return redirect()
+            ->route('admin.products.edit', $newProduct->product_id)
+            ->with('success', 'Product duplicated successfully. Please review and publish it when ready.');
+    }
+
+    private function uniqueProductCode(?string $sourceCode): string
+    {
+        $base = trim((string) $sourceCode) !== ''
+            ? trim((string) $sourceCode).'-copy'
+            : 'product-copy';
+
+        $candidate = $base;
+        $index = 2;
+
+        while (Product::where('product_code', $candidate)->exists()) {
+            $candidate = $base.'-'.$index;
+            $index++;
+        }
+
+        return $candidate;
+    }
+
+    private function uniqueProductName(string $sourceName): string
+    {
+        $base = $sourceName.' - Copy';
+        $candidate = $base;
+        $index = 2;
+
+        while (Product::where('product_name', $candidate)->exists()) {
+            $candidate = $base.' '.$index;
+            $index++;
+        }
+
+        return $candidate;
+    }
+
+    private function duplicateRowsForProduct(string $table, string $primaryKey, int $sourceProductId, int $newProductId): void
+    {
+        DB::table($table)
+            ->where('product_id', $sourceProductId)
+            ->orderBy($primaryKey)
+            ->get()
+            ->each(function ($row) use ($table, $primaryKey, $newProductId) {
+                $attributes = (array) $row;
+                unset($attributes[$primaryKey]);
+
+                $attributes['product_id'] = $newProductId;
+
+                if (array_key_exists('created_at', $attributes)) {
+                    $attributes['created_at'] = now();
+                }
+
+                if (array_key_exists('updated_at', $attributes)) {
+                    $attributes['updated_at'] = now();
+                }
+
+                DB::table($table)->insert($attributes);
+            });
+    }
+
+    private function duplicateProductPriceRules(int $sourceProductId, int $newProductId): void
+    {
+        DB::table('product_price_rules')
+            ->where('product_id', $sourceProductId)
+            ->orderBy('rule_id')
+            ->get()
+            ->each(function ($rule) use ($newProductId) {
+                $attributes = (array) $rule;
+                $sourceRuleId = $attributes['rule_id'];
+                unset($attributes['rule_id']);
+
+                $attributes['product_id'] = $newProductId;
+                $attributes['created_at'] = now();
+                $attributes['updated_at'] = now();
+
+                $newRuleId = DB::table('product_price_rules')->insertGetId($attributes);
+
+                DB::table('product_price_rule_options')
+                    ->where('rule_id', $sourceRuleId)
+                    ->orderBy('rule_option_id')
+                    ->get()
+                    ->each(function ($ruleOption) use ($newRuleId) {
+                        $optionAttributes = (array) $ruleOption;
+                        unset($optionAttributes['rule_option_id']);
+
+                        $optionAttributes['rule_id'] = $newRuleId;
+                        $optionAttributes['created_at'] = now();
+                        $optionAttributes['updated_at'] = now();
+
+                        DB::table('product_price_rule_options')->insert($optionAttributes);
+                    });
+
+                DB::table('product_price_rule_tiers')
+                    ->where('rule_id', $sourceRuleId)
+                    ->orderBy('tier_id')
+                    ->get()
+                    ->each(function ($tier) use ($newRuleId) {
+                        $tierAttributes = (array) $tier;
+                        unset($tierAttributes['tier_id']);
+
+                        $tierAttributes['rule_id'] = $newRuleId;
+                        $tierAttributes['created_at'] = now();
+                        $tierAttributes['updated_at'] = now();
+
+                        DB::table('product_price_rule_tiers')->insert($tierAttributes);
+                    });
+            });
+    }
+
+    private function duplicateProductOptionPriceRules(int $sourceProductId, int $newProductId): void
+    {
+        DB::table('product_option_price_rules')
+            ->where('product_id', $sourceProductId)
+            ->orderBy('option_price_rule_id')
+            ->get()
+            ->each(function ($rule) use ($newProductId) {
+                $attributes = (array) $rule;
+                $sourceRuleId = $attributes['option_price_rule_id'];
+                unset($attributes['option_price_rule_id']);
+
+                $attributes['product_id'] = $newProductId;
+                $attributes['created_at'] = now();
+                $attributes['updated_at'] = now();
+
+                $newRuleId = DB::table('product_option_price_rules')->insertGetId($attributes);
+
+                DB::table('product_option_price_rule_options')
+                    ->where('option_price_rule_id', $sourceRuleId)
+                    ->orderBy('id')
+                    ->get()
+                    ->each(function ($ruleOption) use ($newRuleId) {
+                        $optionAttributes = (array) $ruleOption;
+                        unset($optionAttributes['id']);
+
+                        $optionAttributes['option_price_rule_id'] = $newRuleId;
+
+                        DB::table('product_option_price_rule_options')->insert($optionAttributes);
+                    });
+
+                DB::table('product_option_price_rule_tiers')
+                    ->where('option_price_rule_id', $sourceRuleId)
+                    ->orderBy('option_price_rule_tier_id')
+                    ->get()
+                    ->each(function ($tier) use ($newRuleId) {
+                        $tierAttributes = (array) $tier;
+                        unset($tierAttributes['option_price_rule_tier_id']);
+
+                        $tierAttributes['option_price_rule_id'] = $newRuleId;
+                        $tierAttributes['created_at'] = now();
+                        $tierAttributes['updated_at'] = now();
+
+                        DB::table('product_option_price_rule_tiers')->insert($tierAttributes);
+                    });
+            });
+    }
 
     public function images()
     {
@@ -472,39 +659,38 @@ class ProductController extends Controller
     }
 
     public function preview(Product $product)
-{
-    if (!in_array((int) $product->is_active, [1, 3], true)) {
-        abort(404);
-    }
+    {
+        if (! in_array((int) $product->is_active, [1, 3], true)) {
+            abort(404);
+        }
 
-    $product->load([
-        'mainImage',
-        'images',
-        'galleryImages',
-        'detail',
-        'category',
-        'material',
-    ]);
+        $product->load([
+            'mainImage',
+            'images',
+            'galleryImages',
+            'detail',
+            'category',
+            'material',
+        ]);
 
-    $relatedProducts = collect();
-    $productFaqs = collect();
-    $isPreview = true;
+        $relatedProducts = collect();
+        $productFaqs = collect();
+        $isPreview = true;
 
-    if ((int) $product->product_type === 2) {
-        return view('products.hotmobily_desc', compact(
+        if ((int) $product->product_type === 2) {
+            return view('products.hotmobily_desc', compact(
+                'product',
+                'relatedProducts',
+                'productFaqs',
+                'isPreview'
+            ));
+        }
+
+        return view('products.hotstrap_desc', compact(
             'product',
             'relatedProducts',
             'productFaqs',
             'isPreview'
         ));
     }
-
-    return view('products.hotstrap_desc', compact(
-        'product',
-        'relatedProducts',
-        'productFaqs',
-        'isPreview'
-    ));
-}
-
 }

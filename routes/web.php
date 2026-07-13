@@ -250,6 +250,9 @@ Route::prefix('admin-panel')->name('admin.')->group(function () {
         Route::get('/', [AdminDashboardController::class, 'index'])
             ->name('dashboard');
 
+        Route::post('products/{product}/duplicate', [ProductController::class, 'duplicate'])
+            ->name('products.duplicate');
+
         Route::resource('products', ProductController::class);
         Route::get('products/{product}/options', [ProductOptionAssignmentController::class, 'edit'])
             ->name('products.options.edit');
