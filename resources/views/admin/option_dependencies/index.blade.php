@@ -117,67 +117,68 @@
         .action-link.duplicate {
             color: #2563eb;
         }
+
         .pagination-container {
-    padding: 18px 24px 24px;
-    display: flex;
-    justify-content: flex-start;
-}
+            padding: 18px 24px 24px;
+            display: flex;
+            justify-content: flex-start;
+        }
 
-.pagination-container {
-    padding: 16px 24px;
-    border-top: 1px solid var(--border);
-}
+        .pagination-container {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border);
+        }
 
-.pagination {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
+        .pagination {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
 
-.page-item {
-    list-style: none;
-}
+        .page-item {
+            list-style: none;
+        }
 
-.page-link {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 34px;
-    height: 34px;
-    padding: 0 12px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    background: #fff;
-    color: var(--fg);
-    text-decoration: none;
-    font-size: 14px;
-}
+        .page-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 34px;
+            height: 34px;
+            padding: 0 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: #fff;
+            color: var(--fg);
+            text-decoration: none;
+            font-size: 14px;
+        }
 
-.page-item.active .page-link {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: #fff;
-}
+        .page-item.active .page-link {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+        }
 
-.page-item.disabled .page-link {
-    opacity: .45;
-    pointer-events: none;
-}
+        .page-item.disabled .page-link {
+            opacity: .45;
+            pointer-events: none;
+        }
 
-.pagination-container nav > div:first-child {
-    display: none !important;
-}
+        .pagination-container nav>div:first-child {
+            display: none !important;
+        }
 
-.pagination-container nav > div:last-child {
-    display: block !important;
-}
+        .pagination-container nav>div:last-child {
+            display: block !important;
+        }
 
-.pagination-container .pagination {
-    margin-top: 8px;
-}
+        .pagination-container .pagination {
+            margin-top: 8px;
+        }
     </style>
 @endsection
 
@@ -186,24 +187,24 @@
     <div class="table-card">
         <div class="table-header">
             <div>
-                <div class="table-title">Option Dependencies</div>
+                <div class="table-title">{{ request()->cookie('dev') == '1' ? 'Option Dependencies' : 'オプションの依存関係' }}</div>
                 <div class="showing-text">
-                    Manage conditional display rules between product options and option groups.
+                    {{ request()->cookie('dev') == '1' ? 'Manage conditional display rules between product options and option groups.' : '製品オプションとオプショングループ間の表示条件付きルールを管理します。' }}
                 </div>
             </div>
 
             <div class="table-actions">
                 <a href="{{ route('admin.dashboard') }}" class="btn-outline">
-                    Dashboard
+                    {{ request()->cookie('dev') == '1' ? 'Dashboard' : 'ダッシュボード' }}
                 </a>
 
                 <a href="{{ route('admin.option-dependencies.create') }}" class="btn-primary">
-                    + Add Dependency
+                    {{ request()->cookie('dev') == '1' ? '+ Add Dependency' : '+ 依存関係を追加' }}
                 </a>
             </div>
         </div>
 
-        @if(session('success'))
+        @if (session('success'))
             <div class="alert-success">
                 {{ session('success') }}
             </div>
@@ -212,12 +213,12 @@
         <table>
             <thead>
                 <tr>
-                    <th>Trigger Option</th>
-                    <th>Target Type</th>
-                    <th>Target</th>
-                    <th>Sort</th>
-                    <th>Status</th>
-                    <th style="text-align: right;">Manage</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Trigger Option' : 'トリガーオプション' }}</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Target Type' : 'ターゲットタイプ' }}</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Target' : 'ターゲット' }}</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Sort' : 'ソート' }}</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Status' : 'ステータス' }}</th>
+                    <th style="text-align: right;">{{ request()->cookie('dev') == '1' ? 'Manage' : '管理' }}</th>
                 </tr>
             </thead>
 
@@ -244,11 +245,13 @@
 
                         <td>
                             <div class="dependency-text">
-                                @if($dependency->target_type === 'group')
-                                    <span class="dependency-sub">Group</span>
+                                @if ($dependency->target_type === 'group')
+                                    <span
+                                        class="dependency-sub">{{ request()->cookie('dev') == '1' ? 'Group' : 'グループ' }}</span>
                                     <strong>{{ $dependency->targetGroup->group_name ?? '-' }}</strong>
                                 @else
-                                    <span class="dependency-sub">Option</span>
+                                    <span
+                                        class="dependency-sub">{{ request()->cookie('dev') == '1' ? 'Option' : 'オプション' }}</span>
                                     {{ $dependency->targetOption->group->group_name ?? '-' }}
                                     /
                                     <strong>{{ $dependency->targetOption->option_name ?? '-' }}</strong>
@@ -259,10 +262,12 @@
                         <td>{{ $dependency->sort_order }}</td>
 
                         <td>
-                            @if($dependency->is_active)
-                                <span class="status-pill status-active">Active</span>
+                            @if ($dependency->is_active)
+                                <span
+                                    class="status-pill status-active">{{ request()->cookie('dev') == '1' ? 'Active' : '有効' }}</span>
                             @else
-                                <span class="status-pill status-inactive">Inactive</span>
+                                <span
+                                    class="status-pill status-inactive">{{ request()->cookie('dev') == '1' ? 'Inactive' : '無効' }}</span>
                             @endif
                         </td>
 
@@ -276,23 +281,24 @@
 
                                         <button type="submit" class="action-link duplicate"
                                             onclick="return confirm('Duplicate this PT dependency for {{ strtoupper($language) }}?')">
-                                            Duplicate
+                                            {{ request()->cookie('dev') == '1' ? 'Duplicate' : '複製' }}
                                         </button>
                                     </form>
                                 @else
                                     <a href="{{ route('admin.option-dependencies.edit', $dependency->dependency_id) }}"
                                         class="action-link">
-                                        Edit
+                                        {{ request()->cookie('dev') == '1' ? 'Edit' : '編集' }}
                                     </a>
 
-                                    <form action="{{ route('admin.option-dependencies.destroy', $dependency->dependency_id) }}"
+                                    <form
+                                        action="{{ route('admin.option-dependencies.destroy', $dependency->dependency_id) }}"
                                         method="POST" style="display:inline;">
                                         @csrf
                                         @method('DELETE')
 
                                         <button type="submit" class="action-link delete"
                                             onclick="return confirm('Delete this dependency?')">
-                                            Delete
+                                            {{ request()->cookie('dev') == '1' ? 'Delete' : '削除' }}
                                         </button>
                                     </form>
                                 @endif
@@ -309,9 +315,9 @@
             </tbody>
         </table>
 
-       <div class="pagination-container">
-    {{ $dependencies->links() }}
-</div>
+        <div class="pagination-container">
+            {{ $dependencies->links() }}
+        </div>
     </div>
 
 @endsection
