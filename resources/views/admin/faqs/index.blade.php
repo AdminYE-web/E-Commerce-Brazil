@@ -221,12 +221,12 @@
         <div>
             <h1 class="faq-title">FAQs</h1>
             <div class="faq-subtitle">
-                Manage questions and answers. Current language: {{ strtoupper($language) }}
+                {{ request()->cookie('dev') == '1' ? 'Manage questions and answers. Current language:' : '質問と回答を管理します。現在の言語:' }} {{ strtoupper($language) }}
             </div>
         </div>
 
         <a href="{{ route('admin.faqs.create') }}" class="btn-primary">
-            + Add FAQ
+            {{ request()->cookie('dev') == '1' ? 'Add FAQ' : 'FAQを追加' }}
         </a>
     </div>
 
@@ -245,17 +245,17 @@
         >
 
         <select name="status">
-            <option value="">All Status</option>
+            <option value="">{{ request()->cookie('dev') == '1' ? 'All Status' : 'すべてのステータス' }}</option>
             <option value="show" {{ request('status') === 'show' ? 'selected' : '' }}>Show</option>
             <option value="hide" {{ request('status') === 'hide' ? 'selected' : '' }}>Hide</option>
         </select>
 
        <button type="submit" class="faq-search-btn">
-    Search
+    {{ request()->cookie('dev') == '1' ? 'Search' : '検索' }}
 </button>
 
 <a href="{{ route('admin.faqs.index') }}" class="faq-reset-btn">
-    Reset
+    {{ request()->cookie('dev') == '1' ? 'Reset' : 'リセット' }}
 </a>
     </form>
 
@@ -263,12 +263,12 @@
         <thead>
            <tr>
     <th width="50"></th>
-    <th width="70">Sort</th>
-    <th>Question</th>
-    <th>Product</th>
-    <th>Display</th>
-    <th>Status</th>
-    <th width="150">Action</th>
+    <th width="70">{{ request()->cookie('dev') == '1' ? 'Sort' : 'ソート' }}</th>
+    <th>{{ request()->cookie('dev') == '1' ? 'Question' : '質問' }}</th>
+    <th>{{ request()->cookie('dev') == '1' ? 'Product' : '製品' }}</th>
+    <th>{{ request()->cookie('dev') == '1' ? 'Display' : '表示' }}</th>
+    <th>{{ request()->cookie('dev') == '1' ? 'Status' : 'ステータス' }}</th>
+    <th width="150">{{ request()->cookie('dev') == '1' ? 'Action' : 'アクション' }}</th>
 </tr>
         </thead>
 
@@ -315,7 +315,7 @@
                     <td>
                         <div class="faq-actions">
                             <a href="{{ route('admin.faqs.edit', $faq->faq_id) }}" class="faq-action-link">
-                                Edit
+                                {{ request()->cookie('dev') == '1' ? 'Edit' : '編集' }}
                             </a>
 
                             <form action="{{ route('admin.faqs.destroy', $faq->faq_id) }}"
@@ -325,7 +325,7 @@
                                 @method('DELETE')
 
                                 <button type="submit" class="faq-delete-btn">
-                                    Delete
+                                    {{ request()->cookie('dev') == '1' ? 'Delete' : '削除' }}
                                 </button>
                             </form>
                         </div>

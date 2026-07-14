@@ -145,9 +145,9 @@
     <div class="table-card">
         <div class="table-header">
             <div>
-                <div class="table-title">Contact Submissions</div>
+                <div class="table-title">{{ request()->cookie('dev') == '1' ? 'Contact Submissions' : 'お問い合わせ管理' }}</div>
                 <div class="showing-text">
-                    View messages submitted from the public contact form.
+                    {{ request()->cookie('dev') == '1' ? 'View messages submitted from the public contact form.' : 'お問い合わせを表示します。' }}
                 </div>
             </div>
         </div>
@@ -157,7 +157,7 @@
                 placeholder="Search name, email, phone, subject or message">
 
             <select name="contact_method">
-                <option value="">All Contact Methods</option>
+                <option value="">{{ request()->cookie('dev') == '1' ? 'All Contact Methods' : 'すべての連絡方法' }}</option>
                 @foreach(['whatsapp', 'line', 'phone'] as $method)
                     <option value="{{ $method }}" {{ request('contact_method') === $method ? 'selected' : '' }}>
                         {{ ucfirst($method) }}
@@ -175,25 +175,25 @@
             </select>
 
             <button type="submit" class="btn-primary">
-                Search
+                {{ request()->cookie('dev') == '1' ? 'Search' : '検索' }}
             </button>
 
             <a href="{{ route('admin.contact-submissions.index') }}" class="btn-outline">
-                Reset
+                {{ request()->cookie('dev') == '1' ? 'Reset' : 'リセット' }}
             </a>
         </form>
 
         <table>
             <thead>
                 <tr>
-                    <th>Contact</th>
-                    <th>Method</th>
-                    <th>Subject</th>
-                    <th>Phone</th>
-                    <th>Message</th>
-                    <th>Reply Status</th>
-                    <th>Date</th>
-                    <th style="text-align:right;">Manage</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Contact' : '連絡先' }}</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Method' : '方法' }}</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Subject' : '件名' }}</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Phone' : '電話' }}</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Message' : 'メッセージ' }}</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Reply Status' : '返信状況' }}</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Date' : '日付' }}</th>
+                    <th style="text-align:right;">{{ request()->cookie('dev') == '1' ? 'Manage' : '管理' }}</th>
                 </tr>
             </thead>
 
@@ -237,11 +237,11 @@
                         <td style="text-align:right;">
                             <div class="manage-actions">
                                 <a href="{{ route('admin.contact-submissions.show', $submission) }}" class="btn-outline">
-                                    Detail
+                                    {{ request()->cookie('dev') == '1' ? 'Detail' : '詳細' }}
                                 </a>
 
                                 <a href="{{ route('admin.contact-submissions.reply', $submission) }}" class="btn-primary">
-                                    Reply
+                                    {{ request()->cookie('dev') == '1' ? 'Reply' : '返信' }}
                                 </a>
                             </div>
                         </td>

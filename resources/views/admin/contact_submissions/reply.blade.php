@@ -123,24 +123,24 @@
     <div class="reply-card">
         <div class="reply-header">
             <div>
-                <h1 class="reply-title">Reply Contact Submission</h1>
+                <h1 class="reply-title">{{ request()->cookie('dev') == '1' ? 'Reply Contact Submission' : '連絡先送信に返信' }}</h1>
                 <p class="reply-subtitle">
-                    Write a response, attach a file, and keep reply log.
+                    {{ request()->cookie('dev') == '1' ? 'Reply to the contact submission below.' : '以下の連絡先送信に返信します。' }}
                 </p>
             </div>
 
             <a href="{{ route('admin.contact-submissions.show', $submission) }}" class="btn-outline">
-                Back
+                {{ request()->cookie('dev') == '1' ? 'Back' : '戻る' }}
             </a>
         </div>
 
         <div class="submission-box">
-            <div><strong>Name:</strong> {{ $submission->name }}</div>
-            <div><strong>Email:</strong> {{ $submission->email }}</div>
-            <div><strong>Phone:</strong>
+            <div><strong>{{ request()->cookie('dev') == '1' ? 'Name' : '名前' }}:</strong> {{ $submission->name }}</div>
+            <div><strong>{{ request()->cookie('dev') == '1' ? 'Email' : 'メール' }}:</strong> {{ $submission->email }}</div>
+            <div><strong>{{ request()->cookie('dev') == '1' ? 'Phone' : '電話' }}:</strong>
                 {{ trim(($submission->country_code ?? '') . ' ' . ($submission->phone ?? '')) ?: '-' }}</div>
-            <div><strong>Subject:</strong> {{ $submission->subject ?? '-' }}</div>
-            <div><strong>Message:</strong><br>{{ $submission->message ?? '-' }}</div>
+            <div><strong>{{ request()->cookie('dev') == '1' ? 'Subject' : '件名' }}:</strong> {{ $submission->subject ?? '-' }}</div>
+            <div><strong>{{ request()->cookie('dev') == '1' ? 'Message' : 'メッセージ' }}:</strong><br>{{ $submission->message ?? '-' }}</div>
         </div>
 
         <form action="{{ route('admin.contact-submissions.send-reply', $submission) }}" method="POST"
@@ -148,7 +148,7 @@
             @csrf
 
             <div class="form-group">
-                <label>Reply Subject</label>
+                <label>{{ request()->cookie('dev') == '1' ? 'Reply Subject' : '返信件名' }}</label>
                 <input type="text" name="reply_subject"
                     value="{{ old('reply_subject', 'Reply to your contact submission') }}">
                 @error('reply_subject')
@@ -157,7 +157,7 @@
             </div>
 
             <div class="form-group">
-                <label>Reply Message <span style="color:#dc2626;">*</span></label>
+                <label>{{ request()->cookie('dev') == '1' ? 'Reply Message' : '返信メッセージ' }} <span style="color:#dc2626;">*</span></label>
                 <textarea name="reply_message" required>{{ old('reply_message') }}</textarea>
                 @error('reply_message')
                     <div class="error-text">{{ $message }}</div>
@@ -165,7 +165,7 @@
             </div>
 
             <div class="form-group">
-                <label>Attachment</label>
+                <label>{{ request()->cookie('dev') == '1' ? 'Attachment' : '添付ファイル' }}</label>
                 <input type="file" name="attachment">
                 @error('attachment')
                     <div class="error-text">{{ $message }}</div>
@@ -174,11 +174,11 @@
 
             <div class="reply-actions">
                 <a href="{{ route('admin.contact-submissions.show', $submission) }}" class="btn-outline">
-                    Cancel
+                    {{ request()->cookie('dev') == '1' ? 'Cancel' : 'キャンセル' }}
                 </a>
 
                 <button type="submit" class="btn-primary">
-                    Save Reply
+                    {{ request()->cookie('dev') == '1' ? 'Save Reply' : '返信を保存' }}
                 </button>
             </div>
         </form>

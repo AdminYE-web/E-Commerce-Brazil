@@ -168,12 +168,12 @@
     <div class="table-card">
         <div class="table-header">
             <div>
-                <div class="table-title">Quotations</div>
-                <div class="showing-text">Manage customer quotations.</div>
+                <div class="table-title">{{ request()->cookie('dev') == '1' ? 'Quotations' : '引用' }}</div>
+                <div class="showing-text">{{ request()->cookie('dev') == '1' ? 'Manage customer quotations.' : '管理客户引用' }}</div>
             </div>
 
             <a href="{{ route('admin.quotations.create') }}" class="btn-primary">
-                + Create Quotation
+                {{ request()->cookie('dev') == '1' ? '+ Add Quotation' : '＋ 引用を追加' }}
             </a>
         </div>
 
@@ -199,7 +199,7 @@
             autocomplete="off"
         >
 
-        <span>to</span>
+        <span>{{ request()->cookie('dev') == '1' ? 'to' : 'から' }}</span>
 
         <input
             type="text"
@@ -222,24 +222,24 @@
     </select>
 
     <button type="submit" class="btn-primary">
-        Search
+        {{ request()->cookie('dev') == '1' ? 'Search' : '検索' }}
     </button>
 
     <a href="{{ route('admin.quotations.index') }}" class="btn-outline">
-        Reset
+        {{ request()->cookie('dev') == '1' ? 'Reset' : 'リセット' }}
     </a>
 </form>
 
         <table>
             <thead>
                 <tr>
-                    <th>Quotation No.</th>
-                    <th>Date</th>
-                    <th>Customer</th>
-                    <th>Email</th>
-                    <th>Total</th>
-                    <th>Status</th>
-                    <th width="220">Action</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Quotation No.' : '引用番号' }}</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Date' : '日付' }}</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Customer' : '顧客' }}</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Email' : 'メール' }}</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Total' : '合計' }}</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Status' : 'ステータス' }}</th>
+                    <th width="220">{{ request()->cookie('dev') == '1' ? 'Action' : 'アクション' }}</th>
                 </tr>
             </thead>
 
@@ -255,11 +255,11 @@
                             <select class="quotation-status-select {{ $quotation->status }}"
                                 data-update-url="{{ route('admin.quotations.updateStatus', $quotation->quotation_id) }}">
                                 <option value="active" {{ $quotation->status === 'active' ? 'selected' : '' }}>
-                                    Active
+                                    {{ request()->cookie('dev') == '1' ? 'Active' : '有効' }}
                                 </option>
 
                                 <option value="not_active" {{ $quotation->status === 'not_active' ? 'selected' : '' }}>
-                                    Not Active
+                                    {{ request()->cookie('dev') == '1' ? 'Not Active' : '無効' }}
                                 </option>
                             </select>
                         </td>
@@ -267,17 +267,17 @@
     <div class="quotation-action-buttons">
         <a href="{{ route('admin.quotations.show', $quotation->quotation_id) }}"
            class="quotation-action-btn view">
-            View
+            {{ request()->cookie('dev') == '1' ? 'View' : '表示' }}
         </a>
 
         <a href="{{ route('admin.quotations.edit', $quotation->quotation_id) }}"
            class="quotation-action-btn edit">
-            Edit
+            {{ request()->cookie('dev') == '1' ? 'Edit' : '編集' }}
         </a>
 
         <a href="{{ route('admin.quotations.pdf', $quotation->quotation_id) }}"
            class="quotation-action-btn pdf">
-            PDF
+            {{ request()->cookie('dev') == '1' ? 'PDF' : 'PDF' }}
         </a>
     </div>
 </td>

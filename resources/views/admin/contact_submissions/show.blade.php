@@ -155,18 +155,18 @@
     <div class="table-card contact-detail-card">
         <div class="table-header">
             <div>
-                <div class="table-title">Contact Detail</div>
+                <div class="table-title">{{ request()->cookie('dev') == '1' ? 'Contact Detail' : '連絡先詳細' }}</div>
                 <div class="showing-text">
                     {{ $contactSubmission->name }} &middot; {{ $contactSubmission->email }}
                 </div>
             </div>
 
             <a href="{{ route('admin.contact-submissions.index') }}" class="btn-outline">
-                Back
+                {{ request()->cookie('dev') == '1' ? 'Back' : '戻る' }}
             </a>
         </div>
 
-        <div class="section-title">Contact Information</div>
+        <div class="section-title">{{ request()->cookie('dev') == '1' ? 'Contact Information' : '連絡先情報' }}</div>
 
         <table class="info-table">
             <tr>
@@ -174,7 +174,7 @@
                 <td>{{ $contactSubmission->id }}</td>
             </tr>
             <tr>
-                <th>Reply Status</th>
+                <th>{{ request()->cookie('dev') == '1' ? 'Reply Status' : '返信状況' }}</th>
                 <td>
                     <div class="reply-status-actions">
                         @if (($contactSubmission->status_reply ?? 'pending') === 'reply')
@@ -184,48 +184,48 @@
 
                             <a href="{{ route('admin.contact-submissions.reply', $contactSubmission) }}"
                                 class="btn-reply-small">
-                                Reply
+                                {{ request()->cookie('dev') == '1' ? 'Reply' : '返信' }}
                             </a>
                         @endif
                     </div>
                 </td>
             </tr>
             <tr>
-                <th>Name</th>
+                <th>{{ request()->cookie('dev') == '1' ? 'Name' : '名前' }}</th>
                 <td>{{ $contactSubmission->name }}</td>
             </tr>
             <tr>
-                <th>Email</th>
+                <th>{{ request()->cookie('dev') == '1' ? 'Email' : 'メール' }}</th>
                 <td>{{ $contactSubmission->email }}</td>
             </tr>
             <tr>
-                <th>Phone</th>
+                <th>{{ request()->cookie('dev') == '1' ? 'Phone' : '電話' }}</th>
                 <td>{{ trim(($contactSubmission->country_code ?? '') . ' ' . ($contactSubmission->phone ?? '')) ?: '-' }}
                 </td>
             </tr>
             <tr>
-                <th>LINE ID</th>
+                <th>{{ request()->cookie('dev') == '1' ? 'LINE ID' : 'LINE ID' }}</th>
                 <td>{{ $contactSubmission->line_id ?: '-' }}</td>
             </tr>
             <tr>
-                <th>Preferred Method</th>
+                <th>{{ request()->cookie('dev') == '1' ? 'Preferred Method' : '希望する連絡方法' }}</th>
                 <td><span class="status-pill">{{ $contactSubmission->contact_method }}</span></td>
             </tr>
             <tr>
-                <th>Subject</th>
+                <th>{{ request()->cookie('dev') == '1' ? 'Subject' : '件名' }}</th>
                 <td><span class="status-pill">{{ $contactSubmission->subject }}</span></td>
             </tr>
         </table>
 
-        <div class="section-title">Message</div>
+        <div class="section-title">{{ request()->cookie('dev') == '1' ? 'Message' : 'メッセージ' }}</div>
 
         <div class="message-box">{{ $contactSubmission->message }}</div>
 
-        <div class="section-title">Submission Metadata</div>
+        <div class="section-title">{{ request()->cookie('dev') == '1' ? 'Submission Metadata' : '送信メタデータ' }}</div>
 
         <table class="info-table">
             <tr>
-                <th>Attachment</th>
+                <th>{{ request()->cookie('dev') == '1' ? 'Attachment' : '添付ファイル' }}</th>
                 <td>
                     @if($contactSubmission->attachment_path)
                         <a href="{{ asset('storage/' . $contactSubmission->attachment_path) }}" target="_blank" rel="noopener">
@@ -237,28 +237,28 @@
                 </td>
             </tr>
             <tr>
-                <th>IP Address</th>
+                <th>{{ request()->cookie('dev') == '1' ? 'IP Address' : 'IPアドレス' }}</th>
                 <td>{{ $contactSubmission->ip_address ?: '-' }}</td>
             </tr>
             <tr>
-                <th>Submitted At</th>
+                <th>{{ request()->cookie('dev') == '1' ? 'Submitted At' : '送信日時' }}</th>
                 <td>{{ $contactSubmission->created_at ? $contactSubmission->created_at->format('d/m/Y H:i') : '-' }}</td>
             </tr>
             <tr>
-                <th>Last Updated</th>
+                <th>{{ request()->cookie('dev') == '1' ? 'Last Updated' : '最終更新日時' }}</th>
                 <td>{{ $contactSubmission->updated_at ? $contactSubmission->updated_at->format('d/m/Y H:i') : '-' }}</td>
             </tr>
         </table>
-        <div class="section-title">Reply Logs</div>
+        <div class="section-title">{{ request()->cookie('dev') == '1' ? 'Reply Logs' : '返信ログ' }}</div>
 
         <table>
             <thead>
                 <tr>
-                    <th>Sent By</th>
-                    <th>Subject</th>
-                    <th>Message</th>
-                    <th>Attachment</th>
-                    <th>Sent At</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Sent By' : '送信者' }}</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Subject' : '件名' }}</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Message' : 'メッセージ' }}</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Attachment' : '添付ファイル' }}</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Sent At' : '送信日時' }}</th>
                 </tr>
             </thead>
             <tbody>

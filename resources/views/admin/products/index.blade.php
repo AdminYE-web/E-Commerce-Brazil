@@ -597,14 +597,14 @@
         <table>
             <thead>
                 <tr>
-                    <th>{{ request()->cookie('dev') == '1' ? 'Status Alert' : 'ステータスアラート' }}</th>
+                    {{-- <th>{{ request()->cookie('dev') == '1' ? 'Status Alert' : 'ステータスアラート' }}</th> --}}
                     <th>{{ request()->cookie('dev') == '1' ? 'Product' : '製品' }}</th>
                     <th>{{ request()->cookie('dev') == '1' ? 'Type' : 'タイプ' }}</th>
                     <th>{{ request()->cookie('dev') == '1' ? 'Category' : 'カテゴリ' }}</th>
                     <th>{{ request()->cookie('dev') == '1' ? 'Material' : 'マテリアル' }}</th>
 
                     <th>{{ request()->cookie('dev') == '1' ? 'Status' : 'ステータス' }}</th>
-                    <th>{{ request()->cookie('dev') == '1' ? 'Lang' : '言語' }}</th>
+                    {{-- <th>{{ request()->cookie('dev') == '1' ? 'Lang' : '言語' }}</th> --}}
                     <th style="text-align: right;">{{ request()->cookie('dev') == '1' ? 'Manage' : '管理' }}</th>
                 </tr>
             </thead>
@@ -612,14 +612,14 @@
             <tbody>
                 @forelse ($products as $product)
                     <tr class="{{ !empty($product->is_missing_translation) ? 'translation-missing-row' : '' }}">
-                        <td>
+                        {{-- <td>
                             @if (!empty($product->is_missing_translation))
                                 <span class="status-alert-badge">missing
                                     {{ strtolower($language) === 'ja' ? 'jp' : strtolower($language) }}</span>
                             @else
                                 <span style="color: #cbd5e1;">-</span>
                             @endif
-                        </td>
+                        </td> --}}
                         <td>
                             <div class="product-cell">
                                 @if ($product->mainImage)
@@ -672,13 +672,13 @@
                                     class="status-pill status-inactive">{{ request()->cookie('dev') == '1' ? 'Inactive' : '非公開' }}</span>
                             @endif
                         </td>
-                        <td>
+                        {{-- <td>
                             <div style="display: flex; gap: 6px; align-items: center;">
                                 @foreach (explode(' ', $product->all_languages) as $lang)
                                     <span class="lang-badge lang-{{ strtolower($lang) }}">{{ strtoupper($lang) }}</span>
                                 @endforeach
                             </div>
-                        </td>
+                        </td> --}}
 
                         <td style="text-align: right;">
                             <div class="action-btns" style="justify-content: flex-end;">

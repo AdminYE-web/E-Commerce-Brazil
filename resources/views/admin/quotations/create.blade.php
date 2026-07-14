@@ -244,48 +244,48 @@
     <div class="table-card quotation-page-card">
         <div class="table-header">
             <div>
-                <div class="table-title">Create Quotation</div>
-                <div class="showing-text">Create quotation for customer.</div>
+                <div class="table-title">{{ request()->cookie('dev') == '1' ? 'Create Quotation' : '引用作成' }}</div>
+                <div class="showing-text">{{ request()->cookie('dev') == '1' ? 'Create quotation for customer.' : '顧客の引用を作成します。' }}</div>
             </div>
 
             <a href="{{ route('admin.quotations.index') }}" class="btn-outline">
-                Back
+                {{ request()->cookie('dev') == '1' ? 'Back' : '戻る' }}
             </a>
         </div>
 
         <div class="quotation-form-grid">
             <div class="quotation-form-group quotation-form-full">
-                <label>Quotation No.</label>
+                <label>{{ request()->cookie('dev') == '1' ? 'Quotation No.' : '引用番号' }}</label>
                 <input type="text" name="quotation_no" value="{{ old('quotation_no', $quotationNo) }}" readonly>
             </div>
 
             <div class="quotation-form-group quotation-form-full">
-                <label>Quotation Date</label>
+                <label>{{ request()->cookie('dev') == '1' ? 'Quotation Date' : '引用日付' }}</label>
                 <input type="date" name="quotation_date" value="{{ old('quotation_date', now()->format('Y-m-d')) }}"
                     required>
             </div>
 
             <div class="quotation-form-group quotation-form-full">
-                <label>Customer Name</label>
+                <label>{{ request()->cookie('dev') == '1' ? 'Customer Name' : '顧客名' }}</label>
                 <input type="text" name="customer_name" value="{{ old('customer_name') }}" required>
             </div>
 
             <div class="quotation-form-group quotation-form-full">
-                <label>Customer Email</label>
+                <label>{{ request()->cookie('dev') == '1' ? 'Customer Email' : '顧客メール' }}</label>
                 <input type="email" name="customer_email" value="{{ old('customer_email') }}">
             </div>
 
             <div class="quotation-form-group quotation-form-full">
-                <label>Customer Address</label>
+                <label>{{ request()->cookie('dev') == '1' ? 'Customer Address' : '顧客住所' }}</label>
                 <textarea name="customer_address" rows="3">{{ old('customer_address') }}</textarea>
             </div>
 
             <div class="quotation-form-group quotation-form-full">
-                <label>Note</label>
+                <label>{{ request()->cookie('dev') == '1' ? 'Note' : '備考' }}</label>
                 <textarea name="note" rows="3">{{ old('note') }}</textarea>
             </div>
             <div class="quotation-form-group quotation-form-full">
-    <label>Discount Amount</label>
+    <label>{{ request()->cookie('dev') == '1' ? 'Discount Amount' : '割引額' }}</label>
     <input 
         type="number" 
         name="discount_amount" 
@@ -304,20 +304,20 @@
         <div id="quotation-items"></div>
 
         <button type="button" class="btn-outline" id="add-item-btn">
-            + Add Product
+            {{ request()->cookie('dev') == '1' ? '+ Add Product' : '+ 商品を追加' }}
         </button>
 
         <div class="quotation-actions">
             <button type="submit" class="quotation-save-btn">
-                Save Quotation
+                {{ request()->cookie('dev') == '1' ? 'Save Quotation' : '引用を保存' }}
             </button>
         </div>
        <div class="quotation-grand-summary">
-    <div>Subtotal: ¥<span id="quotationSubtotal">0.00</span></div>
-    <div>Discount: -¥<span id="quotationDiscount">0.00</span></div>
-    <div>Shipping: <span id="quotationShipping">¥800.00</span></div>
-    <div>VAT 10%: ¥<span id="quotationVat">0.00</span></div>
-    <div><strong>Grand Total: ¥<span id="quotationGrandTotal">0.00</span></strong></div>
+    <div>{{ request()->cookie('dev') == '1' ? 'Subtotal:' : '小計:' }} ¥<span id="quotationSubtotal">0.00</span></div>
+    <div>{{ request()->cookie('dev') == '1' ? 'Discount:' : '割引:' }} -¥<span id="quotationDiscount">0.00</span></div>
+    <div>{{ request()->cookie('dev') == '1' ? 'Shipping:' : '配送料:' }} <span id="quotationShipping">¥800.00</span></div>
+    <div>{{ request()->cookie('dev') == '1' ? 'VAT 10%:' : '消費税 10%:' }} ¥<span id="quotationVat">0.00</span></div>
+    <div><strong>{{ request()->cookie('dev') == '1' ? 'Grand Total:' : '合計:' }} ¥<span id="quotationGrandTotal">0.00</span></strong></div>
 </div>
     </div>
 
@@ -327,7 +327,7 @@
     <div class="quotation-item-box" data-item-index="__INDEX__">
         <div class="quotation-form-grid">
             <div class="quotation-form-group">
-                <label>Product</label>
+                <label>{{ request()->cookie('dev') == '1' ? 'Product' : '商品' }}</label>
                 <select name="items[__INDEX__][product_id]" class="quotation-product-select" required>
                     <option value="">-- Select Product --</option>
                     @foreach ($products as $product)
@@ -339,7 +339,7 @@
             </div>
 
             <div class="quotation-form-group">
-                <label>Quantity</label>
+                <label>{{ request()->cookie('dev') == '1' ? 'Quantity' : '数量' }}</label>
                 <input type="number" name="items[__INDEX__][quantity]" class="quotation-qty" value="1"
                     min="1" required>
             </div>
@@ -348,11 +348,11 @@
         <div class="quotation-options-area"></div>
 
         <div class="quotation-item-summary">
-            Item Total: ¥<span class="quotation-item-total">0.00</span>
+           {{ request()->cookie('dev') == '1' ? ' Item Total:' : ' 商品小計:' }} ¥<span class="quotation-item-total">0.00</span>
         </div>
 
         <button type="button" class="quotation-remove-btn remove-item-btn">
-            Remove
+            {{ request()->cookie('dev') == '1' ? 'Remove' : '削除' }}
         </button>
     </div>
 </template>

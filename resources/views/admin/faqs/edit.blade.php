@@ -13,22 +13,24 @@
     <div class="table-card faq-page-card">
         <div class="table-header">
             <div>
-                <div class="table-title">Edit FAQ</div>
+                <div class="table-title">{{ request()->cookie('dev') == '1' ? 'Edit FAQ' : 'FAQを編集' }}</div>
                 <div class="showing-text">{{ $faq->question }}</div>
             </div>
 
-            <a href="{{ route('admin.faqs.index') }}" class="btn-outline">Back</a>
+            <a href="{{ route('admin.faqs.index') }}" class="btn-outline">
+                {{ request()->cookie('dev') == '1' ? 'Back' : '戻る' }}
+            </a>
         </div>
 
         @include('admin.faqs._form', ['faq' => $faq])
 
         <div class="faq-actions-bottom">
             <button type="submit" class="faq-save-btn">
-                Update FAQ
+                {{ request()->cookie('dev') == '1' ? 'Update FAQ' : 'FAQを更新' }}
             </button>
 
             <a href="{{ route('admin.faqs.index') }}" class="faq-cancel-btn">
-                Cancel
+                {{ request()->cookie('dev') == '1' ? 'Cancel' : 'キャンセル' }}
             </a>
         </div>
     </div>
