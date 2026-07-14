@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\ProductOption;
 use App\Models\ProductOptionAssignment;
 use App\Models\ProductOptionPriceRule;
+use App\Models\Quotation;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
@@ -278,6 +279,93 @@ class ProductOptionPriceRuleTest extends TestCase
         $this->assertStringContainsString("'optionPriceRules.options'", $controllerContents);
         $this->assertStringContainsString("'optionPriceRules.tiers'", $controllerContents);
         $this->assertStringContainsString("'optionPriceRules'", $controllerContents);
+    }
+
+    public function test_quotation_uses_the_same_quantity_and_replacement_option_prices_as_product_detail(): void
+    {
+        $admin = AdminUser::create([
+            'name' => 'Quotation Pricing Admin',
+            'email' => 'quotation-pricing-admin-'.uniqid().'@example.com',
+            'password' => Hash::make('password'),
+            'role' => 'super_admin',
+            'is_active' => 1,
+        ]);
+
+        [$product, $targetOption, $conditionOption] = $this->createProductWithTargetAndConditionOptions();
+
+        $targetOption->update([
+            'free_from_qty' => 10,
+        ]);
+
+        $targetOption->priceRates()->create([
+            'min_qty' => 10,
+            'additional_price' => 60,
+            'additional_price_with_tax' => 66,
+        ]);
+
+        $rule = ProductOptionPriceRule::create([
+            'product_id' => $product->product_id,
+            'target_option_id' => $targetOption->option_id,
+            'rule_name' => 'Quotation replacement price',
+            'is_active' => 1,
+        ]);
+
+        $rule->options()->sync([$conditionOption->option_id]);
+        $rule->tiers()->create([
+            'min_qty' => 10,
+            'max_qty' => null,
+            'additional_price' => 20,
+            'additional_price_with_tax' => 22,
+            'is_active' => 1,
+        ]);
+
+        $optionsResponse = $this
+            ->actingAs($admin, 'admin')
+            ->getJson(route('admin.quotations.productOptions', $product));
+
+        $optionsResponse->assertOk();
+
+        $responseData = $optionsResponse->json();
+        $returnedOption = collect($responseData['groups'])
+            ->flatMap(fn ($group) => $group['options'])
+            ->firstWhere('option_id', $targetOption->option_id);
+        $returnedRule = collect($responseData['option_price_rules'])
+            ->firstWhere('option_price_rule_id', $rule->option_price_rule_id);
+
+        $this->assertSame(10, $returnedOption['free_from_qty']);
+        $this->assertSame(60.0, (float) $returnedOption['price_rates'][0]['price']);
+        $this->assertSame($targetOption->option_id, $returnedRule['target_option_id']);
+        $this->assertSame(20.0, (float) $returnedRule['tiers'][0]['additional_price']);
+
+        $quotationNo = 'QT-OPTION-'.uniqid();
+
+        $this
+            ->actingAs($admin, 'admin')
+            ->post(route('admin.quotations.store'), [
+                'quotation_no' => $quotationNo,
+                'quotation_date' => now()->toDateString(),
+                'customer_name' => 'Quotation Price Test',
+                'items' => [
+                    [
+                        'product_id' => $product->product_id,
+                        'quantity' => 10,
+                        'options' => [
+                            $targetOption->option_group_id => $targetOption->option_id,
+                            $conditionOption->option_group_id => $conditionOption->option_id,
+                        ],
+                    ],
+                ],
+            ])
+            ->assertRedirect(route('admin.quotations.index'));
+
+        $quotation = Quotation::where('quotation_no', $quotationNo)->firstOrFail();
+        $quotationItem = $quotation->items()->with('options')->firstOrFail();
+        $targetQuotationOption = $quotationItem->options
+            ->firstWhere('option_id', $targetOption->option_id);
+
+        $this->assertSame(200.0, (float) $quotationItem->option_total);
+        $this->assertSame(200.0, (float) $quotationItem->item_total);
+        $this->assertSame(20.0, (float) $targetQuotationOption->additional_price);
     }
 
     private function createProductWithTargetAndConditionOptions(): array

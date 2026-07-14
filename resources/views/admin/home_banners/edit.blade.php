@@ -236,16 +236,23 @@
 @endsection
 
 @section('content')
-
+    @php
+        $isDev = request()->cookie('dev') == '1';
+    @endphp
     <div class="form-card">
         <div class="form-header">
             <div>
-                <h1>Edit Home Banner</h1>
-                <p>Update homepage banner images, link, sort order and status.</p>
+                <h1>{{ $isDev ? 'Edit Home Banner' : 'ホームバナーを編集' }}</h1>
+
+                <p>
+                    {{ $isDev
+                        ? 'Update homepage banner images, link, sort order and status.'
+                        : 'ホームページバナーの画像、リンク、表示順、ステータスを更新します。' }}
+                </p>
             </div>
 
             <a href="{{ route('admin.home-banners.index') }}" class="btn-outline">
-                Back
+                {{ $isDev ? 'Back' : '戻る' }}
             </a>
         </div>
 
@@ -264,32 +271,36 @@
             @csrf
             @method('PUT')
 
-            <div class="section-title">Banner Information</div>
+            <div class="section-title">
+                {{ $isDev ? 'Banner Information' : 'バナー情報' }}
+            </div>
 
             <div class="form-grid">
                 <div class="form-group">
-                    <label>Title</label>
+                    <label>{{ $isDev ? 'Title' : 'タイトル' }}</label>
                     <input type="text" name="title" value="{{ old('title', $homeBanner->title) }}">
                 </div>
 
                 <div class="form-group">
-                    <label>Link URL</label>
+                    <label>{{ $isDev ? 'Link URL' : 'リンク先URL' }}</label>
                     <input type="text" name="link_url" value="{{ old('link_url', $homeBanner->link_url) }}"
-                        placeholder="https://example.com หรือ /products">
+                        placeholder="https://example.com または /products">
                 </div>
 
                 <div class="form-group">
-                    <label>Sort Order</label>
+                    <label>{{ $isDev ? 'Sort Order' : '表示順' }}</label>
                     <input type="number" name="sort_order" value="{{ old('sort_order', $homeBanner->sort_order) }}"
                         min="0">
                 </div>
             </div>
 
-            <div class="section-title">Banner Images</div>
+            <div class="section-title">
+                {{ $isDev ? 'Banner Images' : 'バナー画像' }}
+            </div>
 
             <div class="image-edit-grid">
                 <div class="image-edit-card">
-                    <label>PC Image</label>
+                    <label>{{ $isDev ? 'PC Image' : 'PC画像' }}</label>
 
                     @if ($homeBanner->image_pc)
                         <div class="current-image-card pc">
@@ -297,7 +308,7 @@
 
                             <label class="remove-check">
                                 <input type="checkbox" name="remove_image_pc" value="1">
-                                Remove PC image
+                                {{ $isDev ? 'Remove PC image' : 'PC画像を削除' }}
                             </label>
                         </div>
                     @else
@@ -305,13 +316,13 @@
                     @endif
 
                     <div class="upload-under-image">
-                        <label>Upload New PC Image</label>
+                        <label>{{ $isDev ? 'Upload New PC Image' : '新しいPC画像のアップロード' }}</label>
                         <input type="file" name="image_pc" accept="image/*">
                     </div>
                 </div>
 
                 <div class="image-edit-card">
-                    <label>Mobile Image</label>
+                    <label>{{ $isDev ? 'Mobile Image' : 'モバイル画像' }}</label>
 
                     @if ($homeBanner->image_mobile)
                         <div class="current-image-card mobile">
@@ -319,38 +330,40 @@
 
                             <label class="remove-check">
                                 <input type="checkbox" name="remove_image_mobile" value="1">
-                                Remove Mobile image
+                                {{ $isDev ? 'Remove Mobile image' : 'モ바일画像を削除' }}
                             </label>
                         </div>
                     @else
-                        <p class="muted-text">No image</p>
+                        <p class="muted-text">{{ $isDev ? 'No image' : '画像がありません' }}</p>
                     @endif
 
                     <div class="upload-under-image">
-                        <label>Upload New Mobile Image</label>
+                        <label>{{ $isDev ? 'Upload New Mobile Image' : '新しいモバイル画像のアップロード' }}</label>
                         <input type="file" name="image_mobile" accept="image/*">
                     </div>
                 </div>
             </div>
 
 
-            <div class="section-title">Status</div>
+            <div class="section-title">
+                {{ $isDev ? 'Status' : 'ステータス' }}
+            </div>
 
             <div class="checkbox-grid">
                 <label>
                     <input type="checkbox" name="is_active" value="1"
                         {{ old('is_active', $homeBanner->is_active) ? 'checked' : '' }}>
-                    Active
+                    {{ $isDev ? 'Active' : 'アクティブ' }}
                 </label>
             </div>
 
             <div class="form-actions">
                 <a href="{{ route('admin.home-banners.index') }}" class="btn-outline">
-                    Cancel
+                    {{ $isDev ? 'Cancel' : 'キャンセル' }}
                 </a>
 
                 <button type="submit" class="btn-primary">
-                    Update Home Banner
+                    {{ $isDev ? 'Update Home Banner' : 'ホームバナーを更新' }}
                 </button>
             </div>
         </form>

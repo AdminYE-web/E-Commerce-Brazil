@@ -196,9 +196,11 @@
     <div class="table-card">
         <div class="table-header">
             <div>
-                <div class="table-title">Manage Menu Bar & Recommended Products</div>
+                <div class="table-title">
+                    {{ request()->cookie('dev') === '1' ? 'Manage Menu Bar & Recommended Products' : 'メニューバーとおすすめ製品の管理' }}
+                </div>
                 <div class="showing-text">
-                    Manage products shown in menu bar and recommended product sections.
+                    {{ request()->cookie('dev') === '1' ? 'Manage products shown in menu bar and recommended product sections.' : 'メニューバーとおすすめ製品セクションに表示される製品を管理します。' }}
                 </div>
             </div>
         </div>
@@ -228,7 +230,8 @@
         <div id="tab-hotstrap" class="type-tab-content active">
 
             <div class="manage-section">
-                <div class="manage-section-title">Menu Bar Products</div>
+                <div class="manage-section-title">{{ request()->cookie('dev') === '1' ? 'Menu Bar Products' : 'メニューバー製品' }}
+                </div>
             </div>
 
             <div class="manage-grid">
@@ -242,7 +245,8 @@
             </div>
 
             <div class="manage-section">
-                <div class="manage-section-title">Recommended Products</div>
+                <div class="manage-section-title">{{ request()->cookie('dev') === '1' ? 'Recommended Products' : 'おすすめ製品' }}
+                </div>
             </div>
 
             <div class="manage-grid">
@@ -260,7 +264,8 @@
         <div id="tab-hotmobily" class="type-tab-content">
 
             <div class="manage-section">
-                <div class="manage-section-title">Menu Bar Products</div>
+                <div class="manage-section-title">{{ request()->cookie('dev') === '1' ? 'Menu Bar Products' : 'メニューバー製品' }}
+                </div>
             </div>
 
             <div class="manage-grid">
@@ -274,7 +279,8 @@
             </div>
 
             <div class="manage-section">
-                <div class="manage-section-title">Recommended Products</div>
+                <div class="manage-section-title">{{ request()->cookie('dev') === '1' ? 'Recommended Products' : 'おすすめ製品' }}
+                </div>
             </div>
 
             <div class="manage-grid">
@@ -290,30 +296,30 @@
         </div>
     </div>
     <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const tabButtons = document.querySelectorAll('.type-tab-btn');
-        const tabContents = document.querySelectorAll('.type-tab-content');
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabButtons = document.querySelectorAll('.type-tab-btn');
+            const tabContents = document.querySelectorAll('.type-tab-content');
 
-        tabButtons.forEach(function (button) {
-            button.addEventListener('click', function () {
-                const tab = this.dataset.tab;
+            tabButtons.forEach(function(button) {
+                button.addEventListener('click', function() {
+                    const tab = this.dataset.tab;
 
-                tabButtons.forEach(function (btn) {
-                    btn.classList.remove('active');
+                    tabButtons.forEach(function(btn) {
+                        btn.classList.remove('active');
+                    });
+
+                    tabContents.forEach(function(content) {
+                        content.classList.remove('active');
+                    });
+
+                    this.classList.add('active');
+
+                    const targetContent = document.getElementById('tab-' + tab);
+                    if (targetContent) {
+                        targetContent.classList.add('active');
+                    }
                 });
-
-                tabContents.forEach(function (content) {
-                    content.classList.remove('active');
-                });
-
-                this.classList.add('active');
-
-                const targetContent = document.getElementById('tab-' + tab);
-                if (targetContent) {
-                    targetContent.classList.add('active');
-                }
             });
         });
-    });
-</script>
+    </script>
 @endsection

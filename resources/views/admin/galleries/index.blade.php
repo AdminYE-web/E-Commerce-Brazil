@@ -115,15 +115,16 @@
     <div class="table-card">
         <div class="table-header">
             <div>
-                <div class="table-title">Galleries</div>
+                <div class="table-title">{{ request()->cookie('dev') === '1' ? 'Galleries' : 'ギャラリー' }}</div>
                 <div class="showing-text">
-                    Manage gallery cover, images, category, material, purpose and date.
+                    Manage
+                    {{ request()->cookie('dev') === '1' ? 'gallery cover, images, category, material, purpose and date.' : 'ギャラリーのカバー、画像、カテゴリ、素材、目的、日付を管理します。' }}
                 </div>
             </div>
 
             <div class="table-actions">
                 <a href="{{ route('admin.galleries.create') }}" class="btn-outline">
-                    + Add Gallery
+                    {{ request()->cookie('dev') == '1' ? '+ Add Gallery' : '+ ギャラリーを追加' }}
                 </a>
             </div>
         </div>
@@ -134,18 +135,18 @@
                     placeholder="Search by title, purpose, category or material...">
 
                 <button type="submit" class="gallery-search-btn">
-                    Search
+                    {{ request()->cookie('dev') == '1' ? 'Search' : '検索' }}
                 </button>
 
-                @if(request('search'))
+                @if (request('search'))
                     <a href="{{ route('admin.galleries.index') }}" class="gallery-reset-btn">
-                        Reset
+                        {{ request()->cookie('dev') == '1' ? 'Reset' : 'リセット' }}
                     </a>
                 @endif
             </div>
         </form>
 
-        @if(session('success'))
+        @if (session('success'))
             <div class="alert-success">
                 {{ session('success') }}
             </div>
@@ -154,14 +155,14 @@
         <table>
             <thead>
                 <tr>
-                    <th>Cover</th>
-                    <th>Title</th>
-                    <th>Category</th>
-                    <th>Material</th>
-                    <th>Purpose</th>
-                    <th>Date</th>
-                    <th>Status</th>
-                    <th style="text-align:right;">Manage</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Cover' : '表紙' }}</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Title' : 'タイトル' }}</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Category' : 'カテゴリ' }}</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Material' : '素材' }}</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Purpose' : '目的' }}</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Date' : '日付' }}</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Status' : 'ステータス' }}</th>
+                    <th style="text-align:right;">{{ request()->cookie('dev') == '1' ? 'Manage' : '管理' }}</th>
                 </tr>
             </thead>
 
@@ -169,7 +170,7 @@
                 @forelse($galleries as $gallery)
                     <tr class="{{ !empty($gallery->is_missing_translation) ? 'translation-missing-row' : '' }}">
                         <td>
-                            @if($gallery->cover_image)
+                            @if ($gallery->cover_image)
                                 <img src="{{ asset('storage/' . $gallery->cover_image) }}" class="gallery-cover"
                                     alt="{{ $gallery->title }}">
                             @else
@@ -197,37 +198,42 @@
                         </td>
 
                         <td>
-                            @if($gallery->is_active)
-                                <span class="status-pill status-active">Active</span>
+                            @if ($gallery->is_active)
+                                <span
+                                    class="status-pill status-active">{{ request()->cookie('dev') == '1' ? 'Active' : '有効' }}</span>
                             @else
-                                <span class="status-pill status-inactive">Inactive</span>
+                                <span
+                                    class="status-pill status-inactive">{{ request()->cookie('dev') == '1' ? 'Inactive' : '無効' }}</span>
                             @endif
                         </td>
 
                         <td style="text-align:right;">
                             <div class="action-btns" style="justify-content:flex-end;">
                                 @if (!empty($gallery->is_missing_translation))
-                                    <form action="{{ route('admin.galleries.duplicate-translation', $gallery->gallery_id) }}"
+                                    <form
+                                        action="{{ route('admin.galleries.duplicate-translation', $gallery->gallery_id) }}"
                                         method="POST" style="display:inline;">
                                         @csrf
 
                                         <button type="submit" class="action-link duplicate"
                                             onclick="return confirm('Duplicate this PT gallery for {{ strtoupper($language) }}?')">
-                                            Duplicate
+                                            {{ request()->cookie('dev') == '1' ? 'Duplicate' : '複製' }}
                                         </button>
                                     </form>
                                 @else
-                                    <a href="{{ route('admin.galleries.edit', $gallery->gallery_id) }}" class="action-link">
-                                        Edit
+                                    <a href="{{ route('admin.galleries.edit', $gallery->gallery_id) }}"
+                                        class="action-link">
+                                        {{ request()->cookie('dev') == '1' ? 'Edit' : '編集' }}
                                     </a>
 
-                                    <form action="{{ route('admin.galleries.destroy', $gallery->gallery_id) }}" method="POST"
-                                        style="display:inline;" onsubmit="return confirm('Delete this gallery?')">
+                                    <form action="{{ route('admin.galleries.destroy', $gallery->gallery_id) }}"
+                                        method="POST" style="display:inline;"
+                                        onsubmit="return confirm('Delete this gallery?')">
                                         @csrf
                                         @method('DELETE')
 
                                         <button type="submit" class="action-link delete">
-                                            Delete
+                                            {{ request()->cookie('dev') == '1' ? 'Delete' : '削除' }}
                                         </button>
                                     </form>
                                 @endif

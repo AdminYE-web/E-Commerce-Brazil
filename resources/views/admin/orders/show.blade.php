@@ -392,55 +392,55 @@
 
         <div class="table-header">
             <div>
-                <div class="table-title">Order Detail</div>
-               <div class="showing-text">
-    Order No:
-    <strong>{{ $order->order_no }}</strong>
+                <div class="table-title">{{ request()->cookie('dev') == '1' ? 'Order Detail' : '注文詳細' }}</div>
+                <div class="showing-text">
+                    {{ request()->cookie('dev') == '1' ? 'Order No' : '注文番号' }}:
+                    <strong>{{ $order->order_no }}</strong>
 
-   
-</div>
+
+                </div>
             </div>
 
             <div class="document-actions">
                 <a href="{{ route('admin.orders.quotation', $order->order_id) }}" class="btn-outline">
-                    Download Quotation
+                    {{ request()->cookie('dev') == '1' ? 'Download Quotation' : '見積書をダウンロード' }}
                 </a>
 
                 <a href="{{ route('admin.orders.invoice', $order->order_id) }}" class="btn-outline">
-                    Download Invoice
+                    {{ request()->cookie('dev') == '1' ? 'Download Invoice' : '請求書をダウンロード' }}
                 </a>
 
                 <a href="{{ route('admin.orders.index') }}" class="btn-outline">
-                    Back
+                    {{ request()->cookie('dev') == '1' ? 'Back' : '戻る' }}
                 </a>
             </div>
         </div>
 
-        @if(session('success'))
+        @if (session('success'))
             <div class="alert-success">
                 {{ session('success') }}
             </div>
         @endif
 
-        <div class="section-title">Order Information</div>
+        <div class="section-title">{{ request()->cookie('dev') == '1' ? 'Order Information' : '注文情報' }}</div>
 
-<table class="info-table">
-    <tr>
-        <th>Order No</th>
-        <td>{{ $order->order_no }}</td>
-    </tr>
+        <table class="info-table">
+            <tr>
+                <th>{{ request()->cookie('dev') == '1' ? 'Order No' : '注文番号' }}</th>
+                <td>{{ $order->order_no }}</td>
+            </tr>
 
-    <tr>
-        <th>Order Date</th>
-        <td>
-            {{ $order->created_at ? $order->created_at->format('d/m/Y H:i') : '-' }}
-        </td>
-    </tr>
+            <tr>
+                <th>{{ request()->cookie('dev') == '1' ? 'Order Date' : '注文日' }}</th>
+                <td>
+                    {{ $order->created_at ? $order->created_at->format('d/m/Y H:i') : '-' }}
+                </td>
+            </tr>
 
-   
-</table>
 
-        <div class="section-title">Order Status</div>
+        </table>
+
+        <div class="section-title">{{ request()->cookie('dev') == '1' ? 'Order Status' : '注文ステータス' }}</div>
 
         <form action="{{ route('admin.orders.updateStatus', $order->order_id) }}" method="POST" class="status-box">
             @csrf
@@ -448,10 +448,10 @@
 
             <div class="status-form">
                 <div class="form-group">
-                    <label>Order Status</label>
+                    <label>{{ request()->cookie('dev') == '1' ? 'Order Status' : '注文ステータス' }}</label>
 
                     <select name="status">
-                        @foreach(['order_pending', 'design_in_progress', 'production', 'delivery', 'delivered', 'completed', 'cancelled'] as $status)
+                        @foreach (['order_pending', 'design_in_progress', 'production', 'delivery', 'delivered', 'completed', 'cancelled'] as $status)
                             <option value="{{ $status }}" {{ $order->order_status == $status ? 'selected' : '' }}>
                                 {{ ucwords(str_replace('_', ' ', $status)) }}
                             </option>
@@ -460,11 +460,12 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Payment Status</label>
+                    <label>{{ request()->cookie('dev') == '1' ? 'Payment Status' : '支払いステータス' }}</label>
 
                     <select name="payment_status">
-                        @foreach(['pending', 'paid', 'failed', 'cancelled', 'refunded'] as $paymentStatus)
-                            <option value="{{ $paymentStatus }}" {{ $order->payment_status == $paymentStatus ? 'selected' : '' }}>
+                        @foreach (['pending', 'paid', 'failed', 'cancelled', 'refunded'] as $paymentStatus)
+                            <option value="{{ $paymentStatus }}"
+                                {{ $order->payment_status == $paymentStatus ? 'selected' : '' }}>
                                 {{ ucfirst($paymentStatus) }}
                             </option>
                         @endforeach
@@ -473,74 +474,75 @@
             </div>
 
             <button type="submit" class="btn-primary">
-                Update Status
+                {{ request()->cookie('dev') == '1' ? 'Update Status' : 'ステータスを更新' }}
             </button>
         </form>
 
-        <div class="section-title">Customer Information</div>
+        <div class="section-title">{{ request()->cookie('dev') == '1' ? 'Customer Information' : '顧客情報' }}</div>
 
         <table class="info-table">
             <tr>
-                <th>Name</th>
+                <th>{{ request()->cookie('dev') == '1' ? 'Name' : '名前' }}</th>
                 <td>
                     {{ $order->customer->personal_first_name ?? '-' }}
                     {{ $order->customer->personal_last_name ?? '' }}
                 </td>
             </tr>
             <tr>
-                <th>Email</th>
+                <th>{{ request()->cookie('dev') == '1' ? 'Email' : 'メールアドレス' }}</th>
                 <td>{{ $order->customer->personal_email ?? '-' }}</td>
             </tr>
             <tr>
-                <th>Phone</th>
+                <th>{{ request()->cookie('dev') == '1' ? 'Phone' : '電話番号' }}</th>
                 <td>{{ $order->customer->personal_phone ?? '-' }}</td>
             </tr>
         </table>
 
-        <div class="section-title">Shipping Address</div>
+        <div class="section-title">{{ request()->cookie('dev') == '1' ? 'Shipping Address' : '配送先住所' }}</div>
 
         <table class="info-table">
             <tr>
-                <th>Postcode</th>
+                <th>{{ request()->cookie('dev') == '1' ? 'Postcode' : '郵便番号' }}</th>
                 <td>{{ $order->customer->shipping_postcode ?? '-' }}</td>
             </tr>
             <tr>
-                <th>Province</th>
+                <th>{{ request()->cookie('dev') == '1' ? 'Province' : '都道府県' }}</th>
                 <td>{{ $order->customer->shipping_province ?? '-' }}</td>
             </tr>
             <tr>
-                <th>City</th>
+                <th>{{ request()->cookie('dev') == '1' ? 'City' : '市区町村' }}</th>
                 <td>{{ $order->customer->shipping_city ?? '-' }}</td>
             </tr>
             <tr>
-                <th>Area</th>
+                <th>{{ request()->cookie('dev') == '1' ? 'Area' : '市区町村以下' }}</th>
                 <td>{{ $order->customer->shipping_area ?? '-' }}</td>
             </tr>
             <tr>
-                <th>Building / Room</th>
+                <th>{{ request()->cookie('dev') == '1' ? 'Building / Room' : '建物名・部屋番号' }}</th>
                 <td>{{ $order->customer->shipping_building_room ?? '-' }}</td>
             </tr>
         </table>
 
-        <div class="section-title">Order Items</div>
+        <div class="section-title">{{ request()->cookie('dev') == '1' ? 'Order Items' : '注文商品' }}</div>
 
         <div class="order-items-table-wrap">
             <table class="order-items-table">
                 <thead>
                     <tr>
-                        <th style="width: 130px;">Image</th>
-                        <th>Product</th>
-                        <th style="width: 95px;">Qty</th>
-                        <th style="width: 140px;">Unit Price</th>
-                        <th style="width: 150px;">Total</th>
+                        <th style="width: 130px;">{{ request()->cookie('dev') == '1' ? 'Image' : '画像' }}</th>
+                        <th>{{ request()->cookie('dev') == '1' ? 'Product' : '商品' }}</th>
+                        <th style="width: 95px;">{{ request()->cookie('dev') == '1' ? 'Qty' : '数量' }}</th>
+                        <th style="width: 140px;">{{ request()->cookie('dev') == '1' ? 'Unit Price' : '単価' }}</th>
+                        <th style="width: 150px;">{{ request()->cookie('dev') == '1' ? 'Total' : '合計' }}</th>
                         <th style="width: 150px; text-align: right;">
-                            <img src="{{ asset('assets/images/icon/weui_arrow-filled (1).png') }}" class="order-toggle-icon" alt="">
+                            <img src="{{ asset('assets/images/icon/weui_arrow-filled (1).png') }}"
+                                class="order-toggle-icon" alt="">
                         </th>
                     </tr>
                 </thead>
 
                 <tbody>
-                    @foreach($order->items as $index => $item)
+                    @foreach ($order->items as $index => $item)
                         @php
                             $options = is_array($item->options)
                                 ? $item->options
@@ -564,8 +566,9 @@
 
                         <tr class="order-main-row {{ $isOpen ? 'is-open' : '' }}">
                             <td>
-                                @if($item->product_image)
-                                    <img src="{{ asset('storage/' . $item->product_image) }}" class="order-product-img" alt="">
+                                @if ($item->product_image)
+                                    <img src="{{ asset('storage/' . $item->product_image) }}" class="order-product-img"
+                                        alt="">
                                 @else
                                     -
                                 @endif
@@ -597,29 +600,30 @@
 
                             <td style="text-align: right;">
                                 <button type="button" class="order-toggle-btn">
-                                    <img src="{{ asset('assets/images/icon/weui_arrow-filled (1).png') }}" class="order-toggle-icon" alt="">
-                                    <span>View Details</span>
+                                    <img src="{{ asset('assets/images/icon/weui_arrow-filled (1).png') }}"
+                                        class="order-toggle-icon" alt="">
+                                    <span>{{ request()->cookie('dev') == '1' ? 'View Details' : '詳細を表示' }}</span>
                                 </button>
                             </td>
                         </tr>
 
                         <tr class="order-detail-row {{ $isOpen ? '' : 'is-hidden' }}">
                             <td colspan="6">
-                                @if(!empty($options))
+                                @if (!empty($options))
                                     <div class="order-detail-content">
                                         <div>
-                                            @foreach($leftOptions as $option)
+                                            @foreach ($leftOptions as $option)
                                                 <div class="order-option-line">
                                                     <strong>{{ $option['group_name'] ?? '-' }}:</strong>
 
-                                                    @if(!empty($option['color_code']))
+                                                    @if (!empty($option['color_code']))
                                                         <span class="order-option-color"
                                                             style="background: {{ $option['color_code'] }}"></span>
                                                     @endif
 
                                                     {{ $option['option_name'] ?? '-' }}
 
-                                                    @if(!empty($option['variant_name']))
+                                                    @if (!empty($option['variant_name']))
                                                         : {{ $option['variant_name'] }}
                                                     @endif
                                                 </div>
@@ -627,18 +631,18 @@
                                         </div>
 
                                         <div>
-                                            @foreach($rightOptions as $option)
+                                            @foreach ($rightOptions as $option)
                                                 <div class="order-option-line">
                                                     <strong>{{ $option['group_name'] ?? '-' }}:</strong>
 
-                                                    @if(!empty($option['color_code']))
+                                                    @if (!empty($option['color_code']))
                                                         <span class="order-option-color"
                                                             style="background: {{ $option['color_code'] }}"></span>
                                                     @endif
 
                                                     {{ $option['option_name'] ?? '-' }}
 
-                                                    @if(!empty($option['variant_name']))
+                                                    @if (!empty($option['variant_name']))
                                                         : {{ $option['variant_name'] }}
                                                     @endif
                                                 </div>
@@ -657,18 +661,19 @@
             </table>
         </div>
 
-        <div class="section-title">Artwork / Template Information</div>
+        <div class="section-title">
+            {{ request()->cookie('dev') == '1' ? 'Artwork / Template Information' : 'アートワーク/テンプレート情報' }}</div>
 
         <table>
             <thead>
                 <tr>
-                    <th>Product ID</th>
-                    <th>File</th>
-                    <th>No Artwork</th>
-                    <th>Text</th>
-                    <th>Font</th>
-                    <th>Template ID</th>
-                    <th>Status</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Product ID' : '商品ID' }}</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'File' : 'ファイル' }}</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'No Artwork' : 'ノーアートワーク' }}</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Text' : 'テキスト' }}</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Font' : 'フォント' }}</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Template ID' : 'テンプレートID' }}</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Status' : 'ステータス' }}</th>
                 </tr>
             </thead>
 
@@ -678,9 +683,9 @@
                         <td>{{ $artwork->product_id }}</td>
 
                         <td>
-                            @if($artwork->file_path)
+                            @if ($artwork->file_path)
                                 <a href="{{ asset('storage/' . $artwork->file_path) }}" target="_blank" class="file-link">
-                                    {{ $artwork->original_name ?? 'View file' }}
+                                    {{ $artwork->original_name ?? request()->cookie('dev') == '1' ? 'View file' : 'ファイルを表示' }}
                                 </a>
                             @else
                                 -
@@ -693,7 +698,7 @@
 
                         <td>
                             {{ $artwork->font_option ?? '-' }}
-                            @if($artwork->font_other)
+                            @if ($artwork->font_other)
                                 / {{ $artwork->font_other }}
                             @endif
                         </td>
@@ -716,15 +721,15 @@
             </tbody>
         </table>
 
-        <div class="section-title">Payment</div>
+        <div class="section-title">{{ request()->cookie('dev') == '1' ? 'Payment' : '支払い' }}</div>
 
         <table class="info-table">
             <tr>
-                <th>Method</th>
+                <th>{{ request()->cookie('dev') == '1' ? 'Method' : '方法' }}</th>
                 <td>{{ $order->payment->payment_method ?? '-' }}</td>
             </tr>
             <tr>
-                <th>Status</th>
+                <th>{{ request()->cookie('dev') == '1' ? 'Status' : 'ステータス' }}</th>
                 <td>
                     <span class="status-pill">
                         {{ $order->payment_status ?? '-' }}
@@ -732,32 +737,32 @@
                 </td>
             </tr>
             <tr>
-                <th>Transaction ID</th>
+                <th>{{ request()->cookie('dev') == '1' ? 'Transaction ID' : '取引ID' }}</th>
                 <td>{{ $order->payment->transaction_id ?? '-' }}</td>
             </tr>
             <tr>
-                <th>Amount</th>
+                <th>{{ request()->cookie('dev') == '1' ? 'Amount' : '金額' }}</th>
                 <td>¥ {{ number_format($order->payment->amount ?? 0, 2) }}</td>
             </tr>
         </table>
 
-        <div class="section-title">Summary</div>
+        <div class="section-title">{{ request()->cookie('dev') == '1' ? 'Summary' : '概要' }}</div>
 
         <table class="info-table">
             <tr>
-                <th>Subtotal</th>
+                <th>{{ request()->cookie('dev') == '1' ? 'Subtotal' : '小計' }}</th>
                 <td>¥ {{ number_format($order->subtotal, 2) }}</td>
             </tr>
             <tr>
-                <th>Shipping</th>
+                <th>{{ request()->cookie('dev') == '1' ? 'Shipping' : '配送料' }}</th>
                 <td>¥ {{ number_format($order->shipping_fee, 2) }}</td>
             </tr>
             <tr>
-                <th>VAT</th>
+                <th>{{ request()->cookie('dev') == '1' ? 'VAT' : 'VAT' }}</th>
                 <td>¥ {{ number_format($order->vat_amount, 2) }}</td>
             </tr>
             <tr>
-                <th>Grand Total</th>
+                <th>{{ request()->cookie('dev') == '1' ? 'Grand Total' : '合計金額' }}</th>
                 <td>
                     <span class="summary-total">
                         ¥ {{ number_format($order->grand_total, 2) }}
@@ -768,9 +773,9 @@
 
     </div>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            document.querySelectorAll('.order-item-toggle').forEach(function (button) {
-                button.addEventListener('click', function () {
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.order-item-toggle').forEach(function(button) {
+                button.addEventListener('click', function() {
                     const card = this.closest('.order-item-card');
                     card.classList.toggle('is-open');
                 });
@@ -782,9 +787,9 @@
 
 @section('js')
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            document.querySelectorAll('.order-toggle-btn').forEach(function (button) {
-                button.addEventListener('click', function () {
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.order-toggle-btn').forEach(function(button) {
+                button.addEventListener('click', function() {
                     const mainRow = this.closest('.order-main-row');
                     const detailRow = mainRow.nextElementSibling;
 

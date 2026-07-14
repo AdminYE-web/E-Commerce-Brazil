@@ -3,7 +3,7 @@
 @section('title', 'Articles | Indigo Admin')
 
 @section('css')
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
         .article-index-card {
             max-width: 1280px;
@@ -363,73 +363,75 @@
         .article-action-link.duplicate {
             color: #2563eb;
         }
+
         .article-filter-bar {
-    flex-wrap: wrap;
-}
+            flex-wrap: wrap;
+        }
 
-.article-filter-bar select {
-    height: 42px;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 0 14px;
-    background: #fff;
-    font-size: 14px;
-    outline: none;
-}
+        .article-filter-bar select {
+            height: 42px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 0 14px;
+            background: #fff;
+            font-size: 14px;
+            outline: none;
+        }
 
-.article-filter-bar select:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
-}
+        .article-filter-bar select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        }
 
-.article-filter-bar .filter-search {
-    width: 260px;
-}
+        .article-filter-bar .filter-search {
+            width: 260px;
+        }
 
-.article-filter-bar .filter-select {
-    width: 170px;
-}
+        .article-filter-bar .filter-select {
+            width: 170px;
+        }
 
-.article-filter-bar .filter-date {
-    width: 150px;
-}
+        .article-filter-bar .filter-date {
+            width: 150px;
+        }
 
-.article-date-range {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
+        .article-date-range {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
-.article-date-range span {
-    color: var(--muted);
-    font-size: 13px;
-    font-weight: 600;
-}
+        .article-date-range span {
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 600;
+        }
 
-.article-status.is-draft {
-    background: #fffbeb;
-    color: #92400e;
-}
+        .article-status.is-draft {
+            background: #fffbeb;
+            color: #92400e;
+        }
 
-@media (max-width: 900px) {
-    .article-filter-bar .filter-search,
-    .article-filter-bar .filter-select,
-    .article-filter-bar .filter-date,
-    .article-filter-bar .btn-search,
-    .article-filter-bar .btn-reset {
-        width: 100%;
-    }
+        @media (max-width: 900px) {
 
-    .article-date-range {
-        width: 100%;
-        flex-direction: column;
-        align-items: stretch;
-    }
+            .article-filter-bar .filter-search,
+            .article-filter-bar .filter-select,
+            .article-filter-bar .filter-date,
+            .article-filter-bar .btn-search,
+            .article-filter-bar .btn-reset {
+                width: 100%;
+            }
 
-    .article-date-range span {
-        text-align: center;
-    }
-}
+            .article-date-range {
+                width: 100%;
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .article-date-range span {
+                text-align: center;
+            }
+        }
     </style>
 @endsection
 
@@ -439,89 +441,74 @@
 
         <div class="article-header">
             <div>
-                <h1 class="article-title">Articles</h1>
+                <h1 class="article-title">{{ request()->cookie('dev') === '1' ? 'Articles' : '記事' }}</h1>
                 <div class="article-subtitle">
-                    Manage website articles.
+                    {{ request()->cookie('dev') === '1' ? 'Manage website articles.' : 'ウェブサイトの記事を管理します。' }}
                 </div>
             </div>
 
             <a href="{{ route('admin.articles.create') }}" class="btn-primary">
-                + Add Article
+                {{ request()->cookie('dev') == '1' ? '+ Add Article' : '+ 記事の追加' }}
             </a>
         </div>
 
-        @if(session('success'))
+        @if (session('success'))
             <div class="alert-success">
                 {{ session('success') }}
             </div>
         @endif
 
         <form method="GET" action="{{ route('admin.articles.index') }}" class="article-filter-bar">
-    <input
-        type="text"
-        name="search"
-        class="filter-search"
-        value="{{ request('search') }}"
-        placeholder="Search title or category..."
-    >
+            <input type="text" name="search" class="filter-search" value="{{ request('search') }}"
+                placeholder="{{ request()->cookie('dev') == '1' ? 'Search title or category...' : 'タイトルまたはカテゴリで検索...' }}">
 
-    <select name="category" class="filter-select">
-        <option value="">All Categories</option>
+            <select name="category" class="filter-select">
+                <option value="">{{ request()->cookie('dev') == '1' ? 'All Categories' : 'すべてのカテゴリ' }}</option>
 
-        @foreach($categories as $cat)
-            <option value="{{ $cat }}" {{ request('category') == $cat ? 'selected' : '' }}>
-                {{ $cat }}
-            </option>
-        @endforeach
-    </select>
+                @foreach ($categories as $cat)
+                    <option value="{{ $cat }}" {{ request('category') == $cat ? 'selected' : '' }}>
+                        {{ $cat }}
+                    </option>
+                @endforeach
+            </select>
 
-    <div class="article-date-range">
-    <input
-        type="text"
-        name="date_from"
-        class="filter-date js-date-picker"
-        value="{{ request('date_from') }}"
-        placeholder="dd/mm/yyyy"
-        autocomplete="off"
-    >
+            <div class="article-date-range">
+                <input type="text" name="date_from" class="filter-date js-date-picker"
+                    value="{{ request('date_from') }}" placeholder="dd/mm/yyyy" autocomplete="off">
 
-    <span>to</span>
+                <span>{{ request()->cookie('dev') == '1' ? 'to' : 'から' }}</span>
 
-    <input
-        type="text"
-        name="date_to"
-        class="filter-date js-date-picker"
-        value="{{ request('date_to') }}"
-        placeholder="dd/mm/yyyy"
-        autocomplete="off"
-    >
-</div>
+                <input type="text" name="date_to" class="filter-date js-date-picker" value="{{ request('date_to') }}"
+                    placeholder="dd/mm/yyyy" autocomplete="off">
+            </div>
 
-    <select name="status" class="filter-select">
-        <option value="">All Status</option>
-        <option value="1" {{ request('status') === '1' ? 'selected' : '' }}>Public</option>
-        <option value="3" {{ request('status') === '3' ? 'selected' : '' }}>Draft</option>
-    </select>
+            <select name="status" class="filter-select">
+                <option value="">{{ request()->cookie('dev') == '1' ? 'All Status' : 'すべてのステータス' }}</option>
+                <option value="1" {{ request('status') === '1' ? 'selected' : '' }}>
+                    {{ request()->cookie('dev') == '1' ? 'Public' : '公開' }}</option>
+                <option value="3" {{ request('status') === '3' ? 'selected' : '' }}>
+                    {{ request()->cookie('dev') == '1' ? 'Draft' : 'ドラフト' }}</option>
+            </select>
 
-    <button type="submit" class="btn-search">
-        Search
-    </button>
+            <button type="submit" class="btn-search">
+                {{ request()->cookie('dev') == '1' ? 'Search' : '検索' }}
+            </button>
 
-    <a href="{{ route('admin.articles.index') }}" class="btn-reset">
-        Reset
-    </a>
-</form>
+            <a href="{{ route('admin.articles.index') }}" class="btn-reset">
+                {{ request()->cookie('dev') == '1' ? 'Reset' : 'リセット' }}
+            </a>
+        </form>
 
         <div class="article-table-wrap">
             <table class="article-table">
                 <thead>
                     <tr>
-                        <th width="140">Cover</th>
-                        <th>Title</th>
-                        <th width="180">Category</th>
-                        <th width="150">Date</th>
-                        <th width="130">Status</th>
-                        <th width="160">Action</th>
+                        <th width="140">{{ request()->cookie('dev') == '1' ? 'Cover' : 'カバー' }}</th>
+                        <th>{{ request()->cookie('dev') == '1' ? 'Title' : 'タイトル' }}</th>
+                        <th width="180">{{ request()->cookie('dev') == '1' ? 'Category' : 'カテゴリ' }}</th>
+                        <th width="150">{{ request()->cookie('dev') == '1' ? 'Date' : '日付' }}</th>
+                        <th width="130">{{ request()->cookie('dev') == '1' ? 'Status' : 'ステータス' }}</th>
+                        <th width="160">{{ request()->cookie('dev') == '1' ? 'Action' : 'アクション' }}</th>
                     </tr>
                 </thead>
 
@@ -529,7 +516,7 @@
                     @forelse($articles as $article)
                         <tr class="{{ !empty($article->is_missing_translation) ? 'translation-missing-row' : '' }}">
                             <td>
-                                @if($article->cover_image)
+                                @if ($article->cover_image)
                                     <img src="{{ asset('storage/' . $article->cover_image) }}" alt="{{ $article->title }}"
                                         class="article-thumb">
                                 @else
@@ -550,51 +537,54 @@
                             </td>
 
                             <td>
-                              @if((int) $article->is_active === 1)
-    <span class="article-status is-active">Public</span>
-@elseif((int) $article->is_active === 3)
-    <span class="article-status is-draft">Draft</span>
-@else
-    <span class="article-status is-inactive">Inactive</span>
-@endif
+                                @if ((int) $article->is_active === 1)
+                                    <span
+                                        class="article-status is-active">{{ request()->cookie('dev') == '1' ? 'Public' : '公開' }}</span>
+                                @elseif((int) $article->is_active === 3)
+                                    <span
+                                        class="article-status is-draft">{{ request()->cookie('dev') == '1' ? 'Draft' : 'ドラフト' }}</span>
+                                @else
+                                    <span
+                                        class="article-status is-inactive">{{ request()->cookie('dev') == '1' ? 'Inactive' : '非公開' }}</span>
+                                @endif
                             </td>
 
                             <td>
                                 <div class="article-actions">
                                     @if (!empty($article->is_missing_translation))
-                                        <form action="{{ route('admin.articles.duplicate-translation', $article->article_id) }}"
+                                        <form
+                                            action="{{ route('admin.articles.duplicate-translation', $article->article_id) }}"
                                             method="POST" style="display:inline;">
                                             @csrf
 
                                             <button type="submit" class="article-action-link duplicate"
                                                 style="border:0;background:transparent;padding:0;cursor:pointer;"
                                                 onclick="return confirm('Duplicate this PT article for {{ strtoupper($language) }}?')">
-                                                Duplicate
+                                                {{ request()->cookie('dev') == '1' ? 'Duplicate' : '複製' }}
                                             </button>
                                         </form>
-                                            <a href="{{ route('admin.articles.preview', $article->article_id) }}"
-            class="article-action-link"
-            target="_blank">
-            Preview
-        </a>
+                                        <a href="{{ route('admin.articles.preview', $article->article_id) }}"
+                                            class="article-action-link" target="_blank">
+                                            {{ request()->cookie('dev') == '1' ? 'Preview' : 'プレビュー' }}
+                                        </a>
                                     @else
-                                     <a href="{{ route('admin.articles.preview', $article->article_id) }}"
-            class="article-action-link"
-            target="_blank">
-            Preview
-        </a>
+                                        <a href="{{ route('admin.articles.preview', $article->article_id) }}"
+                                            class="article-action-link" target="_blank">
+                                            {{ request()->cookie('dev') == '1' ? 'Preview' : 'プレビュー' }}
+                                        </a>
                                         <a href="{{ route('admin.articles.edit', $article->article_id) }}"
                                             class="article-action-link">
-                                            Edit
+                                            {{ request()->cookie('dev') == '1' ? 'Edit' : '編集' }}
                                         </a>
 
-                                        <form action="{{ route('admin.articles.destroy', $article->article_id) }}" method="POST"
-                                            onsubmit="return confirm('Delete this article?')">
+                                        <form action="{{ route('admin.articles.destroy', $article->article_id) }}"
+                                            method="POST"
+                                            onsubmit="return confirm('{{ request()->cookie('dev') == '1' ? 'Delete this article?' : 'この記事を削除しますか？' }}')">
                                             @csrf
                                             @method('DELETE')
 
                                             <button type="submit" class="article-delete-btn">
-                                                Delete
+                                                {{ request()->cookie('dev') == '1' ? 'Delete' : '削除' }}
                                             </button>
                                         </form>
                                     @endif

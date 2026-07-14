@@ -312,39 +312,42 @@
             color: var(--accent);
             background: #f8fafc;
         }
+
         .article-form-group-full {
-    grid-column: 1 / -1;
-}
+            grid-column: 1 / -1;
+        }
     </style>
 @endsection
 @section('content')
 
     <form action="{{ route('admin.articles.store') }}" method="POST" enctype="multipart/form-data">
-    @csrf
+        @csrf
 
-    <div class="table-card article-page-card">
-        <div class="table-header">
-            <div>
-                <div class="table-title">Create Article</div>
-                <div class="showing-text">Add new article.</div>
+        <div class="table-card article-page-card">
+            <div class="table-header">
+                <div>
+                    <div class="table-title">{{ request()->cookie('dev') == '1' ? 'Create Article' : '記事の作成' }}</div>
+                    <div class="showing-text">{{ request()->cookie('dev') == '1' ? 'Add new article.' : '新しい記事を追加します。' }}
+                    </div>
+                </div>
+
+                <a href="{{ route('admin.articles.index') }}"
+                    class="btn-outline">{{ request()->cookie('dev') == '1' ? 'Back' : '戻る' }}</a>
             </div>
 
-            <a href="{{ route('admin.articles.index') }}" class="btn-outline">Back</a>
+            @include('admin.articles._form')
+
+            <div class="article-actions">
+                <button type="submit" class="article-save-btn">
+                    {{ request()->cookie('dev') == '1' ? 'Save Article' : '記事の保存' }}
+                </button>
+
+                <a href="{{ route('admin.articles.index') }}" class="article-cancel-btn">
+                    {{ request()->cookie('dev') == '1' ? 'Cancel' : 'キャンセル' }}
+                </a>
+            </div>
         </div>
-
-        @include('admin.articles._form')
-
-        <div class="article-actions">
-            <button type="submit" class="article-save-btn">
-                Save Article
-            </button>
-
-            <a href="{{ route('admin.articles.index') }}" class="article-cancel-btn">
-                Cancel
-            </a>
-        </div>
-    </div>
-</form>
+    </form>
 
 @endsection
 

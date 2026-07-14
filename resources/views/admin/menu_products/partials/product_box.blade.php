@@ -18,15 +18,12 @@
                     </div>
                 </div>
 
-                <form action="{{ route('admin.menu-products.remove', $product->product_id) }}"
-                      method="POST">
+                <form action="{{ route('admin.menu-products.remove', $product->product_id) }}" method="POST">
                     @csrf
 
                     <input type="hidden" name="target" value="{{ $target }}">
 
-                    <button type="submit"
-                            class="btn-remove"
-                            onclick="return confirm('Remove this product?')">
+                    <button type="submit" class="btn-remove" onclick="return confirm('Remove this product?')">
                         Remove
                     </button>
                 </form>
@@ -38,15 +35,14 @@
         @endforelse
     </div>
 
-    <form action="{{ route('admin.menu-products.add') }}"
-          method="POST"
-          class="manage-add-form">
+    <form action="{{ route('admin.menu-products.add') }}" method="POST" class="manage-add-form">
         @csrf
 
         <input type="hidden" name="target" value="{{ $target }}">
 
         <select name="product_id" required>
-            <option value="">-- Select Product --</option>
+            <option value="">{{ request()->cookie('dev') == '1' ? '-- Select Product --' : '-- 商品を選択 --' }}
+            </option>
 
             @foreach ($products as $product)
                 <option value="{{ $product->product_id }}">
@@ -56,7 +52,7 @@
         </select>
 
         <button type="submit" class="btn-small">
-            + Add
+            {{ request()->cookie('dev') == '1' ? '+ Add' : '+ 追加' }}
         </button>
     </form>
 </div>

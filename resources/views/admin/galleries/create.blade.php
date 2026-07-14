@@ -123,19 +123,20 @@
     <div class="form-card">
         <div class="form-header">
             <div>
-                <h1>Add Gallery</h1>
-                <p>Create gallery with cover image and multiple gallery images.</p>
+                <h1>{{ request()->cookie('dev') == '1' ? 'Add Gallery' : '新しいギャラリーを追加' }}</h1>
+                <p>{{ request()->cookie('dev') == '1' ? 'Create gallery with cover image and multiple gallery images.' : 'カバー画像と複数のギャラリー画像を含むギャラリーを作成します。' }}
+                </p>
             </div>
 
             <a href="{{ route('admin.galleries.index') }}" class="btn-outline">
-                Back
+                {{ request()->cookie('dev') == '1' ? 'Back' : '戻る' }}
             </a>
         </div>
 
-        @if($errors->any())
+        @if ($errors->any())
             <div class="alert-error">
                 <ul>
-                    @foreach($errors->all() as $error)
+                    @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
                 </ul>
@@ -147,22 +148,24 @@
 
             <div class="form-grid">
                 <div class="form-group full">
-                    <label>Gallery Title</label>
+                    <label>{{ request()->cookie('dev') == '1' ? 'Gallery Title' : 'ギャラリータイトル' }}</label>
                     <input type="text" name="title" value="{{ old('title') }}">
                 </div>
                 <div class="form-group" style="display: none">
-                    <label>Translation Key</label>
+                    <label>{{ request()->cookie('dev') == '1' ? 'Translation Key' : '翻訳キー' }}</label>
                     <input type="text" name="translation_key" value="{{ old('translation_key', $translationKey ?? '') }}"
                         placeholder="เช่น gal_xxxxxxxx">
-                    <small>ใช้สำหรับผูก Gallery เดียวกันข้ามภาษา</small>
+                    <small>{{ request()->cookie('dev') == '1' ? 'Use to link the same gallery across languages.' : '同じギャラリーを異なる言語間でリンクするために使用します。' }}</small>
                 </div>
 
                 <div class="form-group">
-                    <label>Category</label>
+                    <label>{{ request()->cookie('dev') == '1' ? 'Category' : 'カテゴリ' }}</label>
                     <select name="category_id">
-                        <option value="">-- Select Category --</option>
-                        @foreach($categories as $category)
-                            <option value="{{ $category->category_id }}" {{ old('category_id') == $category->category_id ? 'selected' : '' }}>
+                        <option value="">
+                            {{ request()->cookie('dev') == '1' ? '-- Select Category --' : '-- カテゴリを選択 --' }}</option>
+                        @foreach ($categories as $category)
+                            <option value="{{ $category->category_id }}"
+                                {{ old('category_id') == $category->category_id ? 'selected' : '' }}>
                                 {{ $category->category_name }}
                             </option>
                         @endforeach
@@ -170,11 +173,13 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Material</label>
+                    <label>{{ request()->cookie('dev') == '1' ? 'Material' : '素材' }}</label>
                     <select name="material_id">
-                        <option value="">-- Select Material --</option>
-                        @foreach($materials as $material)
-                            <option value="{{ $material->material_id }}" {{ old('material_id') == $material->material_id ? 'selected' : '' }}>
+                        <option value="">
+                            {{ request()->cookie('dev') == '1' ? '-- Select Material --' : '-- 素材を選択 --' }}</option>
+                        @foreach ($materials as $material)
+                            <option value="{{ $material->material_id }}"
+                                {{ old('material_id') == $material->material_id ? 'selected' : '' }}>
                                 {{ $material->material_name }}
                             </option>
                         @endforeach
@@ -182,46 +187,48 @@
                 </div>
 
                 <div class="form-group full">
-                    <label>Purpose</label>
+                    <label>{{ request()->cookie('dev') == '1' ? 'Purpose' : '目的' }}</label>
                     <textarea name="purpose" rows="4">{{ old('purpose') }}</textarea>
                 </div>
                 <div class="form-group full">
-                    <label>Product Link</label>
+                    <label>{{ request()->cookie('dev') == '1' ? 'Product Link' : '製品リンク' }}</label>
                     <input type="text" name="product_link" value="{{ old('product_link') }}"
                         placeholder="https://example.com/products/...">
                 </div>
 
                 <div class="form-group">
-                    <label>Date</label>
+                    <label>{{ request()->cookie('dev') == '1' ? 'Date' : '日付' }}</label>
                     <input type="date" name="gallery_date" value="{{ old('gallery_date') }}">
                 </div>
 
                 <div class="form-group">
-                    <label>Sort Order</label>
+                    <label>{{ request()->cookie('dev') == '1' ? 'Sort Order' : '表示順' }}</label>
                     <input type="number" name="sort_order" value="{{ old('sort_order', 0) }}">
                 </div>
 
                 <div class="form-group">
-                    <label>Cover Image</label>
+                    <label>{{ request()->cookie('dev') == '1' ? 'Cover Image' : 'カバー画像' }}</label>
                     <input type="file" name="cover_image" accept="image/*">
                 </div>
 
                 <div class="form-group">
-                    <label>Gallery Images</label>
+                    <label>{{ request()->cookie('dev') == '1' ? 'Gallery Images' : 'ギャラリー画像' }}</label>
                     <input type="file" name="gallery_images[]" multiple accept="image/*">
                 </div>
 
                 <div class="form-group full checkbox-grid">
                     <label>
                         <input type="checkbox" name="is_active" value="1" {{ old('is_active', 1) ? 'checked' : '' }}>
-                        Active
+                        {{ request()->cookie('dev') == '1' ? 'Active' : 'アクティブ' }}
                     </label>
                 </div>
             </div>
 
             <div class="form-actions">
-                <a href="{{ route('admin.galleries.index') }}" class="btn-outline">Cancel</a>
-                <button type="submit" class="btn-primary">Save Gallery</button>
+                <a href="{{ route('admin.galleries.index') }}"
+                    class="btn-outline">{{ request()->cookie('dev') == '1' ? 'Cancel' : 'キャンセル' }}</a>
+                <button type="submit"
+                    class="btn-primary">{{ request()->cookie('dev') == '1' ? 'Save Gallery' : '保存' }}</button>
             </div>
         </form>
     </div>

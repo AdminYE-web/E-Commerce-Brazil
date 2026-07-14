@@ -287,110 +287,111 @@
                 text-align: center;
             }
         }
+
         .filter-form {
-    margin-bottom: 20px;
-    padding: 16px;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-}
+            margin-bottom: 20px;
+            padding: 16px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
 
-.filter-row {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    align-items: center;
-}
+        .filter-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
 
-.filter-row-main {
-    align-items: center;
-}
+        .filter-row-main {
+            align-items: center;
+        }
 
-.filter-search {
-    min-width: 280px;
-    flex: 1;
-}
+        .filter-search {
+            min-width: 280px;
+            flex: 1;
+        }
 
-.filter-form select {
-    min-width: 190px;
-}
+        .filter-form select {
+            min-width: 190px;
+        }
 
-.advanced-filter {
-    display: none;
-    margin-top: 16px;
-    padding-top: 16px;
-    border-top: 1px solid var(--border);
-}
+        .advanced-filter {
+            display: none;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
 
-.advanced-filter.is-open {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(260px, 1fr));
-    gap: 16px;
-    align-items: end;
-}
+        .advanced-filter.is-open {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(260px, 1fr));
+            gap: 16px;
+            align-items: end;
+        }
 
-.date-filter-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
+        .date-filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
 
-.date-filter-label {
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--fg-dark);
-}
+        .date-filter-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--fg-dark);
+        }
 
-.date-filter-inputs {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    gap: 8px;
-    align-items: center;
-}
+        .date-filter-inputs {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 8px;
+            align-items: center;
+        }
 
-.date-filter-inputs input {
-    width: 100%;
-    min-width: 0;
-}
+        .date-filter-inputs input {
+            width: 100%;
+            min-width: 0;
+        }
 
-.date-filter-inputs span {
-    color: var(--muted);
-    font-size: 13px;
-    font-weight: 600;
-    text-align: center;
-}
+        .date-filter-inputs span {
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 600;
+            text-align: center;
+        }
 
-.btn-advanced {
-    min-width: 135px;
-}
+        .btn-advanced {
+            min-width: 135px;
+        }
 
-@media (max-width: 1100px) {
-    .advanced-filter.is-open {
-        grid-template-columns: 1fr;
-    }
-}
+        @media (max-width: 1100px) {
+            .advanced-filter.is-open {
+                grid-template-columns: 1fr;
+            }
+        }
 
-@media (max-width: 900px) {
-    .filter-row {
-        flex-direction: column;
-        align-items: stretch;
-    }
+        @media (max-width: 900px) {
+            .filter-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
 
-    .filter-form input,
-    .filter-form select,
-    .filter-form .btn-primary,
-    .filter-form .btn-outline {
-        width: 100%;
-    }
+            .filter-form input,
+            .filter-form select,
+            .filter-form .btn-primary,
+            .filter-form .btn-outline {
+                width: 100%;
+            }
 
-    .date-filter-inputs {
-        grid-template-columns: 1fr;
-    }
+            .date-filter-inputs {
+                grid-template-columns: 1fr;
+            }
 
-    .date-filter-inputs span {
-        display: none;
-    }
-}
+            .date-filter-inputs span {
+                display: none;
+            }
+        }
     </style>
 @endsection
 
@@ -399,9 +400,9 @@
     <div class="table-card">
         <div class="table-header">
             <div>
-                <div class="table-title">Orders</div>
+                <div class="table-title">{{ request()->cookie('dev') == '1' ? 'Orders' : '注文管理' }}</div>
                 <div class="showing-text">
-                    Manage customer orders, payment status and order progress.
+                    {{ request()->cookie('dev') == '1' ? 'Manage customer orders, payment status and order progress.' : '顧客の注文、支払い状況、注文の進行状況を管理します。' }}
                 </div>
             </div>
         </div>
@@ -413,171 +414,129 @@
         @endif
 
         @php
-    $hasAdvancedFilter = request()->filled('order_date_from')
-        || request()->filled('order_date_to')
-        || request()->filled('payment_date_from')
-        || request()->filled('payment_date_to')
-        || request()->filled('shipping_date_from')
-        || request()->filled('shipping_date_to');
-@endphp
+            $hasAdvancedFilter =
+                request()->filled('order_date_from') ||
+                request()->filled('order_date_to') ||
+                request()->filled('payment_date_from') ||
+                request()->filled('payment_date_to') ||
+                request()->filled('shipping_date_from') ||
+                request()->filled('shipping_date_to');
+        @endphp
 
-<form method="GET" class="filter-form">
-    {{-- Row 1: Main Search --}}
-  <div class="filter-row filter-row-main">
-    <input
-        type="text"
-        name="search"
-        class="filter-search"
-        value="{{ request('search') }}"
-        placeholder="Search order no, email, name, phone"
-    >
+        <form method="GET" class="filter-form">
+            {{-- Row 1: Main Search --}}
+            <div class="filter-row filter-row-main">
+                <input type="text" name="search" class="filter-search" value="{{ request('search') }}"
+                    placeholder="Search order no, email, name, phone">
 
-    <select name="status">
-        <option value="">All Order Status</option>
+                <select name="status">
+                    <option value="">{{ request()->cookie('dev') == '1' ? 'All Order Status' : 'すべての注文ステータス' }}
+                    </option>
 
-        @foreach([
-            'order_pending',
-            'design_in_progress',
-            'production',
-            'delivery',
-            'delivered',
-            'completed',
-            'cancelled'
-        ] as $status)
-            <option value="{{ $status }}" {{ request('status') == $status ? 'selected' : '' }}>
-                {{ ucwords(str_replace('_', ' ', $status)) }}
-            </option>
-        @endforeach
-    </select>
+                    @foreach (['order_pending', 'design_in_progress', 'production', 'delivery', 'delivered', 'completed', 'cancelled'] as $status)
+                        <option value="{{ $status }}" {{ request('status') == $status ? 'selected' : '' }}>
+                            {{ ucwords(str_replace('_', ' ', $status)) }}
+                        </option>
+                    @endforeach
+                </select>
 
-    <select name="payment_status">
-        <option value="">All Payment Status</option>
+                <select name="payment_status">
+                    <option value="">{{ request()->cookie('dev') == '1' ? 'All Payment Status' : 'すべての支払いステータス' }}
+                    </option>
 
-        @foreach(['pending','paid','failed','cancelled','refunded'] as $paymentStatus)
-            <option value="{{ $paymentStatus }}" {{ request('payment_status') == $paymentStatus ? 'selected' : '' }}>
-                {{ ucfirst($paymentStatus) }}
-            </option>
-        @endforeach
-    </select>
+                    @foreach (['pending', 'paid', 'failed', 'cancelled', 'refunded'] as $paymentStatus)
+                        <option value="{{ $paymentStatus }}"
+                            {{ request('payment_status') == $paymentStatus ? 'selected' : '' }}>
+                            {{ ucfirst($paymentStatus) }}
+                        </option>
+                    @endforeach
+                </select>
 
-    <select name="product_type">
-    <option value="">All Product Type</option>
+                <select name="product_type">
+                    <option value="">{{ request()->cookie('dev') == '1' ? 'All Product Type' : 'すべての製品タイプ' }}
+                    </option>
 
-    <option value="1" {{ request('product_type') == '1' ? 'selected' : '' }}>
-        Hotstrap
-    </option>
+                    <option value="1" {{ request('product_type') == '1' ? 'selected' : '' }}>
+                        Hotstrap
+                    </option>
 
-    <option value="2" {{ request('product_type') == '2' ? 'selected' : '' }}>
-        Hotmobily
-    </option>
-</select>
+                    <option value="2" {{ request('product_type') == '2' ? 'selected' : '' }}>
+                        Hotmobily
+                    </option>
+                </select>
 
-    <button type="submit" class="btn-primary">
-        Search
-    </button>
+                <button type="submit" class="btn-primary">
+                    {{ request()->cookie('dev') == '1' ? 'Search' : '検索' }}
+                </button>
 
-    <a href="{{ route('admin.orders.index') }}" class="btn-outline">
-        Reset
-    </a>
+                <a href="{{ route('admin.orders.index') }}" class="btn-outline">
+                    {{ request()->cookie('dev') == '1' ? 'Reset' : 'リセット' }}
+                </a>
 
-    <button type="button" class="btn-outline btn-advanced" id="toggleAdvancedFilter">
-        Advanced Search
-    </button>
-</div>
+                <button type="button" class="btn-outline btn-advanced" id="toggleAdvancedFilter">
+                    {{ request()->cookie('dev') == '1' ? 'Advanced Search' : '詳細検索' }}
+                </button>
+            </div>
 
-    {{-- Row 2: Advanced Search --}}
-   <div class="advanced-filter {{ $hasAdvancedFilter ? 'is-open' : '' }}" id="advancedFilterBox">
-    <div class="date-filter-group">
-        <label class="date-filter-label">Order Date</label>
+            {{-- Row 2: Advanced Search --}}
+            <div class="advanced-filter {{ $hasAdvancedFilter ? 'is-open' : '' }}" id="advancedFilterBox">
+                <div class="date-filter-group">
+                    <label class="date-filter-label">Order Date</label>
 
-        <div class="date-filter-inputs">
-            <input
-                type="text"
-                name="order_date_from"
-                class="js-date-picker"
-                value="{{ request('order_date_from') }}"
-                placeholder="From"
-                autocomplete="off"
-            >
+                    <div class="date-filter-inputs">
+                        <input type="text" name="order_date_from" class="js-date-picker"
+                            value="{{ request('order_date_from') }}" placeholder="From" autocomplete="off">
 
-            <span>to</span>
+                        <span>{{ request()->cookie('dev') == '1' ? 'to' : '〜' }}</span>
 
-            <input
-                type="text"
-                name="order_date_to"
-                class="js-date-picker"
-                value="{{ request('order_date_to') }}"
-                placeholder="To"
-                autocomplete="off"
-            >
-        </div>
-    </div>
+                        <input type="text" name="order_date_to" class="js-date-picker"
+                            value="{{ request('order_date_to') }}" placeholder="To" autocomplete="off">
+                    </div>
+                </div>
 
-    <div class="date-filter-group">
-        <label class="date-filter-label">Shipping Date</label>
+                <div class="date-filter-group">
+                    <label
+                        class="date-filter-label">{{ request()->cookie('dev') == '1' ? 'Shipping Date' : '出荷日' }}</label>
 
-        <div class="date-filter-inputs">
-            <input
-                type="text"
-                name="shipping_date_from"
-                class="js-date-picker"
-                value="{{ request('shipping_date_from') }}"
-                placeholder="From"
-                autocomplete="off"
-            >
+                    <div class="date-filter-inputs">
+                        <input type="text" name="shipping_date_from" class="js-date-picker"
+                            value="{{ request('shipping_date_from') }}" placeholder="From" autocomplete="off">
 
-            <span>to</span>
+                        <span>{{ request()->cookie('dev') == '1' ? 'to' : '〜' }}</span>
 
-            <input
-                type="text"
-                name="shipping_date_to"
-                class="js-date-picker"
-                value="{{ request('shipping_date_to') }}"
-                placeholder="To"
-                autocomplete="off"
-            >
-        </div>
-    </div>
+                        <input type="text" name="shipping_date_to" class="js-date-picker"
+                            value="{{ request('shipping_date_to') }}" placeholder="To" autocomplete="off">
+                    </div>
+                </div>
 
-    <div class="date-filter-group">
-        <label class="date-filter-label">Payment Date</label>
+                <div class="date-filter-group">
+                    <label
+                        class="date-filter-label">{{ request()->cookie('dev') == '1' ? 'Payment Date' : '支払い日' }}</label>
 
-        <div class="date-filter-inputs">
-            <input
-                type="text"
-                name="payment_date_from"
-                class="js-date-picker"
-                value="{{ request('payment_date_from') }}"
-                placeholder="From"
-                autocomplete="off"
-            >
+                    <div class="date-filter-inputs">
+                        <input type="text" name="payment_date_from" class="js-date-picker"
+                            value="{{ request('payment_date_from') }}" placeholder="From" autocomplete="off">
 
-            <span>to</span>
+                        <span>{{ request()->cookie('dev') == '1' ? 'to' : '〜' }}</span>
 
-            <input
-                type="text"
-                name="payment_date_to"
-                class="js-date-picker"
-                value="{{ request('payment_date_to') }}"
-                placeholder="To"
-                autocomplete="off"
-            >
-        </div>
-    </div>
-</div>
-</form>
+                        <input type="text" name="payment_date_to" class="js-date-picker"
+                            value="{{ request('payment_date_to') }}" placeholder="To" autocomplete="off">
+                    </div>
+                </div>
+            </div>
+        </form>
 
         <table>
             <thead>
                 <tr>
-                    <th>Order</th>
-                    <th>Customer</th>
-                    <th>Qty</th>
-                    <th>Total</th>
-                    <th>Order Status</th>
-                    <th>Payment</th>
-                    <th>Date</th>
-                    <th style="text-align:right;">Manage</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Order' : '注文' }}</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Customer' : '顧客' }}</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Qty' : '数量' }}</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Total' : '合計' }}</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Order Status' : '注文ステータス' }}</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Payment' : '支払い' }}</th>
+                    <th>{{ request()->cookie('dev') == '1' ? 'Date' : '注文日' }}</th>
+                    <th style="text-align:right;">{{ request()->cookie('dev') == '1' ? 'Manage' : '管理' }}</th>
                 </tr>
             </thead>
 
@@ -633,7 +592,7 @@
 
                         <td style="text-align:right;">
                             <a href="{{ route('admin.orders.show', $order->order_id) }}" class="btn-outline">
-                                Detail
+                                {{ request()->cookie('dev') == '1' ? 'Detail' : '詳細' }}
                             </a>
                         </td>
                     </tr>
@@ -666,7 +625,7 @@
             locale: 'en'
         });
 
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const toggleButton = document.getElementById('toggleAdvancedFilter');
             const advancedBox = document.getElementById('advancedFilterBox');
 
@@ -675,14 +634,14 @@
             }
 
             function updateButtonText() {
-                toggleButton.textContent = advancedBox.classList.contains('is-open')
-                    ? 'Hide Advanced'
-                    : 'Advanced Search';
+                toggleButton.textContent = advancedBox.classList.contains('is-open') ?
+                    'Hide Advanced' :
+                    'Advanced Search';
             }
 
             updateButtonText();
 
-            toggleButton.addEventListener('click', function () {
+            toggleButton.addEventListener('click', function() {
                 advancedBox.classList.toggle('is-open');
                 updateButtonText();
             });

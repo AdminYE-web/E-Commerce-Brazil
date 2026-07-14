@@ -473,6 +473,8 @@ if (discountInput) {
                                     value="${option.option_id}"
                                     data-price="${option.additional_price}"
                                     data-price-type="${option.price_type || 'per_order'}"
+                                    data-free-from-qty="${option.free_from_qty || 0}"
+                                    data-price-rates='${JSON.stringify(option.price_rates || [])}'
                                 >
                                 ${option.option_name}${priceText}
                             </label>
@@ -495,6 +497,7 @@ if (discountInput) {
                     });
 
                     itemBox.dataset.priceRules = JSON.stringify(data.price_rules || []);
+                    itemBox.dataset.optionPriceRules = JSON.stringify(data.option_price_rules || []);
 
                     calculateItemTotal(itemBox);
                     calculateQuotationSummary();
@@ -507,6 +510,7 @@ if (discountInput) {
 
             const selectedOptionIds = Array.from(checkedOptions).map(input => parseInt(input.value));
             const priceRules = JSON.parse(itemBox.dataset.priceRules || '[]');
+            const optionPriceRules = JSON.parse(itemBox.dataset.optionPriceRules || '[]');
 
             const matchedRule = findMatchedRule(priceRules, selectedOptionIds);
             const unitPrice = getUnitPrice(matchedRule, qty);
@@ -515,8 +519,21 @@ if (discountInput) {
 
             checkedOptions.forEach(input => {
                 const optionId = parseInt(input.value);
-                const price = parseFloat(input.dataset.price || 0);
+                let price = getRatePriceByQty(input, qty);
                 const priceType = input.dataset.priceType || 'per_order';
+                const freeFromQty = parseInt(input.dataset.freeFromQty || 0);
+
+                if (freeFromQty > 0 && qty >= freeFromQty) {
+                    price = 0;
+                }
+
+                price = getOptionReplacementPrice(
+                    optionPriceRules,
+                    optionId,
+                    price,
+                    qty,
+                    selectedOptionIds
+                );
 
                 const isRuleOption = matchedRule && matchedRule.option_ids.map(Number).includes(
                     optionId);
@@ -529,6 +546,66 @@ if (discountInput) {
             const itemTotal = (unitPrice * qty) + optionTotal;
 
             itemBox.querySelector('.quotation-item-total').textContent = itemTotal.toFixed(2);
+        }
+
+        function getRatePriceByQty(input, qty) {
+            const basePrice = parseFloat(input.dataset.price || 0);
+            let rates = [];
+
+            try {
+                rates = JSON.parse(input.dataset.priceRates || '[]');
+            } catch (error) {
+                rates = [];
+            }
+
+            if (!Array.isArray(rates) || !rates.length) {
+                return basePrice;
+            }
+
+            return rates.reduce((matchedPrice, rate) => {
+                return qty >= parseInt(rate.min_qty || 0)
+                    ? parseFloat(rate.price || 0)
+                    : matchedPrice;
+            }, basePrice);
+        }
+
+        function getOptionReplacementPrice(optionPriceRules, optionId, currentPrice, qty, selectedOptionIds) {
+            const matchedRules = optionPriceRules.filter(rule => {
+                const conditionOptionIds = rule.option_ids || [];
+
+                if (parseInt(rule.target_option_id || 0) !== optionId || !conditionOptionIds.length) {
+                    return false;
+                }
+
+                return conditionOptionIds.every(id => selectedOptionIds.includes(parseInt(id)));
+            });
+
+            if (!matchedRules.length) {
+                return currentPrice;
+            }
+
+            matchedRules.sort((a, b) => (b.option_ids || []).length - (a.option_ids || []).length);
+
+            const tiers = matchedRules[0].tiers || [];
+            const matchedTiers = tiers.filter(tier => {
+                const min = parseInt(tier.min_qty);
+                const max = tier.max_qty === null ? null : parseInt(tier.max_qty);
+
+                return qty >= min && (max === null || qty <= max);
+            });
+
+            if (matchedTiers.length) {
+                matchedTiers.sort((a, b) => parseInt(b.min_qty) - parseInt(a.min_qty));
+
+                return parseFloat(matchedTiers[0].additional_price || 0);
+            }
+
+            const sortedTiers = [...tiers].sort((a, b) => parseInt(b.min_qty) - parseInt(a.min_qty));
+            const highestTier = sortedTiers[0];
+
+            return highestTier && qty > parseInt(highestTier.min_qty)
+                ? parseFloat(highestTier.additional_price || 0)
+                : currentPrice;
         }
 
         function findMatchedRule(priceRules, selectedOptionIds) {
@@ -562,8 +639,11 @@ if (discountInput) {
             }
 
             const sorted = [...(rule.tiers || [])].sort((a, b) => parseInt(b.min_qty) - parseInt(a.min_qty));
+            const highestTier = sorted[0];
 
-            return sorted.length ? parseFloat(sorted[0].unit_price) : 0;
+            return highestTier && qty > parseInt(highestTier.min_qty)
+                ? parseFloat(highestTier.unit_price)
+                : 0;
         }
 
         addItem();
